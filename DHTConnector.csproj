@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <ProjectGuid>{7E8CB127-E0C9-4CA6-9A59-09249702AB43}</ProjectGuid>
+    <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>DHTConnector</RootNamespace>
+    <AssemblyName>DHTConnector</AssemblyName>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>DHTConnector.Program</StartupObject>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BencodeNET\Exceptions\BencodeException.cs" />
+    <Compile Include="BencodeNET\Exceptions\InvalidBencodeException.cs" />
+    <Compile Include="BencodeNET\Exceptions\InvalidTorrentException.cs" />
+    <Compile Include="BencodeNET\Exceptions\UnsupportedBencodeException.cs" />
+    <Compile Include="BencodeNET\IO\BencodeStream.cs" />
+    <Compile Include="BencodeNET\Objects\BDictionary.cs" />
+    <Compile Include="BencodeNET\Objects\BList.cs" />
+    <Compile Include="BencodeNET\Objects\BNumber.cs" />
+    <Compile Include="BencodeNET\Objects\BObject.cs" />
+    <Compile Include="BencodeNET\Objects\BString.cs" />
+    <Compile Include="BencodeNET\Objects\IBObject.cs" />
+    <Compile Include="BencodeNET\Parsing\BDictionaryParser.cs" />
+    <Compile Include="BencodeNET\Parsing\BencodeParser.cs" />
+    <Compile Include="BencodeNET\Parsing\BListParser.cs" />
+    <Compile Include="BencodeNET\Parsing\BNumberParser.cs" />
+    <Compile Include="BencodeNET\Parsing\BObjectParser.cs" />
+    <Compile Include="BencodeNET\Parsing\BObjectParserList.cs" />
+    <Compile Include="BencodeNET\Parsing\BStringParser.cs" />
+    <Compile Include="BencodeNET\Parsing\IBencodeParser.cs" />
+    <Compile Include="BencodeNET\Parsing\IBObjectParser.cs" />
+    <Compile Include="BencodeNET\Parsing\ParseUtil.cs" />
+    <Compile Include="BencodeNET\Parsing\TorrentParser.cs" />
+    <Compile Include="BencodeNET\Parsing\TorrentParserMode.cs" />
+    <Compile Include="BencodeNET\Torrents\MagnetLinkOptions.cs" />
+    <Compile Include="BencodeNET\Torrents\MultiFileInfo.cs" />
+    <Compile Include="BencodeNET\Torrents\MultiFileInfoList.cs" />
+    <Compile Include="BencodeNET\Torrents\SingleFileInfo.cs" />
+    <Compile Include="BencodeNET\Torrents\Torrent.cs" />
+    <Compile Include="BencodeNET\Torrents\TorrentFields.cs" />
+    <Compile Include="BencodeNET\Torrents\TorrentFileMode.cs" />
+    <Compile Include="BencodeNET\Torrents\TorrentUtil.cs" />
+    <Compile Include="BencodeNET\UtilityExtensions.cs" />
+    <Compile Include="BittorrentDownloader.cs" />
+    <Compile Include="Helpers.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UDPServer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
