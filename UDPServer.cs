@@ -40,19 +40,18 @@ namespace DHTConnector
 
         private void EndRecv(IAsyncResult result)
         {
-            EndPoint remoteAddrss = new IPEndPoint(IPAddress.Loopback, 0);
+            EndPoint remoteAddress = new IPEndPoint(IPAddress.Loopback, 0);
             try {
-                int count = this.fSocket.EndReceiveFrom(result, ref remoteAddrss);
+                int count = fSocket.EndReceiveFrom(result, ref remoteAddress);
                 if (count > 0)
-                    OnRecvMessage(fBuffer.Take(count).ToArray(), (IPEndPoint)remoteAddrss);
-
+                    OnRecvMessage(fBuffer.Take(count).ToArray(), (IPEndPoint)remoteAddress);
             } catch (Exception ex) {
                 //Console.WriteLine(ex.ToString());
             }
             bool notsuccess = false;
             do {
                 try {
-                    fSocket.BeginReceiveFrom(fBuffer, 0, fBuffer.Length, SocketFlags.None, ref remoteAddrss, EndRecv, null);
+                    fSocket.BeginReceiveFrom(fBuffer, 0, fBuffer.Length, SocketFlags.None, ref remoteAddress, EndRecv, null);
                     notsuccess = false;
                 } catch (Exception ex) {
                     Console.WriteLine(ex);
@@ -77,8 +76,16 @@ namespace DHTConnector
                     var nodesData = nodesStr.Value.ToArray();
                     var nodesList = Helpers.ParseNodesList(nodesData);
                     foreach (var t in nodesList) {
-                        lock (this.fNodes) {
-                            this.fNodes.Enqueue(t);
+
+                        // temp limit
+                        int count = 0;
+                        lock (fNodes) {
+                            count = fNodes.Count;
+                        }
+                        if (count == 100) return;
+
+                        lock (fNodes) {
+                            fNodes.Enqueue(t);
                             //Console.WriteLine("find a node " + t.Item2);
                         }
                     }
@@ -86,18 +93,7 @@ namespace DHTConnector
                 }
 
                 if (dic.Get<BString>("y") == "q" && dic.Get<BString>("q") == "ping") {
-                    //Console.WriteLine("ping");
-                    BDictionary resultDic = new BDictionary();
-                    resultDic.Add("t", dic.Get<BString>("t"));
-                    resultDic.Add("y", "r");
-                    var r = new BDictionary();
-                    r.Add("id", new BString(fLocalID));
-                    resultDic.Add("r", r);
-
-                    Send(resultDic, ipinfo);
-                    //var dataresult = resultDic.EncodeAsBytes();
-                    //this.sock.BeginSendTo(dataresult, 0, dataresult.Length, SocketFlags.None, ipinfo, (ar) => { this.sock.EndSendTo(ar); }, null);
-
+                    SendPingResponse(ipinfo, dic.Get<BString>("t"));
                     return;
                 }
 
@@ -111,26 +107,27 @@ namespace DHTConnector
                     var a = dic.Get<BDictionary>("a");
                     var rid = a.Get<BString>("id");
                     var info_hash = a.Get<BString>("info_hash");
+
                     var result = new BDictionary();
                     result.Add("t", t);
                     result.Add("y", "r");
                     var r = new BDictionary();
                     var neighbor = new List<byte>();
                     neighbor.AddRange(info_hash.Value.Take(10));
-                    neighbor.AddRange(this.fLocalID.Skip(10).Take(10));
+                    neighbor.AddRange(fLocalID.Skip(10).Take(10));
                     r.Add("id", new BString(neighbor));
                     r.Add("token", new BString(info_hash.Value.Take(2)));
                     r.Add("nodes", "");
                     result.Add("r", r);
 
-                    Send(result, ipinfo);
+                    Send(ipinfo, result);
                     //var dataresult = result.EncodeAsBytes();
-                    //this.sock.BeginSendTo(dataresult, 0, dataresult.Length, SocketFlags.None, ipinfo, (ar) => { this.sock.EndSendTo(ar); }, null);
+                    //sock.BeginSendTo(dataresult, 0, dataresult.Length, SocketFlags.None, ipinfo, (ar) => { sock.EndSendTo(ar); }, null);
 
                     WriteInfo("get_peers", info_hash.Value.ToArray(), rid.Value.ToArray(), null);
                     Console.WriteLine(info_hash.Value.ToArray().ToHexString() + "|" + ipinfo.ToString());
                     return;
-                    //this.InfoHashList.Add(info_hash.Value.ToArray());
+                    //InfoHashList.Add(info_hash.Value.ToArray());
                 }
 
                 if (dic.Get<BString>("y") == "q" && dic.Get<BString>("q") == "announce_peer") {
@@ -155,6 +152,20 @@ namespace DHTConnector
             }
         }
 
+        private void SendPingResponse(IPEndPoint address, BString transactionID)
+        {
+            BDictionary resultDict = new BDictionary();
+            resultDict.Add("y", "r");
+            resultDict.Add("t", transactionID);
+            var r = new BDictionary();
+            r.Add("id", new BString(fLocalID));
+            resultDict.Add("r", r);
+
+            Send(address, resultDict);
+            //var dataresult = resultDic.EncodeAsBytes();
+            //sock.BeginSendTo(dataresult, 0, dataresult.Length, SocketFlags.None, ipinfo, (ar) => { sock.EndSendTo(ar); }, null);
+        }
+
         private void WriteInfo(string commandName, byte[] info_hash, byte[] nid, IPEndPoint ipadd)
         {
             var str = $"{commandName}:{info_hash.ToHexString()}:{nid.ToHexString()}:{(ipadd ?? fDefaultIP).ToString()}";
@@ -175,8 +186,8 @@ namespace DHTConnector
                         }.Select(x => Dns.Resolve(x).AddressList[0]).ToList();
                 while (true) {
                     int count = 0;
-                    lock (this.fNodes) {
-                        count = this.fNodes.Count;
+                    lock (fNodes) {
+                        count = fNodes.Count;
                     }
                     if (count == 0) {
                         foreach (var t in hosts) {
@@ -204,7 +215,7 @@ namespace DHTConnector
             }
         }
 
-        private static byte[] get_neighbor(byte[] target, byte[] nid)
+        private static byte[] GetNeighbor(byte[] target, byte[] nid)
         {
             var result = new byte[20];
             for (int i = 0; i < 10; i++)
@@ -220,12 +231,13 @@ namespace DHTConnector
             if (data == null) {
                 nid = fLocalID;
             } else {
-                nid = get_neighbor(data, fLocalID);
+                nid = GetNeighbor(data, fLocalID);
             }
-            var tid = Helpers.GetTil();
+
+            var transactionID = Helpers.GetTransactionID();
 
             BDictionary sendData = new BDictionary();
-            sendData.Add("t", new BString(tid));
+            sendData.Add("t", new BString(transactionID));
             sendData.Add("y", "q");
             sendData.Add("q", "find_node");
             var a = new BDictionary();
@@ -233,13 +245,17 @@ namespace DHTConnector
             a.Add("target", new BString(Helpers.GetRandomID()));
             sendData.Add("a", a);
 
-            Send(sendData, address);
+            Send(address, sendData);
         }
 
-        private void Send(BDictionary data, IPEndPoint address)
+        private void Send(IPEndPoint address, BDictionary data)
         {
-            var dataArray = data.EncodeAsBytes();
-            fSocket.BeginSendTo(dataArray, 0, dataArray.Length, SocketFlags.None, address, (ar) => { fSocket.EndReceive(ar); }, null);
+            try {
+                var dataArray = data.EncodeAsBytes();
+                fSocket.BeginSendTo(dataArray, 0, dataArray.Length, SocketFlags.None, address, (ar) => { fSocket.EndReceive(ar); }, null);
+            } catch (Exception ex) {
+                Console.WriteLine("Send(): " + ex.Message);
+            }
         }
 
         static byte[] GetRandomID()

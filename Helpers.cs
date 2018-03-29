@@ -12,7 +12,7 @@ namespace DHTConnector
         private static Random r = new Random();
         private static SHA1 sha1 = new SHA1CryptoServiceProvider();
 
-        public static byte[] GetTil()
+        public static byte[] GetTransactionID()
         {
             var result = new byte[2];
             r.NextBytes(result);
