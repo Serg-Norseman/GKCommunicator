@@ -65,7 +65,7 @@ namespace DHTConnector
                     fSocket.BeginReceiveFrom(fBuffer, 0, fBuffer.Length, SocketFlags.None, ref remoteAddress, EndRecv, null);
                     notsuccess = false;
                 } catch (Exception ex) {
-                    Console.WriteLine(ex);
+                    Console.WriteLine("EndRecv(): " + ex);
                     notsuccess = true;
                 }
             } while (notsuccess);
@@ -103,22 +103,26 @@ namespace DHTConnector
                     }
                 }
             } catch (Exception ex) {
-                Console.WriteLine(ex);
+                Console.WriteLine("OnRecvMessage(): " + ex);
             }
         }
 
         private void OnRecvResponseX(IPEndPoint ipinfo, BDictionary data)
         {
-            var respNode = data.Get<BDictionary>("r");
-            var nodesStr = respNode.Get<BString>("nodes");
+            var returnValues = data.Get<BDictionary>("r");
+
+            var nodesStr = returnValues.Get<BString>("nodes");
             if (nodesStr == null || nodesStr.Length == 0) {
-                //Console.WriteLine("ping response " + ipinfo.ToString());
+                Console.WriteLine("ping response: " + ipinfo.ToString());
                 return;
             }
+
             if (nodesStr.Value.Count % 26 != 0)
                 throw new Exception("sd");
+
             var nodesData = nodesStr.Value.ToArray();
             var nodesList = Helpers.ParseNodesList(nodesData);
+
             foreach (var t in nodesList) {
 
                 // temp limit
@@ -130,9 +134,10 @@ namespace DHTConnector
 
                 lock (fNodes) {
                     fNodes.Enqueue(t);
-                    //Console.WriteLine("find a node " + t.Item2);
+                    Console.WriteLine("find a node " + t.Item2);
                 }
             }
+
             return;
         }
 
@@ -149,8 +154,8 @@ namespace DHTConnector
                 port = args.Get<BNumber>("port");
 
             //CanDownload.Add(new Tuple<byte[], IPEndPoint>(info_hash.Value.ToArray(), new IPEndPoint(ipinfo.Address, port)));
-            Console.WriteLine("find a hash_info_candownload!!-------------------------------------");
-            WriteInfo("announce_peer", info_hash.Value.ToArray(), id.Value.ToArray(), new IPEndPoint(ipinfo.Address, port));
+            Console.WriteLine("find a torrent's hashinfo");
+            //WriteInfo("announce_peer", info_hash.Value.ToArray(), id.Value.ToArray(), new IPEndPoint(ipinfo.Address, port));
         }
 
         private void OnRecvRequestGetPeers(IPEndPoint ipinfo, BDictionary data)
@@ -175,8 +180,8 @@ namespace DHTConnector
 
             Send(ipinfo, result);
 
-            WriteInfo("get_peers", info_hash.Value.ToArray(), rid.Value.ToArray(), null);
-            Console.WriteLine(info_hash.Value.ToArray().ToHexString() + "|" + ipinfo.ToString());
+            //WriteInfo("get_peers", info_hash.Value.ToArray(), rid.Value.ToArray(), null);
+            Console.WriteLine("receive get_peers: " + info_hash.Value.ToArray().ToHexString() + "|" + ipinfo.ToString());
             //InfoHashList.Add(info_hash.Value.ToArray());
         }
 
