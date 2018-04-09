@@ -1,6 +1,4 @@
-﻿// https://gist.github.com/gubatron/cd9cfa66839e18e49846
-
-using System;
+﻿using System;
 using System.Net;
 
 namespace DHTConnector

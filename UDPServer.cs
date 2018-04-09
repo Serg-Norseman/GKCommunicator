@@ -1,5 +1,6 @@
 ﻿using BencodeNET.Objects;
 using BencodeNET.Parsing;
+using BencodeNET.Torrents;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,12 +13,22 @@ namespace DHTConnector
 {
     public class UDPServer
     {
+        private static byte[] GKN_INFOHASH = CreateGKNInfoHash();
+
         private byte[] fBuffer = new byte[65535];
         private IPEndPoint fDefaultIP = new IPEndPoint(IPAddress.Loopback, 0);
         private byte[] fLocalID = null;
         private Queue<Tuple<byte[], IPEndPoint>> fNodes = new Queue<Tuple<byte[], IPEndPoint>>();
         private BencodeParser fParser = new BencodeParser();
         private Socket fSocket = null;
+
+        private static byte[] CreateGKNInfoHash()
+        {
+            BDictionary resultDict = new BDictionary();
+            resultDict.Add("info", Program.NETWORK_SIGN);
+
+            return TorrentUtil.CalculateInfoHashBytes(resultDict);
+        }
 
         public UDPServer(int port, IPAddress addr)
         {
@@ -64,92 +75,108 @@ namespace DHTConnector
         {
             try {
                 var dic = fParser.Parse<BDictionary>(data);
+
+                // on receive response
                 if (dic.Get<BString>("y") == "r") {
-                    var respNode = dic.Get<BDictionary>("r");
-                    var nodesStr = respNode.Get<BString>("nodes");
-                    if (nodesStr == null || nodesStr.Length == 0) {
-                        //Console.WriteLine("ping response " + ipinfo.ToString());
+                    OnRecvResponseX(ipinfo, dic);
+                    return;
+                }
+
+                // on receive request
+                if (dic.Get<BString>("y") == "q") {
+                    if (dic.Get<BString>("q") == "ping") {
+                        SendPingResponse(ipinfo, dic.Get<BString>("t"));
                         return;
                     }
-                    if (nodesStr.Value.Count % 26 != 0)
-                        throw new Exception("sd");
-                    var nodesData = nodesStr.Value.ToArray();
-                    var nodesList = Helpers.ParseNodesList(nodesData);
-                    foreach (var t in nodesList) {
 
-                        // temp limit
-                        int count = 0;
-                        lock (fNodes) {
-                            count = fNodes.Count;
-                        }
-                        if (count == 100) return;
-
-                        lock (fNodes) {
-                            fNodes.Enqueue(t);
-                            //Console.WriteLine("find a node " + t.Item2);
-                        }
+                    if (dic.Get<BString>("q") == "find_node") {
                     }
-                    return;
+
+                    if (dic.Get<BString>("q") == "get_peers") {
+                        OnRecvRequestGetPeers(ipinfo, dic);
+                        return;
+                    }
+
+                    if (dic.Get<BString>("q") == "announce_peer") {
+                        OnRecvRequestAnnouncePeer(ipinfo, dic);
+                        return;
+                    }
                 }
-
-                if (dic.Get<BString>("y") == "q" && dic.Get<BString>("q") == "ping") {
-                    SendPingResponse(ipinfo, dic.Get<BString>("t"));
-                    return;
-                }
-
-                //if(dic.Get<BString>("y") == "q" && dic.Get<BString>("q") == "find_node")
-                //{
-                //
-                //}
-
-                if (dic.Get<BString>("y") == "q" && dic.Get<BString>("q") == "get_peers") {
-                    var t = dic.Get<BString>("t");
-                    var a = dic.Get<BDictionary>("a");
-                    var rid = a.Get<BString>("id");
-                    var info_hash = a.Get<BString>("info_hash");
-
-                    var result = new BDictionary();
-                    result.Add("t", t);
-                    result.Add("y", "r");
-                    var r = new BDictionary();
-                    var neighbor = new List<byte>();
-                    neighbor.AddRange(info_hash.Value.Take(10));
-                    neighbor.AddRange(fLocalID.Skip(10).Take(10));
-                    r.Add("id", new BString(neighbor));
-                    r.Add("token", new BString(info_hash.Value.Take(2)));
-                    r.Add("nodes", "");
-                    result.Add("r", r);
-
-                    Send(ipinfo, result);
-                    //var dataresult = result.EncodeAsBytes();
-                    //sock.BeginSendTo(dataresult, 0, dataresult.Length, SocketFlags.None, ipinfo, (ar) => { sock.EndSendTo(ar); }, null);
-
-                    WriteInfo("get_peers", info_hash.Value.ToArray(), rid.Value.ToArray(), null);
-                    Console.WriteLine(info_hash.Value.ToArray().ToHexString() + "|" + ipinfo.ToString());
-                    return;
-                    //InfoHashList.Add(info_hash.Value.ToArray());
-                }
-
-                if (dic.Get<BString>("y") == "q" && dic.Get<BString>("q") == "announce_peer") {
-                    var id = dic.Get<BString>("id");
-                    var a = dic.Get<BDictionary>("a");
-                    var info_hash = a.Get<BString>("info_hash");
-                    int port = 0;
-                    if (a.ContainsKey("implied_port") && a.Get<BNumber>("implied_port") == 1) {
-                        port = ipinfo.Port;
-                    } else
-                        port = a.Get<BNumber>("port");
-                    //CanDownload.Add(new Tuple<byte[], IPEndPoint>(info_hash.Value.ToArray(), new IPEndPoint(ipinfo.Address, port)));
-                    Console.WriteLine("find a hash_info_candownload!!-------------------------------------");
-                    WriteInfo("announce_peer", info_hash.Value.ToArray(), id.Value.ToArray(), new IPEndPoint(ipinfo.Address, port));
-                    return;
-                }
-
-                //Console.WriteLine("unknow pack");
-                //Console.WriteLine(dic.Keys.ToString());
             } catch (Exception ex) {
                 Console.WriteLine(ex);
             }
+        }
+
+        private void OnRecvResponseX(IPEndPoint ipinfo, BDictionary data)
+        {
+            var respNode = data.Get<BDictionary>("r");
+            var nodesStr = respNode.Get<BString>("nodes");
+            if (nodesStr == null || nodesStr.Length == 0) {
+                //Console.WriteLine("ping response " + ipinfo.ToString());
+                return;
+            }
+            if (nodesStr.Value.Count % 26 != 0)
+                throw new Exception("sd");
+            var nodesData = nodesStr.Value.ToArray();
+            var nodesList = Helpers.ParseNodesList(nodesData);
+            foreach (var t in nodesList) {
+
+                // temp limit
+                int count = 0;
+                lock (fNodes) {
+                    count = fNodes.Count;
+                }
+                if (count == 100) return;
+
+                lock (fNodes) {
+                    fNodes.Enqueue(t);
+                    //Console.WriteLine("find a node " + t.Item2);
+                }
+            }
+            return;
+        }
+
+        private void OnRecvRequestAnnouncePeer(IPEndPoint ipinfo, BDictionary data)
+        {
+            var args = data.Get<BDictionary>("a");
+
+            var id = args.Get<BString>("id");
+            var info_hash = args.Get<BString>("info_hash");
+            int port = 0;
+            if (args.ContainsKey("implied_port") && args.Get<BNumber>("implied_port") == 1) {
+                port = ipinfo.Port;
+            } else
+                port = args.Get<BNumber>("port");
+
+            //CanDownload.Add(new Tuple<byte[], IPEndPoint>(info_hash.Value.ToArray(), new IPEndPoint(ipinfo.Address, port)));
+            Console.WriteLine("find a hash_info_candownload!!-------------------------------------");
+            WriteInfo("announce_peer", info_hash.Value.ToArray(), id.Value.ToArray(), new IPEndPoint(ipinfo.Address, port));
+        }
+
+        private void OnRecvRequestGetPeers(IPEndPoint ipinfo, BDictionary data)
+        {
+            var t = data.Get<BString>("t");
+            var a = data.Get<BDictionary>("a");
+            var rid = a.Get<BString>("id");
+            var info_hash = a.Get<BString>("info_hash");
+
+            var result = new BDictionary();
+            result.Add("t", t);
+            result.Add("y", "r");
+            var r = new BDictionary();
+            var neighbor = new List<byte>();
+            neighbor.AddRange(info_hash.Value.Take(10));
+            neighbor.AddRange(fLocalID.Skip(10).Take(10));
+            r.Add("id", new BString(neighbor));
+            r.Add("token", new BString(info_hash.Value.Take(2)));
+            r.Add("nodes", "");
+            result.Add("r", r);
+
+            Send(ipinfo, result);
+
+            WriteInfo("get_peers", info_hash.Value.ToArray(), rid.Value.ToArray(), null);
+            Console.WriteLine(info_hash.Value.ToArray().ToHexString() + "|" + ipinfo.ToString());
+            //InfoHashList.Add(info_hash.Value.ToArray());
         }
 
         private void SendPingResponse(IPEndPoint address, BString transactionID)
@@ -162,8 +189,6 @@ namespace DHTConnector
             resultDict.Add("r", r);
 
             Send(address, resultDict);
-            //var dataresult = resultDic.EncodeAsBytes();
-            //sock.BeginSendTo(dataresult, 0, dataresult.Length, SocketFlags.None, ipinfo, (ar) => { sock.EndSendTo(ar); }, null);
         }
 
         private void WriteInfo(string commandName, byte[] info_hash, byte[] nid, IPEndPoint ipadd)
@@ -211,7 +236,9 @@ namespace DHTConnector
                 if (result != null) {
                     SendFindNode(result.Item1, result.Item2);
                 }
-                Thread.Sleep((int)((1 / 50 / 5) * 1000));
+
+                //Thread.Sleep((int)((1 / 50 / 5) * 1000));
+                Thread.Sleep(1000);
             }
         }
 
@@ -223,6 +250,37 @@ namespace DHTConnector
             for (int i = 10; i < 20; i++)
                 result[i] = nid[i];
             return result;
+        }
+
+        public void SendAnnounceGKNPeer(IPEndPoint address)
+        {
+            SendAnnouncePeerRequest(address, GKN_INFOHASH, "");
+        }
+
+        public void SendAnnouncePeerRequest(IPEndPoint address, byte[] infoHash, string token)
+        {
+            SendAnnouncePeerRequest(address, infoHash, 1, 0, token);
+        }
+
+        public void SendAnnouncePeerRequest(IPEndPoint address, byte[] infoHash, byte implied_port, ushort port, string token)
+        {
+            byte[] nid = fLocalID;
+            var transactionID = Helpers.GetTransactionID();
+
+            BDictionary sendData = new BDictionary();
+            sendData.Add("t", new BString(transactionID));
+            sendData.Add("y", "q");
+            sendData.Add("q", "announce_peer");
+
+            var args = new BDictionary();
+            args.Add("id", new BString(nid));
+            args.Add("implied_port", new BNumber(implied_port));
+            args.Add("info_hash", new BString(infoHash));
+            args.Add("port", new BNumber(port));
+            args.Add("token", new BString(token));
+            sendData.Add("a", args);
+
+            Send(address, sendData);
         }
 
         private void SendFindNode(byte[] data, IPEndPoint address, byte[] aaa = null, byte[] ttid = null)
