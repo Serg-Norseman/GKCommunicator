@@ -21,6 +21,14 @@ namespace DHTConnector
 
         public static byte[] GetRandomID()
         {
+            var r = new Random();
+            byte[] result = new byte[20];
+            r.NextBytes(result);
+            return result;
+        }
+
+        public static byte[] GetRandomHashID()
+        {
             var result = new byte[20];
             r.NextBytes(result);
             lock (sha1) {

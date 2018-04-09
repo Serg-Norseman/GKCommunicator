@@ -1,13 +1,13 @@
-﻿using BencodeNET.Objects;
-using BencodeNET.Parsing;
-using BencodeNET.Torrents;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using BencodeNET.Objects;
+using BencodeNET.Parsing;
+using BencodeNET.Torrents;
 
 namespace DHTConnector
 {
@@ -32,7 +32,7 @@ namespace DHTConnector
 
         public UDPServer(int port, IPAddress addr)
         {
-            fLocalID = GetRandomID();
+            fLocalID = Helpers.GetRandomID();
             fSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             const long IOC_IN = 0x80000000;
             const long IOC_VENDOR = 0x18000000;
@@ -156,13 +156,14 @@ namespace DHTConnector
         private void OnRecvRequestGetPeers(IPEndPoint ipinfo, BDictionary data)
         {
             var t = data.Get<BString>("t");
-            var a = data.Get<BDictionary>("a");
-            var rid = a.Get<BString>("id");
-            var info_hash = a.Get<BString>("info_hash");
+            var args = data.Get<BDictionary>("a");
+            var rid = args.Get<BString>("id");
+            var info_hash = args.Get<BString>("info_hash");
 
             var result = new BDictionary();
             result.Add("t", t);
             result.Add("y", "r");
+
             var r = new BDictionary();
             var neighbor = new List<byte>();
             neighbor.AddRange(info_hash.Value.Take(10));
@@ -184,6 +185,7 @@ namespace DHTConnector
             BDictionary resultDict = new BDictionary();
             resultDict.Add("y", "r");
             resultDict.Add("t", transactionID);
+
             var r = new BDictionary();
             r.Add("id", new BString(fLocalID));
             resultDict.Add("r", r);
@@ -209,6 +211,7 @@ namespace DHTConnector
                             "dht.transmissionbt.com",
                             "router.utorrent.com"
                         }.Select(x => Dns.Resolve(x).AddressList[0]).ToList();
+
                 while (true) {
                     int count = 0;
                     lock (fNodes) {
@@ -216,7 +219,7 @@ namespace DHTConnector
                     }
                     if (count == 0) {
                         foreach (var t in hosts) {
-                            SendFindNode(null, new IPEndPoint(t, 6881));
+                            SendFindNodeRequest(null, new IPEndPoint(t, 6881));
                         }
                     }
                     Thread.Sleep(3 * 1000);
@@ -234,7 +237,7 @@ namespace DHTConnector
                     }
                 }
                 if (result != null) {
-                    SendFindNode(result.Item1, result.Item2);
+                    SendFindNodeRequest(result.Item1, result.Item2);
                 }
 
                 //Thread.Sleep((int)((1 / 50 / 5) * 1000));
@@ -250,6 +253,30 @@ namespace DHTConnector
             for (int i = 10; i < 20; i++)
                 result[i] = nid[i];
             return result;
+        }
+
+        private void SendFindNodeRequest(byte[] data, IPEndPoint address, byte[] aaa = null, byte[] ttid = null)
+        {
+            byte[] nid = null;
+            if (data == null) {
+                nid = fLocalID;
+            } else {
+                nid = GetNeighbor(data, fLocalID);
+            }
+
+            var transactionID = Helpers.GetTransactionID();
+
+            BDictionary sendData = new BDictionary();
+            sendData.Add("t", new BString(transactionID));
+            sendData.Add("y", "q");
+            sendData.Add("q", "find_node");
+
+            var args = new BDictionary();
+            args.Add("id", new BString(nid));
+            args.Add("target", new BString(Helpers.GetRandomHashID()));
+            sendData.Add("a", args);
+
+            Send(address, sendData);
         }
 
         public void SendAnnounceGKNPeer(IPEndPoint address)
@@ -283,29 +310,6 @@ namespace DHTConnector
             Send(address, sendData);
         }
 
-        private void SendFindNode(byte[] data, IPEndPoint address, byte[] aaa = null, byte[] ttid = null)
-        {
-            byte[] nid = null;
-            if (data == null) {
-                nid = fLocalID;
-            } else {
-                nid = GetNeighbor(data, fLocalID);
-            }
-
-            var transactionID = Helpers.GetTransactionID();
-
-            BDictionary sendData = new BDictionary();
-            sendData.Add("t", new BString(transactionID));
-            sendData.Add("y", "q");
-            sendData.Add("q", "find_node");
-            var a = new BDictionary();
-            a.Add("id", new BString(nid));
-            a.Add("target", new BString(Helpers.GetRandomID()));
-            sendData.Add("a", a);
-
-            Send(address, sendData);
-        }
-
         private void Send(IPEndPoint address, BDictionary data)
         {
             try {
@@ -314,14 +318,6 @@ namespace DHTConnector
             } catch (Exception ex) {
                 Console.WriteLine("Send(): " + ex.Message);
             }
-        }
-
-        static byte[] GetRandomID()
-        {
-            var r = new Random();
-            byte[] result = new byte[20];
-            r.NextBytes(result);
-            return result;
         }
     }
 }
