@@ -8,26 +8,31 @@ using System.Threading;
 using BencodeNET.Objects;
 using BencodeNET.Parsing;
 using BencodeNET.Torrents;
+using System.Text;
 
 namespace DHTConnector
 {
     public class UDPServer
     {
-        private static byte[] GKN_INFOHASH = CreateGKNInfoHash();
-
         private byte[] fBuffer = new byte[65535];
         private IPEndPoint fDefaultIP = new IPEndPoint(IPAddress.Loopback, 0);
         private byte[] fLocalID = null;
         private Queue<Tuple<byte[], IPEndPoint>> fNodes = new Queue<Tuple<byte[], IPEndPoint>>();
         private BencodeParser fParser = new BencodeParser();
         private Socket fSocket = null;
+        private string fSubnetKey;
+        private byte[] fSNKInfoHash;
 
-        private static byte[] CreateGKNInfoHash()
+        public string SubnetKey
         {
-            BDictionary resultDict = new BDictionary();
-            resultDict.Add("info", Program.NETWORK_SIGN);
+            get { return fSubnetKey; }
+            set {
+                fSubnetKey = value;
 
-            return TorrentUtil.CalculateInfoHashBytes(resultDict);
+                BDictionary resultDict = new BDictionary();
+                resultDict.Add("info", fSubnetKey);
+                fSNKInfoHash = TorrentUtil.CalculateInfoHashBytes(resultDict);
+            }
         }
 
         public UDPServer(int port, IPAddress addr)
@@ -133,8 +138,16 @@ namespace DHTConnector
         {
             var returnValues = data.Get<BDictionary>("r");
 
+            var tokStr = returnValues.Get<BString>("token");
+            if (tokStr != null && tokStr.Length != 0) {
+                Console.WriteLine("get_peers_token_response!!!: " + ipinfo.ToString());
+                SendAnnouncePeerRequest(ipinfo, fSNKInfoHash, tokStr);
+                //return;
+            }
+
             var valuesStr = returnValues.Get<BString>("values");
             if (valuesStr != null && valuesStr.Length != 0) {
+                // if infohash and peers for it was found
                 Console.WriteLine("get_peers_response!!!: " + ipinfo.ToString());
                 //return;
             }
@@ -235,7 +248,7 @@ namespace DHTConnector
                             "router.bittorrent.com",
                             "dht.transmissionbt.com",
                             "router.utorrent.com"
-                        }.Select(x => Dns.Resolve(x).AddressList[0]).ToList();
+                        }.Select(x => Dns.GetHostEntry(x).AddressList[0]).ToList();
 
                 while (true) {
                     int count = 0;
@@ -264,8 +277,7 @@ namespace DHTConnector
                 if (result != null) {
                     SendFindNodeRequest(result.Item1, result.Item2);
 
-                    SendAnnouncePeerRequest(result.Item2, GKN_INFOHASH, "");
-                    SendGetPeersRequest(result.Item2, GKN_INFOHASH);
+                    SendGetPeersRequest(result.Item2, fSNKInfoHash);
                 }
 
                 //Thread.Sleep((int)((1 / 50 / 5) * 1000));
@@ -307,12 +319,12 @@ namespace DHTConnector
             Send(address, sendData);
         }
 
-        public void SendAnnouncePeerRequest(IPEndPoint address, byte[] infoHash, string token)
+        public void SendAnnouncePeerRequest(IPEndPoint address, byte[] infoHash, BString token)
         {
             SendAnnouncePeerRequest(address, infoHash, 1, 0, token);
         }
 
-        public void SendAnnouncePeerRequest(IPEndPoint address, byte[] infoHash, byte implied_port, ushort port, string token)
+        public void SendAnnouncePeerRequest(IPEndPoint address, byte[] infoHash, byte implied_port, ushort port, BString token)
         {
             byte[] nid = fLocalID;
             var transactionID = Helpers.GetTransactionID();
@@ -327,7 +339,7 @@ namespace DHTConnector
             args.Add("implied_port", new BNumber(implied_port));
             args.Add("info_hash", new BString(infoHash));
             args.Add("port", new BNumber(port));
-            args.Add("token", new BString(token));
+            args.Add("token", token);
             sendData.Add("a", args);
 
             Send(address, sendData);

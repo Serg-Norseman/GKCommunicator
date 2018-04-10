@@ -10,6 +10,7 @@ namespace DHTConnector
         static void Main(string[] args)
         {
             var udpServer = new UDPServer(6882, IPAddress.Any);
+            udpServer.SubnetKey = NETWORK_SIGN;
             udpServer.Run();
             udpServer.ReJoin();
             udpServer.SendFindNodes();

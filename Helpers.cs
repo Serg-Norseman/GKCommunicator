@@ -69,12 +69,12 @@ namespace DHTConnector
             return sb.ToString();
         }
 
-        public static string ToHexString2(this byte[] data)
+        /*public static string ToHexString2(this byte[] data)
         {
             return string.Join("", data.SelectMany((x) => new int[] { x / 16, x % 16 }).ToList().Select(x => (char)(x + (x <= 9 ? '0' : 'W'))));
-        }
+        }*/
 
-        public static byte[] ParseToHex(this string data)
+        /*public static byte[] ParseToHex(this string data)
         {
             if (data.Length % 2 != 0)
                 throw new Exception();
@@ -93,9 +93,9 @@ namespace DHTConnector
                     temp.Add(t);
             }
             return temp.Tuken().Select(x => (byte)(x.Item1 * 16 + x.Item2)).ToArray();
-        }
+        }*/
 
-        public static IEnumerable<(T, T)> Tuken<T>(this IEnumerable<T> array)
+        /*public static IEnumerable<(T, T)> Tuken<T>(this IEnumerable<T> array)
         {
             if (array.Count() % 2 != 0)
                 throw new Exception();
@@ -103,9 +103,9 @@ namespace DHTConnector
                 var cc = array.Skip(i).Take(2).ToList();
                 yield return (cc[0], cc[1]);
             }
-        }
+        }*/
 
-        public static byte[] ToDicBytes(this Dictionary<string, object> temp)
+        /*public static byte[] ToDicBytes(this Dictionary<string, object> temp)
         {
             var result = new List<byte>();
             result.Add((byte)'d');
@@ -130,6 +130,6 @@ namespace DHTConnector
             }
             result.Add((byte)'e');
             return result.ToArray();
-        }
+        }*/
     }
 }

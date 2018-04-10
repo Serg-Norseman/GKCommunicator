@@ -20,8 +20,6 @@ namespace DHTConnector
         private List<byte> fDataBuffer = new List<byte>();
         private int fState = 0;
 
-        private List<Tuple<int, byte[]>> TorList = new List<Tuple<int, byte[]>>(); // ?!
-
         public BittorrentDownloader(IPEndPoint ipinfo, byte[] infohash, byte[] nodeid)
         {
             Ipaddress = ipinfo;
@@ -53,7 +51,6 @@ namespace DHTConnector
                 fSocket.BeginReceive(fBuffer, 0, fBuffer.Length, SocketFlags.None, new AsyncCallback(EndRecvData), null);
                 SendShakeHand();
             } catch {
-
             }
         }
 
