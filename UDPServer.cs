@@ -85,31 +85,59 @@ namespace DHTConnector
                 // on receive request
                 if (dic.Get<BString>("y") == "q") {
                     if (dic.Get<BString>("q") == "ping") {
+                        Console.WriteLine("receive ping request");
+
                         SendPingResponse(ipinfo, dic.Get<BString>("t"));
                         return;
                     }
 
                     if (dic.Get<BString>("q") == "find_node") {
+                        Console.WriteLine("receive find_node request");
                     }
 
                     if (dic.Get<BString>("q") == "get_peers") {
+                        Console.WriteLine("receive get_peers request");
                         OnRecvRequestGetPeers(ipinfo, dic);
                         return;
                     }
 
                     if (dic.Get<BString>("q") == "announce_peer") {
+                        Console.WriteLine("receive announce_peer request");
                         OnRecvRequestAnnouncePeer(ipinfo, dic);
                         return;
                     }
+                }
+
+                // on receive error
+                if (dic.Get<BString>("y") == "e") {
+                    OnRecvErrorX(ipinfo, dic);
+                    return;
                 }
             } catch (Exception ex) {
                 Console.WriteLine("OnRecvMessage(): " + ex);
             }
         }
 
+        private void OnRecvErrorX(IPEndPoint ipinfo, BDictionary data)
+        {
+            var errData = data.Get<BList>("e");
+
+            if (errData != null && errData.Count != 0) {
+                var errCode = errData.Get<BNumber>(0);
+                var errText = errData.Get<BString>(1);
+                Console.WriteLine("error receive: " + errCode + " / " + errText);
+            }
+        }
+
         private void OnRecvResponseX(IPEndPoint ipinfo, BDictionary data)
         {
             var returnValues = data.Get<BDictionary>("r");
+
+            var valuesStr = returnValues.Get<BString>("values");
+            if (valuesStr != null && valuesStr.Length != 0) {
+                Console.WriteLine("get_peers_response!!!: " + ipinfo.ToString());
+                //return;
+            }
 
             var nodesStr = returnValues.Get<BString>("nodes");
             if (nodesStr == null || nodesStr.Length == 0) {
@@ -124,14 +152,6 @@ namespace DHTConnector
             var nodesList = Helpers.ParseNodesList(nodesData);
 
             foreach (var t in nodesList) {
-
-                // temp limit
-                int count = 0;
-                lock (fNodes) {
-                    count = fNodes.Count;
-                }
-                if (count == 100) return;
-
                 lock (fNodes) {
                     fNodes.Enqueue(t);
                     Console.WriteLine("find a node " + t.Item2);
@@ -243,6 +263,9 @@ namespace DHTConnector
                 }
                 if (result != null) {
                     SendFindNodeRequest(result.Item1, result.Item2);
+
+                    SendAnnouncePeerRequest(result.Item2, GKN_INFOHASH, "");
+                    SendGetPeersRequest(result.Item2, GKN_INFOHASH);
                 }
 
                 //Thread.Sleep((int)((1 / 50 / 5) * 1000));
@@ -284,11 +307,6 @@ namespace DHTConnector
             Send(address, sendData);
         }
 
-        public void SendAnnounceGKNPeer(IPEndPoint address)
-        {
-            SendAnnouncePeerRequest(address, GKN_INFOHASH, "");
-        }
-
         public void SendAnnouncePeerRequest(IPEndPoint address, byte[] infoHash, string token)
         {
             SendAnnouncePeerRequest(address, infoHash, 1, 0, token);
@@ -310,6 +328,24 @@ namespace DHTConnector
             args.Add("info_hash", new BString(infoHash));
             args.Add("port", new BNumber(port));
             args.Add("token", new BString(token));
+            sendData.Add("a", args);
+
+            Send(address, sendData);
+        }
+
+        private void SendGetPeersRequest(IPEndPoint address, byte[] infoHash)
+        {
+            byte[] nid = fLocalID;
+            var transactionID = Helpers.GetTransactionID();
+
+            BDictionary sendData = new BDictionary();
+            sendData.Add("t", new BString(transactionID));
+            sendData.Add("y", "q");
+            sendData.Add("q", "get_peers");
+
+            var args = new BDictionary();
+            args.Add("id", new BString(nid));
+            args.Add("info_hash", new BString(infoHash));
             sendData.Add("a", args);
 
             Send(address, sendData);
