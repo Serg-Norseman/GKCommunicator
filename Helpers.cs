@@ -13,12 +13,12 @@ namespace DHTConnector
         private static Random r = new Random();
         private static SHA1 sha1 = new SHA1CryptoServiceProvider();
 
-        public static byte[] GetTransactionID()
+        /*public static byte[] GetTransactionID()
         {
             var result = new byte[2];
             r.NextBytes(result);
             return result;
-        }
+        }*/
 
         public static byte[] GetRandomID()
         {
@@ -38,9 +38,9 @@ namespace DHTConnector
             }
         }
 
-        public static List<Tuple<byte[], IPEndPoint>> ParseNodesList(byte[] data)
+        public static List<PeerNode> ParseNodesList(byte[] data)
         {
-            var result = new List<Tuple<byte[], IPEndPoint>>();
+            var result = new List<PeerNode>();
             for (int i = 0; i < data.Length; i += 26) {
                 var dd = data.Skip(i).Take(26).ToArray();
                 //var bc = dd.ToHexString();
@@ -51,7 +51,7 @@ namespace DHTConnector
                 var id = dd.Take(20).ToArray();
                 var ip = new IPAddress(dd.Skip(20).Take(4).ToArray());
                 var port = BitConverter.ToUInt16(dd, 24);
-                var tt = new Tuple<byte[], IPEndPoint>(id, new IPEndPoint(ip, port));
+                var tt = new PeerNode(id, new IPEndPoint(ip, port));
                 result.Add(tt);
             }
             return result;
@@ -87,12 +87,28 @@ namespace DHTConnector
             return sendData.EncodeAsBytes();
         }
 
-        public static byte[] CreatePingResponse(byte[] transactionID, byte[] nid)
+        public static byte[] CreateGetPeersResponse(BString transactionID, byte[] nid, byte[] infoHash)
+        {
+            BDictionary sendData = new BDictionary();
+
+            sendData.Add("t", transactionID);
+            sendData.Add("y", "r");
+
+            var r = new BDictionary();
+            r.Add("id", new BString(nid));
+            r.Add("token", new BString(infoHash.Take(2)));
+            r.Add("nodes", "");
+            sendData.Add("r", r);
+
+            return sendData.EncodeAsBytes();
+        }
+
+        public static byte[] CreatePingResponse(BString transactionID, byte[] nid)
         {
             BDictionary sendData = new BDictionary();
 
             sendData.Add("y", "r");
-            sendData.Add("t", new BString(transactionID));
+            sendData.Add("t", transactionID);
 
             var r = new BDictionary();
             r.Add("id", new BString(nid));
@@ -101,11 +117,11 @@ namespace DHTConnector
             return sendData.EncodeAsBytes();
         }
 
-        public static byte[] CreateFindNodeQuery(byte[] transactionID, byte[] nid)
+        public static byte[] CreateFindNodeQuery(BString transactionID, byte[] nid)
         {
             BDictionary sendData = new BDictionary();
 
-            sendData.Add("t", new BString(transactionID));
+            sendData.Add("t", transactionID);
             sendData.Add("y", "q");
             sendData.Add("q", "find_node");
 
@@ -117,12 +133,12 @@ namespace DHTConnector
             return sendData.EncodeAsBytes();
         }
 
-        public static byte[] CreateAnnouncePeerQuery(byte[] transactionID, byte[] nid, byte[] infoHash,
+        public static byte[] CreateAnnouncePeerQuery(BString transactionID, byte[] nid, byte[] infoHash,
             byte implied_port, int port, BString token)
         {
             BDictionary sendData = new BDictionary();
 
-            sendData.Add("t", new BString(transactionID));
+            sendData.Add("t", transactionID);
             sendData.Add("y", "q");
             sendData.Add("q", "announce_peer");
 
@@ -137,11 +153,11 @@ namespace DHTConnector
             return sendData.EncodeAsBytes();
         }
 
-        public static byte[] CreateGetPeersQuery(byte[] transactionID, byte[] nid, byte[] infoHash)
+        public static byte[] CreateGetPeersQuery(BString transactionID, byte[] nid, byte[] infoHash)
         {
             BDictionary sendData = new BDictionary();
 
-            sendData.Add("t", new BString(transactionID));
+            sendData.Add("t", transactionID);
             sendData.Add("y", "q");
             sendData.Add("q", "get_peers");
 

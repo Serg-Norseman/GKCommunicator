@@ -13,7 +13,7 @@ namespace BencodeNET.Objects
     /// <remarks>
     /// The underlying value is a <see cref="byte"/> array.
     /// </remarks>
-    public class BString : BObject<IReadOnlyList<byte>>, IComparable<BString>
+    public class BString : BObject<byte[]>, IComparable<BString>
     {
         /// <summary>
         /// The maximum number of digits that can be handled as the length part of a bencoded string.
@@ -23,7 +23,7 @@ namespace BencodeNET.Objects
         /// <summary>
         /// The underlying bytes of the string.
         /// </summary>
-        public override IReadOnlyList<byte> Value => _value;
+        public override byte[] Value => _value;
         private readonly byte[] _value;
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace BencodeNET.Objects
 
         public override int GetHashCode()
         {
-            var bytesToHash = Math.Min(Value.Count, 32);
+            var bytesToHash = Math.Min(Value.Length, 32);
 
             long hashValue = 0;
             for (var i = 0; i < bytesToHash; i++)
@@ -173,7 +173,7 @@ namespace BencodeNET.Objects
         /// </returns>
         public override string ToString()
         {
-            return _encoding.GetString(Value.ToArray());
+            return _encoding.GetString(_value);
         }
 
         /// <summary>
@@ -186,7 +186,7 @@ namespace BencodeNET.Objects
         public string ToString(Encoding encoding)
         {
             encoding = encoding ?? _encoding;
-            return encoding.GetString(Value.ToArray());
+            return encoding.GetString(_value);
         }
     }
 }
