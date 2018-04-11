@@ -92,6 +92,7 @@
     <Compile Include="BencodeNET\UtilityExtensions.cs" />
     <Compile Include="BittorrentDownloader.cs" />
     <Compile Include="Helpers.cs" />
+    <Compile Include="PeerNode.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UDPServer.cs" />

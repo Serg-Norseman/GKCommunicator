@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
+using BencodeNET.Objects;
 
 namespace DHTConnector
 {
@@ -67,6 +68,89 @@ namespace DHTConnector
             }
 
             return sb.ToString();
+        }
+
+        public static byte[] GetNeighbor(byte[] target, byte[] nid)
+        {
+            var result = new byte[20];
+            for (int i = 0; i < 10; i++)
+                result[i] = target[i];
+            for (int i = 10; i < 20; i++)
+                result[i] = nid[i];
+            return result;
+        }
+
+        public static byte[] CreateQuery()
+        {
+            BDictionary sendData = new BDictionary();
+
+            return sendData.EncodeAsBytes();
+        }
+
+        public static byte[] CreatePingResponse(byte[] transactionID, byte[] nid)
+        {
+            BDictionary sendData = new BDictionary();
+
+            sendData.Add("y", "r");
+            sendData.Add("t", new BString(transactionID));
+
+            var r = new BDictionary();
+            r.Add("id", new BString(nid));
+            sendData.Add("r", r);
+
+            return sendData.EncodeAsBytes();
+        }
+
+        public static byte[] CreateFindNodeQuery(byte[] transactionID, byte[] nid)
+        {
+            BDictionary sendData = new BDictionary();
+
+            sendData.Add("t", new BString(transactionID));
+            sendData.Add("y", "q");
+            sendData.Add("q", "find_node");
+
+            var args = new BDictionary();
+            args.Add("id", new BString(nid));
+            args.Add("target", new BString(Helpers.GetRandomHashID()));
+            sendData.Add("a", args);
+
+            return sendData.EncodeAsBytes();
+        }
+
+        public static byte[] CreateAnnouncePeerQuery(byte[] transactionID, byte[] nid, byte[] infoHash,
+            byte implied_port, int port, BString token)
+        {
+            BDictionary sendData = new BDictionary();
+
+            sendData.Add("t", new BString(transactionID));
+            sendData.Add("y", "q");
+            sendData.Add("q", "announce_peer");
+
+            var args = new BDictionary();
+            args.Add("id", new BString(nid));
+            args.Add("implied_port", new BNumber(implied_port));
+            args.Add("info_hash", new BString(infoHash));
+            args.Add("port", new BNumber(port));
+            args.Add("token", token);
+            sendData.Add("a", args);
+
+            return sendData.EncodeAsBytes();
+        }
+
+        public static byte[] CreateGetPeersQuery(byte[] transactionID, byte[] nid, byte[] infoHash)
+        {
+            BDictionary sendData = new BDictionary();
+
+            sendData.Add("t", new BString(transactionID));
+            sendData.Add("y", "q");
+            sendData.Add("q", "get_peers");
+
+            var args = new BDictionary();
+            args.Add("id", new BString(nid));
+            args.Add("info_hash", new BString(infoHash));
+            sendData.Add("a", args);
+
+            return sendData.EncodeAsBytes();
         }
 
         /*public static string ToHexString2(this byte[] data)
