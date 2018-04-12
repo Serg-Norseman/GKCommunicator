@@ -18,7 +18,7 @@ namespace DHTConnector
 
     public enum QueryType
     {
-        ping, find_node, get_peers, announce_peer
+        ping, find_node, get_peers, announce_peer, none
     }
 
     public class UDPServer
@@ -27,12 +27,13 @@ namespace DHTConnector
         private IPEndPoint fDefaultIP = new IPEndPoint(IPAddress.Loopback, 0);
         private IPEndPoint fLocalIP;
         private byte[] fLocalID = null;
-        //private Queue<Tuple<byte[], IPEndPoint>> fNodes = new Queue<Tuple<byte[], IPEndPoint>>();
-        private List<PeerNode> fCommonNodes = new List<PeerNode>();
+        private Queue<PeerNode> fNodes = new Queue<PeerNode>();
+        //private List<PeerNode> fCommonNodes = new List<PeerNode>();
         private BencodeParser fParser = new BencodeParser();
         private Socket fSocket = null;
         private string fSubnetKey;
         private byte[] fSNKInfoHash;
+        private Dictionary<int, DHTMessage> fTransactions = new Dictionary<int, DHTMessage>();
 
         public string SubnetKey
         {
@@ -65,6 +66,11 @@ namespace DHTConnector
         {
             EndPoint remoteAddress = new IPEndPoint(IPAddress.Loopback, 0);
             fSocket.BeginReceiveFrom(fBuffer, 0, fBuffer.Length, SocketFlags.None, ref remoteAddress, EndRecv, null);
+        }
+
+        public void AddNode(string address, int port)
+        {
+            fNodes.Enqueue(new PeerNode(null, new IPEndPoint(IPAddress.Parse(address), port)));
         }
 
         private void EndRecv(IAsyncResult result)
@@ -103,24 +109,22 @@ namespace DHTConnector
                 // on receive query
                 if (dic.Get<BString>("y") == "q") {
                     if (dic.Get<BString>("q") == "ping") {
-                        WriteLog("receive ping query " + ipinfo.ToString(), false);
-
+                        WriteLog("receive `ping` query " + ipinfo.ToString(), false);
                         SendPingResponse(ipinfo, dic.Get<BString>("t"));
                         return;
                     }
 
                     if (dic.Get<BString>("q") == "find_node") {
-                        WriteLog("receive find_node query");
+                        WriteLog("receive `find_node` query");
+                        // TODO
                     }
 
                     if (dic.Get<BString>("q") == "get_peers") {
-                        WriteLog("receive get_peers query");
                         OnRecvGetPeersQuery(ipinfo, dic);
                         return;
                     }
 
                     if (dic.Get<BString>("q") == "announce_peer") {
-                        WriteLog("receive announce_peer query");
                         OnRecvAnnouncePeerQuery(ipinfo, dic);
                         return;
                     }
@@ -143,60 +147,128 @@ namespace DHTConnector
             if (errData != null && errData.Count != 0) {
                 var errCode = errData.Get<BNumber>(0);
                 var errText = errData.Get<BString>(1);
-                WriteLog("-------- error receive: " + errCode + " / " + errText);
+                WriteLog(">> error receive: " + errCode + " / " + errText);
             }
         }
 
         private void OnRecvResponseX(IPEndPoint ipinfo, BDictionary data)
         {
+            var tid = data.Get<BString>("t");
+            var ver = data.Get<BString>("v");
             var returnValues = data.Get<BDictionary>("r");
 
+            var idStr = returnValues.Get<BString>("id");
             var tokStr = returnValues.Get<BString>("token");
-            if (tokStr != null && tokStr.Length != 0) {
-                WriteLog("get_peers_token_response!!!: " + ipinfo.ToString());
+            var valuesStr = returnValues.Get<BString>("values");
+            var nodesStr = returnValues.Get<BString>("nodes");
+
+            if (ver != null && ver.ToString() == "gk01") {
+                WriteLog(">>>>>>>>>> response from DHTConnector: " + ipinfo.ToString());
+            }
+
+            // define type of response by transactionId of query/response
+            QueryType queryType = QueryType.none;
+            if (tid != null && tid.Length == 2) {
+                queryType = CheckTransaction(tid);
+            } else {
+                WriteLog("response without transactionId: " + ipinfo.ToString(), false);
+            }
+
+            bool canAnnounce = false;
+            switch (queryType) {
+                case QueryType.ping:
+                    if ((idStr != null && idStr.Length != 0)) {
+                        WriteLog(">>>>> ping query responsed and checked: " + ipinfo.ToString());
+                    } else {
+                        WriteLog(">>> ping response checked");
+                    }
+                    break;
+
+                case QueryType.find_node:
+                    if ((idStr != null && idStr.Length != 0)) {
+                        WriteLog(">>>>> find_node query responsed and checked: " + ipinfo.ToString());
+                        //ProcessNodesStr(ipinfo, nodesStr);
+                    } else {
+                        WriteLog(">>> find_node response checked");
+                    }
+                    break;
+
+                case QueryType.get_peers:
+                    if (tokStr != null && tokStr.Length != 0) {
+                        WriteLog(">>>>> get_peers query responsed and checked: " + ipinfo.ToString());
+                        //ProcessNodesStr(ipinfo, nodesStr);
+
+                        if (!ProcessValuesStr(ipinfo, valuesStr)) {
+                            canAnnounce = true;
+                        }
+                    } else {
+                        WriteLog(">>>> get_peers response checked");
+                    }
+                    break;
+
+                case QueryType.announce_peer:
+                    if ((idStr != null && idStr.Length != 0)) {
+                        WriteLog(">>>>> announce_peer query responsed and checked: " + ipinfo.ToString());
+                    } else {
+                        WriteLog(">>>> announce_peer response checked: " + ipinfo.ToString());
+                    }
+                    break;
+
+                case QueryType.none:
+                    break;
+            }
+
+            ProcessNodesStr(ipinfo, nodesStr);
+
+            if (canAnnounce /*tokStr != null && tokStr.Length != 0*/) {
+                //WriteLog("get_peers_token_response!!!: " + ipinfo.ToString());
                 SendAnnouncePeerQuery(ipinfo, fSNKInfoHash, 1, fLocalIP.Port, tokStr);
                 //SendGetPeersQuery(ipinfo, fSNKInfoHash);
                 //return;
             }
+        }
 
-            var valuesStr = returnValues.Get<BString>("values");
+        private bool ProcessValuesStr(IPEndPoint ipinfo, BString valuesStr)
+        {
+            bool result = false;
             if (valuesStr != null && valuesStr.Length != 0) {
                 // if infohash and peers for it was found
-                WriteLog(">>>>> get_peers_response!!!: " + ipinfo.ToString());
-                //return;
+                WriteLog(">>>>>>>>>>>> get_peers_values_response!!!: " + ipinfo.ToString());
+
+                // TODO: handshake and other
+
+                result = true;
             }
+            return result;
+        }
 
-            var nodesStr = returnValues.Get<BString>("nodes");
-            if (nodesStr == null || nodesStr.Length == 0) {
-                WriteLog("ping response: " + ipinfo.ToString());
-                return;
-            }
-
-            if (nodesStr.Value.Length % 26 != 0)
-                throw new Exception("sd");
-
-            var nodesData = nodesStr.Value;
-            var nodesList = Helpers.ParseNodesList(nodesData);
-            WriteLog("OnRecvResponseX(" + ipinfo.ToString() + "): find nodes " + nodesList.Count);
-
+        private void ProcessNodesStr(IPEndPoint ipinfo, BString nodesStr)
+        {
             // bootstrap's trackers not response with values on GetPeers(infohash) ???
-            lock (fCommonNodes) {
-                if (fCommonNodes.Count < 20) {
+            if (nodesStr != null && nodesStr.Length != 0) {
+                if (nodesStr.Value.Length % 26 != 0)
+                    throw new Exception("sd");
+
+                var nodesData = nodesStr.Value;
+                var nodesList = Helpers.ParseNodesList(nodesData);
+                WriteLog("receive " + nodesList.Count + " nodes from " + ipinfo.ToString(), false);
+
+                /*lock (fCommonNodes) {
                     foreach (var t in nodesList) {
-                        fCommonNodes.Add(t);
-                        WriteLog("find a node " + t.EndPoint.ToString());
+                        if (fCommonNodes.Count < 20) {
+                            fCommonNodes.Add(t);
+                            WriteLog("added node " + t.EndPoint.ToString(), false);
+                        }
+                    }
+                }*/
+
+                foreach (var t in nodesList) {
+                    lock (fNodes) {
+                        fNodes.Enqueue(t);
+                        //WriteLog("find a node " + t.Item2);
                     }
                 }
             }
-
-            /*foreach (var t in nodesList) {
-                lock (fNodes) {
-                    fNodes.Enqueue(t);
-                    WriteLog("find a node " + t.Item2);
-                }
-            }*/
-
-            return;
         }
 
         private void OnRecvAnnouncePeerQuery(IPEndPoint ipinfo, BDictionary data)
@@ -211,6 +283,8 @@ namespace DHTConnector
             } else
                 port = args.Get<BNumber>("port");
 
+            WriteLog("receive `announce_peer` query");
+
             //CanDownload.Add(new Tuple<byte[], IPEndPoint>(info_hash.Value, new IPEndPoint(ipinfo.Address, port)));
             WriteLog("find a torrent's hashinfo");
             WriteInfo("announce_peer", info_hash.Value, id.Value, new IPEndPoint(ipinfo.Address, port));
@@ -222,42 +296,12 @@ namespace DHTConnector
             var args = data.Get<BDictionary>("a");
             var rid = args.Get<BString>("id");
             var info_hash = args.Get<BString>("info_hash");
-
             var neighbor = Helpers.GetNeighbor(info_hash.Value, fLocalID);
 
+            WriteLog("receive `get_peers` query from " + ipinfo.ToString() + " [" + rid.Value.ToHexString() + "] for " + info_hash.Value.ToHexString());
+
             Send(ipinfo, Helpers.CreateGetPeersResponse(t, neighbor, info_hash.Value));
-
-            WriteInfo("get_peers", info_hash.Value, rid.Value, null);
-            WriteLog("receive get_peers: " + info_hash.Value.ToHexString() + "|" + ipinfo.ToString());
             //InfoHashList.Add(info_hash.Value);
-        }
-
-        private void SendPingResponse(IPEndPoint address, BString transactionID)
-        {
-            WriteLog("send ping response " + address.ToString(), false);
-
-            Send(address, Helpers.CreatePingResponse(transactionID, fLocalID));
-        }
-
-        private void WriteLog(string str, bool display = true)
-        {
-            if (display) {
-                Console.WriteLine(str);
-            }
-
-            var fswriter = new StreamWriter(new FileStream("./logFile", FileMode.Append));
-            fswriter.WriteLine(str);
-            fswriter.Flush();
-            fswriter.Close();
-        }
-
-        private void WriteInfo(string commandName, byte[] info_hash, byte[] nid, IPEndPoint ipadd)
-        {
-            /*var str = $"{commandName}:{info_hash.ToHexString()}:{nid.ToHexString()}:{(ipadd ?? fDefaultIP).ToString()}";
-            var fswriter = new StreamWriter(new FileStream("./logFile", FileMode.Append));
-            fswriter.WriteLine(str);
-            fswriter.Flush();
-            fswriter.Close();*/
         }
 
         public void ReJoin()
@@ -269,9 +313,15 @@ namespace DHTConnector
                             "router.utorrent.com"
                         }.Select(x => Dns.GetHostEntry(x).AddressList[0]).ToList();
 
-            lock (fCommonNodes) {
+            /*lock (fCommonNodes) {
                 foreach (var t in hosts) {
                     fCommonNodes.Add(new PeerNode(new IPEndPoint(t, 6881)));
+                }
+            }*/
+
+            lock (fNodes) {
+                foreach (var t in hosts) {
+                    fNodes.Enqueue(new PeerNode(new IPEndPoint(t, 6881)));
                 }
             }
 
@@ -294,58 +344,126 @@ namespace DHTConnector
         public void SendFindNodes()
         {
             while (true) {
-                /*Tuple<byte[], IPEndPoint> result = null;
+                PeerNode result = null;
                 lock (fNodes) {
                     if (fNodes.Count > 0) {
                         result = fNodes.Dequeue();
                     }
                 }
                 if (result != null) {
-                    SendFindNodeQuery(result.Item1, result.Item2);
+                    //SendFindNodeQuery(result.ID, result.EndPoint);
 
-                    SendGetPeersQuery(result.Item2, fSNKInfoHash);
-                }*/
+                    SendGetPeersQuery(result.EndPoint, fSNKInfoHash);
+                }
 
-                foreach (var peerNode in fCommonNodes) {
+                /*foreach (var peerNode in fCommonNodes) {
                     //SendFindNodeQuery(null, peerNode.EndPoint);
 
                     //SendPingResponse(peerNode.EndPoint, new BString(Helpers.GetTransactionID()));
                     SendGetPeersQuery(peerNode.EndPoint, fSNKInfoHash);
-                }
+                }*/
 
                 //Thread.Sleep((int)((1 / 50 / 5) * 1000));
-                Thread.Sleep(5000);
+                Thread.Sleep(1000);
             }
+        }
+
+        public void SetTransaction(BString transactionId, DHTMessage message)
+        {
+            int tid = BitConverter.ToInt16(transactionId.Value, 0);
+            fTransactions[tid] = message;
+        }
+
+        public QueryType CheckTransaction(BString transactionId)
+        {
+            QueryType result = QueryType.none;
+
+            DHTMessage message = null;
+            int tid = BitConverter.ToInt16(transactionId.Value, 0);
+            if (fTransactions.TryGetValue(tid, out message)) {
+                result = message.QueryType;
+                fTransactions[tid] = null;
+            } else {
+                WriteLog(">> error: transaction not found!", false);
+            }
+
+            return result;
+        }
+
+        #region Queries and responses
+
+        private void SendPingResponse(IPEndPoint address, BString transactionID)
+        {
+            WriteLog("send `ping` response " + address.ToString(), false);
+
+            Send(address, Helpers.CreatePingResponse(transactionID, fLocalID));
         }
 
         private void SendFindNodeQuery(byte[] data, IPEndPoint address, byte[] aaa = null, byte[] ttid = null)
         {
             var transactionID = TransactionId.NextId();
             byte[] nid = (data == null) ? fLocalID : Helpers.GetNeighbor(data, fLocalID);
-            Send(address, Helpers.CreateFindNodeQuery(transactionID, nid));
+
+            BDictionary sendData = Helpers.CreateFindNodeQuery(transactionID, nid);
+            SetTransaction(transactionID, new DHTMessage(MsgType.query, QueryType.find_node, sendData));
+            Send(address, sendData);
         }
 
         public void SendAnnouncePeerQuery(IPEndPoint address, byte[] infoHash, byte implied_port, int port, BString token)
         {
             var transactionID = TransactionId.NextId();
             byte[] nid = fLocalID;
-            Send(address, Helpers.CreateAnnouncePeerQuery(transactionID, nid, infoHash, implied_port, port, token));
+
+            BDictionary sendData = Helpers.CreateAnnouncePeerQuery(transactionID, nid, infoHash, implied_port, port, token);
+            SetTransaction(transactionID, new DHTMessage(MsgType.query, QueryType.announce_peer, sendData));
+            Send(address, sendData);
         }
 
         private void SendGetPeersQuery(IPEndPoint address, byte[] infoHash)
         {
             var transactionID = TransactionId.NextId();
             byte[] nid = fLocalID;
-            Send(address, Helpers.CreateGetPeersQuery(transactionID, nid, infoHash));
+
+            BDictionary sendData = Helpers.CreateGetPeersQuery(transactionID, nid, infoHash);
+            SetTransaction(transactionID, new DHTMessage(MsgType.query, QueryType.get_peers, sendData));
+            Send(address, sendData);
         }
 
-        private void Send(IPEndPoint address, byte[] data)
+        private void Send(IPEndPoint address, BDictionary data)
         {
             try {
-                fSocket.BeginSendTo(data, 0, data.Length, SocketFlags.None, address, (ar) => { fSocket.EndReceive(ar); }, null);
+                byte[] dataArray = data.EncodeAsBytes();
+                fSocket.BeginSendTo(dataArray, 0, dataArray.Length, SocketFlags.None, address, (ar) => { fSocket.EndReceive(ar); }, null);
             } catch (Exception ex) {
-                WriteLog("Send(): " + ex.Message);
+                WriteLog("Send(): " + ex.Message, false);
             }
         }
+
+        #endregion
+
+        #region Other
+
+        private void WriteLog(string str, bool display = true)
+        {
+            if (display) {
+                Console.WriteLine(str);
+            }
+
+            var fswriter = new StreamWriter(new FileStream("./logFile", FileMode.Append));
+            fswriter.WriteLine(str);
+            fswriter.Flush();
+            fswriter.Close();
+        }
+
+        private void WriteInfo(string commandName, byte[] info_hash, byte[] nid, IPEndPoint ipadd)
+        {
+            /*var str = $"{commandName}:{info_hash.ToHexString()}:{nid.ToHexString()}:{(ipadd ?? fDefaultIP).ToString()}";
+            var fswriter = new StreamWriter(new FileStream("./logFile", FileMode.Append));
+            fswriter.WriteLine(str);
+            fswriter.Flush();
+            fswriter.Close();*/
+        }
+
+        #endregion
     }
 }

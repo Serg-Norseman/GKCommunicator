@@ -91,6 +91,7 @@
     <Compile Include="BencodeNET\Torrents\TorrentUtil.cs" />
     <Compile Include="BencodeNET\UtilityExtensions.cs" />
     <Compile Include="BittorrentDownloader.cs" />
+    <Compile Include="DHTMessage.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="PeerNode.cs" />
     <Compile Include="Program.cs" />

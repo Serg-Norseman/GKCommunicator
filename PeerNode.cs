@@ -14,6 +14,8 @@ namespace DHTConnector
         public byte[] ID;
         public IPEndPoint EndPoint;
 
+        // time AnnounceExpire?
+
         public PeerNode(IPEndPoint endPoint)
         {
             ID = null;

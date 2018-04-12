@@ -38,6 +38,13 @@ namespace DHTConnector
             }
         }
 
+        public static List<PeerNode> ParseValuesList(byte[] data)
+        {
+            var result = new List<PeerNode>();
+
+            return result;
+        }
+
         public static List<PeerNode> ParseNodesList(byte[] data)
         {
             var result = new List<PeerNode>();
@@ -80,19 +87,20 @@ namespace DHTConnector
             return result;
         }
 
-        public static byte[] CreateQuery()
+        public static BDictionary CreateQuery()
         {
             BDictionary sendData = new BDictionary();
 
-            return sendData.EncodeAsBytes();
+            return sendData;
         }
 
-        public static byte[] CreateGetPeersResponse(BString transactionID, byte[] nid, byte[] infoHash)
+        public static BDictionary CreateGetPeersResponse(BString transactionID, byte[] nid, byte[] infoHash)
         {
             BDictionary sendData = new BDictionary();
 
             sendData.Add("t", transactionID);
             sendData.Add("y", "r");
+            sendData.Add("v", "gk01");
 
             var r = new BDictionary();
             r.Add("id", new BString(nid));
@@ -100,40 +108,42 @@ namespace DHTConnector
             r.Add("nodes", "");
             sendData.Add("r", r);
 
-            return sendData.EncodeAsBytes();
+            return sendData;
         }
 
-        public static byte[] CreatePingResponse(BString transactionID, byte[] nid)
+        public static BDictionary CreatePingResponse(BString transactionID, byte[] nid)
         {
             BDictionary sendData = new BDictionary();
 
             sendData.Add("y", "r");
             sendData.Add("t", transactionID);
+            sendData.Add("v", "gk01");
 
             var r = new BDictionary();
             r.Add("id", new BString(nid));
             sendData.Add("r", r);
 
-            return sendData.EncodeAsBytes();
+            return sendData;
         }
 
-        public static byte[] CreateFindNodeQuery(BString transactionID, byte[] nid)
+        public static BDictionary CreateFindNodeQuery(BString transactionID, byte[] nid)
         {
             BDictionary sendData = new BDictionary();
 
             sendData.Add("t", transactionID);
             sendData.Add("y", "q");
             sendData.Add("q", "find_node");
+            sendData.Add("v", "gk01");
 
             var args = new BDictionary();
             args.Add("id", new BString(nid));
             args.Add("target", new BString(Helpers.GetRandomHashID()));
             sendData.Add("a", args);
 
-            return sendData.EncodeAsBytes();
+            return sendData;
         }
 
-        public static byte[] CreateAnnouncePeerQuery(BString transactionID, byte[] nid, byte[] infoHash,
+        public static BDictionary CreateAnnouncePeerQuery(BString transactionID, byte[] nid, byte[] infoHash,
             byte implied_port, int port, BString token)
         {
             BDictionary sendData = new BDictionary();
@@ -141,6 +151,7 @@ namespace DHTConnector
             sendData.Add("t", transactionID);
             sendData.Add("y", "q");
             sendData.Add("q", "announce_peer");
+            sendData.Add("v", "gk01");
 
             var args = new BDictionary();
             args.Add("id", new BString(nid));
@@ -150,23 +161,24 @@ namespace DHTConnector
             args.Add("token", token);
             sendData.Add("a", args);
 
-            return sendData.EncodeAsBytes();
+            return sendData;
         }
 
-        public static byte[] CreateGetPeersQuery(BString transactionID, byte[] nid, byte[] infoHash)
+        public static BDictionary CreateGetPeersQuery(BString transactionID, byte[] nid, byte[] infoHash)
         {
             BDictionary sendData = new BDictionary();
 
             sendData.Add("t", transactionID);
             sendData.Add("y", "q");
             sendData.Add("q", "get_peers");
+            sendData.Add("v", "gk01");
 
             var args = new BDictionary();
             args.Add("id", new BString(nid));
             args.Add("info_hash", new BString(infoHash));
             sendData.Add("a", args);
 
-            return sendData.EncodeAsBytes();
+            return sendData;
         }
 
         /*public static string ToHexString2(this byte[] data)
