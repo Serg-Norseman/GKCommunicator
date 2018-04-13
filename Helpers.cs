@@ -38,9 +38,22 @@ namespace DHTConnector
             }
         }
 
-        public static List<PeerNode> ParseValuesList(byte[] data)
+        public static List<PeerNode> ParseValuesList(BList data)
         {
             var result = new List<PeerNode>();
+
+            foreach (var item in data) {
+                var str = item as BString;
+                var itemBytes = str.Value;
+                if (itemBytes.Length != 6) {
+
+                } else {
+                    var ip = new IPAddress(itemBytes.Take(4).ToArray());
+                    var port = BitConverter.ToUInt16(itemBytes, 4);
+                    var xnode = new PeerNode(null, new IPEndPoint(ip, port));
+                    result.Add(xnode);
+                }
+            }
 
             return result;
         }
@@ -87,25 +100,35 @@ namespace DHTConnector
             return result;
         }
 
-        public static BDictionary CreateQuery()
+        public static BDictionary CreatePingQuery(BString transactionID, byte[] nodeId)
         {
             BDictionary sendData = new BDictionary();
+
+            sendData.Add("t", transactionID);
+            sendData.Add("y", "q");
+            sendData.Add("q", "ping");
+
+            var args = new BDictionary();
+            args.Add("id", new BString(nodeId));
+            sendData.Add("a", args);
 
             return sendData;
         }
 
-        public static BDictionary CreateGetPeersResponse(BString transactionID, byte[] nid, byte[] infoHash)
+        public static BDictionary CreateGetPeersResponse(BString transactionID, byte[] nid, byte[] infoHash, BList values, BString nodes)
         {
             BDictionary sendData = new BDictionary();
 
             sendData.Add("t", transactionID);
             sendData.Add("y", "r");
-            sendData.Add("v", "gk01");
 
             var r = new BDictionary();
             r.Add("id", new BString(nid));
             r.Add("token", new BString(infoHash.Take(2)));
-            r.Add("nodes", "");
+            if (values != null) {
+                r.Add("values", values);
+            }
+            r.Add("nodes", nodes);
             sendData.Add("r", r);
 
             return sendData;
@@ -117,7 +140,6 @@ namespace DHTConnector
 
             sendData.Add("y", "r");
             sendData.Add("t", transactionID);
-            sendData.Add("v", "gk01");
 
             var r = new BDictionary();
             r.Add("id", new BString(nid));
@@ -133,7 +155,6 @@ namespace DHTConnector
             sendData.Add("t", transactionID);
             sendData.Add("y", "q");
             sendData.Add("q", "find_node");
-            sendData.Add("v", "gk01");
 
             var args = new BDictionary();
             args.Add("id", new BString(nid));
@@ -151,7 +172,6 @@ namespace DHTConnector
             sendData.Add("t", transactionID);
             sendData.Add("y", "q");
             sendData.Add("q", "announce_peer");
-            sendData.Add("v", "gk01");
 
             var args = new BDictionary();
             args.Add("id", new BString(nid));
@@ -171,7 +191,6 @@ namespace DHTConnector
             sendData.Add("t", transactionID);
             sendData.Add("y", "q");
             sendData.Add("q", "get_peers");
-            sendData.Add("v", "gk01");
 
             var args = new BDictionary();
             args.Add("id", new BString(nid));
@@ -179,6 +198,49 @@ namespace DHTConnector
             sendData.Add("a", args);
 
             return sendData;
+        }
+
+        public static bool ArraysEqual<T>(T[] a1, T[] a2)
+        {
+            if (ReferenceEquals(a1, a2))
+                return true;
+
+            if (a1 == null || a2 == null)
+                return false;
+
+            if (a1.Length != a2.Length)
+                return false;
+
+            EqualityComparer<T> comparer = EqualityComparer<T>.Default;
+            for (int i = 0; i < a1.Length; i++) {
+                if (!comparer.Equals(a1[i], a2[i])) return false;
+            }
+            return true;
+        }
+
+        public static byte[] CompactNode(PeerNode node)
+        {
+            IPAddress address = node.EndPoint.Address;
+            ushort port = (ushort)node.EndPoint.Port;
+
+            var info = new byte[26];
+            Array.Copy(node.ID, info, 20);
+            Array.Copy(address.GetAddressBytes(), 0, info, 20, 4);
+            info[24] = (byte)((port >> 8) & 0xFF);
+            info[25] = (byte)(port & 0xFF);
+            return info;
+        }
+
+        public static byte[] CompactEndPoint(IPEndPoint endPoint)
+        {
+            IPAddress address = endPoint.Address;
+            ushort port = (ushort)endPoint.Port;
+
+            var info = new byte[6];
+            Array.Copy(address.GetAddressBytes(), 0, info, 0, 4);
+            info[4] = (byte)((port >> 8) & 0xFF);
+            info[5] = (byte)(port & 0xFF);
+            return info;
         }
 
         /*public static string ToHexString2(this byte[] data)
