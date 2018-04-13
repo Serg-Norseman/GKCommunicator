@@ -1,0 +1,14 @@
+**/.vs/
+*.suo
+*.userprefs
+*.DotSettings.user
+
+/GKNetCore/bin/
+/GKNetCore/obj/
+
+/GKNetPNRP/bin/
+/GKNetPNRP/obj/
+
+/GKSimpleChat/bin/
+/GKSimpleChat/obj/
+/GKSimpleChat/temp/
