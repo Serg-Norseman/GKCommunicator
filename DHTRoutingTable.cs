@@ -6,11 +6,11 @@ using System.Linq;
 
 namespace DHTConnector
 {
-    public class RouteTable : IEnumerable<PeerNode>
+    public class DHTRoutingTable : IEnumerable<DHTNode>
     {
         private class Route
         {
-            public PeerNode Node { get; set; }
+            public DHTNode Node { get; set; }
             public long LastTime { get; set; }
             public string RouteId => Node == null ? string.Empty : Node.EndPoint.Address + ":" + Node.EndPoint.Port;
         }
@@ -51,7 +51,7 @@ namespace DHTConnector
             return result;
         }
 
-        public RouteTable(int nodeSize)
+        public DHTRoutingTable(int nodeSize)
         {
             this.fKTable = new ConcurrentDictionary<string, Route>();
             this.fMaxNodeSize = nodeSize;
@@ -61,7 +61,7 @@ namespace DHTConnector
 
         public bool IsFull => fKTable.Count >= fMaxNodeSize && fMinLastTime + fRouteLife.Ticks > DateTime.Now.Ticks;
 
-        public void AddNode(PeerNode node)
+        public void AddNode(DHTNode node)
         {
             if (node.ID == null || fKTable.Count >= fMaxNodeSize)
                 return;
@@ -72,14 +72,14 @@ namespace DHTConnector
             fKTable.TryAdd(route.RouteId, route);
         }
 
-        public void AddNodes(IEnumerable<PeerNode> nodes)
+        public void AddNodes(IEnumerable<DHTNode> nodes)
         {
             foreach (var node in nodes) {
                 AddNode(node);
             }
         }
 
-        public void AddOrUpdateNode(PeerNode node)
+        public void AddOrUpdateNode(DHTNode node)
         {
             if (node.ID == null)
                 return;
@@ -115,11 +115,11 @@ namespace DHTConnector
             fMinLastTime = Math.Max(minTime, fMinLastTime);
         }
 
-        public IList<PeerNode> FindNodes(byte[] id)
+        public IList<DHTNode> FindNodes(byte[] id)
         {
             if (fKTable.Count <= 8)
                 return fKTable.Values.Take(8).Select(route => route.Node).ToArray();
-            var list = new SortedList<byte[], PeerNode>(8, RouteComparer.Instance);
+            var list = new SortedList<byte[], DHTNode>(8, RouteComparer.Instance);
             var minTime = DateTime.MaxValue.Ticks;
             var tableFull = fKTable.Count >= fMaxNodeSize;
             foreach (var item in fKTable.Values) {
@@ -143,7 +143,7 @@ namespace DHTConnector
 
         #region IEnumerable
 
-        public IEnumerator<PeerNode> GetEnumerator()
+        public IEnumerator<DHTNode> GetEnumerator()
         {
             var minTime = DateTime.MaxValue.Ticks;
             var tableFull = fKTable.Count >= fMaxNodeSize;

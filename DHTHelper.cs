@@ -8,7 +8,7 @@ using BencodeNET.Objects;
 
 namespace DHTConnector
 {
-    public static class Helpers
+    public static class DHTHelper
     {
         private static Random r = new Random();
         private static SHA1 sha1 = new SHA1CryptoServiceProvider();
@@ -31,9 +31,9 @@ namespace DHTConnector
             }
         }
 
-        public static List<PeerNode> ParseValuesList(BList data)
+        public static List<DHTNode> ParseValuesList(BList data)
         {
-            var result = new List<PeerNode>();
+            var result = new List<DHTNode>();
 
             foreach (var item in data) {
                 var str = item as BString;
@@ -43,7 +43,7 @@ namespace DHTConnector
                 } else {
                     var ip = new IPAddress(itemBytes.Take(4).ToArray());
                     var port = BitConverter.ToUInt16(itemBytes, 4);
-                    var xnode = new PeerNode(null, new IPEndPoint(ip, port));
+                    var xnode = new DHTNode(null, new IPEndPoint(ip, port));
                     result.Add(xnode);
                 }
             }
@@ -51,9 +51,9 @@ namespace DHTConnector
             return result;
         }
 
-        public static List<PeerNode> ParseNodesList(byte[] data)
+        public static List<DHTNode> ParseNodesList(byte[] data)
         {
-            var result = new List<PeerNode>();
+            var result = new List<DHTNode>();
             for (int i = 0; i < data.Length; i += 26) {
                 var dd = data.Skip(i).Take(26).ToArray();
                 //var bc = dd.ToHexString();
@@ -64,7 +64,7 @@ namespace DHTConnector
                 var id = dd.Take(20).ToArray();
                 var ip = new IPAddress(dd.Skip(20).Take(4).ToArray());
                 var port = BitConverter.ToUInt16(dd, 24);
-                var tt = new PeerNode(id, new IPEndPoint(ip, port));
+                var tt = new DHTNode(id, new IPEndPoint(ip, port));
                 result.Add(tt);
             }
             return result;
@@ -111,7 +111,7 @@ namespace DHTConnector
             return true;
         }
 
-        public static byte[] CompactNode(PeerNode node)
+        public static byte[] CompactNode(DHTNode node)
         {
             IPAddress address = node.EndPoint.Address;
             ushort port = (ushort)node.EndPoint.Port;

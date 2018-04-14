@@ -14,11 +14,11 @@ namespace DHTConnector
                 port = 6882;
             }
 
-            var dhtNode = new UDPServer(port, IPAddress.Any);
-            dhtNode.SubnetKey = NETWORK_SIGN;
-            dhtNode.Run();
-            dhtNode.ReJoin();
-            dhtNode.SendFindNodes();
+            var dhtClient = new DHTClient(port, IPAddress.Any);
+            dhtClient.SubnetKey = NETWORK_SIGN;
+            dhtClient.Run();
+            dhtClient.ReJoin();
+            dhtClient.SendFindNodes();
 
             Console.ReadLine();
             return 0;

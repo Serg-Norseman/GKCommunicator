@@ -34,7 +34,7 @@ namespace DHTConnector
 
         private void SendShakeHand()
         {
-            var peer = Helpers.GetRandomHashID();
+            var peer = DHTHelper.GetRandomHashID();
             var list = new List<byte>();
             list.Add(0x13);
             list.AddRange(Encoding.ASCII.GetBytes("BitTorrent protocol"));

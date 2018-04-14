@@ -11,7 +11,7 @@ using BencodeNET.Torrents;
 
 namespace DHTConnector
 {
-    public class UDPServer
+    public class DHTClient
     {
         public const int KTableSize = 2048;
 
@@ -19,14 +19,14 @@ namespace DHTConnector
         private IPEndPoint fDefaultIP = new IPEndPoint(IPAddress.Loopback, 0);
         private IPEndPoint fLocalIP;
         private byte[] fLocalID = null;
-        private Queue<PeerNode> fNodes = new Queue<PeerNode>();
+        private Queue<DHTNode> fNodes = new Queue<DHTNode>();
         //private List<PeerNode> fCommonNodes = new List<PeerNode>();
         private BencodeParser fParser = new BencodeParser();
         private Socket fSocket = null;
         private string fSubnetKey;
         private byte[] fSNKInfoHash;
         private Dictionary<int, DHTMessage> fTransactions = new Dictionary<int, DHTMessage>();
-        private readonly RouteTable fRouteTable;
+        private readonly DHTRoutingTable fRoutingTable;
 
         public string SubnetKey
         {
@@ -40,9 +40,9 @@ namespace DHTConnector
             }
         }
 
-        public UDPServer(int port, IPAddress addr)
+        public DHTClient(int port, IPAddress addr)
         {
-            fLocalID = Helpers.GetRandomID();
+            fLocalID = DHTHelper.GetRandomID();
             fSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             const long IOC_IN = 0x80000000;
             const long IOC_VENDOR = 0x18000000;
@@ -54,7 +54,7 @@ namespace DHTConnector
             fLocalIP = new IPEndPoint(addr, port);
             fSocket.Bind(fLocalIP);
 
-            fRouteTable = new RouteTable(KTableSize);
+            fRoutingTable = new DHTRoutingTable(KTableSize);
         }
 
         public void Run()
@@ -65,7 +65,7 @@ namespace DHTConnector
 
         public void AddNode(string address, int port)
         {
-            fNodes.Enqueue(new PeerNode(null, new IPEndPoint(IPAddress.Parse(address), port)));
+            fNodes.Enqueue(new DHTNode(null, new IPEndPoint(IPAddress.Parse(address), port)));
         }
 
         private void EndRecv(IAsyncResult result)
@@ -230,7 +230,7 @@ namespace DHTConnector
                 Console.ForegroundColor = ConsoleColor.Green;
                 WriteLog(">>>>>>>>>>>> get_peers_values_response!!!: " + ipinfo.ToString());
 
-                var values = Helpers.ParseValuesList(valuesList);
+                var values = DHTHelper.ParseValuesList(valuesList);
 
                 if (values.Count > 0) {
                     Console.ForegroundColor = ConsoleColor.DarkGreen;
@@ -257,7 +257,7 @@ namespace DHTConnector
                     throw new Exception("sd");
 
                 var nodesData = nodesStr.Value;
-                var nodesList = Helpers.ParseNodesList(nodesData);
+                var nodesList = DHTHelper.ParseNodesList(nodesData);
                 WriteLog("receive " + nodesList.Count + " nodes from " + ipinfo.ToString(), false);
 
                 /*lock (fCommonNodes) {
@@ -272,7 +272,7 @@ namespace DHTConnector
                 foreach (var t in nodesList) {
                     lock (fNodes) {
                         fNodes.Enqueue(t);
-                        fRouteTable.AddNode(t);
+                        fRoutingTable.AddNode(t);
                         //WriteLog("find a node " + t.Item2);
                     }
                 }
@@ -294,9 +294,9 @@ namespace DHTConnector
             Console.ForegroundColor = ConsoleColor.DarkMagenta;
             WriteLog("receive `announce_peer` query " + ipinfo.ToString());
 
-            fRouteTable.AddNode(new PeerNode(id.Value, ipinfo));
+            fRoutingTable.AddNode(new DHTNode(id.Value, ipinfo));
 
-            if (Helpers.ArraysEqual(info_hash.Value, fSNKInfoHash)) {
+            if (DHTHelper.ArraysEqual(info_hash.Value, fSNKInfoHash)) {
                 Console.ForegroundColor = ConsoleColor.Magenta;
                 WriteLog("receive `announce_peer` query for our HASH " + ipinfo.ToString());
 
@@ -319,22 +319,22 @@ namespace DHTConnector
             var args = data.Get<BDictionary>("a");
             var rid = args.Get<BString>("id");
             var info_hash = args.Get<BString>("info_hash");
-            var neighbor = Helpers.GetNeighbor(info_hash.Value, fLocalID);
-            var nodesList = fRouteTable.FindNodes(info_hash.Value);
+            var neighbor = DHTHelper.GetNeighbor(info_hash.Value, fLocalID);
+            var nodesList = fRoutingTable.FindNodes(info_hash.Value);
             BList values = null;
 
             WriteLog("receive `get_peers` query from " + ipinfo.ToString() + " [" + rid.Value.ToHexString() + "] for " + info_hash.Value.ToHexString());
 
-            fRouteTable.AddNode(new PeerNode(rid.Value, ipinfo));
+            fRoutingTable.AddNode(new DHTNode(rid.Value, ipinfo));
 
             byte[] nodesArray = new byte[nodesList.Count * 26];
             var i = 0;
             foreach (var node in nodesList) {
-                var compact = Helpers.CompactNode(node);
+                var compact = DHTHelper.CompactNode(node);
                 Array.Copy(compact, 0, nodesArray, i * 26, 26);
             }
 
-            if (Helpers.ArraysEqual(info_hash.Value, fSNKInfoHash)) {
+            if (DHTHelper.ArraysEqual(info_hash.Value, fSNKInfoHash)) {
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 WriteLog("receive `get_peers` query for our HASH");
 
@@ -363,7 +363,7 @@ namespace DHTConnector
 
             lock (fNodes) {
                 foreach (var t in hosts) {
-                    fNodes.Enqueue(new PeerNode(new IPEndPoint(t, 6881)));
+                    fNodes.Enqueue(new DHTNode(new IPEndPoint(t, 6881)));
                 }
             }
 
@@ -389,7 +389,7 @@ namespace DHTConnector
             WriteLog("Search for: " + fSNKInfoHash.ToHexString());
 
             while (true) {
-                PeerNode result = null;
+                DHTNode result = null;
                 /*lock (fNodes) {
                     if (fNodes.Count > 0) {
                         result = fNodes.Dequeue();
@@ -401,8 +401,8 @@ namespace DHTConnector
                     SendGetPeersQuery(result.EndPoint, fSNKInfoHash);
                 }*/
 
-                lock (fRouteTable) {
-                    var nodes = fRouteTable.FindNodes(fSNKInfoHash);
+                lock (fRoutingTable) {
+                    var nodes = fRoutingTable.FindNodes(fSNKInfoHash);
 
                     if (nodes.Count <= 0) {
                         lock (fNodes) {
@@ -476,7 +476,7 @@ namespace DHTConnector
         private void SendFindNodeQuery(byte[] data, IPEndPoint address, byte[] aaa = null, byte[] ttid = null)
         {
             var transactionID = TransactionId.NextId();
-            byte[] nid = (data == null) ? fLocalID : Helpers.GetNeighbor(data, fLocalID);
+            byte[] nid = (data == null) ? fLocalID : DHTHelper.GetNeighbor(data, fLocalID);
 
             BDictionary sendData = DHTMessage.CreateFindNodeQuery(transactionID, nid);
             SetTransaction(transactionID, new DHTMessage(MsgType.query, QueryType.find_node, sendData));

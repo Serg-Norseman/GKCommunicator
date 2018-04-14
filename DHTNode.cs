@@ -2,27 +2,27 @@
 
 namespace DHTConnector
 {
-    public enum PeerType
+    public enum NodeType
     {
         Bootstrap,  // startup node
         Simple,     // normal dht peer
         Subnet      // peer was checked by SubnetKey's infohash and handshake
     }
 
-    public class PeerNode
+    public class DHTNode
     {
         public byte[] ID;
         public IPEndPoint EndPoint;
 
         // time AnnounceExpire?
 
-        public PeerNode(IPEndPoint endPoint)
+        public DHTNode(IPEndPoint endPoint)
         {
             ID = null;
             EndPoint = endPoint;
         }
 
-        public PeerNode(byte[] id, IPEndPoint endPoint)
+        public DHTNode(byte[] id, IPEndPoint endPoint)
         {
             ID = id;
             EndPoint = endPoint;

@@ -84,7 +84,7 @@ namespace DHTConnector
 
             var args = new BDictionary();
             args.Add("id", new BString(nid));
-            args.Add("target", new BString(Helpers.GetRandomHashID()));
+            args.Add("target", new BString(DHTHelper.GetRandomHashID()));
             sendData.Add("a", args);
 
             return sendData;
