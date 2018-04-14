@@ -90,14 +90,13 @@
     <Compile Include="BencodeNET\Torrents\TorrentFileMode.cs" />
     <Compile Include="BencodeNET\Torrents\TorrentUtil.cs" />
     <Compile Include="BencodeNET\UtilityExtensions.cs" />
-    <Compile Include="BittorrentDownloader.cs" />
+    <Compile Include="BTClient.cs" />
     <Compile Include="DHTMessage.cs" />
     <Compile Include="DHTHelper.cs" />
     <Compile Include="DHTNode.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DHTRoutingTable.cs" />
-    <Compile Include="TransactionId.cs" />
     <Compile Include="DHTClient.cs" />
   </ItemGroup>
   <ItemGroup>

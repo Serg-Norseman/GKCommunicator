@@ -13,6 +13,22 @@ namespace DHTConnector
         private static Random r = new Random();
         private static SHA1 sha1 = new SHA1CryptoServiceProvider();
 
+        private static byte[] fCurrentTransactionId = new byte[2];
+
+        public static BString GetTransactionId()
+        {
+            lock (fCurrentTransactionId) {
+                BString result = new BString((byte[])fCurrentTransactionId.Clone());
+                if (fCurrentTransactionId[0] == 255) {
+                    fCurrentTransactionId[0] = 0;
+                    fCurrentTransactionId[1] += 1;
+                } else {
+                    fCurrentTransactionId[0] += 1;
+                }
+                return result;
+            }
+        }
+
         public static byte[] GetRandomID()
         {
             var r = new Random();

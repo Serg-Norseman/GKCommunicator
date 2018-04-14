@@ -9,27 +9,27 @@ using BencodeNET.Parsing;
 
 namespace DHTConnector
 {
-    public class BittorrentDownloader
+    public class BTClient
     {
-        public IPEndPoint Ipaddress = null;
+        public IPEndPoint EndPoint = null;
         public byte[] InfoHash = null;
-        public byte[] NodeID = null;
+        public byte[] NodeId = null;
 
         private Socket fSocket = null;
         private byte[] fBuffer = new byte[4096];
         private List<byte> fDataBuffer = new List<byte>();
         private int fState = 0;
 
-        public BittorrentDownloader(IPEndPoint ipinfo, byte[] infohash, byte[] nodeid)
+        public BTClient(IPEndPoint endPoint, byte[] infoHash, byte[] nodeId)
         {
-            Ipaddress = ipinfo;
-            InfoHash = infohash;
-            NodeID = nodeid;
+            EndPoint = endPoint;
+            InfoHash = infoHash;
+            NodeId = nodeId;
         }
 
         public void Run()
         {
-            fSocket.BeginConnect(Ipaddress, new AsyncCallback(EndConnect), null);
+            fSocket.BeginConnect(EndPoint, new AsyncCallback(EndConnect), null);
         }
 
         private void SendShakeHand()
