@@ -1,6 +1,6 @@
 ﻿using System.ServiceModel;
 
-namespace GKSimpleChat
+namespace GKNetPNRP
 {
     // this channel interface provides a multiple inheritence adapter for our channel factory
     // that aggregates the two interfaces need to create the channel

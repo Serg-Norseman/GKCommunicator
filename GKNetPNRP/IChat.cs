@@ -1,6 +1,6 @@
 ﻿using System.ServiceModel;
 
-namespace GKSimpleChat
+namespace GKNetPNRP
 {
     // this is our simple service contract
     // Namespace = "http://gedkeeper.net.gkchat",
