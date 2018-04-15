@@ -16,8 +16,14 @@ namespace DHTConnector
 
             var dhtClient = new DHTClient(port, IPAddress.Any);
             dhtClient.SubnetKey = NETWORK_SIGN;
+            dhtClient.PeersFound += delegate (object sender, PeersFoundEventArgs e) {
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine("Found peers: {0}", e.Peers.Count);
+                Console.ResetColor();
+            };
+
             dhtClient.Run();
-            dhtClient.ReJoin();
+            dhtClient.JoinNetwork();
             dhtClient.SendFindNodes();
 
             Console.ReadLine();

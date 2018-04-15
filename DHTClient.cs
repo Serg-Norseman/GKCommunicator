@@ -40,6 +40,8 @@ namespace DHTConnector
             }
         }
 
+        public event EventHandler<PeersFoundEventArgs> PeersFound;
+
         public DHTClient(int port, IPAddress addr)
         {
             fLocalID = DHTHelper.GetRandomID();
@@ -61,11 +63,6 @@ namespace DHTConnector
         {
             EndPoint remoteAddress = new IPEndPoint(IPAddress.Loopback, 0);
             fSocket.BeginReceiveFrom(fBuffer, 0, fBuffer.Length, SocketFlags.None, ref remoteAddress, EndRecv, null);
-        }
-
-        public void AddNode(string address, int port)
-        {
-            fNodes.Enqueue(new DHTNode(null, new IPEndPoint(IPAddress.Parse(address), port)));
         }
 
         private void EndRecv(IAsyncResult result)
@@ -221,6 +218,13 @@ namespace DHTConnector
             }
         }
 
+        private void RaisePeersFound(byte[] infoHash, List<IPEndPoint> peers)
+        {
+            if (PeersFound != null) {
+                PeersFound(this, new PeersFoundEventArgs(infoHash, peers));
+            }
+        }
+
         private bool ProcessValuesStr(IPEndPoint ipinfo, BList valuesList)
         {
             // bootstrap's trackers not response with values on GetPeers(infohash) ???
@@ -238,11 +242,13 @@ namespace DHTConnector
                     WriteLog("receive " + values.Count + " values from " + ipinfo.ToString(), true);
 
                     Console.ForegroundColor = ConsoleColor.DarkCyan;
-                    WriteLog("send ping " + values[0].EndPoint.ToString(), true);
-                    SendPingQuery(values[0].EndPoint, true);
+                    WriteLog("send ping " + values[0].ToString(), true);
+                    SendPingQuery(values[0], true);
 
                     // TODO: handshake and other
                     // TODO: check that there is no current node in the response
+
+                    RaisePeersFound(fSNKInfoHash, values);
                 }
 
                 result = true;
@@ -359,7 +365,7 @@ namespace DHTConnector
             //InfoHashList.Add(info_hash.Value);
         }
 
-        public void ReJoin()
+        public void JoinNetwork()
         {
             var hosts = new List<string>()
                     {

@@ -47,9 +47,9 @@ namespace DHTConnector
             }
         }
 
-        public static List<DHTNode> ParseValuesList(BList data)
+        public static List<IPEndPoint> ParseValuesList(BList data)
         {
-            var result = new List<DHTNode>();
+            var result = new List<IPEndPoint>();
 
             foreach (var item in data) {
                 var str = item as BString;
@@ -59,7 +59,7 @@ namespace DHTConnector
                 } else {
                     var ip = new IPAddress(itemBytes.Take(4).ToArray());
                     var port = BitConverter.ToUInt16(itemBytes, 4);
-                    var xnode = new DHTNode(null, new IPEndPoint(ip, port));
+                    var xnode = new IPEndPoint(ip, port);
                     result.Add(xnode);
                 }
             }
