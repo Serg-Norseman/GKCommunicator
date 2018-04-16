@@ -3,7 +3,10 @@
 *.userprefs
 *.DotSettings.user
 
-/bin/
-/obj/
+/DHT/bin/
+/DHT/obj/
+
+/DHTSample/bin/
+/DHTSample/obj/
 
 /temp/
