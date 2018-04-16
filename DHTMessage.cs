@@ -91,7 +91,7 @@ namespace DHTConnector
         }
 
         public static BDictionary CreateAnnouncePeerQuery(BString transactionID, byte[] nid, byte[] infoHash,
-            /*byte implied_port, */int port, BString token)
+            byte implied_port, int port, BString token)
         {
             BDictionary sendData = new BDictionary();
 
@@ -101,7 +101,9 @@ namespace DHTConnector
 
             var args = new BDictionary();
             args.Add("id", new BString(nid));
-            //args.Add("implied_port", new BNumber(implied_port));
+            if (implied_port != 0) {
+                args.Add("implied_port", new BNumber(implied_port));
+            }
             args.Add("info_hash", new BString(infoHash));
             args.Add("port", new BNumber(port));
             args.Add("token", token);

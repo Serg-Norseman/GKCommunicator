@@ -11,7 +11,7 @@ namespace DHTConnector
         {
             int port;
             if (args.Length == 0 || !int.TryParse(args[0], out port)) {
-                port = 6882;
+                port = DHTClient.PublicDHTPort;
             }
 
             var dhtClient = new DHTClient(port, IPAddress.Any);
@@ -19,6 +19,7 @@ namespace DHTConnector
             dhtClient.PeersFound += delegate (object sender, PeersFoundEventArgs e) {
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine("Found peers: {0}", e.Peers.Count);
+                Console.WriteLine("Peers[0]: {0}", e.Peers[0].ToString());
                 Console.ResetColor();
             };
 

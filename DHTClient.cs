@@ -13,6 +13,7 @@ namespace DHTConnector
 {
     public class DHTClient
     {
+        public const int PublicDHTPort = 6881;
         public const int KTableSize = 2048;
 
         private byte[] fBuffer = new byte[65535];
@@ -22,7 +23,8 @@ namespace DHTConnector
         private Queue<DHTNode> fNodes = new Queue<DHTNode>();
         //private List<PeerNode> fCommonNodes = new List<PeerNode>();
         private BencodeParser fParser = new BencodeParser();
-        private Socket fSocket = null;
+        //private Socket fSocket = null;
+        private UdpClient fClient;
         private string fSubnetKey;
         private byte[] fSNKInfoHash;
         private Dictionary<int, DHTMessage> fTransactions = new Dictionary<int, DHTMessage>();
@@ -45,29 +47,41 @@ namespace DHTConnector
         public DHTClient(int port, IPAddress addr)
         {
             fLocalID = DHTHelper.GetRandomID();
-            fSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            fLocalIP = new IPEndPoint(addr, port);
+
             const long IOC_IN = 0x80000000;
             const long IOC_VENDOR = 0x18000000;
             const long SIO_UDP_CONNRESET = IOC_IN | IOC_VENDOR | 12;
             byte[] optionInValue = { Convert.ToByte(false) };
             byte[] optionOutValue = new byte[4];
-            fSocket.IOControl((IOControlCode)SIO_UDP_CONNRESET, optionInValue, optionOutValue);
+            //fSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            //fSocket.IOControl((IOControlCode)SIO_UDP_CONNRESET, optionInValue, optionOutValue);
+            //fSocket.Bind(fLocalIP);
 
-            fLocalIP = new IPEndPoint(addr, port);
-            fSocket.Bind(fLocalIP);
+            fClient = new UdpClient(fLocalIP);
+            fClient.AllowNatTraversal(true);
+            fClient.Ttl = 255;
+            fClient.Client.IOControl((IOControlCode)SIO_UDP_CONNRESET, optionInValue, optionOutValue);
+            //fClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
 
             fRoutingTable = new DHTRoutingTable(KTableSize);
         }
 
         public void Run()
         {
-            EndPoint remoteAddress = new IPEndPoint(IPAddress.Loopback, 0);
-            fSocket.BeginReceiveFrom(fBuffer, 0, fBuffer.Length, SocketFlags.None, ref remoteAddress, EndRecv, null);
+            //EndPoint remoteAddress = new IPEndPoint(IPAddress.Loopback, 0);
+            //fSocket.BeginReceiveFrom(fBuffer, 0, fBuffer.Length, SocketFlags.None, ref remoteAddress, EndRecv, null);
+            fClient.BeginReceive(EndRecv, null);
+        }
+
+        public void Stop()
+        {
+            fClient.Close();
         }
 
         private void EndRecv(IAsyncResult result)
         {
-            EndPoint remoteAddress = new IPEndPoint(IPAddress.Loopback, 0);
+            /*EndPoint remoteAddress = new IPEndPoint(IPAddress.Loopback, 0);
             try {
                 int count = fSocket.EndReceiveFrom(result, ref remoteAddress);
                 if (count > 0)
@@ -84,7 +98,19 @@ namespace DHTConnector
                     WriteLog("EndRecv(): " + ex);
                     notsuccess = true;
                 }
-            } while (notsuccess);
+            } while (notsuccess);*/
+
+            try {
+                IPEndPoint e = new IPEndPoint(IPAddress.Any, fLocalIP.Port);
+                byte[] buffer = fClient.EndReceive(result, ref e);
+
+                OnRecvMessage(buffer, e);
+
+                fClient.BeginReceive(EndRecv, null);
+            } catch (SocketException) {
+                fClient.BeginReceive(EndRecv, null);
+            } catch (Exception) {
+            }
         }
 
         private void OnRecvMessage(byte[] data, IPEndPoint ipinfo)
@@ -212,7 +238,7 @@ namespace DHTConnector
 
             if (canAnnounce) {
                 //WriteLog("get_peers_token_response!!!: " + ipinfo.ToString());
-                SendAnnouncePeerQuery(ipinfo, fSNKInfoHash, /*1, */fLocalIP.Port, tokStr);
+                SendAnnouncePeerQuery(ipinfo, fSNKInfoHash, 1, fLocalIP.Port, tokStr);
                 //SendGetPeersQuery(ipinfo, fSNKInfoHash);
                 //return;
             }
@@ -242,8 +268,13 @@ namespace DHTConnector
                     WriteLog("receive " + values.Count + " values from " + ipinfo.ToString(), true);
 
                     Console.ForegroundColor = ConsoleColor.DarkCyan;
+
                     WriteLog("send ping " + values[0].ToString(), true);
-                    SendPingQuery(values[0], true);
+                    SendPingQuery(values[0], false);
+
+                    var newaddr = new IPEndPoint(values[0].Address, fLocalIP.Port);
+                    WriteLog("send ping " + newaddr.ToString(), true);
+                    SendPingQuery(newaddr, true);
 
                     // TODO: handshake and other
                     // TODO: check that there is no current node in the response
@@ -309,9 +340,9 @@ namespace DHTConnector
             var args = data.Get<BDictionary>("a");
             var id = args.Get<BString>("id");
 
-            var handshake = args.Get<BString>("handshake");
+            var handshake = data.Get<BString>("handshake");
             if (handshake != null && handshake.ToString() == "gkn") {
-                Console.ForegroundColor = ConsoleColor.White;
+                Console.ForegroundColor = ConsoleColor.Magenta;
                 WriteLog("Found a peer! " + ipinfo.ToString());
             }
 
@@ -376,13 +407,13 @@ namespace DHTConnector
 
             /*lock (fCommonNodes) {
                 foreach (var t in hosts) {
-                    fCommonNodes.Add(new PeerNode(new IPEndPoint(t, 6881)));
+                    fCommonNodes.Add(new PeerNode(new IPEndPoint(t, PublicDHTPort)));
                 }
             }*/
 
             lock (fNodes) {
                 foreach (var t in hosts) {
-                    fNodes.Enqueue(new DHTNode(new IPEndPoint(t, 6881)));
+                    fNodes.Enqueue(new DHTNode(new IPEndPoint(t, PublicDHTPort)));
                 }
             }
 
@@ -394,7 +425,7 @@ namespace DHTConnector
                     }
                     if (count == 0) {
                         foreach (var t in hosts) {
-                            SendFindNodeQuery(null, new IPEndPoint(t, 6881));
+                            SendFindNodeQuery(null, new IPEndPoint(t, PublicDHTPort));
                         }
                     }
                     Thread.Sleep(3 * 1000);
@@ -498,12 +529,12 @@ namespace DHTConnector
             Send(address, sendData);
         }
 
-        public void SendAnnouncePeerQuery(IPEndPoint address, byte[] infoHash, /*byte implied_port, */int port, BString token)
+        public void SendAnnouncePeerQuery(IPEndPoint address, byte[] infoHash, byte implied_port, int port, BString token)
         {
             var transactionID = DHTHelper.GetTransactionId();
             byte[] nid = fLocalID;
 
-            BDictionary sendData = DHTMessage.CreateAnnouncePeerQuery(transactionID, nid, infoHash, /*implied_port, */port, token);
+            BDictionary sendData = DHTMessage.CreateAnnouncePeerQuery(transactionID, nid, infoHash, implied_port, port, token);
             SetTransaction(transactionID, new DHTMessage(MsgType.query, QueryType.announce_peer, sendData));
             Send(address, sendData);
         }
@@ -522,7 +553,8 @@ namespace DHTConnector
         {
             try {
                 byte[] dataArray = data.EncodeAsBytes();
-                fSocket.BeginSendTo(dataArray, 0, dataArray.Length, SocketFlags.None, address, (ar) => { fSocket.EndReceive(ar); }, null);
+                //fSocket.BeginSendTo(dataArray, 0, dataArray.Length, SocketFlags.None, address, (ar) => { fSocket.EndReceive(ar); }, null);
+                fClient.Send(dataArray, dataArray.Length, address);
             } catch (Exception ex) {
                 WriteLog("Send(): " + ex.Message, false);
             }
