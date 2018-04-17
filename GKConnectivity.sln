@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GKNetCore", "GKNetCore\GKNe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GKNetPNRP", "GKNetPNRP\GKNetPNRP.csproj", "{6E6875F8-6C1B-4877-9028-2F521BD43138}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DHT", "DHT\DHT.csproj", "{99D21F5C-61AC-490F-B26C-49D9CB0A3C61}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DHTSample", "DHTSample\DHTSample.csproj", "{E19B390E-BA4C-4333-A4C1-2C390B1C1930}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{6E6875F8-6C1B-4877-9028-2F521BD43138}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E6875F8-6C1B-4877-9028-2F521BD43138}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E6875F8-6C1B-4877-9028-2F521BD43138}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99D21F5C-61AC-490F-B26C-49D9CB0A3C61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99D21F5C-61AC-490F-B26C-49D9CB0A3C61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99D21F5C-61AC-490F-B26C-49D9CB0A3C61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99D21F5C-61AC-490F-B26C-49D9CB0A3C61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E19B390E-BA4C-4333-A4C1-2C390B1C1930}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E19B390E-BA4C-4333-A4C1-2C390B1C1930}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E19B390E-BA4C-4333-A4C1-2C390B1C1930}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E19B390E-BA4C-4333-A4C1-2C390B1C1930}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
