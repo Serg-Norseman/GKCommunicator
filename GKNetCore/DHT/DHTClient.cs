@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using System.Threading;
 using BencodeNET.Objects;
 using BencodeNET.Parsing;
+using GKNet.Core;
 
 namespace GKNet.DHT
 {
@@ -24,14 +25,14 @@ namespace GKNet.DHT
         private readonly UdpClient fClient;
         private readonly IPEndPoint fDefaultIP;
         private readonly IPEndPoint fLocalIP;
-        private readonly IDHTLogger fLogger;
+        private readonly ILogger fLogger;
         private readonly BencodeParser fParser;
         private readonly DHTRoutingTable fRoutingTable;
         private readonly Dictionary<int, DHTMessage> fTransactions;
 
         public event EventHandler<PeersFoundEventArgs> PeersFound;
 
-        public DHTClient(IPAddress addr, int port, IDHTLogger logger)
+        public DHTClient(IPAddress addr, int port, ILogger logger)
         {
             fDefaultIP = new IPEndPoint(IPAddress.Loopback, 0);
             fLocalID = DHTHelper.GetRandomID();

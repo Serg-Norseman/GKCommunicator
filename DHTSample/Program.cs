@@ -2,11 +2,12 @@
 using System.IO;
 using System.Net;
 using BencodeNET.Objects;
+using GKNet.Core;
 using GKNet.DHT;
 
 namespace DHTSample
 {
-    class Program : IDHTLogger
+    class Program : ILogger
     {
         public const string NETWORK_SIGN = "GEDKEEPER NETWORK";
 
