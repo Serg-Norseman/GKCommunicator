@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using BencodeNET.Objects;
 
-namespace DHTConnector
+namespace GKNet.DHT
 {
     public enum MsgType
     {
@@ -37,25 +37,6 @@ namespace DHTConnector
             var args = new BDictionary();
             args.Add("id", new BString(nodeId));
             sendData.Add("a", args);
-
-            return sendData;
-        }
-
-        public static BDictionary CreateGetPeersResponse(BString transactionID, byte[] nid, byte[] infoHash, BList values, BString nodes)
-        {
-            BDictionary sendData = new BDictionary();
-
-            sendData.Add("t", transactionID);
-            sendData.Add("y", "r");
-
-            var r = new BDictionary();
-            r.Add("id", new BString(nid));
-            r.Add("token", new BString(infoHash.Take(2)));
-            if (values != null) {
-                r.Add("values", values);
-            }
-            r.Add("nodes", nodes);
-            sendData.Add("r", r);
 
             return sendData;
         }
@@ -112,6 +93,20 @@ namespace DHTConnector
             return sendData;
         }
 
+        public static BDictionary CreateAnnouncePeerResponse(BString transactionID, byte[] nid)
+        {
+            BDictionary sendData = new BDictionary();
+
+            sendData.Add("y", "r");
+            sendData.Add("t", transactionID);
+
+            var r = new BDictionary();
+            r.Add("id", new BString(nid));
+            sendData.Add("r", r);
+
+            return sendData;
+        }
+
         public static BDictionary CreateGetPeersQuery(BString transactionID, byte[] nid, byte[] infoHash)
         {
             BDictionary sendData = new BDictionary();
@@ -124,6 +119,25 @@ namespace DHTConnector
             args.Add("id", new BString(nid));
             args.Add("info_hash", new BString(infoHash));
             sendData.Add("a", args);
+
+            return sendData;
+        }
+
+        public static BDictionary CreateGetPeersResponse(BString transactionID, byte[] nid, byte[] infoHash, BList values, BString nodes)
+        {
+            BDictionary sendData = new BDictionary();
+
+            sendData.Add("t", transactionID);
+            sendData.Add("y", "r");
+
+            var r = new BDictionary();
+            r.Add("id", new BString(nid));
+            r.Add("token", new BString(infoHash.Take(2)));
+            if (values != null) {
+                r.Add("values", values);
+            }
+            r.Add("nodes", nodes);
+            sendData.Add("r", r);
 
             return sendData;
         }

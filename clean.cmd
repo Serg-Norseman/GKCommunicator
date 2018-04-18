@@ -14,3 +14,6 @@ rmdir .\DHT\obj /s /q
 
 rmdir .\DHTSample\bin /s /q
 rmdir .\DHTSample\obj /s /q
+
+del logFile
+del msbuild.log

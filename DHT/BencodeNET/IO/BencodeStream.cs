@@ -12,7 +12,7 @@ namespace BencodeNET.IO
     public class BencodeStream : IDisposable
     {
         private static readonly byte[] EmptyByteArray = new byte[0];
-
+        private readonly bool fLeaveOpen;
         private bool _hasPeeked;
         private int _peekedByte;
 
@@ -48,11 +48,11 @@ namespace BencodeNET.IO
         /// <param name="leaveOpen">Indicates if the specified stream should be left open when this <see cref="BencodeStream"/> is disposed.</param>
         public BencodeStream(Stream stream, bool leaveOpen = false)
         {
-            if (stream == null) throw new ArgumentNullException(nameof(stream));
-            if (!stream.CanSeek) throw new ArgumentException("Only seekable streams are supported.", nameof(stream));
+            if (stream == null) throw new ArgumentNullException("stream");
+            if (!stream.CanSeek) throw new ArgumentException("Only seekable streams are supported.", "stream");
 
             InnerStream = stream;
-            LeaveOpen = leaveOpen;
+            fLeaveOpen = leaveOpen;
         }
 
         /// <summary>
@@ -63,21 +63,30 @@ namespace BencodeNET.IO
         /// <summary>
         /// If true <see cref="InnerStream"/> will not be disposed when this <see cref="BencodeStream"/> is disposed.
         /// </summary>
-        public bool LeaveOpen { get; }
+        public bool LeaveOpen
+        {
+            get {
+                return fLeaveOpen;
+            }
+        }
 
         /// <summary>
         /// Gets the lenght in bytes of the stream.
         /// </summary>
-        public long Length => InnerStream.Length;
+        public long Length
+        {
+            get { return InnerStream.Length; }
+        }
 
         /// <summary>
         /// Gets or sets the position within the stream.
         /// </summary>
         public long Position
         {
-            get => InnerStream.Position;
-            set
-            {
+            get {
+                return InnerStream.Position;
+            }
+            set {
                 _hasPeeked = false;
                 InnerStream.Position = value;
             }
@@ -86,7 +95,12 @@ namespace BencodeNET.IO
         /// <summary>
         /// Indicates if the current position is at or after the end of the stream.
         /// </summary>
-        public bool EndOfStream => Position >= Length;
+        public bool EndOfStream
+        {
+            get {
+                return Position >= Length;
+            }
+        }
 
         /// <summary>
         /// Sets the position within the stream.
@@ -129,7 +143,7 @@ namespace BencodeNET.IO
         {
             if (Peek() == -1)
                 return default(char);
-            return (char) Peek();
+            return (char)Peek();
         }
 
         /// <summary>
@@ -162,7 +176,7 @@ namespace BencodeNET.IO
             var value = Read();
             if (value == -1)
                 return default(char);
-            return (char) value;
+            return (char)value;
         }
 
         /// <summary>
@@ -172,15 +186,14 @@ namespace BencodeNET.IO
         /// <returns>The read bytes.</returns>
         public byte[] Read(int bytesToRead)
         {
-            if (bytesToRead < 0) throw new ArgumentOutOfRangeException(nameof(bytesToRead));
+            if (bytesToRead < 0) throw new ArgumentOutOfRangeException("bytesToRead");
             if (bytesToRead == 0) return EmptyByteArray;
 
             var bytes = new byte[bytesToRead];
 
             var offset = 0;
 
-            if (_hasPeeked)
-            {
+            if (_hasPeeked) {
                 if (_peekedByte == -1)
                     return EmptyByteArray;
 
@@ -193,7 +206,7 @@ namespace BencodeNET.IO
             if (offset > 0)
                 InnerStream.Position += offset;
 
-            var readBytes = InnerStream.Read(bytes, offset, bytesToRead-offset) + offset;
+            var readBytes = InnerStream.Read(bytes, offset, bytesToRead - offset) + offset;
             if (readBytes != bytesToRead)
                 Array.Resize(ref bytes, readBytes);
 
@@ -306,8 +319,7 @@ namespace BencodeNET.IO
         /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
-            if (disposing)
-            {
+            if (disposing) {
                 if (InnerStream != null && !LeaveOpen)
                     InnerStream.Dispose();
                 InnerStream = null;

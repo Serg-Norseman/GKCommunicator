@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DHT</RootNamespace>
     <AssemblyName>DHT</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -20,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>default</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -54,16 +56,6 @@
     <Compile Include="BencodeNET\Parsing\IBencodeParser.cs" />
     <Compile Include="BencodeNET\Parsing\IBObjectParser.cs" />
     <Compile Include="BencodeNET\Parsing\ParseUtil.cs" />
-    <Compile Include="BencodeNET\Parsing\TorrentParser.cs" />
-    <Compile Include="BencodeNET\Parsing\TorrentParserMode.cs" />
-    <Compile Include="BencodeNET\Torrents\MagnetLinkOptions.cs" />
-    <Compile Include="BencodeNET\Torrents\MultiFileInfo.cs" />
-    <Compile Include="BencodeNET\Torrents\MultiFileInfoList.cs" />
-    <Compile Include="BencodeNET\Torrents\SingleFileInfo.cs" />
-    <Compile Include="BencodeNET\Torrents\Torrent.cs" />
-    <Compile Include="BencodeNET\Torrents\TorrentFields.cs" />
-    <Compile Include="BencodeNET\Torrents\TorrentFileMode.cs" />
-    <Compile Include="BencodeNET\Torrents\TorrentUtil.cs" />
     <Compile Include="BencodeNET\UtilityExtensions.cs" />
     <Compile Include="BTClient.cs" />
     <Compile Include="DHTClient.cs" />
@@ -71,6 +63,7 @@
     <Compile Include="DHTMessage.cs" />
     <Compile Include="DHTNode.cs" />
     <Compile Include="DHTRoutingTable.cs" />
+    <Compile Include="IDHTLogger.cs" />
     <Compile Include="PeersFoundEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

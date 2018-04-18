@@ -22,7 +22,7 @@ namespace BencodeNET.Parsing
         /// <param name="bencodeParser">The parser used for contained keys and values.</param>
         public BDictionaryParser(IBencodeParser bencodeParser)
         {
-            if (bencodeParser == null) throw new ArgumentNullException(nameof(bencodeParser));
+            if (bencodeParser == null) throw new ArgumentNullException("bencodeParser");
 
             BencodeParser = bencodeParser;
         }
@@ -35,7 +35,12 @@ namespace BencodeNET.Parsing
         /// <summary>
         /// The encoding used for parsing.
         /// </summary>
-        protected override Encoding Encoding => BencodeParser.Encoding;
+        protected override Encoding Encoding
+        {
+            get {
+                return BencodeParser.Encoding;
+            }
+        }
 
         /// <summary>
         /// Parses the next <see cref="BDictionary"/> from the stream and its contained keys and values.
@@ -45,7 +50,7 @@ namespace BencodeNET.Parsing
         /// <exception cref="InvalidBencodeException{BDictionary}">Invalid bencode</exception>
         public override BDictionary Parse(BencodeStream stream)
         {
-            if (stream == null) throw new ArgumentNullException(nameof(stream));
+            if (stream == null) throw new ArgumentNullException("stream");
 
             var startPosition = stream.Position;
 
@@ -80,14 +85,14 @@ namespace BencodeNET.Parsing
                 catch (BencodeException ex)
                 {
                     throw InvalidException(
-                        $"Could not parse dictionary value for the key '{key}'. There needs to be a value for each key.",
+                        string.Format("Could not parse dictionary value for the key '{0}'. There needs to be a value for each key.", key),
                         ex, startPosition);
                 }
 
                 if (dictionary.ContainsKey(key))
                 {
                     throw InvalidException(
-                        $"The dictionary already contains the key '{key}'. Duplicate keys are not supported.", startPosition);
+                        string.Format("The dictionary already contains the key '{0}'. Duplicate keys are not supported.", key), startPosition);
                 }
 
                 dictionary.Add(key, value);
@@ -105,13 +110,13 @@ namespace BencodeNET.Parsing
         private static InvalidBencodeException<BDictionary> InvalidException(string message, long startPosition)
         {
             return new InvalidBencodeException<BDictionary>(
-                $"{message} The dictionary starts at position {startPosition}.", startPosition);
+                string.Format("{0} The dictionary starts at position {1}.", message, startPosition), startPosition);
         }
 
         private static InvalidBencodeException<BDictionary> InvalidException(string message, Exception inner, long startPosition)
         {
             return new InvalidBencodeException<BDictionary>(
-                $"{message} The dictionary starts at position {startPosition}.",
+                string.Format("{0} The dictionary starts at position {1}.", message, startPosition),
                 inner, startPosition);
         }
     }

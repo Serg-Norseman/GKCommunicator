@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GKNetCore
+namespace GKNet.Core
 {
     public delegate void OnSynchronizeMemberList(object sender, string Member);
 

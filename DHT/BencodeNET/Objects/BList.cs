@@ -15,11 +15,17 @@ namespace BencodeNET.Objects
     /// </remarks>
     public class BList : BObject<IList<IBObject>>, IList<IBObject>
     {
+        private readonly IList<IBObject> fValue = new List<IBObject>();
+
         /// <summary>
         /// The underlying list.
         /// </summary>
-        public override IList<IBObject> Value { get; } = new List<IBObject>();
-
+        public override IList<IBObject> Value
+        {
+            get {
+                return fValue;
+            }
+        }
         /// <summary>
         /// Creates an empty list.
         /// </summary>
@@ -41,8 +47,7 @@ namespace BencodeNET.Objects
         /// <param name="encoding"></param>
         public BList(IEnumerable<string> strings, Encoding encoding)
         {
-            foreach (var str in strings)
-            {
+            foreach (var str in strings) {
                 Add(str, encoding);
             }
         }
@@ -53,7 +58,7 @@ namespace BencodeNET.Objects
         /// <param name="objects"></param>
         public BList(IEnumerable<IBObject> objects)
         {
-            Value = new List<IBObject>(objects);
+            fValue = new List<IBObject>(objects);
         }
 
         /// <summary>
@@ -81,7 +86,7 @@ namespace BencodeNET.Objects
         /// <param name="value"></param>
         public void Add(int value)
         {
-            Add((IBObject) new BNumber(value));
+            Add((IBObject)new BNumber(value));
         }
 
         /// <summary>
@@ -90,7 +95,7 @@ namespace BencodeNET.Objects
         /// <param name="value"></param>
         public void Add(long value)
         {
-            Add((IBObject) new BNumber(value));
+            Add((IBObject)new BNumber(value));
         }
 
         /// <summary>
@@ -99,8 +104,7 @@ namespace BencodeNET.Objects
         /// <param name="list"></param>
         public void AddRange(BList list)
         {
-            foreach (var obj in list)
-            {
+            foreach (var obj in list) {
                 Add(obj);
             }
         }
@@ -155,13 +159,10 @@ namespace BencodeNET.Objects
         /// </exception>
         public BList<T> AsType<T>() where T : class, IBObject
         {
-            try
-            {
+            try {
                 return new BList<T>(this.Cast<T>());
-            }
-            catch (InvalidCastException ex)
-            {
-                throw new InvalidCastException($"Not all elements are of type '{typeof(T).FullName}'.", ex);
+            } catch (InvalidCastException ex) {
+                throw new InvalidCastException(string.Format("Not all elements are of type '{0}'.", typeof(T).FullName), ex);
             }
         }
 
@@ -169,8 +170,7 @@ namespace BencodeNET.Objects
         protected override void EncodeObject(BencodeStream stream)
         {
             stream.Write('l');
-            foreach (var item in this)
-            {
+            foreach (var item in this) {
                 item.EncodeTo(stream);
             }
             stream.Write('e');
@@ -180,23 +180,32 @@ namespace BencodeNET.Objects
         #region IList<IBObject> Members
 #pragma warning disable 1591
 
-        public int Count => Value.Count;
+        public int Count
+        {
+            get {
+                return Value.Count;
+            }
+        }
 
-        public bool IsReadOnly => Value.IsReadOnly;
+        public bool IsReadOnly
+        {
+            get {
+                return Value.IsReadOnly;
+            }
+        }
 
         public IBObject this[int index]
         {
             get { return Value[index]; }
-            set
-            {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+            set {
+                if (value == null) throw new ArgumentNullException("value");
                 Value[index] = value;
             }
         }
 
         public void Add(IBObject item)
         {
-            if (item == null) throw new ArgumentNullException(nameof(item));
+            if (item == null) throw new ArgumentNullException("item");
             Value.Add(item);
         }
 
@@ -254,11 +263,17 @@ namespace BencodeNET.Objects
     /// </summary>
     public class BList<T> : BList, IList<T> where T : class, IBObject
     {
+        private readonly IList<IBObject> fValue = new List<IBObject>();
+
         /// <summary>
         /// The underlying list.
         /// </summary>
-        public override IList<IBObject> Value { get; } = new List<IBObject>();
-
+        public override IList<IBObject> Value
+        {
+            get {
+                return fValue;
+            }
+        }
         /// <summary>
         /// Creates an empty list.
         /// </summary>
@@ -271,7 +286,7 @@ namespace BencodeNET.Objects
         /// <param name="objects"></param>
         public BList(IEnumerable<T> objects)
         {
-            Value = objects.Cast<IBObject>().ToList();
+            fValue = objects.Cast<IBObject>().ToList();
         }
 
         #region IList<T> Members
@@ -279,22 +294,20 @@ namespace BencodeNET.Objects
 
         public new T this[int index]
         {
-            get
-            {
+            get {
                 var obj = Value[index] as T;
-                if (obj == null) throw new InvalidCastException($"The object at index {index} is not of type {typeof (T).FullName}");
+                if (obj == null) throw new InvalidCastException(string.Format("The object at index {0} is not of type {1}", index, typeof(T).FullName));
                 return obj;
             }
-            set
-            {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+            set {
+                if (value == null) throw new ArgumentNullException("value");
                 Value[index] = value;
             }
         }
 
         public void Add(T item)
         {
-            if (item == null) throw new ArgumentNullException(nameof(item));
+            if (item == null) throw new ArgumentNullException("item");
             Value.Add(item);
         }
 
@@ -312,11 +325,10 @@ namespace BencodeNET.Objects
         {
             var i = 0;
             var enumerator = Value.GetEnumerator();
-            while (enumerator.MoveNext())
-            {
+            while (enumerator.MoveNext()) {
                 var obj = enumerator.Current as T;
-                if (obj == null) throw new InvalidCastException($"The object at index {i} is not of type {typeof(T).FullName}");
-                yield return (T) enumerator.Current;
+                if (obj == null) throw new InvalidCastException(string.Format("The object at index {0} is not of type {1}", i, typeof(T).FullName));
+                yield return (T)enumerator.Current;
                 i++;
             }
         }

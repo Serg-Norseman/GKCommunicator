@@ -23,13 +23,24 @@ namespace BencodeNET.Objects
         /// <summary>
         /// The underlying bytes of the string.
         /// </summary>
-        public override byte[] Value => _value;
+        public override byte[] Value
+        {
+            get {
+                return _value;
+            }
+        }
+
         private readonly byte[] _value;
 
         /// <summary>
         /// Gets the length of the string in bytes.
         /// </summary>
-        public int Length => _value.Length;
+        public int Length
+        {
+            get {
+                return _value.Length;
+            }
+        }
 
         private static readonly Encoding DefaultEncoding = Encoding.UTF8;
 
@@ -39,8 +50,12 @@ namespace BencodeNET.Objects
         /// <exception cref="ArgumentNullException"></exception>
         public Encoding Encoding
         {
-            get => _encoding;
-            set => _encoding = value ?? DefaultEncoding;
+            get {
+                return _encoding;
+            }
+            set {
+                _encoding = value ?? DefaultEncoding;
+            }
         }
         private Encoding _encoding;
 
@@ -51,7 +66,7 @@ namespace BencodeNET.Objects
         /// <param name="encoding">The encoding of the bytes. Defaults to <see cref="System.Text.Encoding.UTF8"/>.</param>
         public BString(IEnumerable<byte> bytes, Encoding encoding = null)
         {
-            if (bytes == null) throw new ArgumentNullException(nameof(bytes));
+            if (bytes == null) throw new ArgumentNullException("bytes");
 
             _encoding = encoding ?? DefaultEncoding;
             _value = bytes as byte[] ?? bytes.ToArray();
@@ -65,7 +80,7 @@ namespace BencodeNET.Objects
         /// <exception cref="ArgumentNullException"></exception>
         public BString(string str, Encoding encoding = null)
         {
-            if (str == null) throw new ArgumentNullException(nameof(str));
+            if (str == null) throw new ArgumentNullException("str");
 
             _encoding = encoding ?? DefaultEncoding;
             _value = _encoding.GetBytes(str);
@@ -111,8 +126,8 @@ namespace BencodeNET.Objects
 
         public override bool Equals(object other)
         {
-            if (other is BString bstring)
-                return Value.SequenceEqual(bstring.Value);
+            if (other is BString)
+                return Value.SequenceEqual(((BString)other).Value);
 
             return false;
         }

@@ -22,7 +22,7 @@ namespace BencodeNET.Parsing
         /// <param name="bencodeParser">The parser used for parsing contained objects.</param>
         public BListParser(IBencodeParser bencodeParser)
         {
-            if (bencodeParser == null) throw new ArgumentNullException(nameof(bencodeParser));
+            if (bencodeParser == null) throw new ArgumentNullException("bencodeParser");
 
             BencodeParser = bencodeParser;
         }
@@ -35,7 +35,12 @@ namespace BencodeNET.Parsing
         /// <summary>
         /// The encoding used for parsing.
         /// </summary>
-        protected override Encoding Encoding => BencodeParser.Encoding;
+        protected override Encoding Encoding
+        {
+            get {
+                return BencodeParser.Encoding;
+            }
+        }
 
         /// <summary>
         /// Parses the next <see cref="BList"/> from the stream.
@@ -45,7 +50,7 @@ namespace BencodeNET.Parsing
         /// <exception cref="InvalidBencodeException{BList}">Invalid bencode</exception>
         public override BList Parse(BencodeStream stream)
         {
-            if (stream == null) throw new ArgumentNullException(nameof(stream));
+            if (stream == null) throw new ArgumentNullException("stream");
 
             if (stream.Length < MinimumLength)
                 throw InvalidBencodeException<BList>.BelowMinimumLength(MinimumLength, stream.Length, stream.Position);

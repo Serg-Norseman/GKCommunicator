@@ -15,6 +15,7 @@ namespace BencodeNET.Parsing
         /// The minimum stream length in bytes for a valid string ('0:').
         /// </summary>
         protected const int MinimumLength = 2;
+        private readonly Encoding fEncoding;
 
         /// <summary>
         /// Creates an instance using <see cref="System.Text.Encoding.UTF8"/> for parsing.
@@ -29,15 +30,20 @@ namespace BencodeNET.Parsing
         /// <param name="encoding"></param>
         public BStringParser(Encoding encoding)
         {
-            if (encoding == null) throw new ArgumentNullException(nameof(encoding));
+            if (encoding == null) throw new ArgumentNullException("encoding");
 
-            Encoding = encoding;
+            fEncoding = encoding;
         }
 
         /// <summary>
         /// The encoding used when creating the <see cref="BString"/> when parsing.
         /// </summary>
-        protected override Encoding Encoding { get; }
+        protected override Encoding Encoding
+        {
+            get {
+                return fEncoding;
+            }
+        }
 
         /// <summary>
         /// Parses the next <see cref="BString"/> from the stream.
@@ -48,7 +54,7 @@ namespace BencodeNET.Parsing
         /// <exception cref="UnsupportedBencodeException{BString}">The bencode is unsupported by this library</exception>
         public override BString Parse(BencodeStream stream)
         {
-            if (stream == null) throw new ArgumentNullException(nameof(stream));
+            if (stream == null) throw new ArgumentNullException("stream");
 
             // Minimum valid bencode string is '0:' meaning an empty string
             if (stream.Length < MinimumLength)
@@ -57,13 +63,11 @@ namespace BencodeNET.Parsing
             var startPosition = stream.Position;
 
             var lengthString = new StringBuilder();
-            for (var c = stream.ReadChar(); c != ':' && c != default(char); c = stream.ReadChar())
-            {
+            for (var c = stream.ReadChar(); c != ':' && c != default(char); c = stream.ReadChar()) {
                 // Because of memory limitations (~1-2 GB) we know for certain we cannot handle more than 10 digits (10GB)
-                if (lengthString.Length >= BString.LengthMaxDigits)
-                {
+                if (lengthString.Length >= BString.LengthMaxDigits) {
                     throw UnsupportedException(
-                        $"Length of string is more than {BString.LengthMaxDigits} digits (>10GB) and is not supported (max is ~1-2GB).",
+                        string.Format("Length of string is more than {0} digits (>10GB) and is not supported (max is ~1-2GB).", BString.LengthMaxDigits),
                         startPosition);
                 }
 
@@ -72,23 +76,21 @@ namespace BencodeNET.Parsing
 
             long stringLength;
             if (!ParseUtil.TryParseLongFast(lengthString.ToString(), out stringLength))
-                throw InvalidException($"Invalid length '{lengthString}' of string.", startPosition);
+                throw InvalidException(string.Format("Invalid length '{0}' of string.", lengthString), startPosition);
 
             // Int32.MaxValue is ~2GB and is the absolute maximum that can be handled in memory
-            if (stringLength > int.MaxValue)
-            {
+            if (stringLength > int.MaxValue) {
                 throw UnsupportedException(
-                    $"Length of string is {stringLength:N0} but maximum supported length is {int.MaxValue:N0}.",
+                    string.Format("Length of string is {0:N0} but maximum supported length is {1:N0}.", stringLength, int.MaxValue),
                     startPosition);
             }
 
             var bytes = stream.Read((int)stringLength);
 
             // If the two don't match we've reached the end of the stream before reading the expected number of chars
-            if (bytes.Length != stringLength)
-            {
+            if (bytes.Length != stringLength) {
                 throw InvalidException(
-                    $"Expected string to be {stringLength:N0} bytes long but could only read {bytes.Length:N0} bytes.",
+                    string.Format("Expected string to be {0:N0} bytes long but could only read {1:N0} bytes.", stringLength, bytes.Length),
                     startPosition);
             }
 
@@ -98,14 +100,14 @@ namespace BencodeNET.Parsing
         private static InvalidBencodeException<BString> InvalidException(string message, long startPosition)
         {
             return new InvalidBencodeException<BString>(
-                $"{message} The string starts at position {startPosition}.",
+                string.Format("{0} The string starts at position {1}.", message, startPosition),
                 startPosition);
         }
 
         private static UnsupportedBencodeException<BString> UnsupportedException(string message, long startPosition)
         {
             return new UnsupportedBencodeException<BString>(
-                $"{message} The string starts at position {startPosition}.",
+                string.Format("{0} The string starts at position {1}.", message, startPosition),
                 startPosition);
         }
     }

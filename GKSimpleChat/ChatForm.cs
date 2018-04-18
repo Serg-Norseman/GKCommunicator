@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.ServiceModel;
 using System.ServiceModel.PeerResolvers;
 using System.Windows.Forms;
-using GKNetCore;
+using GKNet.Core;
 using GKNetPNRP;
 
 namespace GKSimpleChat

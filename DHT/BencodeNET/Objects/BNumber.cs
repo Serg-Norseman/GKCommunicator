@@ -12,6 +12,7 @@ namespace BencodeNET.Objects
     public class BNumber : BObject<long>, IComparable<BNumber>
     {
         private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        private readonly long fValue;
 
         /// <summary>
         /// The string-length of long.MaxValue. Longer strings cannot be parsed.
@@ -21,14 +22,19 @@ namespace BencodeNET.Objects
         /// <summary>
         /// The underlying value.
         /// </summary>
-        public override long Value { get; }
+        public override long Value
+        {
+            get {
+                return fValue;
+            }
+        }
 
         /// <summary>
         /// Create a <see cref="BNumber"/> from a <see cref="long"/>.
         /// </summary>
         public BNumber(long value)
         {
-            Value = value;
+            fValue = value;
         }
 
         /// <summary>
@@ -39,7 +45,7 @@ namespace BencodeNET.Objects
         /// </remarks>
         public BNumber(DateTime? datetime)
         {
-            Value = datetime?.Subtract(Epoch).Ticks / TimeSpan.TicksPerSecond ?? 0;
+            fValue = (datetime.HasValue) ? datetime.Value.Subtract(Epoch).Ticks / TimeSpan.TicksPerSecond : 0;
         }
 
 #pragma warning disable 1591
@@ -69,18 +75,14 @@ namespace BencodeNET.Objects
 
         }
 
-        public static implicit operator DateTime?(BNumber number)
+        public static implicit operator DateTime? (BNumber number)
         {
             if (number == null) return null;
 
-            if (number.Value > int.MaxValue)
-            {
-                try
-                {
+            if (number.Value > int.MaxValue) {
+                try {
                     return Epoch.AddMilliseconds(number);
-                }
-                catch (ArgumentOutOfRangeException)
-                {
+                } catch (ArgumentOutOfRangeException) {
                     return Epoch;
                 }
             }
@@ -123,7 +125,7 @@ namespace BencodeNET.Objects
         public override bool Equals(object other)
         {
             var bnumber = other as BNumber;
-            return Value == bnumber?.Value;
+            return Value == (bnumber != null ? bnumber.Value : 0);
         }
 
         /// <summary>

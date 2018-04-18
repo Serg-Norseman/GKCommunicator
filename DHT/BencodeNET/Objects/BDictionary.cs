@@ -14,10 +14,17 @@ namespace BencodeNET.Objects
     /// </remarks>
     public sealed class BDictionary : BObject<IDictionary<BString, IBObject>>, IDictionary<BString, IBObject>
     {
+        private readonly IDictionary<BString, IBObject> fValue = new SortedDictionary<BString, IBObject>();
+
         /// <summary>
         /// The underlying dictionary.
         /// </summary>
-        public override IDictionary<BString, IBObject> Value { get; } = new SortedDictionary<BString, IBObject>();
+        public override IDictionary<BString, IBObject> Value
+        {
+            get {
+                return fValue;
+            }
+        }
 
         /// <summary>
         /// Creates an empty dictionary.
@@ -31,7 +38,7 @@ namespace BencodeNET.Objects
         /// <param name="keyValuePairs"></param>
         public BDictionary(IEnumerable<KeyValuePair<BString, IBObject>> keyValuePairs)
         {
-            Value = new SortedDictionary<BString, IBObject>(keyValuePairs.ToDictionary(x => x.Key, x => x.Value));
+            fValue = new SortedDictionary<BString, IBObject>(keyValuePairs.ToDictionary(x => x.Key, x => x.Value));
         }
 
         /// <summary>
@@ -40,7 +47,7 @@ namespace BencodeNET.Objects
         /// <param name="dictionary"></param>
         public BDictionary(IDictionary<BString, IBObject> dictionary)
         {
-            Value = dictionary;
+            fValue = dictionary;
         }
 
         /// <summary>
@@ -87,11 +94,9 @@ namespace BencodeNET.Objects
         /// <param name="existingKeyAction">Decides how to handle the values of existing keys.</param>
         public void MergeWith(BDictionary dictionary, ExistingKeyAction existingKeyAction = ExistingKeyAction.Merge)
         {
-            foreach (var field in dictionary)
-            {
+            foreach (var field in dictionary) {
                 // Add non-existing key
-                if (!ContainsKey(field.Key))
-                {
+                if (!ContainsKey(field.Key)) {
                     Add(field);
                     continue;
                 }
@@ -100,19 +105,16 @@ namespace BencodeNET.Objects
                     continue;
 
                 // Replace strings and numbers
-                if (field.Value is BString || field.Value is BNumber)
-                {
+                if (field.Value is BString || field.Value is BNumber) {
                     this[field.Key] = field.Value;
                     continue;
                 }
 
                 // Append list to existing list or replace other types
                 var newList = field.Value as BList;
-                if (newList != null)
-                {
+                if (newList != null) {
                     var existingList = Get<BList>(field.Key);
-                    if (existingList == null || existingKeyAction == ExistingKeyAction.Replace)
-                    {
+                    if (existingList == null || existingKeyAction == ExistingKeyAction.Replace) {
                         this[field.Key] = field.Value;
                         continue;
                     }
@@ -122,11 +124,9 @@ namespace BencodeNET.Objects
 
                 // Merge dictionary with existing or replace other types
                 var newDictionary = field.Value as BDictionary;
-                if (newDictionary != null)
-                {
+                if (newDictionary != null) {
                     var existingDictionary = Get<BDictionary>(field.Key);
-                    if (existingDictionary == null || existingKeyAction == ExistingKeyAction.Replace)
-                    {
+                    if (existingDictionary == null || existingKeyAction == ExistingKeyAction.Replace) {
                         this[field.Key] = field.Value;
                         continue;
                     }
@@ -139,8 +139,7 @@ namespace BencodeNET.Objects
         protected override void EncodeObject(BencodeStream stream)
         {
             stream.Write('d');
-            foreach (var kvPair in this)
-            {
+            foreach (var kvPair in this) {
                 kvPair.Key.EncodeTo(stream);
                 kvPair.Value.EncodeTo(stream);
             }
@@ -149,13 +148,33 @@ namespace BencodeNET.Objects
 
         #region IDictionary<BString, IBObject> Members
 
-        public ICollection<BString> Keys => Value.Keys;
+        public ICollection<BString> Keys
+        {
+            get {
+                return Value.Keys;
+            }
+        }
 
-        public ICollection<IBObject> Values => Value.Values;
+        public ICollection<IBObject> Values
+        {
+            get {
+                return Value.Values;
+            }
+        }
 
-        public int Count => Value.Count;
+        public int Count
+        {
+            get {
+                return Value.Count;
+            }
+        }
 
-        public bool IsReadOnly => Value.IsReadOnly;
+        public bool IsReadOnly
+        {
+            get {
+                return Value.IsReadOnly;
+            }
+        }
 
         /// <summary>
         /// Returns the value associated with the key or null if the key doesn't exist.
@@ -163,23 +182,22 @@ namespace BencodeNET.Objects
         public IBObject this[BString key]
         {
             get { return ContainsKey(key) ? Value[key] : null; }
-            set
-            {
+            set {
                 if (value == null)
-                    throw new ArgumentNullException(nameof(value), "A null value cannot be added to a BDictionary");
+                    throw new ArgumentNullException("value", "A null value cannot be added to a BDictionary");
                 Value[key] = value;
             }
         }
 
         public void Add(KeyValuePair<BString, IBObject> item)
         {
-            if (item.Value == null) throw new ArgumentException("Must not contain a null value", nameof(item));
+            if (item.Value == null) throw new ArgumentException("Must not contain a null value", "item");
             Value.Add(item);
         }
 
         public void Add(BString key, IBObject value)
         {
-            if (value == null) throw new ArgumentNullException(nameof(value));
+            if (value == null) throw new ArgumentNullException("value");
             Value.Add(key, value);
         }
 

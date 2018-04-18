@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace DHTConnector
+namespace GKNet.DHT
 {
     public enum NodeType
     {

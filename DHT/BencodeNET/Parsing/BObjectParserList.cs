@@ -12,7 +12,14 @@ namespace BencodeNET.Parsing
     /// </summary>
     public class BObjectParserList : IEnumerable<KeyValuePair<Type, IBObjectParser>>
     {
-        private IDictionary<Type, IBObjectParser> Parsers { get; } = new Dictionary<Type, IBObjectParser>();
+        private readonly IDictionary<Type, IBObjectParser> fParsers = new Dictionary<Type, IBObjectParser>();
+
+        private IDictionary<Type, IBObjectParser> Parsers
+        {
+            get {
+                return fParsers;
+            }
+        }
 
         /// <summary>
         /// Adds a parser for the specified type.
@@ -56,7 +63,7 @@ namespace BencodeNET.Parsing
         public void AddOrReplace(Type type, IBObjectParser parser)
         {
             if (!typeof(IBObject).IsAssignableFrom(type))
-                throw new ArgumentException($"The '{nameof(type)}' parameter must be assignable to '{typeof(IBObject).FullName}'");
+                throw new ArgumentException(string.Format("The '{0}' parameter must be assignable to '{1}'", type, typeof(IBObject).FullName));
 
             if (Parsers.ContainsKey(type))
                 Parsers.Remove(type);
@@ -72,8 +79,7 @@ namespace BencodeNET.Parsing
         /// <param name="parser">The parser to add.</param>
         public void AddOrReplace(IEnumerable<Type> types, IBObjectParser parser)
         {
-            foreach (var type in types)
-            {
+            foreach (var type in types) {
                 AddOrReplace(type, parser);
             }
         }
@@ -106,8 +112,12 @@ namespace BencodeNET.Parsing
         /// <returns>The parser for the specified type or null if there isn't one.</returns>
         public IBObjectParser this[Type type]
         {
-            get => Get(type);
-            set => AddOrReplace(type, value);
+            get {
+                return Get(type);
+            }
+            set {
+                AddOrReplace(type, value);
+            }
         }
 
         /// <summary>
@@ -135,19 +145,28 @@ namespace BencodeNET.Parsing
         /// </summary>
         /// <param name="type">The type to remove the parser for.</param>
         /// <returns>True if successful, false otherwise.</returns>
-        public bool Remove(Type type) => Parsers.Remove(type);
+        public bool Remove(Type type)
+        {
+            return Parsers.Remove(type);
+        }
 
         /// <summary>
         /// Removes the parser for the specified type.
         /// </summary>
         /// <typeparam name="T">The type to remove the parser for.</typeparam>
         /// <returns>True if successful, false otherwise.</returns>
-        public bool Remove<T>() => Remove(typeof (T));
+        public bool Remove<T>()
+        {
+            return Remove(typeof(T));
+        }
 
         /// <summary>
         /// Empties the collection.
         /// </summary>
-        public void Clear() => Parsers.Clear();
+        public void Clear()
+        {
+            Parsers.Clear();
+        }
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.

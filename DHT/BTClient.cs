@@ -7,7 +7,7 @@ using System.Text;
 using BencodeNET.Objects;
 using BencodeNET.Parsing;
 
-namespace DHTConnector
+namespace GKNet.DHT
 {
     public class BTClient
     {

@@ -13,6 +13,8 @@ namespace BencodeNET.Parsing
     /// </summary>
     public class BencodeParser : IBencodeParser
     {
+        private readonly BObjectParserList fParsers;
+
         /// <summary>
         /// Creates an instance using <see cref="System.Text.Encoding.UTF8"/> and the default parsers.
         /// </summary>
@@ -28,13 +30,12 @@ namespace BencodeNET.Parsing
         {
             Encoding = encoding;
 
-            Parsers = new BObjectParserList
+            fParsers = new BObjectParserList
             {
                 new BStringParser(encoding),
                 new BNumberParser(),
                 new BListParser(this),
-                new BDictionaryParser(this),
-                new TorrentParser(this)
+                new BDictionaryParser(this)
             };
         }
 
@@ -66,8 +67,7 @@ namespace BencodeNET.Parsing
         {
             Encoding = encoding;
 
-            foreach (var entry in parsers)
-            {
+            foreach (var entry in parsers) {
                 Parsers.AddOrReplace(entry.Key, entry.Value);
             }
         }
@@ -90,7 +90,12 @@ namespace BencodeNET.Parsing
         /// <summary>
         /// The parsers used by this instance when parsing bencoded.
         /// </summary>
-        public BObjectParserList Parsers { get; }
+        public BObjectParserList Parsers
+        {
+            get {
+                return fParsers;
+            }
+        }
 
         /// <summary>
         /// Parses a bencoded string into an <see cref="IBObject"/>.
@@ -99,8 +104,7 @@ namespace BencodeNET.Parsing
         /// <returns>The parsed object.</returns>
         public IBObject ParseString(string bencodedString)
         {
-            using (var stream = bencodedString.AsStream(Encoding))
-            {
+            using (var stream = bencodedString.AsStream(Encoding)) {
                 return Parse(stream);
             }
         }
@@ -112,8 +116,7 @@ namespace BencodeNET.Parsing
         /// <returns>The parsed object.</returns>
         public IBObject Parse(byte[] bytes)
         {
-            using (var stream = new MemoryStream(bytes))
-            {
+            using (var stream = new MemoryStream(bytes)) {
                 return Parse(stream);
             }
         }
@@ -135,10 +138,9 @@ namespace BencodeNET.Parsing
         /// <returns>The parsed object.</returns>
         public IBObject Parse(BencodeStream stream)
         {
-            if (stream == null) throw new ArgumentNullException(nameof(stream));
+            if (stream == null) throw new ArgumentNullException("stream");
 
-            switch (stream.PeekChar())
-            {
+            switch (stream.PeekChar()) {
                 case '0':
                 case '1':
                 case '2':
@@ -164,8 +166,7 @@ namespace BencodeNET.Parsing
         /// <returns>The parsed object.</returns>
         public IBObject Parse(string filePath)
         {
-            using (var stream = File.OpenRead(filePath))
-            {
+            using (var stream = File.OpenRead(filePath)) {
                 return Parse(stream);
             }
         }
@@ -178,8 +179,7 @@ namespace BencodeNET.Parsing
         /// <returns>The parsed object.</returns>
         public T ParseString<T>(string bencodedString) where T : class, IBObject
         {
-            using (var stream = bencodedString.AsStream(Encoding))
-            {
+            using (var stream = bencodedString.AsStream(Encoding)) {
                 return Parse<T>(stream);
             }
         }
@@ -192,8 +192,7 @@ namespace BencodeNET.Parsing
         /// <returns>The parsed object.</returns>
         public T Parse<T>(byte[] bytes) where T : class, IBObject
         {
-            using (var stream = new MemoryStream(bytes))
-            {
+            using (var stream = new MemoryStream(bytes)) {
                 return Parse<T>(stream);
             }
         }
@@ -220,7 +219,7 @@ namespace BencodeNET.Parsing
             var parser = Parsers.Get<T>();
 
             if (parser == null)
-                throw new BencodeException($"Missing parser for the type '{typeof(T).FullName}'. Stream position: {stream.Position}");
+                throw new BencodeException(string.Format("Missing parser for the type '{0}'. Stream position: {1}", typeof(T).FullName, stream.Position));
 
             return parser.Parse(stream);
         }
@@ -232,8 +231,7 @@ namespace BencodeNET.Parsing
         /// <returns>The parsed object.</returns>
         public T Parse<T>(string filePath) where T : class, IBObject
         {
-            using (var stream = File.OpenRead(filePath))
-            {
+            using (var stream = File.OpenRead(filePath)) {
                 return Parse<T>(stream);
             }
         }

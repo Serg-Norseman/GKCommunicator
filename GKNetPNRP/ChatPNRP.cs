@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ServiceModel;
 using System.ServiceModel.PeerResolvers;
-using GKNetCore;
+using GKNet.Core;
 
 namespace GKNetPNRP
 {

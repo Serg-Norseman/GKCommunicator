@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using BencodeNET.Objects;
 
-namespace DHTConnector
+namespace GKNet.DHT
 {
     public static class DHTHelper
     {
@@ -150,6 +151,50 @@ namespace DHTConnector
             info[4] = (byte)((port >> 8) & 0xFF);
             info[5] = (byte)(port & 0xFF);
             return info;
+        }
+
+        /// <summary>
+        /// Calculates the hash of the 'info'-dictionary.
+        /// The info hash is a 20-byte SHA1 hash of the 'info'-dictionary of the torrent
+        /// used to uniquely identify it and it's contents.
+        ///
+        /// <para>Example: 6D60711ECF005C1147D8973A67F31A11454AB3F5</para>
+        /// </summary>
+        /// <param name="info">The 'info'-dictionary of a torrent.</param>
+        /// <returns>A byte-array of the 20-byte SHA1 hash.</returns>
+        public static byte[] CalculateInfoHashBytes(BDictionary info)
+        {
+            using (var sha1 = SHA1.Create())
+            using (var stream = new MemoryStream()) {
+                info.EncodeTo(stream);
+                stream.Position = 0;
+
+                return sha1.ComputeHash(stream);
+            }
+        }
+
+        /// <summary>
+        /// Calculates the hash of the 'info'-dictionary.
+        /// The info hash is a 20-byte SHA1 hash of the 'info'-dictionary of the torrent
+        /// used to uniquely identify it and it's contents.
+        ///
+        /// <para>Example: 6D60711ECF005C1147D8973A67F31A11454AB3F5</para>
+        /// </summary>
+        /// <param name="info">The 'info'-dictionary of a torrent.</param>
+        /// <returns>A string representation of the 20-byte SHA1 hash without dashes.</returns>
+        public static string CalculateInfoHash(BDictionary info)
+        {
+            var hashBytes = CalculateInfoHashBytes(info);
+            return BytesToHexString(hashBytes);
+        }
+
+        /// <summary>
+        /// Converts the byte array to a hexadecimal string representation without hyphens.
+        /// </summary>
+        /// <param name="bytes"></param>
+        public static string BytesToHexString(byte[] bytes)
+        {
+            return BitConverter.ToString(bytes).Replace("-", "");
         }
     }
 }

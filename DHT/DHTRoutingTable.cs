@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DHTConnector
+namespace GKNet.DHT
 {
     public class DHTRoutingTable : IEnumerable<DHTNode>
     {
@@ -12,7 +11,12 @@ namespace DHTConnector
         {
             public DHTNode Node { get; set; }
             public long LastTime { get; set; }
-            public string RouteId => Node == null ? string.Empty : Node.EndPoint.Address + ":" + Node.EndPoint.Port;
+            public string RouteId
+            {
+                get {
+                    return Node == null ? string.Empty : Node.EndPoint.Address + ":" + Node.EndPoint.Port;
+                }
+            }
         }
 
         private class RouteComparer : IComparer<byte[]>
@@ -39,7 +43,7 @@ namespace DHTConnector
         private static readonly TimeSpan fRouteLife = TimeSpan.FromMinutes(15);
 
         private readonly int fMaxNodeSize;
-        private readonly ConcurrentDictionary<string, Route> fKTable;
+        private readonly Dictionary<string, Route> fKTable;
         private long fMinLastTime = DateTime.Now.Ticks;
 
         private static byte[] ComputeRouteDistance(byte[] sourceId, byte[] targetId)
@@ -53,23 +57,37 @@ namespace DHTConnector
 
         public DHTRoutingTable(int nodeSize)
         {
-            this.fKTable = new ConcurrentDictionary<string, Route>();
-            this.fMaxNodeSize = nodeSize;
+            fKTable = new Dictionary<string, Route>();
+            fMaxNodeSize = nodeSize;
         }
 
-        public int Count => fKTable.Count;
+        public int Count
+        {
+            get {
+                return fKTable.Count;
+            }
+        }
 
-        public bool IsFull => fKTable.Count >= fMaxNodeSize && fMinLastTime + fRouteLife.Ticks > DateTime.Now.Ticks;
+        public bool IsFull
+        {
+            get {
+                return fKTable.Count >= fMaxNodeSize && fMinLastTime + fRouteLife.Ticks > DateTime.Now.Ticks;
+            }
+        }
 
         public void AddNode(DHTNode node)
         {
             if (node.ID == null || fKTable.Count >= fMaxNodeSize)
                 return;
+
             var route = new Route() {
                 Node = node,
                 LastTime = DateTime.Now.Ticks
             };
-            fKTable.TryAdd(route.RouteId, route);
+
+            if (!fKTable.ContainsKey(route.RouteId)) {
+                fKTable.Add(route.RouteId, route);
+            }
         }
 
         public void AddNodes(IEnumerable<DHTNode> nodes)
@@ -83,23 +101,28 @@ namespace DHTConnector
         {
             if (node.ID == null)
                 return;
+
             if (fKTable.Count >= fMaxNodeSize && fMinLastTime + fRouteLife.Ticks < DateTime.Now.Ticks) {
                 lock (this) {
                     if (fMinLastTime + fRouteLife.Ticks < DateTime.Now.Ticks)
                         ClearExpireNode();
                 }
             }
-            if (fKTable.Count >= fMaxNodeSize)
+
+            if (fKTable.Count >= fMaxNodeSize) {
                 return;
+            }
+
             var route = new Route() {
                 Node = node,
                 LastTime = DateTime.Now.Ticks
             };
-            fKTable.AddOrUpdate(route.RouteId, route, (k, n) => {
-                n.Node = route.Node;
-                n.LastTime = DateTime.Now.Ticks;
-                return n;
-            });
+
+            if (fKTable.ContainsKey(route.RouteId)) {
+                fKTable[route.RouteId] = route;
+            } else {
+                fKTable.Add(route.RouteId, route);
+            }
         }
 
         private void ClearExpireNode()
@@ -107,7 +130,7 @@ namespace DHTConnector
             var minTime = DateTime.Now.Ticks;
             foreach (var item in fKTable.Values) {
                 if (DateTime.Now.Ticks - item.LastTime > fRouteLife.Ticks) {
-                    fKTable.TryRemove(item.RouteId, out Route remove);
+                    fKTable.Remove(item.RouteId);
                     continue;
                 }
                 minTime = Math.Min(fMinLastTime, item.LastTime);
@@ -124,7 +147,7 @@ namespace DHTConnector
             var tableFull = fKTable.Count >= fMaxNodeSize;
             foreach (var item in fKTable.Values) {
                 if (tableFull && DateTime.Now.Ticks - item.LastTime > fRouteLife.Ticks) {
-                    fKTable.TryRemove(item.RouteId, out Route route);
+                    fKTable.Remove(item.RouteId);
                     continue;
                 }
                 var distance = ComputeRouteDistance(item.Node.ID, id);
@@ -149,7 +172,7 @@ namespace DHTConnector
             var tableFull = fKTable.Count >= fMaxNodeSize;
             foreach (var item in fKTable.Values) {
                 if (tableFull && DateTime.Now.Ticks - item.LastTime > fRouteLife.Ticks) {
-                    fKTable.TryRemove(item.RouteId, out Route route);
+                    fKTable.Remove(item.RouteId);
                     continue;
                 }
                 minTime = Math.Min(fMinLastTime, item.LastTime);

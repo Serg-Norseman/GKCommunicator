@@ -33,13 +33,13 @@ namespace BencodeNET.Exceptions
         { }
 
         public InvalidBencodeException(string message, Exception inner, long streamPosition)
-            : base($"Failed to parse {typeof(T).Name}. {message}", inner)
+            : base(string.Format("Failed to parse {0}. {1}", typeof(T).Name, message), inner)
         {
             StreamPosition = streamPosition;
         }
 
         public InvalidBencodeException(string message, long streamPosition)
-            : base($"Failed to parse {typeof(T).Name}. {message}")
+            : base(string.Format("Failed to parse {0}. {1}", typeof(T).Name, message))
         {
             StreamPosition = streamPosition;
         }
@@ -49,28 +49,28 @@ namespace BencodeNET.Exceptions
             : base(info, context)
         {
             if (info == null) return;
-            StreamPosition = info.GetInt64(nameof(StreamPosition));
+            StreamPosition = info.GetInt64("StreamPosition");
         }
 
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             base.GetObjectData(info, context);
 
-            info.AddValue(nameof(StreamPosition), StreamPosition);
+            info.AddValue("StreamPosition", StreamPosition);
         }
 #endif
 
         internal static InvalidBencodeException<T> InvalidBeginningChar(char invalidChar, long streamPosition)
         {
             var message =
-                $"Invalid beginning character of object. Found '{invalidChar}' at position {streamPosition}. Valid characters are: 0-9, 'i', 'l' and 'd'";
+                string.Format("Invalid beginning character of object. Found '{0}' at position {1}. Valid characters are: 0-9, 'i', 'l' and 'd'", invalidChar, streamPosition);
             return new InvalidBencodeException<T>(message, streamPosition);
         }
 
         internal static InvalidBencodeException<T> InvalidEndChar(char invalidChar, long streamPosition)
         {
             var message =
-                $"Invalid end character of object. Expected 'e' but found '{invalidChar}' at position {streamPosition}.";
+                string.Format("Invalid end character of object. Expected 'e' but found '{0}' at position {1}.", invalidChar, streamPosition);
             return new InvalidBencodeException<T>(message, streamPosition);
         }
 
@@ -83,13 +83,13 @@ namespace BencodeNET.Exceptions
         internal static InvalidBencodeException<T> BelowMinimumLength(int minimumLength, long actualLength, long streamPosition)
         {
             var message =
-                $"Invalid length. Minimum valid stream length for parsing '{typeof (T).FullName}' is {minimumLength} but the actual length was only {actualLength}.";
+                string.Format("Invalid length. Minimum valid stream length for parsing '{0}' is {1} but the actual length was only {2}.", typeof (T).FullName, minimumLength, actualLength);
             return new InvalidBencodeException<T>(message, streamPosition);
         }
 
         internal static InvalidBencodeException<T> UnexpectedChar(char expected, char unexpected, long streamPosition)
         {
-            var message = $"Unexpected character. Expected '{expected}' but found '{unexpected}' at position {streamPosition}.";
+            var message = string.Format("Unexpected character. Expected '{0}' but found '{1}' at position {2}.", expected, unexpected, streamPosition);
             return new InvalidBencodeException<T>(message, streamPosition);
         }
     }

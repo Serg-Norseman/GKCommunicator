@@ -7,7 +7,7 @@
     <ProjectGuid>{FEE68CF6-1D60-4E90-AEF3-6AFA4A8C977D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GKNetCore</RootNamespace>
+    <RootNamespace>GKNet</RootNamespace>
     <AssemblyName>GKNetCore</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

@@ -42,7 +42,7 @@ namespace BencodeNET.Exceptions
             if (info == null)
                 return;
 
-            StreamPosition = info.GetInt64(nameof(StreamPosition));
+            StreamPosition = info.GetInt64("StreamPosition");
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace BencodeNET.Exceptions
         {
             base.GetObjectData(info, context);
 
-            info.AddValue(nameof(StreamPosition), StreamPosition);
+            info.AddValue("StreamPosition", StreamPosition);
         }
 #endif
     }

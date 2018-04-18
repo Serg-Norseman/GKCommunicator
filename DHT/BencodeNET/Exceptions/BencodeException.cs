@@ -42,10 +42,17 @@ namespace BencodeNET.Exceptions
 #endif
     public class BencodeException<T> : BencodeException
     {
+        private readonly Type fRelatedType = typeof(T);
+
         /// <summary>
         /// The type related to this error. Usually the type being parsed.
         /// </summary>
-        public Type RelatedType { get; } = typeof(T);
+        public Type RelatedType
+        {
+            get {
+                return fRelatedType;
+            }
+        }
 
         public BencodeException()
         { }
@@ -64,7 +71,7 @@ namespace BencodeNET.Exceptions
             : base(info, context)
         {
             if (info == null) return;
-            RelatedType = Type.GetType(info.GetString(nameof(RelatedType)), false);
+            fRelatedType = Type.GetType(info.GetString("RelatedType"), false);
         }
 
         /// <summary>
@@ -77,7 +84,7 @@ namespace BencodeNET.Exceptions
         {
             base.GetObjectData(info, context);
 
-            info.AddValue(nameof(RelatedType), RelatedType.AssemblyQualifiedName);
+            info.AddValue("RelatedType", RelatedType.AssemblyQualifiedName);
         }
 #endif
     }

@@ -24,7 +24,8 @@ namespace BencodeNET
 
         public static TValue GetValueOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
         {
-            return dictionary.TryGetValue(key, out TValue value) ? value : default(TValue);
+            TValue value;
+            return dictionary.TryGetValue(key, out value) ? value : default(TValue);
         }
 
         public static void Write(this Stream stream, char c)

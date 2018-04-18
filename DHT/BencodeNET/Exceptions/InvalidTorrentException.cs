@@ -38,14 +38,14 @@ namespace BencodeNET.Exceptions
             : base(info, context)
         {
             if (info == null) return;
-            InvalidField = info.GetString(nameof(InvalidField));
+            InvalidField = info.GetString("InvalidField");
         }
 
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             base.GetObjectData(info, context);
 
-            info.AddValue(nameof(InvalidField), InvalidField);
+            info.AddValue("InvalidField", InvalidField);
         }
 #endif
     }
