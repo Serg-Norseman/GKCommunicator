@@ -196,5 +196,12 @@ namespace GKSimpleChat
         {
             Application.Run(new ChatForm());
         }
+
+        private void btnSysInfo_Click(object sender, EventArgs e)
+        {
+            using (var dlgSysInfo = new SysInfoWin()) {
+                dlgSysInfo.ShowDialog();
+            }
+        }
     }
 }
