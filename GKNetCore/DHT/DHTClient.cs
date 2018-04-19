@@ -21,6 +21,7 @@ namespace GKNet.DHT
 
         private byte[] fLocalID;
         private byte[] fSearchInfoHash;
+        private bool fSearchRunned;
 
         private readonly UdpClient fClient;
         private readonly IPEndPoint fDefaultIP;
@@ -40,6 +41,7 @@ namespace GKNet.DHT
             fLogger = logger;
             fParser = new BencodeParser();
             fRoutingTable = new DHTRoutingTable(KTableSize);
+            fSearchRunned = false;
             fTransactions = new Dictionary<int, DHTMessage>();
 
             const long IOC_IN = 0x80000000;
@@ -98,14 +100,22 @@ namespace GKNet.DHT
         public void SearchNodes(byte[] searchInfoHash)
         {
             fSearchInfoHash = searchInfoHash;
+            fSearchRunned = true;
 
-            while (true) {
-                var nodes = fRoutingTable.FindNodes(fSearchInfoHash);
-                foreach (var node in nodes) {
-                    SendGetPeersQuery(node.EndPoint, fSearchInfoHash);
+            new Thread(() => {
+                while (fSearchRunned) {
+                    var nodes = fRoutingTable.FindNodes(fSearchInfoHash);
+                    foreach (var node in nodes) {
+                        SendGetPeersQuery(node.EndPoint, fSearchInfoHash);
+                    }
+                    Thread.Sleep(1000);
                 }
-                Thread.Sleep(1000);
-            }
+            }).Start();
+        }
+
+        public void StopSearch()
+        {
+            fSearchRunned = false;
         }
 
         #region Receive messages and data
@@ -267,7 +277,7 @@ namespace GKNet.DHT
                     Console.ForegroundColor = ConsoleColor.DarkCyan;
 
                     WriteLog("send ping " + values[0].ToString(), true);
-                    SendPingQuery(values[0], false);
+                    SendPingQuery(values[0], true);
 
                     var newaddr = new IPEndPoint(values[0].Address, fLocalIP.Port);
                     WriteLog("send ping " + newaddr.ToString(), true);
@@ -306,7 +316,7 @@ namespace GKNet.DHT
             var id = args.Get<BString>("id");
             var infoHash = args.Get<BString>("info_hash");
             var impliedPort = args.Get<BNumber>("implied_port");
-            int port = (impliedPort != null && impliedPort.Value == 1) ? PublicDHTPort : (int)args.Get<BNumber>("port").Value;
+            int port = (impliedPort != null && impliedPort.Value == 1) ? ipinfo.Port : (int)args.Get<BNumber>("port").Value;
 
             Console.ForegroundColor = ConsoleColor.DarkYellow;
             WriteLog("receive `announce_peer` query " + ipinfo.ToString());

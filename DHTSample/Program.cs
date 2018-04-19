@@ -34,6 +34,11 @@ namespace DHTSample
                 Console.ResetColor();
             };
 
+            Console.CancelKeyPress += delegate (object sender, ConsoleCancelEventArgs e) {
+                e.Cancel = true;
+                dhtClient.StopSearch();
+            };
+
             dhtClient.Run();
             dhtClient.JoinNetwork();
             dhtClient.SearchNodes(snkInfoHash);
