@@ -13,11 +13,11 @@
 /GKSimpleChat/obj/
 /GKSimpleChat/temp/
 
-/DHT/bin/
-/DHT/obj/
-
 /DHTSample/bin/
 /DHTSample/obj/
+
+/TCPChatTest/bin/
+/TCPChatTest/obj/
 
 /temp/
 
