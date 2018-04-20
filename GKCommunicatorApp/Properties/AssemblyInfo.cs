@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("GKNetCore")]
+[assembly: AssemblyTitle("GKCommunicatorApp")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
@@ -11,6 +11,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
-[assembly: Guid("fee68cf6-1d60-4e90-aef3-6afa4a8c977d")]
+[assembly: Guid("c5499f93-1280-4457-9289-103c611ce88c")]
 [assembly: AssemblyVersion("0.0.2.0")]
 [assembly: AssemblyFileVersion("0.0.2.0")]

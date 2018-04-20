@@ -18,10 +18,20 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace GKNet.Core
+using System;
+using System.Windows.Forms;
+
+namespace GKSimpleChat
 {
-    public interface ILogger
+    static class Program
     {
-        void WriteLog(string str, bool display = true);
+        [STAThread]
+        static void Main()
+        {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            //Application.Run(new Form1());
+            Application.Run(new ChatForm());
+        }
     }
 }

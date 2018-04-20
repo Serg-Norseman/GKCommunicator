@@ -9,15 +9,14 @@
 /GKNetPNRP/bin/
 /GKNetPNRP/obj/
 
-/GKSimpleChat/bin/
-/GKSimpleChat/obj/
-/GKSimpleChat/temp/
+/GKCommunicatorApp/bin/
+/GKCommunicatorApp/obj/
+
+/GKCommunicatorPlugin/bin/
+/GKCommunicatorPlugin/obj/
 
 /DHTSample/bin/
 /DHTSample/obj/
-
-/TCPChatTest/bin/
-/TCPChatTest/obj/
 
 /temp/
 

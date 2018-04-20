@@ -1,4 +1,24 @@
-﻿using System;
+﻿/*
+ *  "GKCommunicator", the chat and bulletin board of the genealogical network.
+ *  Copyright (C) 2018 by Sergey V. Zhdanovskih.
+ *
+ *  This file is part of "GEDKeeper".
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+using System;
 using System.ComponentModel;
 using System.ServiceModel;
 using System.ServiceModel.PeerResolvers;
@@ -69,7 +89,7 @@ namespace GKSimpleChat
         {
             Invoke(
                 (MethodInvoker)delegate {
-                    lstChatMsgs.Items.Add(Member + " joined the chatroom.");
+                    lstChatMsgs.AppendText(Member + " joined the chatroom.");
 
                     // this will retrieve any new members that have joined before the current user
                     fChannel.SynchronizeMemberList(fMemberName);
@@ -80,7 +100,7 @@ namespace GKSimpleChat
         {
             Invoke(
                 (MethodInvoker)delegate {
-                    lstChatMsgs.Items.Add(Member + " says: " + Message);
+                    lstChatMsgs.AppendText(Member + " says: " + Message);
                 });
         }
 
@@ -98,7 +118,7 @@ namespace GKSimpleChat
                     //that in the future but for now i'm too busy with other things to mess with it hence it's
                     //left as an exercise for the reader.
                     if (fMemberName.Equals(Member) || fMemberName.Equals(MemberTo)) {
-                        lstChatMsgs.Items.Add(Member + " whispers: " + Message);
+                        lstChatMsgs.AppendText(Member + " whispers: " + Message);
                     }
                 });
         }
@@ -112,7 +132,7 @@ namespace GKSimpleChat
         {
             Invoke(
                 (MethodInvoker)delegate {
-                    lstChatMsgs.Items.Add(Member + " left the chatroom.");
+                    lstChatMsgs.AppendText(Member + " left the chatroom.");
                 });
         }
 
@@ -146,7 +166,7 @@ namespace GKSimpleChat
             executor.BeginInvoke(null, null);
         }
 
-        private void btnChat_Click(object sender, EventArgs e)
+        private void btnSendToAll_Click(object sender, EventArgs e)
         {
             // broadcast the chat message to the peer mesh and clear the box
             if (!String.IsNullOrEmpty(txtChatMsg.Text)) {
@@ -156,7 +176,7 @@ namespace GKSimpleChat
             }
         }
 
-        private void btnWhisper_Click(object sender, EventArgs e)
+        private void btnSend_Click(object sender, EventArgs e)
         {
             // broadcast the chat message to the peer mesh with the member name it is intended for
             if ((!String.IsNullOrEmpty(txtChatMsg.Text)) && (lstMembers.SelectedIndex >= 0)) {
@@ -191,13 +211,14 @@ namespace GKSimpleChat
             });
         }
 
-        [STAThread]
-        static void Main()
+        private void miDHTLog_Click(object sender, EventArgs e)
         {
-            Application.Run(new ChatForm());
+            using (var dlg = new DHTLogDlg()) {
+                dlg.ShowDialog();
+            }
         }
 
-        private void btnSysInfo_Click(object sender, EventArgs e)
+        private void miSysInfo_Click(object sender, EventArgs e)
         {
             using (var dlgSysInfo = new SysInfoWin()) {
                 dlgSysInfo.ShowDialog();

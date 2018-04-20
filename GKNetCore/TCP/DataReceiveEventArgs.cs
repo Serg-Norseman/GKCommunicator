@@ -18,10 +18,30 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace GKNet.Core
+using System;
+using System.Net;
+
+namespace GKNet.TCP
 {
-    public interface ILogger
+    public class DataReceiveEventArgs : EventArgs
     {
-        void WriteLog(string str, bool display = true);
+        private byte[] fData;
+        private IPEndPoint fPeer;
+
+        public DataReceiveEventArgs(byte[] data, IPEndPoint peer)
+        {
+            fData = data;
+            fPeer = peer;
+        }
+
+        public IPEndPoint Peer
+        {
+            get { return fPeer; }
+        }
+
+        public byte[] Data
+        {
+            get { return fData; }
+        }
     }
 }

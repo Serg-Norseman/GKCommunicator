@@ -18,10 +18,35 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace GKNet.Core
+using BencodeNET.Objects;
+using GKNet.DHT;
+
+namespace GKNet.Protocol
 {
-    public interface ILogger
+    public class ProtocolHelper
     {
-        void WriteLog(string str, bool display = true);
+        public const string NETWORK_SIGN = "GEDKEEPER NETWORK";
+
+        public static byte[] CreateSignInfoKey()
+        {
+            BDictionary subnetKey = new BDictionary();
+            subnetKey.Add("info", ProtocolHelper.NETWORK_SIGN);
+            return DHTHelper.CalculateInfoHashBytes(subnetKey);
+        }
+
+        public static byte[] CreateHandshakeQuery()
+        {
+            var data = new BDictionary();
+            data.Add("y", "q");
+            data.Add("q", "handshake");
+
+            var args = new BDictionary();
+            args.Add("app", "GEDKeeper Communicator");
+            args.Add("ver", "2.14.0");
+
+            data.Add("a", args);
+
+            return data.EncodeAsBytes();
+        }
     }
 }

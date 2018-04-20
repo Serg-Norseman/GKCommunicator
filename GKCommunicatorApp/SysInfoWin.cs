@@ -18,10 +18,25 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace GKNet.Core
+using System;
+using System.Windows.Forms;
+using GKNet.Core;
+
+namespace GKSimpleChat
 {
-    public interface ILogger
+    public partial class SysInfoWin : Form
     {
-        void WriteLog(string str, bool display = true);
+        public SysInfoWin()
+        {
+            InitializeComponent();
+        }
+
+        private void SysInfoWin_Load(object sender, EventArgs e)
+        {
+            textBox1.Text += "UserName: " + SysHelper.GetUserName() + "\r\n";
+            textBox1.Text += "UserCountry: " + SysHelper.GetUserCountry() + "\r\n";
+            textBox1.Text += "TimeZone: " + SysHelper.GetTimeZone() + "\r\n";
+            textBox1.Text += "Languages: " + SysHelper.GetLanguages() + "\r\n";
+        }
     }
 }

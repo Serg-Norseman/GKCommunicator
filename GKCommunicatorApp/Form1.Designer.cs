@@ -1,4 +1,4 @@
-﻿namespace TCPChatTest
+﻿namespace GKSimpleChat
 {
     partial class Form1
     {

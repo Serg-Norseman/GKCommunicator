@@ -1,6 +1,25 @@
-﻿using System;
+﻿/*
+ *  "GKCommunicator", the chat and bulletin board of the genealogical network.
+ *  Copyright (C) 2018 by Sergey V. Zhdanovskih.
+ *
+ *  This file is part of "GEDKeeper".
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -20,6 +39,7 @@ namespace GKNet.DHT
         //private Socket fSocket;
 
         private byte[] fLocalID;
+        private IList<IPAddress> fRouters;
         private byte[] fSearchInfoHash;
         private bool fSearchRunned;
 
@@ -75,26 +95,17 @@ namespace GKNet.DHT
 
         public void JoinNetwork()
         {
-            var bootstrapHosts = new List<string>() {
+            fRouters = new List<string>() {
                             "router.bittorrent.com",
                             "dht.transmissionbt.com",
                             "router.utorrent.com"
                         }.Select(x => Dns.GetHostEntry(x).AddressList[0]).ToList();
 
-            new Thread(() => {
+            /*new Thread(() => {
                 while (true) {
-                    int count = 0;
-                    lock (fRoutingTable) {
-                        count = fRoutingTable.Count;
-                    }
-                    if (count == 0) {
-                        foreach (var t in bootstrapHosts) {
-                            SendFindNodeQuery(new IPEndPoint(t, PublicDHTPort), null);
-                        }
-                    }
                     Thread.Sleep(5000);
                 }
-            }).Start();
+            }).Start();*/
         }
 
         public void SearchNodes(byte[] searchInfoHash)
@@ -104,10 +115,24 @@ namespace GKNet.DHT
 
             new Thread(() => {
                 while (fSearchRunned) {
-                    var nodes = fRoutingTable.FindNodes(fSearchInfoHash);
-                    foreach (var node in nodes) {
-                        SendGetPeersQuery(node.EndPoint, fSearchInfoHash);
+                    int count = 0;
+                    lock (fRoutingTable) {
+                        count = fRoutingTable.Count;
                     }
+
+                    if (count == 0) {
+                        // reboot if empty
+                        foreach (var t in fRouters) {
+                            SendFindNodeQuery(new IPEndPoint(t, PublicDHTPort), null);
+                        }
+                    } else {
+                        // search
+                        var nodes = fRoutingTable.FindNodes(fSearchInfoHash);
+                        foreach (var node in nodes) {
+                            SendGetPeersQuery(node.EndPoint, fSearchInfoHash);
+                        }
+                    }
+
                     Thread.Sleep(1000);
                 }
             }).Start();
@@ -271,16 +296,13 @@ namespace GKNet.DHT
                 var values = DHTHelper.ParseValuesList(valuesList);
                 if (values.Count > 0) {
                     // if infohash and peers for it was found
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    WriteLog("receive " + values.Count + " values from " + ipinfo.ToString(), true);
+                    fLogger.WriteLog("receive " + values.Count + " values from " + ipinfo.ToString(), true);
 
-                    Console.ForegroundColor = ConsoleColor.DarkCyan;
-
-                    WriteLog("send ping " + values[0].ToString(), true);
+                    fLogger.WriteLog("send ping " + values[0].ToString(), true);
                     SendPingQuery(values[0], true);
 
                     var newaddr = new IPEndPoint(values[0].Address, fLocalIP.Port);
-                    WriteLog("send ping " + newaddr.ToString(), true);
+                    fLogger.WriteLog("send ping " + newaddr.ToString(), true);
                     SendPingQuery(newaddr, true);
 
                     // TODO: handshake and other
@@ -300,7 +322,7 @@ namespace GKNet.DHT
                     throw new Exception("sd");
 
                 var nodesList = DHTHelper.ParseNodesList(nodesStr.Value);
-                WriteLog("receive " + nodesList.Count + " nodes from " + ipinfo.ToString(), false);
+                fLogger.WriteLog("receive " + nodesList.Count + " nodes from " + ipinfo.ToString(), false);
 
                 foreach (var t in nodesList) {
                     fRoutingTable.AddOrUpdateNode(t);
@@ -318,8 +340,7 @@ namespace GKNet.DHT
             var impliedPort = args.Get<BNumber>("implied_port");
             int port = (impliedPort != null && impliedPort.Value == 1) ? ipinfo.Port : (int)args.Get<BNumber>("port").Value;
 
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
-            WriteLog("receive `announce_peer` query " + ipinfo.ToString());
+            fLogger.WriteLog("receive `announce_peer` query " + ipinfo.ToString());
 
             fRoutingTable.AddOrUpdateNode(new DHTNode(id.Value, ipinfo));
 
@@ -342,13 +363,12 @@ namespace GKNet.DHT
 
             var handshake = data.Get<BString>("handshake");
             if (handshake != null && handshake.ToString() == "gkn") {
-                Console.ForegroundColor = ConsoleColor.Magenta;
-                WriteLog("Found a peer! " + ipinfo.ToString());
+                fLogger.WriteLog("Found a peer! " + ipinfo.ToString());
             }
 
             fRoutingTable.AddOrUpdateNode(new DHTNode(id.Value, ipinfo));
 
-            WriteLog("receive `ping` query " + ipinfo.ToString());
+            fLogger.WriteLog("receive `ping` query " + ipinfo.ToString());
             SendPingResponse(ipinfo, t);
         }
 
@@ -361,7 +381,7 @@ namespace GKNet.DHT
 
             fRoutingTable.AddOrUpdateNode(new DHTNode(id.Value, ipinfo));
 
-            WriteLog("receive `find_node` query");
+            fLogger.WriteLog("receive `find_node` query");
             // TODO: response!
         }
 
@@ -376,7 +396,7 @@ namespace GKNet.DHT
             var nodesList = fRoutingTable.FindNodes(info_hash.Value);
             BList values = null;
 
-            WriteLog("receive `get_peers` query from " + ipinfo.ToString() + " [" + id.Value.ToHexString() + "] for " + info_hash.Value.ToHexString());
+            fLogger.WriteLog("receive `get_peers` query from " + ipinfo.ToString() + " [" + id.Value.ToHexString() + "] for " + info_hash.Value.ToHexString());
 
             fRoutingTable.AddOrUpdateNode(new DHTNode(id.Value, ipinfo));
 
@@ -388,8 +408,7 @@ namespace GKNet.DHT
             }
 
             if (DHTHelper.ArraysEqual(info_hash.Value, fSearchInfoHash)) {
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                WriteLog("receive `get_peers` query for our HASH");
+                fLogger.WriteLog("receive `get_peers` query for our HASH");
 
                 // TODO: create list from our neighbours
                 //values = new BList();
@@ -505,23 +524,6 @@ namespace GKNet.DHT
             } catch (Exception ex) {
                 fLogger.WriteLog("Send(): " + ex.Message);
             }
-        }
-
-        #endregion
-
-        #region Other
-
-        private void WriteLog(string str, bool display = true)
-        {
-            if (display) {
-                Console.WriteLine(str);
-                Console.ResetColor();
-            }
-
-            var fswriter = new StreamWriter(new FileStream("./logFile", FileMode.Append));
-            fswriter.WriteLine(str);
-            fswriter.Flush();
-            fswriter.Close();
         }
 
         #endregion

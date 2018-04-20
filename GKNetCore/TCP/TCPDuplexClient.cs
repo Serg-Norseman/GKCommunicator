@@ -1,10 +1,31 @@
-﻿using System;
+﻿/*
+ *  "GKCommunicator", the chat and bulletin board of the genealogical network.
+ *  Copyright (C) 2018 by Sergey V. Zhdanovskih.
+ *
+ *  This file is part of "GEDKeeper".
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 
-namespace TCPChatTest
+namespace GKNet.TCP
 {
     public class TCPDuplexClient
     {
@@ -36,8 +57,12 @@ namespace TCPChatTest
             for (int i = 0; i < fConnections.Count; i++) {
                 fConnections[i].Close();
             }
-            fSocket.Shutdown(SocketShutdown.Both);
-            fSocket.Close();
+            fConnections.Clear();
+
+            if (fSocket != null && fSocket.Connected) {
+                fSocket.Shutdown(SocketShutdown.Both);
+                fSocket.Close();
+            }
         }
 
         protected internal void AddConnection(TCPConnection connection)
@@ -68,6 +93,15 @@ namespace TCPChatTest
             sock.BeginAccept(OnConnectRequest, sock);
         }
 
+        public TCPConnection GetConnection(IPEndPoint point, bool canCreate = true)
+        {
+            var result = fConnections.FirstOrDefault((x) => x.EndPoint.Equals(point));
+            if (result == null && canCreate) {
+                result = CreateConnection(point);
+            }
+            return result;
+        }
+
         public TCPConnection CreateConnection(IPEndPoint point)
         {
             var extSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -78,7 +112,13 @@ namespace TCPChatTest
         public void Send(IPEndPoint point, string msg)
         {
             var newConn = CreateConnection(point);
-            newConn.Send(msg);
+            newConn.Send(Encoding.UTF8.GetBytes(msg));
+        }
+
+        public void Send(IPEndPoint point, byte[] data)
+        {
+            var newConn = CreateConnection(point);
+            newConn.Send(data);
         }
 
         public void RaiseDataReceive(byte[] data, IPEndPoint peer)
