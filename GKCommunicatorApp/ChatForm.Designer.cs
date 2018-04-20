@@ -71,7 +71,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(7, 3, 0, 3);
-            this.menuStrip1.Size = new System.Drawing.Size(1091, 30);
+            this.menuStrip1.Size = new System.Drawing.Size(782, 30);
             this.menuStrip1.TabIndex = 9;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -121,10 +121,10 @@
             this.statusStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.lblConnectionStatus});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 516);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 528);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 16, 0);
-            this.statusStrip1.Size = new System.Drawing.Size(1091, 25);
+            this.statusStrip1.Size = new System.Drawing.Size(782, 25);
             this.statusStrip1.TabIndex = 10;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -143,7 +143,7 @@
             this.panTempHeader.Location = new System.Drawing.Point(0, 30);
             this.panTempHeader.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.panTempHeader.Name = "panTempHeader";
-            this.panTempHeader.Size = new System.Drawing.Size(1091, 43);
+            this.panTempHeader.Size = new System.Drawing.Size(782, 43);
             this.panTempHeader.TabIndex = 11;
             // 
             // btnConnect
@@ -189,8 +189,8 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(1091, 443);
-            this.splitContainer1.SplitterDistance = 357;
+            this.splitContainer1.Size = new System.Drawing.Size(782, 455);
+            this.splitContainer1.SplitterDistance = 255;
             this.splitContainer1.TabIndex = 12;
             // 
             // lstMembers
@@ -201,7 +201,7 @@
             this.lstMembers.Location = new System.Drawing.Point(0, 0);
             this.lstMembers.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.lstMembers.Name = "lstMembers";
-            this.lstMembers.Size = new System.Drawing.Size(357, 443);
+            this.lstMembers.Size = new System.Drawing.Size(255, 455);
             this.lstMembers.TabIndex = 4;
             // 
             // splitContainer2
@@ -220,8 +220,8 @@
             // 
             this.splitContainer2.Panel2.Controls.Add(this.txtChatMsg);
             this.splitContainer2.Panel2.Controls.Add(this.flowLayoutPanel1);
-            this.splitContainer2.Size = new System.Drawing.Size(730, 443);
-            this.splitContainer2.SplitterDistance = 255;
+            this.splitContainer2.Size = new System.Drawing.Size(523, 455);
+            this.splitContainer2.SplitterDistance = 261;
             this.splitContainer2.SplitterWidth = 5;
             this.splitContainer2.TabIndex = 0;
             // 
@@ -232,7 +232,7 @@
             this.lstChatMsgs.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.lstChatMsgs.Name = "lstChatMsgs";
             this.lstChatMsgs.ReadOnly = true;
-            this.lstChatMsgs.Size = new System.Drawing.Size(730, 255);
+            this.lstChatMsgs.Size = new System.Drawing.Size(523, 261);
             this.lstChatMsgs.TabIndex = 0;
             this.lstChatMsgs.Text = "";
             // 
@@ -243,7 +243,7 @@
             this.txtChatMsg.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtChatMsg.Multiline = true;
             this.txtChatMsg.Name = "txtChatMsg";
-            this.txtChatMsg.Size = new System.Drawing.Size(730, 131);
+            this.txtChatMsg.Size = new System.Drawing.Size(523, 137);
             this.txtChatMsg.TabIndex = 6;
             // 
             // flowLayoutPanel1
@@ -252,15 +252,15 @@
             this.flowLayoutPanel1.Controls.Add(this.btnSend);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 131);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 137);
             this.flowLayoutPanel1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(730, 52);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(523, 52);
             this.flowLayoutPanel1.TabIndex = 0;
             // 
             // btnSendToAll
             // 
-            this.btnSendToAll.Location = new System.Drawing.Point(614, 5);
+            this.btnSendToAll.Location = new System.Drawing.Point(407, 5);
             this.btnSendToAll.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnSendToAll.Name = "btnSendToAll";
             this.btnSendToAll.Size = new System.Drawing.Size(112, 42);
@@ -271,7 +271,7 @@
             // 
             // btnSend
             // 
-            this.btnSend.Location = new System.Drawing.Point(494, 5);
+            this.btnSend.Location = new System.Drawing.Point(287, 5);
             this.btnSend.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnSend.Name = "btnSend";
             this.btnSend.Size = new System.Drawing.Size(112, 42);
@@ -282,9 +282,9 @@
             // 
             // ChatForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 21F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1091, 541);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(120F, 120F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+            this.ClientSize = new System.Drawing.Size(782, 553);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.panTempHeader);
             this.Controls.Add(this.statusStrip1);

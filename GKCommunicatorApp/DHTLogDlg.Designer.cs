@@ -37,19 +37,20 @@
             this.rtbLog.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.rtbLog.Name = "rtbLog";
             this.rtbLog.ReadOnly = true;
-            this.rtbLog.Size = new System.Drawing.Size(900, 591);
+            this.rtbLog.Size = new System.Drawing.Size(782, 553);
             this.rtbLog.TabIndex = 0;
             this.rtbLog.Text = "";
             // 
             // DHTLogDlg
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 21F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(900, 591);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(120F, 120F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+            this.ClientSize = new System.Drawing.Size(782, 553);
             this.Controls.Add(this.rtbLog);
             this.Font = new System.Drawing.Font("Calibri", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "DHTLogDlg";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "DHTLogDlg";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.DHTLogDlg_FormClosed);
             this.Load += new System.EventHandler(this.DHTLogDlg_Load);

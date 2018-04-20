@@ -79,7 +79,6 @@
     </Compile>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Windows.Forms" />
     <Compile Include="ChatForm.cs">
       <SubType>Form</SubType>
