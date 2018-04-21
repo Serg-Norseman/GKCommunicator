@@ -55,6 +55,7 @@
     <Compile Include="BencodeNET\Parsing\IBObjectParser.cs" />
     <Compile Include="BencodeNET\Parsing\ParseUtil.cs" />
     <Compile Include="BencodeNET\UtilityExtensions.cs" />
+    <Compile Include="ChatDHTCP.cs" />
     <Compile Include="Core\IChatForm.cs" />
     <Compile Include="DHT\BTClient.cs" />
     <Compile Include="DHT\DHTClient.cs" />

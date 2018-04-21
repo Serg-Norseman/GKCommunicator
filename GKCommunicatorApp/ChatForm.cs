@@ -20,9 +20,13 @@
 
 using System;
 using System.ComponentModel;
+using System.Net;
+using System.Text;
 using System.Windows.Forms;
+using GKNet;
 using GKNet.Core;
-using GKNetPNRP;
+using GKNet.Protocol;
+using GKNet.TCP;
 
 namespace GKSimpleChat
 {
@@ -33,10 +37,12 @@ namespace GKSimpleChat
         private string fMemberName;
         private IChatCore fCore;
 
+        private TCPDuplexClient fClient;
+
         public ChatForm()
         {
             InitializeComponent();
-            fCore = new ChatPNRP(this);
+            fCore = new ChatDHTCP(this);
             fCore.Online += ostat_Online;
             fCore.Offline += ostat_Offline;
             Closing += new CancelEventHandler(WindowMain_Closing);
@@ -45,6 +51,12 @@ namespace GKSimpleChat
 
         void WindowMain_Closing(object sender, CancelEventArgs e)
         {
+            if (fClient != null) {
+                fClient.Disconnect();
+            }
+
+            //
+
             fCore.Disconnect();
         }
 
@@ -52,6 +64,25 @@ namespace GKSimpleChat
         {
             lstChatMsgs.AppendText(text + "\r\n");
         }
+
+        public void RaiseDataReceive(object sender, DataReceiveEventArgs e)
+        {
+            Invoke((MethodInvoker)delegate {
+                AddChatText(Encoding.UTF8.GetString(e.Data));
+            });
+        }
+
+        #region Protocol features
+
+        private void SendHandshakeQuery()
+        {
+            var data = ProtocolHelper.CreateHandshakeQuery();
+            var endPoint = new IPEndPoint(IPAddress.Parse(txtRemoteAddress.Text), int.Parse(txtRemotePort.Text));
+            var conn = fClient.GetConnection(endPoint);
+            conn.Send(data);
+        }
+
+        #endregion
 
         #region IChatForm members
 
@@ -139,6 +170,15 @@ namespace GKSimpleChat
 
         private void btnConnect_Click(object sender, EventArgs e)
         {
+            fClient = new TCPDuplexClient();
+            fClient.DataReceive += RaiseDataReceive;
+            fClient.Start(int.Parse(txtLocalPort.Text));
+
+            txtLocalPort.Enabled = false;
+            btnConnect.Enabled = false;
+
+            //
+
             lblConnectionStatus.Visible = true;
             // join the P2P mesh from a worker thread
             fCore.MemberName = fMemberName;
@@ -157,6 +197,12 @@ namespace GKSimpleChat
 
         private void btnSend_Click(object sender, EventArgs e)
         {
+            //var endPoint = new IPEndPoint(IPAddress.Parse(txtRemoteAddress.Text), int.Parse(txtRemotePort.Text));
+            //fClient.Send(endPoint, txtMsg.Text);
+            SendHandshakeQuery();
+
+            //
+
             if ((!String.IsNullOrEmpty(txtChatMsg.Text)) && (lstMembers.SelectedIndex >= 0)) {
                 fCore.SendWhisper(fMemberName, lstMembers.SelectedItem.ToString(), txtChatMsg.Text);
                 txtChatMsg.Clear();

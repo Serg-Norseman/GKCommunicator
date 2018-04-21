@@ -48,6 +48,12 @@
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.btnSendToAll = new System.Windows.Forms.Button();
             this.btnSend = new System.Windows.Forms.Button();
+            this.txtRemoteAddress = new System.Windows.Forms.ComboBox();
+            this.txtRemotePort = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.txtLocalPort = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.panTempHeader.SuspendLayout();
@@ -136,6 +142,12 @@
             // 
             // panTempHeader
             // 
+            this.panTempHeader.Controls.Add(this.txtRemoteAddress);
+            this.panTempHeader.Controls.Add(this.txtRemotePort);
+            this.panTempHeader.Controls.Add(this.label3);
+            this.panTempHeader.Controls.Add(this.label2);
+            this.panTempHeader.Controls.Add(this.txtLocalPort);
+            this.panTempHeader.Controls.Add(this.label1);
             this.panTempHeader.Controls.Add(this.btnConnect);
             this.panTempHeader.Controls.Add(this.txtMemberName);
             this.panTempHeader.Controls.Add(this.lblMemberName);
@@ -143,7 +155,7 @@
             this.panTempHeader.Location = new System.Drawing.Point(0, 30);
             this.panTempHeader.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.panTempHeader.Name = "panTempHeader";
-            this.panTempHeader.Size = new System.Drawing.Size(782, 43);
+            this.panTempHeader.Size = new System.Drawing.Size(782, 133);
             this.panTempHeader.TabIndex = 11;
             // 
             // btnConnect
@@ -178,7 +190,7 @@
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 73);
+            this.splitContainer1.Location = new System.Drawing.Point(0, 163);
             this.splitContainer1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.splitContainer1.Name = "splitContainer1";
             // 
@@ -189,8 +201,8 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(782, 455);
-            this.splitContainer1.SplitterDistance = 255;
+            this.splitContainer1.Size = new System.Drawing.Size(782, 365);
+            this.splitContainer1.SplitterDistance = 254;
             this.splitContainer1.TabIndex = 12;
             // 
             // lstMembers
@@ -201,7 +213,7 @@
             this.lstMembers.Location = new System.Drawing.Point(0, 0);
             this.lstMembers.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.lstMembers.Name = "lstMembers";
-            this.lstMembers.Size = new System.Drawing.Size(255, 455);
+            this.lstMembers.Size = new System.Drawing.Size(254, 365);
             this.lstMembers.TabIndex = 4;
             // 
             // splitContainer2
@@ -220,8 +232,8 @@
             // 
             this.splitContainer2.Panel2.Controls.Add(this.txtChatMsg);
             this.splitContainer2.Panel2.Controls.Add(this.flowLayoutPanel1);
-            this.splitContainer2.Size = new System.Drawing.Size(523, 455);
-            this.splitContainer2.SplitterDistance = 261;
+            this.splitContainer2.Size = new System.Drawing.Size(524, 365);
+            this.splitContainer2.SplitterDistance = 209;
             this.splitContainer2.SplitterWidth = 5;
             this.splitContainer2.TabIndex = 0;
             // 
@@ -232,7 +244,7 @@
             this.lstChatMsgs.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.lstChatMsgs.Name = "lstChatMsgs";
             this.lstChatMsgs.ReadOnly = true;
-            this.lstChatMsgs.Size = new System.Drawing.Size(523, 261);
+            this.lstChatMsgs.Size = new System.Drawing.Size(524, 209);
             this.lstChatMsgs.TabIndex = 0;
             this.lstChatMsgs.Text = "";
             // 
@@ -243,7 +255,7 @@
             this.txtChatMsg.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtChatMsg.Multiline = true;
             this.txtChatMsg.Name = "txtChatMsg";
-            this.txtChatMsg.Size = new System.Drawing.Size(523, 137);
+            this.txtChatMsg.Size = new System.Drawing.Size(524, 99);
             this.txtChatMsg.TabIndex = 6;
             // 
             // flowLayoutPanel1
@@ -252,15 +264,15 @@
             this.flowLayoutPanel1.Controls.Add(this.btnSend);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 137);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 99);
             this.flowLayoutPanel1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(523, 52);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(524, 52);
             this.flowLayoutPanel1.TabIndex = 0;
             // 
             // btnSendToAll
             // 
-            this.btnSendToAll.Location = new System.Drawing.Point(407, 5);
+            this.btnSendToAll.Location = new System.Drawing.Point(408, 5);
             this.btnSendToAll.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnSendToAll.Name = "btnSendToAll";
             this.btnSendToAll.Size = new System.Drawing.Size(112, 42);
@@ -271,7 +283,7 @@
             // 
             // btnSend
             // 
-            this.btnSend.Location = new System.Drawing.Point(287, 5);
+            this.btnSend.Location = new System.Drawing.Point(288, 5);
             this.btnSend.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnSend.Name = "btnSend";
             this.btnSend.Size = new System.Drawing.Size(112, 42);
@@ -279,6 +291,64 @@
             this.btnSend.Text = "Send";
             this.btnSend.UseVisualStyleBackColor = true;
             this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
+            // 
+            // txtRemoteAddress
+            // 
+            this.txtRemoteAddress.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.txtRemoteAddress.FormattingEnabled = true;
+            this.txtRemoteAddress.Items.AddRange(new object[] {
+            "127.0.0.1",
+            "195.162.27.155"});
+            this.txtRemoteAddress.Location = new System.Drawing.Point(182, 76);
+            this.txtRemoteAddress.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.txtRemoteAddress.Name = "txtRemoteAddress";
+            this.txtRemoteAddress.Size = new System.Drawing.Size(157, 29);
+            this.txtRemoteAddress.TabIndex = 11;
+            // 
+            // txtRemotePort
+            // 
+            this.txtRemotePort.Location = new System.Drawing.Point(345, 76);
+            this.txtRemotePort.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.txtRemotePort.Name = "txtRemotePort";
+            this.txtRemotePort.Size = new System.Drawing.Size(159, 28);
+            this.txtRemotePort.TabIndex = 9;
+            this.txtRemotePort.Text = "8888";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(341, 51);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(98, 21);
+            this.label3.TabIndex = 6;
+            this.label3.Text = "Remote Port";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(178, 51);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(124, 21);
+            this.label2.TabIndex = 7;
+            this.label2.Text = "Remote Address";
+            // 
+            // txtLocalPort
+            // 
+            this.txtLocalPort.Location = new System.Drawing.Point(11, 76);
+            this.txtLocalPort.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.txtLocalPort.Name = "txtLocalPort";
+            this.txtLocalPort.Size = new System.Drawing.Size(159, 28);
+            this.txtLocalPort.TabIndex = 10;
+            this.txtLocalPort.Text = "11000";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(7, 51);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(79, 21);
+            this.label1.TabIndex = 8;
+            this.label1.Text = "Local Port";
             // 
             // ChatForm
             // 
@@ -335,5 +405,11 @@
         private System.Windows.Forms.Button btnSendToAll;
         private System.Windows.Forms.Button btnSend;
         private System.Windows.Forms.RichTextBox lstChatMsgs;
+        private System.Windows.Forms.ComboBox txtRemoteAddress;
+        private System.Windows.Forms.TextBox txtRemotePort;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox txtLocalPort;
+        private System.Windows.Forms.Label label1;
     }
 }
