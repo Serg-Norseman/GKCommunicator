@@ -18,25 +18,31 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-using System.Windows.Forms;
-using GKNet.Core;
+using System.Net;
 
-namespace GKCommunicatorApp
+namespace GKNet
 {
-    public partial class SysInfoWin : Form
+    public enum PeerState
     {
-        public SysInfoWin()
+        Unknown, Unchecked, Checked
+    }
+
+    public class Peer
+    {
+        public IPAddress Address { get; private set; }
+        public PeerState State { get; set; }
+        public PeerProfile Profile { get; private set; }
+
+        public Peer(IPAddress address)
         {
-            InitializeComponent();
+            Address = address;
+            State = PeerState.Unknown;
+            Profile = new PeerProfile();
         }
 
-        private void SysInfoWin_Load(object sender, EventArgs e)
+        public override string ToString()
         {
-            textBox1.Text += "UserName: " + SysHelper.GetUserName() + "\r\n";
-            textBox1.Text += "UserCountry: " + SysHelper.GetUserCountry() + "\r\n";
-            textBox1.Text += "TimeZone: " + SysHelper.GetTimeZone() + "\r\n";
-            textBox1.Text += "Languages: " + SysHelper.GetLanguages() + "\r\n";
+            return string.Format("{0} ({1})", Address.ToString(), State.ToString());
         }
     }
 }

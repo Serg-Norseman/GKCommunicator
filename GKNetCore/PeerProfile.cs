@@ -19,24 +19,13 @@
  */
 
 using System;
-using System.Windows.Forms;
-using GKNet.Core;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
-namespace GKCommunicatorApp
+namespace GKNet
 {
-    public partial class SysInfoWin : Form
+    public class PeerProfile
     {
-        public SysInfoWin()
-        {
-            InitializeComponent();
-        }
-
-        private void SysInfoWin_Load(object sender, EventArgs e)
-        {
-            textBox1.Text += "UserName: " + SysHelper.GetUserName() + "\r\n";
-            textBox1.Text += "UserCountry: " + SysHelper.GetUserCountry() + "\r\n";
-            textBox1.Text += "TimeZone: " + SysHelper.GetTimeZone() + "\r\n";
-            textBox1.Text += "Languages: " + SysHelper.GetLanguages() + "\r\n";
-        }
     }
 }

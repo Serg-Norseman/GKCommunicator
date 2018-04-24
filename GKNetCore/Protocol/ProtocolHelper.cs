@@ -26,6 +26,7 @@ namespace GKNet.Protocol
     public class ProtocolHelper
     {
         public const string NETWORK_SIGN = "GEDKEEPER NETWORK";
+        public const int PublicTCPPort = 11000;
 
         public static byte[] CreateSignInfoKey()
         {
@@ -43,6 +44,29 @@ namespace GKNet.Protocol
             var args = new BDictionary();
             args.Add("app", "GEDKeeper Communicator");
             args.Add("ver", "2.14.0");
+
+            data.Add("a", args);
+
+            return data.EncodeAsBytes();
+        }
+
+        public static byte[] CreateHandshakeResponse()
+        {
+            var data = new BDictionary();
+            data.Add("y", "r");
+            data.Add("r", "handshake");
+
+            return data.EncodeAsBytes();
+        }
+
+        public static byte[] CreateChatMessage(string message)
+        {
+            var data = new BDictionary();
+            data.Add("y", "q");
+            data.Add("q", "chat");
+
+            var args = new BDictionary();
+            args.Add("msg", message);
 
             data.Add("a", args);
 

@@ -38,7 +38,7 @@ namespace GKNet.TCP
         public event EventHandler<DataReceiveEventArgs> DataReceive;
 
         // This is the method that starts the server listening.
-        public void Start(int port = 8080)
+        public void Connect(int port = 8080)
         {
             fLocalPort = port;
             // Create the new socket on which we'll be listening.
@@ -104,12 +104,16 @@ namespace GKNet.TCP
 
         public TCPConnection CreateConnection(IPEndPoint point)
         {
-            var extSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            extSocket.Connect(point);
-            return new TCPConnection(this, extSocket, false);
+            try {
+                var extSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                extSocket.Connect(point);
+                return new TCPConnection(this, extSocket, false);
+            } catch (Exception ex) {
+                return null;
+            }
         }
 
-        public void Send(IPEndPoint point, string msg)
+        /*public void Send(IPEndPoint point, string msg)
         {
             var newConn = CreateConnection(point);
             newConn.Send(Encoding.UTF8.GetBytes(msg));
@@ -119,7 +123,7 @@ namespace GKNet.TCP
         {
             var newConn = CreateConnection(point);
             newConn.Send(data);
-        }
+        }*/
 
         public void RaiseDataReceive(byte[] data, IPEndPoint peer)
         {

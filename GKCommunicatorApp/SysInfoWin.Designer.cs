@@ -1,4 +1,4 @@
-﻿namespace GKSimpleChat
+﻿namespace GKCommunicatorApp
 {
     partial class SysInfoWin
     {

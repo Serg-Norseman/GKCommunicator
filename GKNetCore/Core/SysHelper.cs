@@ -19,6 +19,9 @@
  */
 
 using System;
+using System.Net;
+using System.Net.NetworkInformation;
+using System.Text.RegularExpressions;
 //using System.Windows.Forms;
 
 namespace GKNet.Core
@@ -55,6 +58,21 @@ namespace GKNet.Core
                 result += (c.Culture.ThreeLetterISOLanguageName);
             }*/
             return result;
+        }
+
+        public static string GetPublicIPAddress()
+        {
+            if (!NetworkInterface.GetIsNetworkAvailable()) {
+                return null;
+            }
+
+            try {
+                string externalIP;
+                externalIP = (new WebClient()).DownloadString("http://checkip.dyndns.org/");
+                externalIP = (new Regex(@"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"))
+                             .Matches(externalIP)[0].ToString();
+                return externalIP;
+            } catch { return null; }
         }
     }
 }

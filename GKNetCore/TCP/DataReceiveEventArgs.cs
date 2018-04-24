@@ -23,7 +23,7 @@ using System.Net;
 
 namespace GKNet.TCP
 {
-    public class DataReceiveEventArgs : EventArgs
+    public sealed class DataReceiveEventArgs : EventArgs
     {
         private byte[] fData;
         private IPEndPoint fPeer;

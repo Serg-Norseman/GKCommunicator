@@ -18,27 +18,24 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
+using System.Collections.Generic;
+using System.Net;
 
 namespace GKNet.Core
 {
-    public delegate void OnSynchronizeMemberList(object sender, string Member);
-
     public interface IChatCore
     {
         string MemberName { get; set; }
-
-        event EventHandler Offline;
-        event EventHandler Online;
-        event OnSynchronizeMemberList OnSynchronizeMemberList;
-
-        void SendJoin(string member);
-        void SendChat(string member, string message);
-        void SendWhisper(string member, string memberTo, string message);
-        void SendLeave(string member);
-        void SendSynchronizeMemberList(string member);
+        IList<Peer> Peers { get; }
 
         void Connect();
         void Disconnect();
+        void Join(string member);
+        void Leave(string member);
+        void Send(Peer target, string message);
+        void SendToAll(string message);
+
+        void AddPeer(IPAddress peerAddress);
+        Peer FindPeer(IPAddress peerAddress);
     }
 }

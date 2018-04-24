@@ -22,10 +22,9 @@ namespace GKNet.Core
 {
     public interface IChatForm
     {
-        void OnJoin(string member);
-        void OnLeave(string member);
-        void OnChat(string member, string message);
-        void OnWhisper(string member, string memberTo, string message);
-        void OnSynchronizeMemberList(string member);
+        void OnJoin(Peer member);
+        void OnLeave(Peer member);
+        void OnMessageReceived(Peer sender, string message);
+        void OnPeersListChanged();
     }
 }

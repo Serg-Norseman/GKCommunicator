@@ -244,6 +244,9 @@ namespace GKNet.DHT
 
             fRoutingTable.AddOrUpdateNode(new DHTNode(id.Value, ipinfo));
 
+            // according to bep_????, most types of response contain a list of nodes
+            ProcessNodesStr(ipinfo, nodesStr);
+
             // define type of response by transactionId of query/response
             QueryType queryType = CheckTransaction(tid);
 
@@ -281,9 +284,6 @@ namespace GKNet.DHT
                     break;
             }
 
-            // according to bep_????, most types of response contain a list of nodes
-            ProcessNodesStr(ipinfo, nodesStr);
-
             if (canAnnounce) {
                 SendAnnouncePeerQuery(ipinfo, fSearchInfoHash, 1, fLocalIP.Port, tokStr);
             }
@@ -298,12 +298,14 @@ namespace GKNet.DHT
                     // if infohash and peers for it was found
                     fLogger.WriteLog("receive " + values.Count + " values from " + ipinfo.ToString(), true);
 
-                    fLogger.WriteLog("send ping " + values[0].ToString(), true);
-                    SendPingQuery(values[0], true);
+                    foreach (var val in values) {
+                        fLogger.WriteLog("send ping " + values[0].ToString(), true);
+                        SendPingQuery(values[0], true);
 
-                    var newaddr = new IPEndPoint(values[0].Address, fLocalIP.Port);
-                    fLogger.WriteLog("send ping " + newaddr.ToString(), true);
-                    SendPingQuery(newaddr, true);
+                        var newaddr = new IPEndPoint(values[0].Address, fLocalIP.Port);
+                        fLogger.WriteLog("send ping " + newaddr.ToString(), true);
+                        SendPingQuery(newaddr, true);
+                    }
 
                     // TODO: handshake and other
                     // TODO: check that there is no current node in the response

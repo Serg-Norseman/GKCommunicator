@@ -20,15 +20,13 @@
 
 using System;
 using System.ComponentModel;
-using System.Net;
-using System.Text;
+using System.Diagnostics;
+using System.IO;
 using System.Windows.Forms;
 using GKNet;
 using GKNet.Core;
-using GKNet.Protocol;
-using GKNet.TCP;
 
-namespace GKSimpleChat
+namespace GKCommunicatorApp
 {
     public partial class ChatForm : Form, IChatForm
     {
@@ -37,26 +35,18 @@ namespace GKSimpleChat
         private string fMemberName;
         private IChatCore fCore;
 
-        private TCPDuplexClient fClient;
-
         public ChatForm()
         {
             InitializeComponent();
-            fCore = new ChatDHTCP(this);
-            fCore.Online += ostat_Online;
-            fCore.Offline += ostat_Offline;
+
             Closing += new CancelEventHandler(WindowMain_Closing);
             txtMemberName.Focus();
+
+            fCore = new ChatDHTCP(this);
         }
 
         void WindowMain_Closing(object sender, CancelEventArgs e)
         {
-            if (fClient != null) {
-                fClient.Disconnect();
-            }
-
-            //
-
             fCore.Disconnect();
         }
 
@@ -65,131 +55,24 @@ namespace GKSimpleChat
             lstChatMsgs.AppendText(text + "\r\n");
         }
 
-        public void RaiseDataReceive(object sender, DataReceiveEventArgs e)
-        {
-            Invoke((MethodInvoker)delegate {
-                AddChatText(Encoding.UTF8.GetString(e.Data));
-            });
-        }
-
-        #region Protocol features
-
-        private void SendHandshakeQuery()
-        {
-            var data = ProtocolHelper.CreateHandshakeQuery();
-            var endPoint = new IPEndPoint(IPAddress.Parse(txtRemoteAddress.Text), int.Parse(txtRemotePort.Text));
-            var conn = fClient.GetConnection(endPoint);
-            conn.Send(data);
-        }
-
-        #endregion
-
-        #region IChatForm members
-
-        public void OnJoin(string member)
-        {
-            Invoke(
-                (MethodInvoker)delegate {
-                    AddChatText(member + " joined the chatroom.");
-
-                    // this will retrieve any new members that have joined before the current user
-                    fCore.SendSynchronizeMemberList(fMemberName);
-                });
-        }
-
-        public void OnChat(string member, string message)
-        {
-            Invoke(
-                (MethodInvoker)delegate {
-                    AddChatText(member + " says: " + message);
-                });
-        }
-
-        public void OnWhisper(string member, string memberTo, string message)
-        {
-            Invoke(
-                (MethodInvoker)delegate {
-                    //this is a rudimentary form of whisper and is flawed so should NOT be used in production.
-                    //this method simply checks the sender and to address and only displays the message
-                    //if it belongs to this member, however! - if there are N members with the same name
-                    //they will all be whispered to from the sender since the message is broadcast to everybody.
-                    //the correct way to implement this would
-                    //be to instead retrieve the peer name from the mesh for the member you want to whisper to
-                    //and send the message directly to that peer node via the mesh.  i may update the code to do 
-                    //that in the future but for now i'm too busy with other things to mess with it hence it's
-                    //left as an exercise for the reader.
-                    if (fMemberName.Equals(member) || fMemberName.Equals(memberTo)) {
-                        AddChatText(member + " whispers: " + message);
-                    }
-                });
-        }
-
-        public void OnLeave(string member)
-        {
-            Invoke(
-                (MethodInvoker)delegate {
-                    AddChatText(member + " left the chatroom.");
-                });
-        }
-
-        public void OnSynchronizeMemberList(string member)
-        {
-            Invoke(
-                (MethodInvoker)delegate {
-                    //as member names come in we simply disregard duplicates and 
-                    //add them to the member list, this way we can retrieve a list
-                    //of members already in the chatroom when we enter at any time.
-
-                    //again, since this is just an example this is the simplified
-                    //way to do things.  the correct way would be to retrieve a list
-                    //of peernames and retrieve the metadata from each one which would
-                    //tell us what the member name is and add it.  we would want to check
-                    //this list when we join the mesh to make sure our member name doesn't 
-                    //conflict with someone else
-                    if (!lstMembers.Items.Contains(member)) {
-                        lstMembers.Items.Add(member);
-                    }
-                });
-        }
-
-        void ostat_Offline(object sender, EventArgs e)
-        {
-            // implement later
-        }
-
-        void ostat_Online(object sender, EventArgs e)
-        {
-            Invoke((MethodInvoker)delegate {
-                fMemberName = txtMemberName.Text;
-                lblConnectionStatus.Text = "Welcome to the chat room!";
-                fCore.SendJoin(fMemberName);
-            });
-        }
-
-        #endregion
-
         private void btnConnect_Click(object sender, EventArgs e)
         {
-            fClient = new TCPDuplexClient();
-            fClient.DataReceive += RaiseDataReceive;
-            fClient.Start(int.Parse(txtLocalPort.Text));
-
-            txtLocalPort.Enabled = false;
             btnConnect.Enabled = false;
-
-            //
-
             lblConnectionStatus.Visible = true;
-            // join the P2P mesh from a worker thread
+
             fCore.MemberName = fMemberName;
+
+            // join the P2P mesh from a worker thread
             NoArgDelegate executor = new NoArgDelegate(fCore.Connect);
             executor.BeginInvoke(null, null);
         }
 
         private void btnSendToAll_Click(object sender, EventArgs e)
         {
-            if (!String.IsNullOrEmpty(txtChatMsg.Text)) {
-                fCore.SendChat(fMemberName, txtChatMsg.Text);
+            var msgText = txtChatMsg.Text;
+
+            if (!String.IsNullOrEmpty(msgText)) {
+                fCore.SendToAll(msgText);
                 txtChatMsg.Clear();
                 txtChatMsg.Focus();
             }
@@ -197,14 +80,11 @@ namespace GKSimpleChat
 
         private void btnSend_Click(object sender, EventArgs e)
         {
-            //var endPoint = new IPEndPoint(IPAddress.Parse(txtRemoteAddress.Text), int.Parse(txtRemotePort.Text));
-            //fClient.Send(endPoint, txtMsg.Text);
-            SendHandshakeQuery();
+            var peerItem = (lstMembers.SelectedItem as Peer);
+            var msgText = txtChatMsg.Text;
 
-            //
-
-            if ((!String.IsNullOrEmpty(txtChatMsg.Text)) && (lstMembers.SelectedIndex >= 0)) {
-                fCore.SendWhisper(fMemberName, lstMembers.SelectedItem.ToString(), txtChatMsg.Text);
+            if ((!String.IsNullOrEmpty(msgText)) && (peerItem != null)) {
+                fCore.Send(peerItem, msgText);
                 txtChatMsg.Clear();
                 txtChatMsg.Focus();
             }
@@ -212,9 +92,7 @@ namespace GKSimpleChat
 
         private void miDHTLog_Click(object sender, EventArgs e)
         {
-            using (var dlg = new DHTLogDlg()) {
-                dlg.ShowDialog();
-            }
+            LoadExtFile("./dht.log");
         }
 
         private void miSysInfo_Click(object sender, EventArgs e)
@@ -223,5 +101,62 @@ namespace GKSimpleChat
                 dlgSysInfo.ShowDialog();
             }
         }
+
+        private void miExternalIP_Click(object sender, EventArgs e)
+        {
+            LoadExtFile("https://2ip.ru/");
+        }
+
+        #region IChatForm members
+
+        void IChatForm.OnPeersListChanged()
+        {
+            Invoke((MethodInvoker)delegate {
+                lstMembers.BeginUpdate();
+                lstMembers.Items.Clear();
+                foreach (var peer in fCore.Peers) {
+                    lstMembers.Items.Add(peer);
+                }
+                lstMembers.EndUpdate();
+            });
+        }
+
+        void IChatForm.OnMessageReceived(Peer sender, string message)
+        {
+            Invoke((MethodInvoker)delegate {
+                AddChatText(message);
+            });
+        }
+
+        void IChatForm.OnJoin(Peer member)
+        {
+            Invoke((MethodInvoker)delegate {
+                //AddChatText(member + " joined the chatroom.");
+            });
+        }
+
+        void IChatForm.OnLeave(Peer member)
+        {
+            Invoke((MethodInvoker)delegate {
+                //AddChatText(member + " left the chatroom.");
+            });
+        }
+
+        #endregion
+
+        #region External functions
+
+        public static void LoadExtFile(string fileName)
+        {
+#if !CI_MODE
+            if (File.Exists(fileName)) {
+                Process.Start(new ProcessStartInfo("file://" + fileName) { UseShellExecute = true });
+            } else {
+                Process.Start(fileName);
+            }
+#endif
+        }
+
+        #endregion
     }
 }
