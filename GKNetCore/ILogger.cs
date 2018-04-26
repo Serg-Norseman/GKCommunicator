@@ -18,10 +18,11 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace GKNet.Core
+namespace GKNet
 {
     public interface ILogger
     {
-        void WriteLog(string str, bool display = true);
+        void WriteLog(string str);
+        void WriteLog(string str, params object[] args);
     }
 }

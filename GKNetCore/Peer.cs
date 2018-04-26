@@ -30,12 +30,14 @@ namespace GKNet
     public class Peer
     {
         public IPAddress Address { get; private set; }
+        public IPEndPoint EndPoint { get; private set; }
         public PeerState State { get; set; }
         public PeerProfile Profile { get; private set; }
 
         public Peer(IPAddress address)
         {
             Address = address;
+            EndPoint = new IPEndPoint(address, ProtocolHelper.PublicTCPPort);
             State = PeerState.Unknown;
             Profile = new PeerProfile();
         }

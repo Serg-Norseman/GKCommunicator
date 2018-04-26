@@ -20,7 +20,7 @@
 
 using System;
 using System.Windows.Forms;
-using GKNet.Core;
+using GKNet;
 
 namespace GKCommunicatorApp
 {

@@ -29,9 +29,7 @@ using System.Text;
 using System.Threading;
 using BencodeNET.Objects;
 using BencodeNET.Parsing;
-using GKNet.Core;
 using GKNet.DHT;
-using GKNet.Protocol;
 using GKNet.TCP;
 
 namespace GKNet
@@ -78,6 +76,8 @@ namespace GKNet
 
             InitLogs();
 
+            NATMapper.CreateNATMapping(this);
+
             fDHTClient = new DHTClient(IPAddress.Any, DHTClient.PublicDHTPort, this);
             fDHTClient.PeersFound += delegate (object sender, PeersFoundEventArgs e) {
                 WriteLog(string.Format("Found peers: {0}", e.Peers.Count));
@@ -92,7 +92,7 @@ namespace GKNet
             };
 
             fTCPClient = new TCPDuplexClient();
-            fTCPClient.DataReceive += RaiseDataReceive;
+            fTCPClient.DataReceive += OnDataReceive;
         }
 
         public void Connect()
@@ -141,35 +141,43 @@ namespace GKNet
 
         #region Protocol features
 
-        public void SendHandshakeQuery(Peer peer)
+        private void SendData(IPEndPoint endPoint, byte[] data)
         {
-            peer.State = PeerState.Unchecked;
-
-            var data = ProtocolHelper.CreateHandshakeQuery();
-            var endPoint = new IPEndPoint(peer.Address, ProtocolHelper.PublicTCPPort);
             var conn = fTCPClient.GetConnection(endPoint);
             if (conn != null) {
                 conn.Send(data);
             }
+        }
+
+        public void SendHandshakeQuery(Peer peer)
+        {
+            peer.State = PeerState.Unchecked;
+            var data = ProtocolHelper.CreateHandshakeQuery();
+            SendData(peer.EndPoint, data);
         }
 
         public void SendHandshakeResponse(IPEndPoint endPoint)
         {
             var data = ProtocolHelper.CreateHandshakeResponse();
-            var conn = fTCPClient.GetConnection(endPoint);
-            if (conn != null) {
-                conn.Send(data);
-            }
+            SendData(endPoint, data);
         }
 
         public void SendMessage(Peer peer, string message)
         {
             var data = ProtocolHelper.CreateChatMessage(message);
-            var endPoint = new IPEndPoint(peer.Address, ProtocolHelper.PublicTCPPort);
-            var conn = fTCPClient.GetConnection(endPoint);
-            if (conn != null) {
-                conn.Send(data);
-            }
+            SendData(peer.EndPoint, data);
+        }
+
+        public void SendGetPeerInfoQuery(Peer peer)
+        {
+            var data = ProtocolHelper.CreateGetPeerInfoQuery();
+            SendData(peer.EndPoint, data);
+        }
+
+        public void SendGetPeerInfoResponse(IPEndPoint endPoint)
+        {
+            var data = ProtocolHelper.CreateGetPeerInfoResponse();
+            SendData(endPoint, data);
         }
 
         #endregion
@@ -182,9 +190,10 @@ namespace GKNet
             fForm.OnPeersListChanged();
         }
 
-        private void RaiseDataReceive(object sender, DataReceiveEventArgs e)
+        private void OnDataReceive(object sender, DataReceiveEventArgs e)
         {
             var dic = fParser.Parse<BDictionary>(e.Data);
+            fForm.OnMessageReceived(null, dic.EncodeAsString());
 
             string msgType = dic.Get<BString>("y").ToString();
             switch (msgType) {
@@ -194,6 +203,10 @@ namespace GKNet
                     switch (queryType) {
                         case "handshake":
                             SendHandshakeResponse(e.Peer);
+                            break;
+
+                        case "getpeerinfo":
+                            SendGetPeerInfoResponse(e.Peer);
                             break;
 
                         case "chat":
@@ -212,7 +225,11 @@ namespace GKNet
                             var pr = FindPeer(e.Peer.Address);
                             if (pr != null) {
                                 pr.State = PeerState.Checked;
+                                SendGetPeerInfoQuery(pr);
                             }
+                            break;
+
+                        case "getpeerinfo":
                             break;
                     }
                     break;
@@ -246,12 +263,17 @@ namespace GKNet
             }
         }
 
-        public void WriteLog(string str, bool display = true)
+        public void WriteLog(string str)
         {
             var fswriter = new StreamWriter(new FileStream("./dht.log", FileMode.Append));
             fswriter.WriteLine(str);
             fswriter.Flush();
             fswriter.Close();
+        }
+
+        public void WriteLog(string str, params object[] args)
+        {
+            WriteLog(string.Format(str, args));
         }
     }
 }

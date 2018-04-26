@@ -160,12 +160,18 @@ namespace GKNet.DHT
 
         public IList<DHTNode> FindNodes(byte[] id)
         {
+            Route[] values;
+            lock (this) {
+                values = fKTable.Values.ToArray();
+            }
+
             if (fKTable.Count <= 8)
-                return fKTable.Values.Take(8).Select(route => route.Node).ToArray();
+                return values.Take(8).Select(route => route.Node).ToArray();
+
             var list = new SortedList<byte[], DHTNode>(8, RouteComparer.Instance);
             var minTime = DateTime.MaxValue.Ticks;
             var tableFull = fKTable.Count >= fMaxNodeSize;
-            foreach (var item in fKTable.Values) {
+            foreach (var item in values) {
                 if (tableFull && DateTime.Now.Ticks - item.LastTime > fRouteLife.Ticks) {
                     fKTable.Remove(item.RouteId);
                     continue;

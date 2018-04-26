@@ -11,6 +11,7 @@
     <AssemblyName>GKNetCore</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Mono.Nat">
+      <HintPath>..\libs\Mono.Nat.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
@@ -56,25 +60,27 @@
     <Compile Include="BencodeNET\Parsing\ParseUtil.cs" />
     <Compile Include="BencodeNET\UtilityExtensions.cs" />
     <Compile Include="ChatDHTCP.cs" />
-    <Compile Include="Core\IChatForm.cs" />
+    <Compile Include="IChatForm.cs" />
     <Compile Include="DHT\BTClient.cs" />
     <Compile Include="DHT\DHTClient.cs" />
     <Compile Include="DHT\DHTHelper.cs" />
     <Compile Include="DHT\DHTMessage.cs" />
     <Compile Include="DHT\DHTNode.cs" />
     <Compile Include="DHT\DHTRoutingTable.cs" />
-    <Compile Include="Core\ILogger.cs" />
+    <Compile Include="ILogger.cs" />
     <Compile Include="DHT\PeersFoundEventArgs.cs" />
-    <Compile Include="Core\IChatCore.cs" />
+    <Compile Include="IChatCore.cs" />
+    <Compile Include="NATMapper.cs" />
     <Compile Include="Peer.cs" />
     <Compile Include="PeerProfile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Protocol\ProtocolHelper.cs" />
-    <Compile Include="Core\SysHelper.cs" />
+    <Compile Include="ProtocolHelper.cs" />
+    <Compile Include="SysHelper.cs" />
     <Compile Include="TCP\DataReceiveEventArgs.cs" />
     <Compile Include="TCP\TCPConnection.cs" />
     <Compile Include="TCP\TCPDuplexClient.cs" />
     <Compile Include="UserProfile.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

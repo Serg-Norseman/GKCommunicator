@@ -21,7 +21,7 @@
 using BencodeNET.Objects;
 using GKNet.DHT;
 
-namespace GKNet.Protocol
+namespace GKNet
 {
     public class ProtocolHelper
     {
@@ -67,6 +67,32 @@ namespace GKNet.Protocol
 
             var args = new BDictionary();
             args.Add("msg", message);
+
+            data.Add("a", args);
+
+            return data.EncodeAsBytes();
+        }
+
+        public static byte[] CreateGetPeerInfoQuery()
+        {
+            var data = new BDictionary();
+            data.Add("y", "q");
+            data.Add("q", "getpeerinfo");
+
+            return data.EncodeAsBytes();
+        }
+
+        public static byte[] CreateGetPeerInfoResponse()
+        {
+            var data = new BDictionary();
+            data.Add("y", "r");
+            data.Add("r", "getpeerinfo");
+
+            var args = new BDictionary();
+            args.Add("uname", SysHelper.GetUserName());
+            args.Add("uctry", SysHelper.GetUserCountry());
+            args.Add("utz", SysHelper.GetTimeZone());
+            args.Add("ulangs", SysHelper.GetLanguages());
 
             data.Add("a", args);
 

@@ -18,13 +18,24 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace GKNet.Core
+using System.Collections.Generic;
+using System.Net;
+
+namespace GKNet
 {
-    public interface IChatForm
+    public interface IChatCore
     {
-        void OnJoin(Peer member);
-        void OnLeave(Peer member);
-        void OnMessageReceived(Peer sender, string message);
-        void OnPeersListChanged();
+        string MemberName { get; set; }
+        IList<Peer> Peers { get; }
+
+        void Connect();
+        void Disconnect();
+        void Join(string member);
+        void Leave(string member);
+        void Send(Peer target, string message);
+        void SendToAll(string message);
+
+        void AddPeer(IPAddress peerAddress);
+        Peer FindPeer(IPAddress peerAddress);
     }
 }

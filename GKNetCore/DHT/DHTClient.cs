@@ -26,7 +26,6 @@ using System.Net.Sockets;
 using System.Threading;
 using BencodeNET.Objects;
 using BencodeNET.Parsing;
-using GKNet.Core;
 
 namespace GKNet.DHT
 {
@@ -296,14 +295,14 @@ namespace GKNet.DHT
                 var values = DHTHelper.ParseValuesList(valuesList);
                 if (values.Count > 0) {
                     // if infohash and peers for it was found
-                    fLogger.WriteLog("receive " + values.Count + " values from " + ipinfo.ToString(), true);
+                    fLogger.WriteLog("receive " + values.Count + " values from " + ipinfo.ToString());
 
                     foreach (var val in values) {
-                        fLogger.WriteLog("send ping " + values[0].ToString(), true);
+                        fLogger.WriteLog("send ping " + values[0].ToString());
                         SendPingQuery(values[0], true);
 
                         var newaddr = new IPEndPoint(values[0].Address, fLocalIP.Port);
-                        fLogger.WriteLog("send ping " + newaddr.ToString(), true);
+                        fLogger.WriteLog("send ping " + newaddr.ToString());
                         SendPingQuery(newaddr, true);
                     }
 
@@ -324,7 +323,7 @@ namespace GKNet.DHT
                     throw new Exception("sd");
 
                 var nodesList = DHTHelper.ParseNodesList(nodesStr.Value);
-                fLogger.WriteLog("receive " + nodesList.Count + " nodes from " + ipinfo.ToString(), false);
+                fLogger.WriteLog("receive " + nodesList.Count + " nodes from " + ipinfo.ToString());
 
                 foreach (var t in nodesList) {
                     fRoutingTable.AddOrUpdateNode(t);

@@ -24,7 +24,7 @@ using System.Net.NetworkInformation;
 using System.Text.RegularExpressions;
 //using System.Windows.Forms;
 
-namespace GKNet.Core
+namespace GKNet
 {
     public static class SysHelper
     {

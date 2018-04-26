@@ -24,7 +24,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
 using GKNet;
-using GKNet.Core;
 
 namespace GKCommunicatorApp
 {

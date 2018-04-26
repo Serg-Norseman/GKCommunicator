@@ -13,4 +13,6 @@
 /GKCommunicatorPlugin/obj/
 
 /temp/
-/libs/
+
+/libs/linux/
+/libs/mswin/
