@@ -37,12 +37,6 @@ namespace GKNet
             NatUtility.StartDiscovery();
 
             fLogger.WriteLog("NAT Discovery started");
-
-            /*while (true) {
-                Thread.Sleep(500000);
-                NatUtility.StopDiscovery();
-                NatUtility.StartDiscovery();
-            }*/
         }
 
         private static void DeviceFound(object sender, DeviceEventArgs args)
@@ -63,14 +57,18 @@ namespace GKNet
                 fLogger.WriteLog("Create Mapping: protocol={0}, public={1}, private={2}", mapping.Protocol, mapping.PublicPort, mapping.PrivatePort);
 
                 try {
-                    Mapping m = device.GetSpecificMapping(Mono.Nat.Protocol.Tcp, 6001);
+                    Mapping m = device.GetSpecificMapping(Mono.Nat.Protocol.Tcp, DHTClient.PublicDHTPort);
+                    fLogger.WriteLog("Specific Mapping: protocol={0}, public={1}, private={2}", m.Protocol, m.PublicPort, m.PrivatePort);
+
+                    m = device.GetSpecificMapping(Mono.Nat.Protocol.Udp, DHTClient.PublicDHTPort);
                     fLogger.WriteLog("Specific Mapping: protocol={0}, public={1}, private={2}", m.Protocol, m.PublicPort, m.PrivatePort);
                 } catch {
                     fLogger.WriteLog("Couldnt get specific mapping");
                 }
+
                 foreach (Mapping mp in device.GetAllMappings()) {
                     fLogger.WriteLog("Existing Mapping: protocol={0}, public={1}, private={2}", mp.Protocol, mp.PublicPort, mp.PrivatePort);
-                    device.DeletePortMap(mp);
+                    //device.DeletePortMap(mp);
                 }
 
                 fLogger.WriteLog("Done...");

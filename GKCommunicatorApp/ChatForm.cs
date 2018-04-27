@@ -22,6 +22,7 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Windows.Forms;
 using GKNet;
 
@@ -60,6 +61,7 @@ namespace GKCommunicatorApp
             lblConnectionStatus.Visible = true;
 
             fCore.MemberName = fMemberName;
+            fCore.TCPListenerPort = ProtocolHelper.PublicTCPPort;
 
             // join the P2P mesh from a worker thread
             NoArgDelegate executor = new NoArgDelegate(fCore.Connect);
@@ -157,5 +159,23 @@ namespace GKCommunicatorApp
         }
 
         #endregion
+
+        private void miAddDebugPeer_Click(object sender, EventArgs e)
+        {
+            fCore.AddPeer(IPAddress.Parse("127.0.0.1"), ProtocolHelper.DebugTCPPort);
+        }
+
+        private void btnDebugConnect_Click(object sender, EventArgs e)
+        {
+            btnConnect.Enabled = false;
+            lblConnectionStatus.Visible = true;
+
+            fCore.MemberName = fMemberName;
+            fCore.TCPListenerPort = ProtocolHelper.DebugTCPPort;
+
+            // join the P2P mesh from a worker thread
+            NoArgDelegate executor = new NoArgDelegate(fCore.Connect);
+            executor.BeginInvoke(null, null);
+        }
     }
 }

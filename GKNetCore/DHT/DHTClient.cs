@@ -74,10 +74,10 @@ namespace GKNet.DHT
             //fSocket.Bind(fLocalIP);
 
             fClient = new UdpClient(fLocalIP);
-            //fClient.AllowNatTraversal(true);
+            fClient.AllowNatTraversal(true);
             fClient.Ttl = 255;
             fClient.Client.IOControl((IOControlCode)SIO_UDP_CONNRESET, optionInValue, optionOutValue);
-            //fClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            fClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
         }
 
         public void Run()
@@ -450,7 +450,7 @@ namespace GKNet.DHT
 
                 if (fTransactions.TryGetValue(tid, out message)) {
                     result = message.QueryType;
-                    fTransactions[tid] = null;
+                    fTransactions.Remove(tid);
                 }
             }
 

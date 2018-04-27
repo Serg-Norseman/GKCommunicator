@@ -33,18 +33,25 @@ namespace GKNet.TCP
         private List<TCPConnection> fConnections = new List<TCPConnection>();
         private IPAddress fLocalAddress = IPAddress.Any;
         private int fLocalPort;
+        internal readonly ILogger fLogger;
         private Socket fSocket;
 
         public event EventHandler<DataReceiveEventArgs> DataReceive;
 
+        public TCPDuplexClient(ILogger logger)
+        {
+            fLogger = logger;
+        }
+
         // This is the method that starts the server listening.
         public void Connect(int port = 8080)
         {
+            fBacklog = 100;
             fLocalPort = port;
             // Create the new socket on which we'll be listening.
             fSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             // global with NAT traversal
-            //fSocket.SetIPProtectionLevel(IPProtectionLevel.Unrestricted);
+            fSocket.SetIPProtectionLevel(IPProtectionLevel.Unrestricted);
             // Bind the socket to the address and port.
             fSocket.Bind(new IPEndPoint(IPAddress.Any, port));
             // Start listening.
@@ -111,6 +118,7 @@ namespace GKNet.TCP
                 extSocket.Connect(point);
                 return new TCPConnection(this, extSocket, false);
             } catch (Exception ex) {
+                fLogger.WriteLog("TCPDuplexClient.CreateConnection(): " + ex.Message);
                 return null;
             }
         }

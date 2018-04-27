@@ -27,6 +27,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.miConnection = new System.Windows.Forms.ToolStripMenuItem();
             this.miView = new System.Windows.Forms.ToolStripMenuItem();
@@ -43,18 +44,22 @@
             this.lblMemberName = new System.Windows.Forms.Label();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.lstMembers = new System.Windows.Forms.ListBox();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.miAddDebugPeer = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.lstChatMsgs = new System.Windows.Forms.RichTextBox();
             this.txtChatMsg = new System.Windows.Forms.TextBox();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.btnSendToAll = new System.Windows.Forms.Button();
             this.btnSend = new System.Windows.Forms.Button();
+            this.btnDebugConnect = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.panTempHeader.SuspendLayout();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            this.contextMenuStrip1.SuspendLayout();
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
@@ -145,6 +150,7 @@
             // 
             // panTempHeader
             // 
+            this.panTempHeader.Controls.Add(this.btnDebugConnect);
             this.panTempHeader.Controls.Add(this.btnConnect);
             this.panTempHeader.Controls.Add(this.txtMemberName);
             this.panTempHeader.Controls.Add(this.lblMemberName);
@@ -152,7 +158,7 @@
             this.panTempHeader.Location = new System.Drawing.Point(0, 30);
             this.panTempHeader.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.panTempHeader.Name = "panTempHeader";
-            this.panTempHeader.Size = new System.Drawing.Size(782, 42);
+            this.panTempHeader.Size = new System.Drawing.Size(782, 87);
             this.panTempHeader.TabIndex = 11;
             // 
             // btnConnect
@@ -187,7 +193,7 @@
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 72);
+            this.splitContainer1.Location = new System.Drawing.Point(0, 117);
             this.splitContainer1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.splitContainer1.Name = "splitContainer1";
             // 
@@ -198,20 +204,36 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(782, 456);
+            this.splitContainer1.Size = new System.Drawing.Size(782, 411);
             this.splitContainer1.SplitterDistance = 254;
             this.splitContainer1.TabIndex = 12;
             // 
             // lstMembers
             // 
+            this.lstMembers.ContextMenuStrip = this.contextMenuStrip1;
             this.lstMembers.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lstMembers.FormattingEnabled = true;
             this.lstMembers.ItemHeight = 21;
             this.lstMembers.Location = new System.Drawing.Point(0, 0);
             this.lstMembers.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.lstMembers.Name = "lstMembers";
-            this.lstMembers.Size = new System.Drawing.Size(254, 456);
+            this.lstMembers.Size = new System.Drawing.Size(254, 411);
             this.lstMembers.TabIndex = 4;
+            // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.miAddDebugPeer});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(188, 28);
+            // 
+            // miAddDebugPeer
+            // 
+            this.miAddDebugPeer.Name = "miAddDebugPeer";
+            this.miAddDebugPeer.Size = new System.Drawing.Size(187, 24);
+            this.miAddDebugPeer.Text = "Add debug peer";
+            this.miAddDebugPeer.Click += new System.EventHandler(this.miAddDebugPeer_Click);
             // 
             // splitContainer2
             // 
@@ -229,8 +251,8 @@
             // 
             this.splitContainer2.Panel2.Controls.Add(this.txtChatMsg);
             this.splitContainer2.Panel2.Controls.Add(this.flowLayoutPanel1);
-            this.splitContainer2.Size = new System.Drawing.Size(524, 456);
-            this.splitContainer2.SplitterDistance = 261;
+            this.splitContainer2.Size = new System.Drawing.Size(524, 411);
+            this.splitContainer2.SplitterDistance = 235;
             this.splitContainer2.SplitterWidth = 5;
             this.splitContainer2.TabIndex = 0;
             // 
@@ -241,7 +263,7 @@
             this.lstChatMsgs.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.lstChatMsgs.Name = "lstChatMsgs";
             this.lstChatMsgs.ReadOnly = true;
-            this.lstChatMsgs.Size = new System.Drawing.Size(524, 261);
+            this.lstChatMsgs.Size = new System.Drawing.Size(524, 235);
             this.lstChatMsgs.TabIndex = 0;
             this.lstChatMsgs.Text = "";
             // 
@@ -252,7 +274,7 @@
             this.txtChatMsg.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtChatMsg.Multiline = true;
             this.txtChatMsg.Name = "txtChatMsg";
-            this.txtChatMsg.Size = new System.Drawing.Size(524, 138);
+            this.txtChatMsg.Size = new System.Drawing.Size(524, 119);
             this.txtChatMsg.TabIndex = 6;
             // 
             // flowLayoutPanel1
@@ -261,7 +283,7 @@
             this.flowLayoutPanel1.Controls.Add(this.btnSend);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 138);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 119);
             this.flowLayoutPanel1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Size = new System.Drawing.Size(524, 52);
@@ -289,6 +311,17 @@
             this.btnSend.UseVisualStyleBackColor = true;
             this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
             // 
+            // btnDebugConnect
+            // 
+            this.btnDebugConnect.Location = new System.Drawing.Point(528, 41);
+            this.btnDebugConnect.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.btnDebugConnect.Name = "btnDebugConnect";
+            this.btnDebugConnect.Size = new System.Drawing.Size(225, 37);
+            this.btnDebugConnect.TabIndex = 5;
+            this.btnDebugConnect.Text = "Debug Connect";
+            this.btnDebugConnect.UseVisualStyleBackColor = true;
+            this.btnDebugConnect.Click += new System.EventHandler(this.btnDebugConnect_Click);
+            // 
             // ChatForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(120F, 120F);
@@ -312,6 +345,7 @@
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             this.splitContainer1.ResumeLayout(false);
+            this.contextMenuStrip1.ResumeLayout(false);
             this.splitContainer2.Panel1.ResumeLayout(false);
             this.splitContainer2.Panel2.ResumeLayout(false);
             this.splitContainer2.Panel2.PerformLayout();
@@ -345,5 +379,8 @@
         private System.Windows.Forms.Button btnSend;
         private System.Windows.Forms.RichTextBox lstChatMsgs;
         private System.Windows.Forms.ToolStripMenuItem miExternalIP;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem miAddDebugPeer;
+        private System.Windows.Forms.Button btnDebugConnect;
     }
 }

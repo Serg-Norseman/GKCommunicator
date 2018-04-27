@@ -18,7 +18,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#define ECHO_MODE
+//#define ECHO_MODE
+//#define DEBUG_INSTANCE
 
 using System;
 using System.Collections.Generic;
@@ -45,6 +46,7 @@ namespace GKNet
         private IList<Peer> fPeers;
         private readonly UserProfile fProfile;
         private TCPDuplexClient fTCPClient;
+        private int fTCPListenerPort;
 
         public string MemberName
         {
@@ -60,6 +62,12 @@ namespace GKNet
         public UserProfile Profile
         {
             get { return fProfile; }
+        }
+
+        public int TCPListenerPort
+        {
+            get { return fTCPListenerPort; }
+            set { fTCPListenerPort = value; }
         }
 
         public ChatDHTCP(IChatForm form)
@@ -78,7 +86,12 @@ namespace GKNet
 
             NATMapper.CreateNATMapping(this);
 
-            fDHTClient = new DHTClient(IPAddress.Any, DHTClient.PublicDHTPort, this);
+            int dhtPort = DHTClient.PublicDHTPort;
+#if DEBUG_INSTANCE
+            dhtPort += 100;
+#endif
+
+            fDHTClient = new DHTClient(IPAddress.Any, dhtPort, this);
             fDHTClient.PeersFound += delegate (object sender, PeersFoundEventArgs e) {
                 WriteLog(string.Format("Found peers: {0}", e.Peers.Count));
 
@@ -86,12 +99,13 @@ namespace GKNet
                     var peerAddress = p.Address;
                     var ex = FindPeer(peerAddress);
                     if (ex == null) {
-                        AddPeer(peerAddress);
+                        //AddPeer(peerAddress, ProtocolHelper.PublicTCPPort);
+                        AddPeer(peerAddress, p.Port);
                     }
                 }
             };
 
-            fTCPClient = new TCPDuplexClient();
+            fTCPClient = new TCPDuplexClient(this);
             fTCPClient.DataReceive += OnDataReceive;
         }
 
@@ -107,7 +121,7 @@ namespace GKNet
             fDHTClient.JoinNetwork();
             fDHTClient.SearchNodes(snkInfoHash);
 
-            fTCPClient.Connect(ProtocolHelper.PublicTCPPort);
+            fTCPClient.Connect(fTCPListenerPort);
 
             fConnected = true;
             new Thread(() => {
@@ -125,10 +139,10 @@ namespace GKNet
             fDHTClient.StopSearch();
         }
 
-        public void AddPeer(IPAddress peerAddress)
+        public void AddPeer(IPAddress peerAddress, int port)
         {
             lock (fPeers) {
-                fPeers.Add(new Peer(peerAddress));
+                fPeers.Add(new Peer(peerAddress, port));
                 fForm.OnPeersListChanged();
                 WriteLog(string.Format("Found new peer: {0}", peerAddress.ToString()));
             }

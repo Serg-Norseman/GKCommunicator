@@ -34,17 +34,17 @@ namespace GKNet
         public PeerState State { get; set; }
         public PeerProfile Profile { get; private set; }
 
-        public Peer(IPAddress address)
+        public Peer(IPAddress address, int port)
         {
             Address = address;
-            EndPoint = new IPEndPoint(address, ProtocolHelper.PublicTCPPort);
+            EndPoint = new IPEndPoint(address, port);
             State = PeerState.Unknown;
             Profile = new PeerProfile();
         }
 
         public override string ToString()
         {
-            return string.Format("{0} ({1})", Address.ToString(), State.ToString());
+            return string.Format("{0} ({1})", EndPoint.ToString(), State.ToString());
         }
     }
 }

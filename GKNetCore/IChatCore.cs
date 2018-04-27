@@ -27,6 +27,7 @@ namespace GKNet
     {
         string MemberName { get; set; }
         IList<Peer> Peers { get; }
+        int TCPListenerPort { get; set; }
 
         void Connect();
         void Disconnect();
@@ -35,7 +36,7 @@ namespace GKNet
         void Send(Peer target, string message);
         void SendToAll(string message);
 
-        void AddPeer(IPAddress peerAddress);
+        void AddPeer(IPAddress peerAddress, int port);
         Peer FindPeer(IPAddress peerAddress);
     }
 }

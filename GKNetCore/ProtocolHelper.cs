@@ -26,7 +26,8 @@ namespace GKNet
     public class ProtocolHelper
     {
         public const string NETWORK_SIGN = "GEDKEEPER NETWORK";
-        public const int PublicTCPPort = 11000;
+        public const int PublicTCPPort = DHTClient.PublicDHTPort; //11000;
+        public const int DebugTCPPort = DHTClient.PublicDHTPort; //11200;
 
         public static byte[] CreateSignInfoKey()
         {
