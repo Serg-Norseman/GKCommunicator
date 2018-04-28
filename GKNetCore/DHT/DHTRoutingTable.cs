@@ -22,6 +22,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 
 namespace GKNet.DHT
 {
@@ -31,6 +32,7 @@ namespace GKNet.DHT
         {
             public DHTNode Node { get; set; }
             public long LastTime { get; set; }
+
             public string RouteId
             {
                 get {
@@ -188,6 +190,16 @@ namespace GKNet.DHT
             }
             fMinLastTime = Math.Max(minTime, fMinLastTime);
             return list.Values;
+        }
+
+        public DHTNode FindNode(IPEndPoint endPoint)
+        {
+            Route route = null;
+            if (fKTable.TryGetValue(endPoint.ToString(), out route)) {
+                return route.Node;
+            } else {
+                return null;
+            }
         }
 
         #region IEnumerable

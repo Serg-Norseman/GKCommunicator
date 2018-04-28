@@ -33,8 +33,7 @@ namespace GKNet.DHT
     {
         public byte[] ID;
         public IPEndPoint EndPoint;
-
-        // time AnnounceExpire?
+        public long LastAnnouncementTime;
 
         public DHTNode(IPEndPoint endPoint)
         {

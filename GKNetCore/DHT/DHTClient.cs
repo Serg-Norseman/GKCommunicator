@@ -34,15 +34,13 @@ namespace GKNet.DHT
         public const int PublicDHTPort = 6881;
         public const int KTableSize = 2048;
 
-        //private byte[] fBuffer = new byte[65535];
-        //private Socket fSocket;
-
+        private byte[] fBuffer = new byte[65535];
         private byte[] fLocalID;
         private IList<IPAddress> fRouters;
         private byte[] fSearchInfoHash;
         private bool fSearchRunned;
+        private Socket fSocket;
 
-        private readonly UdpClient fClient;
         private readonly IPEndPoint fDefaultIP;
         private readonly IPEndPoint fLocalIP;
         private readonly ILogger fLogger;
@@ -69,27 +67,23 @@ namespace GKNet.DHT
             byte[] optionInValue = { Convert.ToByte(false) };
             byte[] optionOutValue = new byte[4];
 
-            //fSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            //fSocket.IOControl((IOControlCode)SIO_UDP_CONNRESET, optionInValue, optionOutValue);
-            //fSocket.Bind(fLocalIP);
-
-            fClient = new UdpClient(fLocalIP);
-            fClient.AllowNatTraversal(true);
-            fClient.Ttl = 255;
-            fClient.Client.IOControl((IOControlCode)SIO_UDP_CONNRESET, optionInValue, optionOutValue);
-            fClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            fSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            fSocket.SetIPProtectionLevel(IPProtectionLevel.Unrestricted);
+            fSocket.Ttl = 255;
+            fSocket.IOControl((IOControlCode)SIO_UDP_CONNRESET, optionInValue, optionOutValue);
+            fSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            fSocket.Bind(fLocalIP);
         }
 
         public void Run()
         {
-            //EndPoint remoteAddress = new IPEndPoint(IPAddress.Loopback, 0);
-            //fSocket.BeginReceiveFrom(fBuffer, 0, fBuffer.Length, SocketFlags.None, ref remoteAddress, EndRecv, null);
-            fClient.BeginReceive(EndRecv, null);
+            EndPoint remoteAddress = new IPEndPoint(IPAddress.Loopback, 0);
+            fSocket.BeginReceiveFrom(fBuffer, 0, fBuffer.Length, SocketFlags.None, ref remoteAddress, EndRecv, null);
         }
 
         public void Stop()
         {
-            fClient.Close();
+            fSocket.Close();
         }
 
         public void JoinNetwork()
@@ -146,36 +140,28 @@ namespace GKNet.DHT
 
         private void EndRecv(IAsyncResult result)
         {
-            /*EndPoint remoteAddress = new IPEndPoint(IPAddress.Loopback, 0);
+            EndPoint remoteAddress = new IPEndPoint(IPAddress.Loopback, 0);
             try {
                 int count = fSocket.EndReceiveFrom(result, ref remoteAddress);
-                if (count > 0)
-                    OnRecvMessage(fBuffer.Take(count).ToArray(), (IPEndPoint)remoteAddress);
+                if (count > 0) {
+                    byte[] buffer = new byte[count];
+                    Array.Copy(fBuffer, 0, buffer, 0, count);
+                    OnRecvMessage(buffer, (IPEndPoint)remoteAddress);
+                }
             } catch (Exception ex) {
-                //WriteLog(ex.ToString());
+                fLogger.WriteLog("EndRecv.1(): " + ex.ToString());
             }
+
             bool notsuccess = false;
             do {
                 try {
                     fSocket.BeginReceiveFrom(fBuffer, 0, fBuffer.Length, SocketFlags.None, ref remoteAddress, EndRecv, null);
                     notsuccess = false;
                 } catch (Exception ex) {
-                    WriteLog("EndRecv(): " + ex);
+                    fLogger.WriteLog("EndRecv.2(): " + ex);
                     notsuccess = true;
                 }
-            } while (notsuccess);*/
-
-            try {
-                IPEndPoint e = new IPEndPoint(IPAddress.Any, fLocalIP.Port);
-                byte[] buffer = fClient.EndReceive(result, ref e);
-
-                OnRecvMessage(buffer, e);
-
-                fClient.BeginReceive(EndRecv, null);
-            } catch (SocketException) {
-                fClient.BeginReceive(EndRecv, null);
-            } catch (Exception) {
-            }
+            } while (notsuccess);
         }
 
         private void OnRecvMessage(byte[] data, IPEndPoint ipinfo)
@@ -264,7 +250,7 @@ namespace GKNet.DHT
                     break;
 
                 case QueryType.get_peers:
-                    if (tokStr != null && tokStr.Length != 0) {
+                    if ((id != null && id.Length != 0) && (tokStr != null && tokStr.Length != 0)) {
                         // correct and complete response
                         if (!ProcessValuesStr(ipinfo, valuesList)) {
                             canAnnounce = true;
@@ -392,12 +378,12 @@ namespace GKNet.DHT
             var args = data.Get<BDictionary>("a");
 
             var id = args.Get<BString>("id");
-            var info_hash = args.Get<BString>("info_hash");
-            var neighbor = DHTHelper.GetNeighbor(info_hash.Value, fLocalID);
-            var nodesList = fRoutingTable.FindNodes(info_hash.Value);
+            var infoHash = args.Get<BString>("info_hash");
+            var neighbor = DHTHelper.GetNeighbor(infoHash.Value, fLocalID);
+            var nodesList = fRoutingTable.FindNodes(infoHash.Value);
             BList values = null;
 
-            fLogger.WriteLog("receive `get_peers` query from " + ipinfo.ToString() + " [" + id.Value.ToHexString() + "] for " + info_hash.Value.ToHexString());
+            fLogger.WriteLog("receive `get_peers` query from " + ipinfo.ToString() + " [" + id.Value.ToHexString() + "] for " + infoHash.Value.ToHexString());
 
             fRoutingTable.AddOrUpdateNode(new DHTNode(id.Value, ipinfo));
 
@@ -408,7 +394,7 @@ namespace GKNet.DHT
                 Array.Copy(compact, 0, nodesArray, i * 26, 26);
             }
 
-            if (DHTHelper.ArraysEqual(info_hash.Value, fSearchInfoHash)) {
+            if (DHTHelper.ArraysEqual(infoHash.Value, fSearchInfoHash)) {
                 fLogger.WriteLog("receive `get_peers` query for our HASH");
 
                 // TODO: create list from our neighbours
@@ -416,7 +402,7 @@ namespace GKNet.DHT
                 //values.Add(new BString(Helpers.CompactEndPoint(???)));
             }
 
-            Send(ipinfo, DHTMessage.CreateGetPeersResponse(t, neighbor, info_hash.Value, values, new BString(nodesArray)));
+            Send(ipinfo, DHTMessage.CreateGetPeersResponse(t, neighbor, infoHash.Value, values, new BString(nodesArray)));
         }
 
         #endregion
@@ -491,8 +477,20 @@ namespace GKNet.DHT
             Send(address, sendData);
         }
 
+        private static readonly TimeSpan AnnounceLife = TimeSpan.FromMinutes(10); // FIXME?
+
         public void SendAnnouncePeerQuery(IPEndPoint address, byte[] infoHash, byte implied_port, int port, BString token)
         {
+            DHTNode node = fRoutingTable.FindNode(address);
+            if (node != null) {
+                long nowTicks = DateTime.Now.Ticks;
+                if (nowTicks - node.LastAnnouncementTime < AnnounceLife.Ticks) {
+                    return;
+                }
+                node.LastAnnouncementTime = nowTicks;
+                // TODO: update announce by timer, every 30m
+            }
+
             var transactionID = DHTHelper.GetTransactionId();
             byte[] nid = fLocalID;
 
@@ -520,8 +518,7 @@ namespace GKNet.DHT
         {
             try {
                 byte[] dataArray = data.EncodeAsBytes();
-                //fSocket.BeginSendTo(dataArray, 0, dataArray.Length, SocketFlags.None, address, (ar) => { fSocket.EndReceive(ar); }, null);
-                fClient.Send(dataArray, dataArray.Length, address);
+                fSocket.BeginSendTo(dataArray, 0, dataArray.Length, SocketFlags.None, address, (ar) => { fSocket.EndReceive(ar); }, null);
             } catch (Exception ex) {
                 fLogger.WriteLog("Send(): " + ex.Message);
             }
