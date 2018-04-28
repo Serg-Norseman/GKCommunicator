@@ -26,12 +26,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using BencodeNET.Objects;
 using BencodeNET.Parsing;
 using GKNet.DHT;
 using GKNet.TCP;
+using LumiSoft.Net.STUN.Client;
 
 namespace GKNet
 {
@@ -84,7 +86,8 @@ namespace GKNet
 
             InitLogs();
 
-            NATMapper.CreateNATMapping(this);
+            var stunResult = DetectSTUN();
+            NATMapper.CreateNATMapping(this, stunResult);
 
             int dhtPort = DHTClient.PublicDHTPort;
 #if DEBUG_INSTANCE
@@ -107,6 +110,37 @@ namespace GKNet
 
             fTCPClient = new TCPDuplexClient(this);
             fTCPClient.DataReceive += OnDataReceive;
+        }
+
+        private STUN_Result DetectSTUN()
+        {
+            string stunServer = "stun.ekiga.net";
+            STUN_Result result = null;
+            try {
+                if (string.IsNullOrEmpty(stunServer)) {
+                    throw new Exception("Please specify STUN server!");
+                }
+
+                Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+                try {
+                    socket.Bind(new IPEndPoint(IPAddress.Any, 0));
+                    result = STUN_Client.Query(stunServer, 3478, socket);
+
+                    WriteLog("STUN Info:");
+                    WriteLog("NetType: {0}", result.NetType.ToString());
+                    WriteLog("LocalEndPoint: {0}", socket.LocalEndPoint.ToString());
+                    if (result.NetType != STUN_NetType.UdpBlocked) {
+                        WriteLog("PublicEndPoint: {0}", result.PublicEndPoint.ToString());
+                    } else {
+                        WriteLog("PublicEndPoint: -");
+                    }
+                } finally {
+                    socket.Close();
+                }
+            } catch (Exception ex) {
+                WriteLog("DetectSTUN(): " + ex.Message);
+            }
+            return result;
         }
 
         public void Connect()

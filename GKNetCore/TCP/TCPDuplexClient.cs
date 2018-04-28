@@ -44,7 +44,7 @@ namespace GKNet.TCP
         }
 
         // This is the method that starts the server listening.
-        public void Connect(int port = 8080)
+        public void Connect(int port)
         {
             fBacklog = 100;
             fLocalPort = port;

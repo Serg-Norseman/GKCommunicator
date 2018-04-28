@@ -39,6 +39,7 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.lblConnectionStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.panTempHeader = new System.Windows.Forms.Panel();
+            this.btnDebugConnect = new System.Windows.Forms.Button();
             this.btnConnect = new System.Windows.Forms.Button();
             this.txtMemberName = new System.Windows.Forms.TextBox();
             this.lblMemberName = new System.Windows.Forms.Label();
@@ -52,14 +53,16 @@
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.btnSendToAll = new System.Windows.Forms.Button();
             this.btnSend = new System.Windows.Forms.Button();
-            this.btnDebugConnect = new System.Windows.Forms.Button();
+            this.sTUNInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.panTempHeader.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
@@ -98,7 +101,8 @@
             this.miService.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.miDHTLog,
             this.miSysInfo,
-            this.miExternalIP});
+            this.miExternalIP,
+            this.sTUNInfoToolStripMenuItem});
             this.miService.Name = "miService";
             this.miService.Size = new System.Drawing.Size(68, 24);
             this.miService.Text = "Service";
@@ -106,21 +110,21 @@
             // miDHTLog
             // 
             this.miDHTLog.Name = "miDHTLog";
-            this.miDHTLog.Size = new System.Drawing.Size(213, 26);
+            this.miDHTLog.Size = new System.Drawing.Size(216, 26);
             this.miDHTLog.Text = "DHT Log";
             this.miDHTLog.Click += new System.EventHandler(this.miDHTLog_Click);
             // 
             // miSysInfo
             // 
             this.miSysInfo.Name = "miSysInfo";
-            this.miSysInfo.Size = new System.Drawing.Size(213, 26);
+            this.miSysInfo.Size = new System.Drawing.Size(216, 26);
             this.miSysInfo.Text = "System Information";
             this.miSysInfo.Click += new System.EventHandler(this.miSysInfo_Click);
             // 
             // miExternalIP
             // 
             this.miExternalIP.Name = "miExternalIP";
-            this.miExternalIP.Size = new System.Drawing.Size(213, 26);
+            this.miExternalIP.Size = new System.Drawing.Size(216, 26);
             this.miExternalIP.Text = "External IP";
             this.miExternalIP.Click += new System.EventHandler(this.miExternalIP_Click);
             // 
@@ -160,6 +164,17 @@
             this.panTempHeader.Name = "panTempHeader";
             this.panTempHeader.Size = new System.Drawing.Size(782, 87);
             this.panTempHeader.TabIndex = 11;
+            // 
+            // btnDebugConnect
+            // 
+            this.btnDebugConnect.Location = new System.Drawing.Point(528, 41);
+            this.btnDebugConnect.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.btnDebugConnect.Name = "btnDebugConnect";
+            this.btnDebugConnect.Size = new System.Drawing.Size(225, 37);
+            this.btnDebugConnect.TabIndex = 5;
+            this.btnDebugConnect.Text = "Debug Connect";
+            this.btnDebugConnect.UseVisualStyleBackColor = true;
+            this.btnDebugConnect.Click += new System.EventHandler(this.btnDebugConnect_Click);
             // 
             // btnConnect
             // 
@@ -311,16 +326,12 @@
             this.btnSend.UseVisualStyleBackColor = true;
             this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
             // 
-            // btnDebugConnect
+            // sTUNInfoToolStripMenuItem
             // 
-            this.btnDebugConnect.Location = new System.Drawing.Point(528, 41);
-            this.btnDebugConnect.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.btnDebugConnect.Name = "btnDebugConnect";
-            this.btnDebugConnect.Size = new System.Drawing.Size(225, 37);
-            this.btnDebugConnect.TabIndex = 5;
-            this.btnDebugConnect.Text = "Debug Connect";
-            this.btnDebugConnect.UseVisualStyleBackColor = true;
-            this.btnDebugConnect.Click += new System.EventHandler(this.btnDebugConnect_Click);
+            this.sTUNInfoToolStripMenuItem.Name = "sTUNInfoToolStripMenuItem";
+            this.sTUNInfoToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
+            this.sTUNInfoToolStripMenuItem.Text = "STUN Info";
+            this.sTUNInfoToolStripMenuItem.Click += new System.EventHandler(this.sTUNInfoToolStripMenuItem_Click);
             // 
             // ChatForm
             // 
@@ -344,11 +355,13 @@
             this.panTempHeader.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.contextMenuStrip1.ResumeLayout(false);
             this.splitContainer2.Panel1.ResumeLayout(false);
             this.splitContainer2.Panel2.ResumeLayout(false);
             this.splitContainer2.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
             this.flowLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -382,5 +395,6 @@
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem miAddDebugPeer;
         private System.Windows.Forms.Button btnDebugConnect;
+        private System.Windows.Forms.ToolStripMenuItem sTUNInfoToolStripMenuItem;
     }
 }

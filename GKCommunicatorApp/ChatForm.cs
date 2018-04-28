@@ -177,5 +177,12 @@ namespace GKCommunicatorApp
             NoArgDelegate executor = new NoArgDelegate(fCore.Connect);
             executor.BeginInvoke(null, null);
         }
+
+        private void sTUNInfoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var dlgStunInfo = new StunInfoDlg()) {
+                dlgStunInfo.ShowDialog();
+            }
+        }
     }
 }

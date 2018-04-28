@@ -47,5 +47,10 @@ namespace GKNet.DHT
             ID = id;
             EndPoint = endPoint;
         }
+
+        public override string ToString()
+        {
+            return string.Format("{0} ({1})", EndPoint.ToString(), ID.ToHexString());
+        }
     }
 }

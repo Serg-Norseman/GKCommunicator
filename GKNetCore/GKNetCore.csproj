@@ -77,12 +77,18 @@
     <Compile Include="PeerProfile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProtocolHelper.cs" />
+    <Compile Include="STUN\Client\STUN_Client.cs" />
+    <Compile Include="STUN\Client\STUN_NetType.cs" />
+    <Compile Include="STUN\Client\STUN_Result.cs" />
+    <Compile Include="STUN\Message\STUN_ChangeRequest.cs" />
+    <Compile Include="STUN\Message\STUN_ErrorCode.cs" />
+    <Compile Include="STUN\Message\STUN_Message.cs" />
+    <Compile Include="STUN\Message\STUN_MessageType.cs" />
     <Compile Include="SysHelper.cs" />
     <Compile Include="TCP\DataReceiveEventArgs.cs" />
     <Compile Include="TCP\TCPConnection.cs" />
     <Compile Include="TCP\TCPDuplexClient.cs" />
     <Compile Include="UserProfile.cs" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

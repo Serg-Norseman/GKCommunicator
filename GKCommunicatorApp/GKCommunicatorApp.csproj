@@ -67,6 +67,9 @@
     <Compile Include="SysInfoWin.Designer.cs">
       <DependentUpon>SysInfoWin.cs</DependentUpon>
     </Compile>
+    <Compile Include="StunInfoDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />

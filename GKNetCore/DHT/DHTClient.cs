@@ -298,10 +298,10 @@ namespace GKNet.DHT
                     fLogger.WriteLog("receive " + values.Count + " values from " + ipinfo.ToString());
 
                     foreach (var val in values) {
-                        fLogger.WriteLog("send ping " + values[0].ToString());
-                        SendPingQuery(values[0], true);
+                        fLogger.WriteLog("send ping " + val.ToString());
+                        SendPingQuery(val, true);
 
-                        var newaddr = new IPEndPoint(values[0].Address, fLocalIP.Port);
+                        var newaddr = new IPEndPoint(val.Address, fLocalIP.Port);
                         fLogger.WriteLog("send ping " + newaddr.ToString());
                         SendPingQuery(newaddr, true);
                     }
@@ -364,7 +364,7 @@ namespace GKNet.DHT
 
             var handshake = data.Get<BString>("handshake");
             if (handshake != null && handshake.ToString() == "gkn") {
-                fLogger.WriteLog("Found a peer! " + ipinfo.ToString());
+                fLogger.WriteLog(">>>>>>>>>>>> Found a peer! " + ipinfo.ToString());
             }
 
             fRoutingTable.AddOrUpdateNode(new DHTNode(id.Value, ipinfo));

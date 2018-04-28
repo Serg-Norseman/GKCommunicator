@@ -20,6 +20,7 @@
 
 using System;
 using GKNet.DHT;
+using LumiSoft.Net.STUN.Client;
 using Mono.Nat;
 
 namespace GKNet
@@ -28,9 +29,12 @@ namespace GKNet
     {
         private static ILogger fLogger;
 
-        public static void CreateNATMapping(ILogger logger)
+        public static void CreateNATMapping(ILogger logger, STUN_Result stunResult)
         {
             fLogger = logger;
+            if (stunResult.NetType == STUN_NetType.OpenInternet) {
+                return;
+            }
 
             NatUtility.DeviceFound += DeviceFound;
             NatUtility.DeviceLost += DeviceLost;
@@ -48,27 +52,30 @@ namespace GKNet
                 fLogger.WriteLog("Type: {0}", device.GetType().Name);
                 fLogger.WriteLog("External IP: {0}", device.GetExternalIP());
 
-                Mapping mapping = new Mapping(Mono.Nat.Protocol.Tcp, ProtocolHelper.PublicTCPPort, ProtocolHelper.PublicTCPPort);
-                device.CreatePortMap(mapping);
-                fLogger.WriteLog("Create Mapping: protocol={0}, public={1}, private={2}", mapping.Protocol, mapping.PublicPort, mapping.PrivatePort);
-
-                mapping = new Mapping(Mono.Nat.Protocol.Udp, DHTClient.PublicDHTPort, DHTClient.PublicDHTPort);
-                device.CreatePortMap(mapping);
-                fLogger.WriteLog("Create Mapping: protocol={0}, public={1}, private={2}", mapping.Protocol, mapping.PublicPort, mapping.PrivatePort);
-
                 try {
-                    Mapping m = device.GetSpecificMapping(Mono.Nat.Protocol.Tcp, DHTClient.PublicDHTPort);
-                    fLogger.WriteLog("Specific Mapping: protocol={0}, public={1}, private={2}", m.Protocol, m.PublicPort, m.PrivatePort);
+                    Mapping m = device.GetSpecificMapping(Mono.Nat.Protocol.Tcp, ProtocolHelper.PublicTCPPort);
+                    if (m != null) {
+                        fLogger.WriteLog("Specific Mapping: protocol={0}, public={1}, private={2}", m.Protocol, m.PublicPort, m.PrivatePort);
+                    } else {
+                        m = new Mapping(Mono.Nat.Protocol.Tcp, ProtocolHelper.PublicTCPPort, ProtocolHelper.PublicTCPPort);
+                        device.CreatePortMap(m);
+                        fLogger.WriteLog("Create Mapping: protocol={0}, public={1}, private={2}", m.Protocol, m.PublicPort, m.PrivatePort);
+                    }
 
                     m = device.GetSpecificMapping(Mono.Nat.Protocol.Udp, DHTClient.PublicDHTPort);
-                    fLogger.WriteLog("Specific Mapping: protocol={0}, public={1}, private={2}", m.Protocol, m.PublicPort, m.PrivatePort);
+                    if (m != null) {
+                        fLogger.WriteLog("Specific Mapping: protocol={0}, public={1}, private={2}", m.Protocol, m.PublicPort, m.PrivatePort);
+                    } else {
+                        m = new Mapping(Mono.Nat.Protocol.Udp, DHTClient.PublicDHTPort, DHTClient.PublicDHTPort);
+                        device.CreatePortMap(m);
+                        fLogger.WriteLog("Create Mapping: protocol={0}, public={1}, private={2}", m.Protocol, m.PublicPort, m.PrivatePort);
+                    }
                 } catch {
                     fLogger.WriteLog("Couldnt get specific mapping");
                 }
 
                 foreach (Mapping mp in device.GetAllMappings()) {
                     fLogger.WriteLog("Existing Mapping: protocol={0}, public={1}, private={2}", mp.Protocol, mp.PublicPort, mp.PrivatePort);
-                    //device.DeletePortMap(mp);
                 }
 
                 fLogger.WriteLog("Done...");
