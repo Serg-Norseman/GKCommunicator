@@ -31,9 +31,16 @@ namespace GKNet.DHT
 
     public class DHTNode
     {
-        public byte[] ID;
-        public IPEndPoint EndPoint;
-        public long LastAnnouncementTime;
+        public byte[] ID { get; private set; }
+        public IPEndPoint EndPoint { get; private set; }
+
+        public long LastAnnouncementTime { get; set; }
+        public long LastUpdateTime { get; set; }
+
+        public string RouteId
+        {
+            get { return EndPoint == null ? string.Empty : EndPoint.ToString(); }
+        }
 
         public DHTNode(IPEndPoint endPoint)
         {

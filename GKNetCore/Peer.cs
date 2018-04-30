@@ -24,7 +24,7 @@ namespace GKNet
 {
     public enum PeerState
     {
-        Unknown, Unchecked, Checked
+        Unknown, Unchecked, Checked, Self
     }
 
     public class Peer

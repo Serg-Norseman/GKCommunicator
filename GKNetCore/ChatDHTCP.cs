@@ -47,6 +47,7 @@ namespace GKNet
         private readonly BencodeParser fParser;
         private IList<Peer> fPeers;
         private readonly UserProfile fProfile;
+        private IPEndPoint fPublicEndPoint;
         private TCPDuplexClient fTCPClient;
         private int fTCPListenerPort;
 
@@ -103,7 +104,10 @@ namespace GKNet
                     var ex = FindPeer(peerAddress);
                     if (ex == null) {
                         //AddPeer(peerAddress, ProtocolHelper.PublicTCPPort);
-                        AddPeer(peerAddress, p.Port);
+                        Peer peer = AddPeer(peerAddress, p.Port);
+                        if (peerAddress.Equals(fPublicEndPoint.Address)) {
+                            peer.State = PeerState.Self;
+                        }
                     }
                 }
             };
@@ -130,8 +134,10 @@ namespace GKNet
                     WriteLog("NetType: {0}", result.NetType.ToString());
                     WriteLog("LocalEndPoint: {0}", socket.LocalEndPoint.ToString());
                     if (result.NetType != STUN_NetType.UdpBlocked) {
+                        fPublicEndPoint = new IPEndPoint(result.PublicEndPoint.Address, ProtocolHelper.PublicTCPPort);
                         WriteLog("PublicEndPoint: {0}", result.PublicEndPoint.ToString());
                     } else {
+                        fPublicEndPoint = null;
                         WriteLog("PublicEndPoint: -");
                     }
                 } finally {
@@ -159,11 +165,18 @@ namespace GKNet
 
             fConnected = true;
             new Thread(() => {
+                int x = 0;
                 while (fConnected) {
-                    CheckPeers();
-                    Thread.Sleep(60000);
+                    if (++x >= 60) {
+                        CheckPeers();
+                        x = 0;
+                    }
+                    Thread.Sleep(1000);
                 }
             }).Start();
+
+            // bad attempt
+            //SendData(fPublicEndPoint, ProtocolHelper.CreateHolepunchQuery());
         }
 
         public void Disconnect()
@@ -173,12 +186,14 @@ namespace GKNet
             fDHTClient.StopSearch();
         }
 
-        public void AddPeer(IPAddress peerAddress, int port)
+        public Peer AddPeer(IPAddress peerAddress, int port)
         {
             lock (fPeers) {
-                fPeers.Add(new Peer(peerAddress, port));
+                Peer peer = new Peer(peerAddress, port);
+                fPeers.Add(peer);
                 fForm.OnPeersListChanged();
                 WriteLog(string.Format("Found new peer: {0}", peerAddress.ToString()));
+                return peer;
             }
         }
 
@@ -233,7 +248,12 @@ namespace GKNet
         private void CheckPeers()
         {
             foreach (var p in fPeers) {
-                SendHandshakeQuery(p);
+                /*if (p.Address.Equals(fPublicEndPoint.Address)) {
+                    p.State = PeerState.Self;
+                }*/
+                if (p.State != PeerState.Self) {
+                    SendHandshakeQuery(p);
+                }
             }
             fForm.OnPeersListChanged();
         }
@@ -313,7 +333,7 @@ namespace GKNet
 
         public void WriteLog(string str)
         {
-            var fswriter = new StreamWriter(new FileStream("./dht.log", FileMode.Append));
+            var fswriter = new StreamWriter(new FileStream("./dht.log", FileMode.Append), Encoding.UTF8);
             fswriter.WriteLine(str);
             fswriter.Flush();
             fswriter.Close();

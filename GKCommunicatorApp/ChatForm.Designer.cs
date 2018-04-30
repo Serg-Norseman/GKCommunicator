@@ -53,7 +53,7 @@
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.btnSendToAll = new System.Windows.Forms.Button();
             this.btnSend = new System.Windows.Forms.Button();
-            this.sTUNInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.miSTUNInfo = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.panTempHeader.SuspendLayout();
@@ -102,7 +102,7 @@
             this.miDHTLog,
             this.miSysInfo,
             this.miExternalIP,
-            this.sTUNInfoToolStripMenuItem});
+            this.miSTUNInfo});
             this.miService.Name = "miService";
             this.miService.Size = new System.Drawing.Size(68, 24);
             this.miService.Text = "Service";
@@ -326,12 +326,12 @@
             this.btnSend.UseVisualStyleBackColor = true;
             this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
             // 
-            // sTUNInfoToolStripMenuItem
+            // miSTUNInfo
             // 
-            this.sTUNInfoToolStripMenuItem.Name = "sTUNInfoToolStripMenuItem";
-            this.sTUNInfoToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
-            this.sTUNInfoToolStripMenuItem.Text = "STUN Info";
-            this.sTUNInfoToolStripMenuItem.Click += new System.EventHandler(this.sTUNInfoToolStripMenuItem_Click);
+            this.miSTUNInfo.Name = "miSTUNInfo";
+            this.miSTUNInfo.Size = new System.Drawing.Size(216, 26);
+            this.miSTUNInfo.Text = "STUN Info";
+            this.miSTUNInfo.Click += new System.EventHandler(this.miSTUNInfo_Click);
             // 
             // ChatForm
             // 
@@ -395,6 +395,6 @@
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem miAddDebugPeer;
         private System.Windows.Forms.Button btnDebugConnect;
-        private System.Windows.Forms.ToolStripMenuItem sTUNInfoToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem miSTUNInfo;
     }
 }

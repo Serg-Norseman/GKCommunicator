@@ -38,6 +38,15 @@ namespace GKNet
             return DHTHelper.CalculateInfoHashBytes(subnetKey);
         }
 
+        public static byte[] CreateHolepunchQuery()
+        {
+            var data = new BDictionary();
+            data.Add("y", "q");
+            data.Add("q", "holepunch");
+
+            return data.EncodeAsBytes();
+        }
+
         public static byte[] CreateHandshakeQuery()
         {
             var data = new BDictionary();

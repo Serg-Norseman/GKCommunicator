@@ -108,6 +108,13 @@ namespace GKCommunicatorApp
             LoadExtFile("https://2ip.ru/");
         }
 
+        private void miSTUNInfo_Click(object sender, EventArgs e)
+        {
+            using (var dlgStunInfo = new StunInfoDlg()) {
+                dlgStunInfo.ShowDialog();
+            }
+        }
+
         #region IChatForm members
 
         void IChatForm.OnPeersListChanged()
@@ -176,13 +183,6 @@ namespace GKCommunicatorApp
             // join the P2P mesh from a worker thread
             NoArgDelegate executor = new NoArgDelegate(fCore.Connect);
             executor.BeginInvoke(null, null);
-        }
-
-        private void sTUNInfoToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            using (var dlgStunInfo = new StunInfoDlg()) {
-                dlgStunInfo.ShowDialog();
-            }
         }
     }
 }

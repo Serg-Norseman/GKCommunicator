@@ -36,7 +36,7 @@ namespace GKNet
         void Send(Peer target, string message);
         void SendToAll(string message);
 
-        void AddPeer(IPAddress peerAddress, int port);
+        Peer AddPeer(IPAddress peerAddress, int port);
         Peer FindPeer(IPAddress peerAddress);
     }
 }

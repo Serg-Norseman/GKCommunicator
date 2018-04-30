@@ -227,7 +227,7 @@ namespace GKNet.DHT
             var valuesList = returnValues.Get<BList>("values");
             var nodesStr = returnValues.Get<BString>("nodes");
 
-            fRoutingTable.AddOrUpdateNode(new DHTNode(id.Value, ipinfo));
+            fRoutingTable.UpdateNode(new DHTNode(id.Value, ipinfo));
 
             // according to bep_????, most types of response contain a list of nodes
             ProcessNodesStr(ipinfo, nodesStr);
@@ -312,7 +312,7 @@ namespace GKNet.DHT
                 fLogger.WriteLog("receive " + nodesList.Count + " nodes from " + ipinfo.ToString());
 
                 foreach (var t in nodesList) {
-                    fRoutingTable.AddOrUpdateNode(t);
+                    fRoutingTable.UpdateNode(t);
                 }
             }
         }
@@ -329,7 +329,7 @@ namespace GKNet.DHT
 
             fLogger.WriteLog("receive `announce_peer` query " + ipinfo.ToString());
 
-            fRoutingTable.AddOrUpdateNode(new DHTNode(id.Value, ipinfo));
+            fRoutingTable.UpdateNode(new DHTNode(id.Value, ipinfo));
 
             // Did we receive our infohash? Is this our partner?
             if (DHTHelper.ArraysEqual(infoHash.Value, fSearchInfoHash)) {
@@ -353,7 +353,7 @@ namespace GKNet.DHT
                 fLogger.WriteLog(">>>>>>>>>>>> Found a peer! " + ipinfo.ToString());
             }
 
-            fRoutingTable.AddOrUpdateNode(new DHTNode(id.Value, ipinfo));
+            fRoutingTable.UpdateNode(new DHTNode(id.Value, ipinfo));
 
             fLogger.WriteLog("receive `ping` query " + ipinfo.ToString());
             SendPingResponse(ipinfo, t);
@@ -366,7 +366,7 @@ namespace GKNet.DHT
 
             var id = args.Get<BString>("id");
 
-            fRoutingTable.AddOrUpdateNode(new DHTNode(id.Value, ipinfo));
+            fRoutingTable.UpdateNode(new DHTNode(id.Value, ipinfo));
 
             fLogger.WriteLog("receive `find_node` query");
             // TODO: response!
@@ -385,7 +385,7 @@ namespace GKNet.DHT
 
             fLogger.WriteLog("receive `get_peers` query from " + ipinfo.ToString() + " [" + id.Value.ToHexString() + "] for " + infoHash.Value.ToHexString());
 
-            fRoutingTable.AddOrUpdateNode(new DHTNode(id.Value, ipinfo));
+            fRoutingTable.UpdateNode(new DHTNode(id.Value, ipinfo));
 
             byte[] nodesArray = new byte[nodesList.Count * 26];
             var i = 0;
