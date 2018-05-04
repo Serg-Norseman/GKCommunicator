@@ -88,7 +88,7 @@ namespace GKNet
             InitLogs();
 
             var stunResult = DetectSTUN();
-            NATMapper.CreateNATMapping(this, stunResult);
+            //NATMapper.CreateNATMapping(this, stunResult);
 
             int dhtPort = DHTClient.PublicDHTPort;
 #if DEBUG_INSTANCE
@@ -101,7 +101,7 @@ namespace GKNet
 
                 foreach (var p in e.Peers) {
                     var peerAddress = p.Address;
-                    var ex = FindPeer(peerAddress);
+                    var ex = FindPeer(p);
                     if (ex == null) {
                         //AddPeer(peerAddress, ProtocolHelper.PublicTCPPort);
                         Peer peer = AddPeer(peerAddress, p.Port);
@@ -200,6 +200,11 @@ namespace GKNet
         public Peer FindPeer(IPAddress peerAddress)
         {
             return fPeers.FirstOrDefault(x => x.Address.Equals(peerAddress));
+        }
+
+        public Peer FindPeer(IPEndPoint peerEndPoint)
+        {
+            return fPeers.FirstOrDefault(x => x.EndPoint.Equals(peerEndPoint));
         }
 
         #region Protocol features

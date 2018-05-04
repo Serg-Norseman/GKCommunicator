@@ -77,8 +77,7 @@ namespace GKNet.DHT
 
         public void Run()
         {
-            EndPoint remoteAddress = new IPEndPoint(IPAddress.Loopback, 0);
-            fSocket.BeginReceiveFrom(fBuffer, 0, fBuffer.Length, SocketFlags.None, ref remoteAddress, EndRecv, null);
+            BeginRecv();
         }
 
         public void Stop()
@@ -138,10 +137,17 @@ namespace GKNet.DHT
 
         #region Receive messages and data
 
+        private void BeginRecv()
+        {
+            //EndPoint remoteAddress = new IPEndPoint(IPAddress.Loopback, 0);
+            EndPoint remoteAddress = new IPEndPoint(IPAddress.Any, 0);
+            fSocket.BeginReceiveFrom(fBuffer, 0, fBuffer.Length, SocketFlags.None, ref remoteAddress, EndRecv, null);
+        }
+
         private void EndRecv(IAsyncResult result)
         {
-            EndPoint remoteAddress = new IPEndPoint(IPAddress.Loopback, 0);
             try {
+                EndPoint remoteAddress = new IPEndPoint(IPAddress.Loopback, 0);
                 int count = fSocket.EndReceiveFrom(result, ref remoteAddress);
                 if (count > 0) {
                     byte[] buffer = new byte[count];
@@ -155,7 +161,7 @@ namespace GKNet.DHT
             bool notsuccess = false;
             do {
                 try {
-                    fSocket.BeginReceiveFrom(fBuffer, 0, fBuffer.Length, SocketFlags.None, ref remoteAddress, EndRecv, null);
+                    BeginRecv();
                     notsuccess = false;
                 } catch (Exception ex) {
                     fLogger.WriteLog("EndRecv.2(): " + ex);
@@ -167,6 +173,8 @@ namespace GKNet.DHT
         private void OnRecvMessage(byte[] data, IPEndPoint ipinfo)
         {
             try {
+                //fLogger.WriteLog("receive message from " + ipinfo.ToString());
+
                 var dic = fParser.Parse<BDictionary>(data);
                 string msgType = dic.Get<BString>("y").ToString();
                 switch (msgType) {
