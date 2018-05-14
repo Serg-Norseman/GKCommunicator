@@ -35,11 +35,11 @@
             this.miDHTLog = new System.Windows.Forms.ToolStripMenuItem();
             this.miSysInfo = new System.Windows.Forms.ToolStripMenuItem();
             this.miExternalIP = new System.Windows.Forms.ToolStripMenuItem();
+            this.miSTUNInfo = new System.Windows.Forms.ToolStripMenuItem();
             this.miHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.lblConnectionStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.panTempHeader = new System.Windows.Forms.Panel();
-            this.btnDebugConnect = new System.Windows.Forms.Button();
             this.btnConnect = new System.Windows.Forms.Button();
             this.txtMemberName = new System.Windows.Forms.TextBox();
             this.lblMemberName = new System.Windows.Forms.Label();
@@ -47,13 +47,13 @@
             this.lstMembers = new System.Windows.Forms.ListBox();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.miAddDebugPeer = new System.Windows.Forms.ToolStripMenuItem();
+            this.miSendTestMessage = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.lstChatMsgs = new System.Windows.Forms.RichTextBox();
             this.txtChatMsg = new System.Windows.Forms.TextBox();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.btnSendToAll = new System.Windows.Forms.Button();
             this.btnSend = new System.Windows.Forms.Button();
-            this.miSTUNInfo = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.panTempHeader.SuspendLayout();
@@ -110,23 +110,30 @@
             // miDHTLog
             // 
             this.miDHTLog.Name = "miDHTLog";
-            this.miDHTLog.Size = new System.Drawing.Size(216, 26);
+            this.miDHTLog.Size = new System.Drawing.Size(213, 26);
             this.miDHTLog.Text = "DHT Log";
             this.miDHTLog.Click += new System.EventHandler(this.miDHTLog_Click);
             // 
             // miSysInfo
             // 
             this.miSysInfo.Name = "miSysInfo";
-            this.miSysInfo.Size = new System.Drawing.Size(216, 26);
+            this.miSysInfo.Size = new System.Drawing.Size(213, 26);
             this.miSysInfo.Text = "System Information";
             this.miSysInfo.Click += new System.EventHandler(this.miSysInfo_Click);
             // 
             // miExternalIP
             // 
             this.miExternalIP.Name = "miExternalIP";
-            this.miExternalIP.Size = new System.Drawing.Size(216, 26);
+            this.miExternalIP.Size = new System.Drawing.Size(213, 26);
             this.miExternalIP.Text = "External IP";
             this.miExternalIP.Click += new System.EventHandler(this.miExternalIP_Click);
+            // 
+            // miSTUNInfo
+            // 
+            this.miSTUNInfo.Name = "miSTUNInfo";
+            this.miSTUNInfo.Size = new System.Drawing.Size(213, 26);
+            this.miSTUNInfo.Text = "STUN Info";
+            this.miSTUNInfo.Click += new System.EventHandler(this.miSTUNInfo_Click);
             // 
             // miHelp
             // 
@@ -154,7 +161,6 @@
             // 
             // panTempHeader
             // 
-            this.panTempHeader.Controls.Add(this.btnDebugConnect);
             this.panTempHeader.Controls.Add(this.btnConnect);
             this.panTempHeader.Controls.Add(this.txtMemberName);
             this.panTempHeader.Controls.Add(this.lblMemberName);
@@ -162,19 +168,8 @@
             this.panTempHeader.Location = new System.Drawing.Point(0, 30);
             this.panTempHeader.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.panTempHeader.Name = "panTempHeader";
-            this.panTempHeader.Size = new System.Drawing.Size(782, 87);
+            this.panTempHeader.Size = new System.Drawing.Size(782, 43);
             this.panTempHeader.TabIndex = 11;
-            // 
-            // btnDebugConnect
-            // 
-            this.btnDebugConnect.Location = new System.Drawing.Point(528, 41);
-            this.btnDebugConnect.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.btnDebugConnect.Name = "btnDebugConnect";
-            this.btnDebugConnect.Size = new System.Drawing.Size(225, 37);
-            this.btnDebugConnect.TabIndex = 5;
-            this.btnDebugConnect.Text = "Debug Connect";
-            this.btnDebugConnect.UseVisualStyleBackColor = true;
-            this.btnDebugConnect.Click += new System.EventHandler(this.btnDebugConnect_Click);
             // 
             // btnConnect
             // 
@@ -208,7 +203,7 @@
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 117);
+            this.splitContainer1.Location = new System.Drawing.Point(0, 73);
             this.splitContainer1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.splitContainer1.Name = "splitContainer1";
             // 
@@ -219,7 +214,7 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(782, 411);
+            this.splitContainer1.Size = new System.Drawing.Size(782, 455);
             this.splitContainer1.SplitterDistance = 254;
             this.splitContainer1.TabIndex = 12;
             // 
@@ -232,23 +227,31 @@
             this.lstMembers.Location = new System.Drawing.Point(0, 0);
             this.lstMembers.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.lstMembers.Name = "lstMembers";
-            this.lstMembers.Size = new System.Drawing.Size(254, 411);
+            this.lstMembers.Size = new System.Drawing.Size(254, 455);
             this.lstMembers.TabIndex = 4;
             // 
             // contextMenuStrip1
             // 
             this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.miAddDebugPeer});
+            this.miAddDebugPeer,
+            this.miSendTestMessage});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(188, 28);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(202, 52);
             // 
             // miAddDebugPeer
             // 
             this.miAddDebugPeer.Name = "miAddDebugPeer";
-            this.miAddDebugPeer.Size = new System.Drawing.Size(187, 24);
+            this.miAddDebugPeer.Size = new System.Drawing.Size(201, 24);
             this.miAddDebugPeer.Text = "Add debug peer";
             this.miAddDebugPeer.Click += new System.EventHandler(this.miAddDebugPeer_Click);
+            // 
+            // miSendTestMessage
+            // 
+            this.miSendTestMessage.Name = "miSendTestMessage";
+            this.miSendTestMessage.Size = new System.Drawing.Size(201, 24);
+            this.miSendTestMessage.Text = "Send test message";
+            this.miSendTestMessage.Click += new System.EventHandler(this.miSendTestMessage_Click);
             // 
             // splitContainer2
             // 
@@ -266,8 +269,8 @@
             // 
             this.splitContainer2.Panel2.Controls.Add(this.txtChatMsg);
             this.splitContainer2.Panel2.Controls.Add(this.flowLayoutPanel1);
-            this.splitContainer2.Size = new System.Drawing.Size(524, 411);
-            this.splitContainer2.SplitterDistance = 235;
+            this.splitContainer2.Size = new System.Drawing.Size(524, 455);
+            this.splitContainer2.SplitterDistance = 260;
             this.splitContainer2.SplitterWidth = 5;
             this.splitContainer2.TabIndex = 0;
             // 
@@ -278,7 +281,7 @@
             this.lstChatMsgs.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.lstChatMsgs.Name = "lstChatMsgs";
             this.lstChatMsgs.ReadOnly = true;
-            this.lstChatMsgs.Size = new System.Drawing.Size(524, 235);
+            this.lstChatMsgs.Size = new System.Drawing.Size(524, 260);
             this.lstChatMsgs.TabIndex = 0;
             this.lstChatMsgs.Text = "";
             // 
@@ -289,8 +292,9 @@
             this.txtChatMsg.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtChatMsg.Multiline = true;
             this.txtChatMsg.Name = "txtChatMsg";
-            this.txtChatMsg.Size = new System.Drawing.Size(524, 119);
+            this.txtChatMsg.Size = new System.Drawing.Size(524, 138);
             this.txtChatMsg.TabIndex = 6;
+            this.txtChatMsg.Text = "test";
             // 
             // flowLayoutPanel1
             // 
@@ -298,7 +302,7 @@
             this.flowLayoutPanel1.Controls.Add(this.btnSend);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 119);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 138);
             this.flowLayoutPanel1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Size = new System.Drawing.Size(524, 52);
@@ -325,13 +329,6 @@
             this.btnSend.Text = "Send";
             this.btnSend.UseVisualStyleBackColor = true;
             this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
-            // 
-            // miSTUNInfo
-            // 
-            this.miSTUNInfo.Name = "miSTUNInfo";
-            this.miSTUNInfo.Size = new System.Drawing.Size(216, 26);
-            this.miSTUNInfo.Text = "STUN Info";
-            this.miSTUNInfo.Click += new System.EventHandler(this.miSTUNInfo_Click);
             // 
             // ChatForm
             // 
@@ -394,7 +391,7 @@
         private System.Windows.Forms.ToolStripMenuItem miExternalIP;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem miAddDebugPeer;
-        private System.Windows.Forms.Button btnDebugConnect;
         private System.Windows.Forms.ToolStripMenuItem miSTUNInfo;
+        private System.Windows.Forms.ToolStripMenuItem miSendTestMessage;
     }
 }

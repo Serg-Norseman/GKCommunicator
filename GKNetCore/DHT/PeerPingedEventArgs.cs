@@ -18,26 +18,18 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System.Collections.Generic;
+using System;
 using System.Net;
 
-namespace GKNet
+namespace GKNet.DHT
 {
-    public interface IChatCore
+    public class PeerPingedEventArgs : EventArgs
     {
-        string MemberName { get; set; }
-        IList<Peer> Peers { get; }
-        int TCPListenerPort { get; set; }
+        public IPEndPoint EndPoint { get; private set; }
 
-        void Connect();
-        void Disconnect();
-        void Join(string member);
-        void Leave(string member);
-        void Send(Peer target, string message);
-        void SendUDP(Peer target, string message);
-        void SendToAll(string message);
-
-        Peer AddPeer(IPAddress peerAddress, int port);
-        Peer FindPeer(IPAddress peerAddress);
+        public PeerPingedEventArgs(IPEndPoint peerEndPoint)
+        {
+            EndPoint = peerEndPoint;
+        }
     }
 }

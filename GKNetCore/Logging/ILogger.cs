@@ -18,26 +18,22 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System.Collections.Generic;
-using System.Net;
+using System;
 
-namespace GKNet
+namespace GKNet.Logging
 {
-    public interface IChatCore
+    public interface ILogger
     {
-        string MemberName { get; set; }
-        IList<Peer> Peers { get; }
-        int TCPListenerPort { get; set; }
+        void WriteDebug(string msg);
+        void WriteDebug(string str, params object[] args);
 
-        void Connect();
-        void Disconnect();
-        void Join(string member);
-        void Leave(string member);
-        void Send(Peer target, string message);
-        void SendUDP(Peer target, string message);
-        void SendToAll(string message);
+        void WriteInfo(string msg);
+        void WriteInfo(string str, params object[] args);
 
-        Peer AddPeer(IPAddress peerAddress, int port);
-        Peer FindPeer(IPAddress peerAddress);
+        void WriteError(string msg);
+
+        void WriteError(string msg, Exception ex);
+
+        void WriteNumError(int num, Exception ex);
     }
 }

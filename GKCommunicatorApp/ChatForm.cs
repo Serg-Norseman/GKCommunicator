@@ -25,6 +25,7 @@ using System.IO;
 using System.Net;
 using System.Windows.Forms;
 using GKNet;
+using GKNet.Logging;
 
 namespace GKCommunicatorApp
 {
@@ -32,6 +33,7 @@ namespace GKCommunicatorApp
     {
         private delegate void NoArgDelegate();
 
+        private readonly ILogger fLogger;
         private string fMemberName;
         private IChatCore fCore;
 
@@ -41,6 +43,11 @@ namespace GKCommunicatorApp
 
             Closing += new CancelEventHandler(WindowMain_Closing);
             txtMemberName.Focus();
+
+            if (File.Exists(ProtocolHelper.LOG_FILE)) {
+                File.Delete(ProtocolHelper.LOG_FILE);
+            }
+            fLogger = LogManager.GetLogger(ProtocolHelper.LOG_FILE, ProtocolHelper.LOG_LEVEL, "ChatForm");
 
             fCore = new ChatDHTCP(this);
         }
@@ -93,7 +100,7 @@ namespace GKCommunicatorApp
 
         private void miDHTLog_Click(object sender, EventArgs e)
         {
-            LoadExtFile("./dht.log");
+            LoadExtFile(ProtocolHelper.LOG_FILE);
         }
 
         private void miSysInfo_Click(object sender, EventArgs e)
@@ -172,17 +179,16 @@ namespace GKCommunicatorApp
             fCore.AddPeer(IPAddress.Parse("127.0.0.1"), ProtocolHelper.DebugTCPPort);
         }
 
-        private void btnDebugConnect_Click(object sender, EventArgs e)
+        private void miSendTestMessage_Click(object sender, EventArgs e)
         {
-            btnConnect.Enabled = false;
-            lblConnectionStatus.Visible = true;
+            var peerItem = (lstMembers.SelectedItem as Peer);
+            var msgText = txtChatMsg.Text;
 
-            fCore.MemberName = fMemberName;
-            fCore.TCPListenerPort = ProtocolHelper.DebugTCPPort;
-
-            // join the P2P mesh from a worker thread
-            NoArgDelegate executor = new NoArgDelegate(fCore.Connect);
-            executor.BeginInvoke(null, null);
+            if ((!String.IsNullOrEmpty(msgText)) && (peerItem != null)) {
+                fCore.SendUDP(peerItem, msgText);
+                txtChatMsg.Clear();
+                txtChatMsg.Focus();
+            }
         }
     }
 }

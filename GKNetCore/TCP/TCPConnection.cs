@@ -89,9 +89,9 @@ namespace GKNet.TCP
                 fSocket.BeginReceive(fBuffer, 0, fBuffer.Length, SocketFlags.None,
                     new AsyncCallback(OnBytesReceived), this);
             } catch (ObjectDisposedException ex) {
-                fDuplexClient.fLogger.WriteLog("TCPConnection.OnBytesReceived(): " + ex.Message);
+                fDuplexClient.fLogger.WriteError("TCPConnection.OnBytesReceived(): ", ex);
             } catch (SocketException ex) {
-                fDuplexClient.fLogger.WriteLog("TCPConnection.OnBytesReceived(): " + ex.Message);
+                fDuplexClient.fLogger.WriteError("TCPConnection.OnBytesReceived(): ", ex);
             }
         }
 

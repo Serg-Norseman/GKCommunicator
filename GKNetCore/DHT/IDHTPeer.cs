@@ -18,26 +18,12 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System.Collections.Generic;
 using System.Net;
 
-namespace GKNet
+namespace GKNet.DHT
 {
-    public interface IChatCore
+    public interface IDHTPeer
     {
-        string MemberName { get; set; }
-        IList<Peer> Peers { get; }
-        int TCPListenerPort { get; set; }
-
-        void Connect();
-        void Disconnect();
-        void Join(string member);
-        void Leave(string member);
-        void Send(Peer target, string message);
-        void SendUDP(Peer target, string message);
-        void SendToAll(string message);
-
-        Peer AddPeer(IPAddress peerAddress, int port);
-        Peer FindPeer(IPAddress peerAddress);
+        IPEndPoint EndPoint { get; }
     }
 }

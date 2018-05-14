@@ -18,11 +18,21 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace GKNet
+using System;
+using System.Net;
+using BencodeNET.Objects;
+
+namespace GKNet.DHT
 {
-    public interface ILogger
+    public class MessageEventArgs : EventArgs
     {
-        void WriteLog(string str);
-        void WriteLog(string str, params object[] args);
+        public IPEndPoint EndPoint { get; private set; }
+        public BDictionary Data { get; private set; }
+
+        public MessageEventArgs(IPEndPoint peerEndPoint, BDictionary data)
+        {
+            EndPoint = peerEndPoint;
+            Data = data;
+        }
     }
 }

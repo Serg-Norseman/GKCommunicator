@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Text;
-using BencodeNET.IO;
 using BencodeNET.Objects;
 
 namespace BencodeNET.Parsing

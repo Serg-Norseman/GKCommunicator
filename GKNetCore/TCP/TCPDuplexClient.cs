@@ -24,6 +24,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using GKNet.Logging;
 
 namespace GKNet.TCP
 {
@@ -38,9 +39,9 @@ namespace GKNet.TCP
 
         public event EventHandler<DataReceiveEventArgs> DataReceive;
 
-        public TCPDuplexClient(ILogger logger)
+        public TCPDuplexClient()
         {
-            fLogger = logger;
+            fLogger = LogManager.GetLogger(ProtocolHelper.LOG_FILE, ProtocolHelper.LOG_LEVEL, "TCPDuplexClient");
         }
 
         // This is the method that starts the server listening.
@@ -118,7 +119,7 @@ namespace GKNet.TCP
                 extSocket.Connect(point);
                 return new TCPConnection(this, extSocket, false);
             } catch (Exception ex) {
-                fLogger.WriteLog("TCPDuplexClient.CreateConnection(): " + ex.Message);
+                fLogger.WriteError("TCPDuplexClient.CreateConnection() exception", ex);
                 return null;
             }
         }

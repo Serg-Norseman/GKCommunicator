@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 
-namespace BencodeNET.IO
+namespace BencodeNET.Parsing
 {
     /// <summary>
     /// A wrapper for <see cref="Stream"/> that makes it easier and faster to work

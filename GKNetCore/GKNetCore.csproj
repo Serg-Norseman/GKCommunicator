@@ -33,16 +33,20 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="log4net">
+      <HintPath>..\libs\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="Mono.Nat">
       <HintPath>..\libs\Mono.Nat.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BencodeNET\Exceptions\BencodeException.cs" />
     <Compile Include="BencodeNET\Exceptions\InvalidBencodeException.cs" />
     <Compile Include="BencodeNET\Exceptions\UnsupportedBencodeException.cs" />
-    <Compile Include="BencodeNET\IO\BencodeStream.cs" />
+    <Compile Include="BencodeNET\Parsing\BencodeStream.cs" />
     <Compile Include="BencodeNET\Objects\BDictionary.cs" />
     <Compile Include="BencodeNET\Objects\BList.cs" />
     <Compile Include="BencodeNET\Objects\BNumber.cs" />
@@ -61,6 +65,10 @@
     <Compile Include="BencodeNET\Parsing\ParseUtil.cs" />
     <Compile Include="BencodeNET\UtilityExtensions.cs" />
     <Compile Include="ChatDHTCP.cs" />
+    <Compile Include="DHT\IDHTPeer.cs" />
+    <Compile Include="DHT\IDHTPeersHolder.cs" />
+    <Compile Include="DHT\MessageEventArgs.cs" />
+    <Compile Include="DHT\PeerPingedEventArgs.cs" />
     <Compile Include="IChatForm.cs" />
     <Compile Include="DHT\BTClient.cs" />
     <Compile Include="DHT\DHTClient.cs" />
@@ -68,9 +76,11 @@
     <Compile Include="DHT\DHTMessage.cs" />
     <Compile Include="DHT\DHTNode.cs" />
     <Compile Include="DHT\DHTRoutingTable.cs" />
-    <Compile Include="ILogger.cs" />
     <Compile Include="DHT\PeersFoundEventArgs.cs" />
     <Compile Include="IChatCore.cs" />
+    <Compile Include="Logging\ILogger.cs" />
+    <Compile Include="Logging\Log4NetHelper.cs" />
+    <Compile Include="Logging\LogManager.cs" />
     <Compile Include="NATMapper.cs" />
     <Compile Include="Peer.cs" />
     <Compile Include="PeerProfile.cs" />

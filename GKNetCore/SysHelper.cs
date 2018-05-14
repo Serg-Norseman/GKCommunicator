@@ -21,6 +21,7 @@
 using System;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Text.RegularExpressions;
 //using System.Windows.Forms;
 
@@ -60,6 +61,35 @@ namespace GKNet
             return result;
         }
 
+        // Fatal problem:
+        // if there is an address statically assigned to the corporate network,
+        // then there is still no correct external address
+        private static IPAddress GetPublicAddress()
+        {
+            NetworkInterface[] networkInterfaces = NetworkInterface.GetAllNetworkInterfaces();
+
+            // weed out addresses of virtual adapters (VirtualBox, VMWare, Tunngle, etc.)
+            foreach (NetworkInterface network in networkInterfaces) {
+                IPInterfaceProperties properties = network.GetIPProperties();
+                if (properties.GatewayAddresses.Count == 0) {
+                    // all the magic is in this line
+                    continue;
+                }
+
+                foreach (IPAddressInformation address in properties.UnicastAddresses) {
+                    if (address.Address.AddressFamily != AddressFamily.InterNetwork)
+                        continue;
+
+                    if (IPAddress.IsLoopback(address.Address))
+                        continue;
+
+                    return address.Address;
+                }
+            }
+
+            return default(IPAddress);
+        }
+
         public static string GetPublicIPAddress()
         {
             if (!NetworkInterface.GetIsNetworkAvailable()) {
@@ -67,10 +97,10 @@ namespace GKNet
             }
 
             try {
-                string externalIP;
-                externalIP = (new WebClient()).DownloadString("http://checkip.dyndns.org/");
+                string externalIP = GetPublicAddress().ToString();
+                /*externalIP = (new WebClient()).DownloadString("http://checkip.dyndns.org/");
                 externalIP = (new Regex(@"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"))
-                             .Matches(externalIP)[0].ToString();
+                             .Matches(externalIP)[0].ToString();*/
                 return externalIP;
             } catch { return null; }
         }

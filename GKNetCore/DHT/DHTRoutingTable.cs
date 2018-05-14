@@ -135,6 +135,11 @@ namespace GKNet.DHT
             fMinLastTime = Math.Max(minTime, fMinLastTime);
         }
 
+        public void Clear()
+        {
+            fKTable.Clear();
+        }
+
         public IList<DHTNode> FindNodes(byte[] id)
         {
             DHTNode[] values;

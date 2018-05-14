@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using BencodeNET.IO;
+using BencodeNET.Parsing;
 
 namespace BencodeNET.Objects
 {

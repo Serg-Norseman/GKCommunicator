@@ -18,6 +18,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System.Collections.Generic;
 using System.Linq;
 using BencodeNET.Objects;
 
@@ -91,6 +92,24 @@ namespace GKNet.DHT
             return sendData;
         }
 
+        public static BDictionary CreateFindNodeResponse(BString transactionID,
+            byte[] nid, IList<DHTNode> nodesList)
+        {
+            var nodes = new BString(DHTHelper.CompactNodes(nodesList));
+
+            BDictionary sendData = new BDictionary();
+
+            sendData.Add("y", "r");
+            sendData.Add("t", transactionID);
+
+            var r = new BDictionary();
+            r.Add("id", new BString(nid));
+            r.Add("nodes", nodes);
+            sendData.Add("r", r);
+
+            return sendData;
+        }
+
         public static BDictionary CreateAnnouncePeerQuery(BString transactionID, byte[] nid, byte[] infoHash,
             byte implied_port, int port, BString token)
         {
@@ -113,8 +132,10 @@ namespace GKNet.DHT
             return sendData;
         }
 
-        public static BDictionary CreateAnnouncePeerResponse(BString transactionID, byte[] nid)
+        public static BDictionary CreateAnnouncePeerResponse(BString transactionID, byte[] nid, IList<DHTNode> nodesList)
         {
+            var nodes = new BString(DHTHelper.CompactNodes(nodesList));
+
             BDictionary sendData = new BDictionary();
 
             sendData.Add("y", "r");
@@ -122,6 +143,7 @@ namespace GKNet.DHT
 
             var r = new BDictionary();
             r.Add("id", new BString(nid));
+            r.Add("nodes", nodes);
             sendData.Add("r", r);
 
             return sendData;
@@ -143,8 +165,13 @@ namespace GKNet.DHT
             return sendData;
         }
 
-        public static BDictionary CreateGetPeersResponse(BString transactionID, byte[] nid, byte[] infoHash, BList values, BString nodes)
+        public static BDictionary CreateGetPeersResponse(
+            BString transactionID, byte[] nid, byte[] infoHash,
+            IList<IDHTPeer> peersList, IList<DHTNode> nodesList)
         {
+            BList values = DHTHelper.CompactPeers(peersList);
+            var nodes = new BString(DHTHelper.CompactNodes(nodesList));
+
             BDictionary sendData = new BDictionary();
 
             sendData.Add("t", transactionID);

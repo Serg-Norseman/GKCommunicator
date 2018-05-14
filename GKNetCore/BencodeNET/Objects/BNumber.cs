@@ -1,5 +1,5 @@
 ﻿using System;
-using BencodeNET.IO;
+using BencodeNET.Parsing;
 
 namespace BencodeNET.Objects
 {

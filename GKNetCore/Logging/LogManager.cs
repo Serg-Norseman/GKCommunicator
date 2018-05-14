@@ -18,26 +18,31 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System.Collections.Generic;
-using System.Net;
+using System;
 
-namespace GKNet
+namespace GKNet.Logging
 {
-    public interface IChatCore
+    public sealed class LogManager
     {
-        string MemberName { get; set; }
-        IList<Peer> Peers { get; }
-        int TCPListenerPort { get; set; }
+        private static LogManager fLogManager;
 
-        void Connect();
-        void Disconnect();
-        void Join(string member);
-        void Leave(string member);
-        void Send(Peer target, string message);
-        void SendUDP(Peer target, string message);
-        void SendToAll(string message);
+        private LogManager(string logFileName, string logLevel)
+        {
+            try {
+                Log4NetHelper.Init(logFileName, logLevel);
+            } catch (Exception e) {
+                Log4NetHelper.Init(@".\fatal.log", "ERROR");
+                var l = new Log4NetHelper(GetType().ToString());
+                l.WriteError("Error while initializing the logger", e);
+            }
+        }
 
-        Peer AddPeer(IPAddress peerAddress, int port);
-        Peer FindPeer(IPAddress peerAddress);
+        public static ILogger GetLogger(string logFileName, string logLevel, string loggerName)
+        {
+            if (fLogManager == null) {
+                fLogManager = new LogManager(logFileName, logLevel);
+            }
+            return new Log4NetHelper(loggerName);
+        }
     }
 }

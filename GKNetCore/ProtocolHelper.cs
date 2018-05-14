@@ -26,6 +26,9 @@ namespace GKNet
     public class ProtocolHelper
     {
         public const string NETWORK_SIGN = "GEDKEEPER NETWORK";
+        public const string LOG_FILE = "./GKCommunicator.log";
+        public const string LOG_LEVEL = "DEBUG";
+
         //public const int PublicTCPPort = DHTClient.PublicDHTPort;
         //public const int DebugTCPPort = DHTClient.PublicDHTPort;
         public const int PublicTCPPort = 11000;
@@ -71,7 +74,7 @@ namespace GKNet
             return data.EncodeAsBytes();
         }
 
-        public static byte[] CreateChatMessage(string message)
+        public static BDictionary CreateChatMessage(string message)
         {
             var data = new BDictionary();
             data.Add("y", "q");
@@ -82,33 +85,33 @@ namespace GKNet
 
             data.Add("a", args);
 
-            return data.EncodeAsBytes();
+            return data;
         }
 
-        public static byte[] CreateGetPeerInfoQuery()
+        public static BDictionary CreateGetPeerInfoQuery()
         {
             var data = new BDictionary();
             data.Add("y", "q");
             data.Add("q", "getpeerinfo");
 
-            return data.EncodeAsBytes();
+            return data;
         }
 
-        public static byte[] CreateGetPeerInfoResponse()
+        public static BDictionary CreateGetPeerInfoResponse()
         {
             var data = new BDictionary();
             data.Add("y", "r");
             data.Add("r", "getpeerinfo");
 
-            var args = new BDictionary();
-            args.Add("uname", SysHelper.GetUserName());
-            args.Add("uctry", SysHelper.GetUserCountry());
-            args.Add("utz", SysHelper.GetTimeZone());
-            args.Add("ulangs", SysHelper.GetLanguages());
+            var retvals = new BDictionary();
+            retvals.Add("uname", SysHelper.GetUserName());
+            retvals.Add("uctry", SysHelper.GetUserCountry());
+            retvals.Add("utz", SysHelper.GetTimeZone());
+            retvals.Add("ulangs", SysHelper.GetLanguages());
 
-            data.Add("a", args);
+            data.Add("rv", retvals);
 
-            return data.EncodeAsBytes();
+            return data;
         }
     }
 }

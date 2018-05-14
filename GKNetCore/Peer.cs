@@ -19,20 +19,22 @@
  */
 
 using System.Net;
+using GKNet.DHT;
 
 namespace GKNet
 {
     public enum PeerState
     {
-        Unknown, Unchecked, Checked, Self
+        Unknown, Unchecked, Checked
     }
 
-    public class Peer
+    public class Peer : IDHTPeer
     {
         public IPAddress Address { get; private set; }
         public IPEndPoint EndPoint { get; private set; }
         public PeerState State { get; set; }
         public PeerProfile Profile { get; private set; }
+        public bool IsLocal { get; set; }
 
         public Peer(IPAddress address, int port)
         {
@@ -44,7 +46,8 @@ namespace GKNet
 
         public override string ToString()
         {
-            return string.Format("{0} ({1})", EndPoint.ToString(), State.ToString());
+            string location = (IsLocal) ? "local" : "external";
+            return string.Format("{0} ({1}, {2})", EndPoint, State, location);
         }
     }
 }

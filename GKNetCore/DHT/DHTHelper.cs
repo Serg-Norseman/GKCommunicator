@@ -148,6 +148,30 @@ namespace GKNet.DHT
             return true;
         }
 
+        // TODO: ATTENTION, the quantity is not more than according to specification!
+        public static BList CompactPeers(IList<IDHTPeer> peersList)
+        {
+            BList values = null;
+            if (peersList != null && peersList.Count > 0) {
+                values = new BList();
+                foreach (var peer in peersList) {
+                    values.Add(new BString(CompactEndPoint(peer.EndPoint)));
+                }
+            }
+            return values;
+        }
+
+        public static byte[] CompactNodes(IList<DHTNode> nodesList)
+        {
+            byte[] nodesArray = new byte[nodesList.Count * 26];
+            var i = 0;
+            foreach (var node in nodesList) {
+                var compact = CompactNode(node);
+                Array.Copy(compact, 0, nodesArray, i * 26, 26);
+            }
+            return nodesArray;
+        }
+
         public static byte[] CompactNode(DHTNode node)
         {
             IPAddress address = node.EndPoint.Address;
