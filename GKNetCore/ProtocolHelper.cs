@@ -18,6 +18,9 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System.Net;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using BencodeNET.Objects;
 using GKNet.DHT;
 
@@ -34,6 +37,7 @@ namespace GKNet
         public const int PublicTCPPort = 11000;
         public const int DebugTCPPort = 11200;
 
+
         public static byte[] CreateSignInfoKey()
         {
             BDictionary subnetKey = new BDictionary();
@@ -41,16 +45,7 @@ namespace GKNet
             return DHTHelper.CalculateInfoHashBytes(subnetKey);
         }
 
-        public static byte[] CreateHolepunchQuery()
-        {
-            var data = new BDictionary();
-            data.Add("y", "q");
-            data.Add("q", "holepunch");
-
-            return data.EncodeAsBytes();
-        }
-
-        public static byte[] CreateHandshakeQuery()
+        public static BDictionary CreateHandshakeQuery()
         {
             var data = new BDictionary();
             data.Add("y", "q");
@@ -62,16 +57,16 @@ namespace GKNet
 
             data.Add("a", args);
 
-            return data.EncodeAsBytes();
+            return data;
         }
 
-        public static byte[] CreateHandshakeResponse()
+        public static BDictionary CreateHandshakeResponse()
         {
             var data = new BDictionary();
             data.Add("y", "r");
             data.Add("r", "handshake");
 
-            return data.EncodeAsBytes();
+            return data;
         }
 
         public static BDictionary CreateChatMessage(string message)
@@ -84,6 +79,8 @@ namespace GKNet
             args.Add("msg", message);
 
             data.Add("a", args);
+
+            data.Add("handshake", "gkn");
 
             return data;
         }
@@ -104,14 +101,58 @@ namespace GKNet
             data.Add("r", "getpeerinfo");
 
             var retvals = new BDictionary();
-            retvals.Add("uname", SysHelper.GetUserName());
-            retvals.Add("uctry", SysHelper.GetUserCountry());
-            retvals.Add("utz", SysHelper.GetTimeZone());
-            retvals.Add("ulangs", SysHelper.GetLanguages());
-
+            var peerInfo = new PeerInfo();
+            peerInfo.ResetSystem();
+            peerInfo.Save(retvals);
             data.Add("rv", retvals);
 
             return data;
+        }
+
+
+
+        // Fatal problem:
+        // if there is an address statically assigned to the corporate network,
+        // then there is still no correct external address
+        private static IPAddress GetPublicAddress()
+        {
+            NetworkInterface[] networkInterfaces = NetworkInterface.GetAllNetworkInterfaces();
+
+            // weed out addresses of virtual adapters (VirtualBox, VMWare, Tunngle, etc.)
+            foreach (NetworkInterface network in networkInterfaces) {
+                IPInterfaceProperties properties = network.GetIPProperties();
+                if (properties.GatewayAddresses.Count == 0) {
+                    // all the magic is in this line
+                    continue;
+                }
+
+                foreach (IPAddressInformation address in properties.UnicastAddresses) {
+                    if (address.Address.AddressFamily != AddressFamily.InterNetwork)
+                        continue;
+
+                    if (IPAddress.IsLoopback(address.Address))
+                        continue;
+
+                    return address.Address;
+                }
+            }
+
+            return default(IPAddress);
+        }
+
+        public static string GetPublicIPAddress()
+        {
+            if (!NetworkInterface.GetIsNetworkAvailable()) {
+                return null;
+            }
+
+            try {
+                string externalIP = GetPublicAddress().ToString();
+                /*externalIP = (new WebClient()).DownloadString("http://checkip.dyndns.org/");
+                externalIP = (new Regex(@"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"))
+                             .Matches(externalIP)[0].ToString();*/
+                return externalIP;
+            } catch { return null; }
         }
     }
 }

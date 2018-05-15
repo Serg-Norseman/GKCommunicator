@@ -33,10 +33,13 @@ namespace GKCommunicatorApp
 
         private void SysInfoWin_Load(object sender, EventArgs e)
         {
-            textBox1.Text += "UserName: " + SysHelper.GetUserName() + "\r\n";
-            textBox1.Text += "UserCountry: " + SysHelper.GetUserCountry() + "\r\n";
-            textBox1.Text += "TimeZone: " + SysHelper.GetTimeZone() + "\r\n";
-            textBox1.Text += "Languages: " + SysHelper.GetLanguages() + "\r\n";
+            var peerInfo = new PeerInfo();
+            peerInfo.ResetSystem();
+
+            textBox1.Text += "UserName: " + peerInfo.UserName + "\r\n";
+            textBox1.Text += "UserCountry: " + peerInfo.Country + "\r\n";
+            textBox1.Text += "TimeZone: " + peerInfo.TimeZone + "\r\n";
+            textBox1.Text += "Languages: " + peerInfo.Languages + "\r\n";
         }
     }
 }

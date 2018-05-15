@@ -18,18 +18,14 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
 using System.Net;
 
 namespace GKNet.DHT
 {
-    public class PeerPingedEventArgs : EventArgs
+    public class PeerPingedEventArgs : PeerEventArgs
     {
-        public IPEndPoint EndPoint { get; private set; }
-
-        public PeerPingedEventArgs(IPEndPoint peerEndPoint)
+        public PeerPingedEventArgs(IPEndPoint peerEndPoint, byte[] nodeId) : base(peerEndPoint, nodeId)
         {
-            EndPoint = peerEndPoint;
         }
     }
 }

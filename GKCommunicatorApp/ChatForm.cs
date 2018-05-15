@@ -22,7 +22,6 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Net;
 using System.Windows.Forms;
 using GKNet;
 using GKNet.Logging;
@@ -163,32 +162,13 @@ namespace GKCommunicatorApp
 
         public static void LoadExtFile(string fileName)
         {
-#if !CI_MODE
             if (File.Exists(fileName)) {
                 Process.Start(new ProcessStartInfo("file://" + fileName) { UseShellExecute = true });
             } else {
                 Process.Start(fileName);
             }
-#endif
         }
 
         #endregion
-
-        private void miAddDebugPeer_Click(object sender, EventArgs e)
-        {
-            fCore.AddPeer(IPAddress.Parse("127.0.0.1"), ProtocolHelper.DebugTCPPort);
-        }
-
-        private void miSendTestMessage_Click(object sender, EventArgs e)
-        {
-            var peerItem = (lstMembers.SelectedItem as Peer);
-            var msgText = txtChatMsg.Text;
-
-            if ((!String.IsNullOrEmpty(msgText)) && (peerItem != null)) {
-                fCore.SendUDP(peerItem, msgText);
-                txtChatMsg.Clear();
-                txtChatMsg.Focus();
-            }
-        }
     }
 }

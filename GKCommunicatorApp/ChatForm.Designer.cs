@@ -46,8 +46,6 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.lstMembers = new System.Windows.Forms.ListBox();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.miAddDebugPeer = new System.Windows.Forms.ToolStripMenuItem();
-            this.miSendTestMessage = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.lstChatMsgs = new System.Windows.Forms.RichTextBox();
             this.txtChatMsg = new System.Windows.Forms.TextBox();
@@ -61,7 +59,6 @@
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
-            this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
@@ -233,25 +230,8 @@
             // contextMenuStrip1
             // 
             this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.miAddDebugPeer,
-            this.miSendTestMessage});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(202, 52);
-            // 
-            // miAddDebugPeer
-            // 
-            this.miAddDebugPeer.Name = "miAddDebugPeer";
-            this.miAddDebugPeer.Size = new System.Drawing.Size(201, 24);
-            this.miAddDebugPeer.Text = "Add debug peer";
-            this.miAddDebugPeer.Click += new System.EventHandler(this.miAddDebugPeer_Click);
-            // 
-            // miSendTestMessage
-            // 
-            this.miSendTestMessage.Name = "miSendTestMessage";
-            this.miSendTestMessage.Size = new System.Drawing.Size(201, 24);
-            this.miSendTestMessage.Text = "Send test message";
-            this.miSendTestMessage.Click += new System.EventHandler(this.miSendTestMessage_Click);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
             // 
             // splitContainer2
             // 
@@ -354,7 +334,6 @@
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
-            this.contextMenuStrip1.ResumeLayout(false);
             this.splitContainer2.Panel1.ResumeLayout(false);
             this.splitContainer2.Panel2.ResumeLayout(false);
             this.splitContainer2.Panel2.PerformLayout();
@@ -390,8 +369,6 @@
         private System.Windows.Forms.RichTextBox lstChatMsgs;
         private System.Windows.Forms.ToolStripMenuItem miExternalIP;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem miAddDebugPeer;
         private System.Windows.Forms.ToolStripMenuItem miSTUNInfo;
-        private System.Windows.Forms.ToolStripMenuItem miSendTestMessage;
     }
 }

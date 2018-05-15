@@ -18,20 +18,17 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
 using System.Net;
 using BencodeNET.Objects;
 
 namespace GKNet.DHT
 {
-    public class MessageEventArgs : EventArgs
+    public class MessageEventArgs : PeerEventArgs
     {
-        public IPEndPoint EndPoint { get; private set; }
         public BDictionary Data { get; private set; }
 
-        public MessageEventArgs(IPEndPoint peerEndPoint, BDictionary data)
+        public MessageEventArgs(IPEndPoint peerEndPoint, byte[] nodeId, BDictionary data) : base(peerEndPoint, nodeId)
         {
-            EndPoint = peerEndPoint;
             Data = data;
         }
     }

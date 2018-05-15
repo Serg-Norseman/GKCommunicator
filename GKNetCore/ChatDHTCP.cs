@@ -18,12 +18,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-//#define ECHO_MODE
-//#define DEBUG_INSTANCE
-
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -40,6 +36,8 @@ namespace GKNet
 {
     public class ChatDHTCP : IChatCore, IDHTPeersHolder
     {
+        public const string CLIENT_VER = "GKC";
+
         private IChatForm fForm;
 
         private bool fConnected;
@@ -96,11 +94,7 @@ namespace GKNet
             fSTUNInfo = null;
 
             int dhtPort = DHTClient.PublicDHTPort;
-#if DEBUG_INSTANCE
-            dhtPort += 100;
-#endif
-
-            fDHTClient = new DHTClient(IPAddress.Any, dhtPort, this);
+            fDHTClient = new DHTClient(IPAddress.Any, dhtPort, this, CLIENT_VER);
             fDHTClient.PeersFound += delegate (object sender, PeersFoundEventArgs e) {
                 fLogger.WriteInfo(string.Format("Found DHT peers: {0}", e.Peers.Count));
 
@@ -120,7 +114,7 @@ namespace GKNet
 
                 if (changed) {
                     fForm.OnPeersListChanged();
-                    SendUDP(e.EndPoint, ProtocolHelper.CreateGetPeerInfoQuery());
+                    SendData(e.EndPoint, ProtocolHelper.CreateGetPeerInfoQuery());
                 }
             };
             fDHTClient.QueryReceived += OnQueryReceive;
@@ -179,7 +173,7 @@ namespace GKNet
         public void Connect()
         {
             // FIXME: sometimes it does not work correctly
-            fLogger.WriteInfo("Public IP: " + SysHelper.GetPublicIPAddress().ToString());
+            fLogger.WriteInfo("Public IP: " + ProtocolHelper.GetPublicIPAddress().ToString());
 
             var snkInfoHash = ProtocolHelper.CreateSignInfoKey();
             fLogger.WriteInfo("Search for: " + snkInfoHash.ToHexString());
@@ -201,9 +195,6 @@ namespace GKNet
                     Thread.Sleep(1000);
                 }
             }).Start();
-
-            // bad attempt
-            //SendData(fPublicEndPoint, ProtocolHelper.CreateHolepunchQuery());
         }
 
         public void Disconnect()
@@ -285,52 +276,29 @@ namespace GKNet
 
         #region Protocol features
 
-        private void SendData(IPEndPoint endPoint, byte[] data)
+        private void SendData(IPEndPoint endPoint, BDictionary data)
         {
-            var conn = fTCPClient.GetConnection(endPoint);
+            fDHTClient.Send(endPoint, data);
+
+            /*var conn = fTCPClient.GetConnection(endPoint);
             if (conn != null) {
-                conn.Send(data);
-            }
-        }
-
-        public void SendHandshakeQuery(Peer peer)
-        {
-            peer.State = PeerState.Unchecked;
-            var data = ProtocolHelper.CreateHandshakeQuery();
-            SendData(peer.EndPoint, data);
-        }
-
-        public void SendHandshakeResponse(IPEndPoint endPoint)
-        {
-            var data = ProtocolHelper.CreateHandshakeResponse();
-            SendData(endPoint, data);
+                conn.Send(data.EncodeAsBytes());
+            }*/
         }
 
         public void SendMessage(Peer peer, string message)
         {
-            var data = ProtocolHelper.CreateChatMessage(message);
-            SendData(peer.EndPoint, data.EncodeAsBytes());
-        }
-
-        public void SendGetPeerInfoQuery(Peer peer)
-        {
-            var data = ProtocolHelper.CreateGetPeerInfoQuery();
-            SendData(peer.EndPoint, data.EncodeAsBytes());
-        }
-
-        public void SendGetPeerInfoResponse(IPEndPoint endPoint)
-        {
-            var data = ProtocolHelper.CreateGetPeerInfoResponse();
-            SendData(endPoint, data.EncodeAsBytes());
+            SendData(peer.EndPoint, ProtocolHelper.CreateChatMessage(message));
         }
 
         #endregion
 
         private void CheckPeers()
         {
-            foreach (var p in fPeers) {
-                if (!p.IsLocal) {
-                    SendHandshakeQuery(p);
+            foreach (var peer in fPeers) {
+                if (!peer.IsLocal) {
+                    peer.State = PeerState.Unchecked;
+                    SendData(peer.EndPoint, ProtocolHelper.CreateHandshakeQuery());
                 }
             }
             fForm.OnPeersListChanged();
@@ -347,11 +315,11 @@ namespace GKNet
             var args = e.Data.Get<BDictionary>("a");
             switch (queryType) {
                 case "handshake":
-                    SendHandshakeResponse(e.EndPoint);
+                    SendData(e.EndPoint, ProtocolHelper.CreateHandshakeResponse());
                     break;
 
                 case "getpeerinfo":
-                    SendGetPeerInfoResponse(e.EndPoint);
+                    SendData(e.EndPoint, ProtocolHelper.CreateGetPeerInfoResponse());
                     break;
 
                 case "chat":
@@ -381,17 +349,19 @@ namespace GKNet
 
                 case "getpeerinfo":
                     var args = e.Data.Get<BDictionary>("rv");
-                    fForm.OnMessageReceived(pr, args.Get<BString>("uname").Value.ToString());
-                    fForm.OnMessageReceived(pr, args.Get<BString>("uctry").Value.ToString());
-                    fForm.OnMessageReceived(pr, args.Get<BString>("utz").Value.ToString());
-                    fForm.OnMessageReceived(pr, args.Get<BString>("ulangs").Value.ToString());
+                    var peerInfo = new PeerInfo();
+                    peerInfo.Load(args);
+                    fForm.OnMessageReceived(pr, peerInfo.UserName);
+                    fForm.OnMessageReceived(pr, peerInfo.Country);
+                    fForm.OnMessageReceived(pr, peerInfo.TimeZone);
+                    fForm.OnMessageReceived(pr, peerInfo.Languages);
                     break;
             }
         }
 
         private void OnDataReceive(object sender, DataReceiveEventArgs e)
         {
-            var dic = fParser.Parse<BDictionary>(e.Data);
+            /*var dic = fParser.Parse<BDictionary>(e.Data);
             fForm.OnMessageReceived(null, dic.EncodeAsString());
 
             string msgType = dic.Get<BString>("y").ToString();
@@ -421,18 +391,13 @@ namespace GKNet
                     string respType = dic.Get<BString>("r").ToString();
                     switch (respType) {
                         case "handshake":
-                            /*var pr = FindPeer(e.Peer.Address);
-                            if (pr != null) {
-                                pr.State = PeerState.Checked;
-                                SendGetPeerInfoQuery(pr);
-                            }*/
                             break;
 
                         case "getpeerinfo":
                             break;
                     }
                     break;
-            }
+            }*/
         }
 
         public void Join(string member)
@@ -441,18 +406,6 @@ namespace GKNet
 
         public void Leave(string member)
         {
-        }
-
-        public void SendUDP(IPEndPoint endPoint, BDictionary data)
-        {
-            fDHTClient.Send(endPoint, data);
-        }
-
-        public void SendUDP(Peer target, string message)
-        {
-            var data = ProtocolHelper.CreateChatMessage(message);
-            data.Add("handshake", "gkn");
-            fDHTClient.Send(target.EndPoint, data);
         }
 
         public void Send(Peer target, string message)
