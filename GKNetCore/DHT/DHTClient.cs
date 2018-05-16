@@ -18,8 +18,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-//#define IP6
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,6 +34,16 @@ namespace GKNet.DHT
     {
         private static readonly TimeSpan NodesUpdateRange = TimeSpan.FromMinutes(1);
         private static readonly TimeSpan AnnounceLife = TimeSpan.FromMinutes(10); // FIXME?
+
+#if !IP6
+        public static readonly IPAddress IPLoopbackAddress = IPAddress.Loopback;
+        public static readonly IPAddress IPAnyAddress = IPAddress.Any;
+        public static readonly AddressFamily IPAddressFamily = AddressFamily.InterNetwork;
+#else
+        public static readonly IPAddress IPLoopbackAddress = IPAddress.IPv6Loopback;
+        public static readonly IPAddress IPAnyAddress = IPAddress.IPv6Any;
+        public static readonly AddressFamily IPAddressFamily = AddressFamily.InterNetworkV6;
+#endif
 
         public const int PublicDHTPort = 6881;
         public const int KTableSize = 2048;
@@ -76,7 +84,7 @@ namespace GKNet.DHT
         public DHTClient(IPAddress addr, int port, IDHTPeersHolder peersHolder, string clientVer)
         {
             fClientVer = clientVer;
-            fDefaultIP = new IPEndPoint(IPAddress.Loopback, 0);
+            fDefaultIP = new IPEndPoint(IPLoopbackAddress, 0);
             fLocalID = DHTHelper.GetRandomID();
             fLocalIP = new IPEndPoint(addr, port);
             fLogger = LogManager.GetLogger(ProtocolHelper.LOG_FILE, ProtocolHelper.LOG_LEVEL, "DHTClient");
@@ -92,11 +100,15 @@ namespace GKNet.DHT
             byte[] optionInValue = { Convert.ToByte(false) };
             byte[] optionOutValue = new byte[4];
 
-            fSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            fSocket = new Socket(IPAddressFamily, SocketType.Dgram, ProtocolType.Udp);
             fSocket.SetIPProtectionLevel(IPProtectionLevel.Unrestricted);
+#if !IP6
             fSocket.Ttl = 255;
             fSocket.IOControl((IOControlCode)SIO_UDP_CONNRESET, optionInValue, optionOutValue);
             fSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+#else
+            fSocket.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.IPv6Only, false);
+#endif
             fSocket.Bind(fLocalIP);
         }
 
@@ -112,11 +124,20 @@ namespace GKNet.DHT
 
         public void JoinNetwork()
         {
-            fRouters = new List<string>() {
+            var routers = new List<string>() {
                             "router.bittorrent.com",
                             "dht.transmissionbt.com",
                             "router.utorrent.com"
                         }.Select(x => Dns.GetHostEntry(x).AddressList[0]).ToList();
+
+#if !IP6
+            fRouters = routers;
+#else
+            fRouters = new List<IPAddress>();
+            foreach (var r in routers) {
+                fRouters.Add(r.MapToIPv6());
+            }
+#endif
         }
 
         public void SearchNodes(byte[] searchInfoHash)
@@ -166,15 +187,15 @@ namespace GKNet.DHT
 
         private void BeginRecv()
         {
-            //EndPoint remoteAddress = new IPEndPoint(IPAddress.Loopback, 0);
-            EndPoint remoteAddress = new IPEndPoint(IPAddress.Any, 0);
+            //EndPoint remoteAddress = new IPEndPoint(IPLoopbackAddress, 0);
+            EndPoint remoteAddress = new IPEndPoint(IPAnyAddress, 0);
             fSocket.BeginReceiveFrom(fBuffer, 0, fBuffer.Length, SocketFlags.None, ref remoteAddress, EndRecv, null);
         }
 
         private void EndRecv(IAsyncResult result)
         {
             try {
-                EndPoint remoteAddress = new IPEndPoint(IPAddress.Loopback, 0);
+                EndPoint remoteAddress = new IPEndPoint(IPLoopbackAddress, 0);
                 int count = fSocket.EndReceiveFrom(result, ref remoteAddress);
                 if (count > 0) {
                     byte[] buffer = new byte[count];
@@ -200,8 +221,6 @@ namespace GKNet.DHT
         private void OnRecvMessage(byte[] data, IPEndPoint ipinfo)
         {
             try {
-                fLogger.WriteDebug("Receive message from " + ipinfo.ToString());
-
                 if (data == null || data.Length == 0 || data[0] != 'd') {
                     return;
                 }
@@ -333,6 +352,7 @@ namespace GKNet.DHT
             bool result = false;
             if (valuesList != null && valuesList.Count != 0) {
                 var values = DHTHelper.ParseValuesList(valuesList);
+
                 if (values.Count > 0) {
                     fLogger.WriteDebug("Receive {0} values (peers) from {1}", values.Count, ipinfo.ToString());
                     RaisePeersFound(fSearchInfoHash, values);
@@ -352,10 +372,15 @@ namespace GKNet.DHT
         private void ProcessNodesStr(IPEndPoint ipinfo, BString nodesStr)
         {
             if (nodesStr != null && nodesStr.Length != 0) {
-                if (nodesStr.Value.Length % 26 != 0)
+                List<DHTNode> nodesList = null;
+                if (nodesStr.Value.Length % DHTHelper.CompactNodeRecordLengthIP4 == 0) {
+                    nodesList = DHTHelper.ParseNodesListIP4(nodesStr.Value);
+                } else if (nodesStr.Value.Length % DHTHelper.CompactNodeRecordLengthIP6 == 0) {
+                    nodesList = DHTHelper.ParseNodesListIP6(nodesStr.Value);
+                } else {
                     throw new Exception("sd");
+                }
 
-                var nodesList = DHTHelper.ParseNodesList(nodesStr.Value);
                 fLogger.WriteDebug("Receive {0} nodes from {1}", nodesList.Count, ipinfo.ToString());
 
                 bool nodesUpdated = false;
@@ -569,7 +594,13 @@ namespace GKNet.DHT
                 data.Add("v", fClientVer);
 
                 byte[] dataArray = data.EncodeAsBytes();
-                fSocket.BeginSendTo(dataArray, 0, dataArray.Length, SocketFlags.None, address, (ar) => { fSocket.EndReceive(ar); }, null);
+                fSocket.BeginSendTo(dataArray, 0, dataArray.Length, SocketFlags.None, address, (ar) => {
+                    try {
+                        fSocket.EndReceive(ar);
+                    } catch (Exception ex) {
+                        fLogger.WriteError("Send.1(" + address.ToString() + "): ", ex);
+                    }
+                }, null);
             } catch (Exception ex) {
                 fLogger.WriteError("Send(): ", ex);
             }

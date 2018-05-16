@@ -84,6 +84,12 @@ namespace GKNet.DHT
             sendData.Add("y", "q");
             sendData.Add("q", "find_node");
 
+#if IP6
+            var want = new BList();
+            want.Add("n6");
+            sendData.Add("want", want);
+#endif
+
             var args = new BDictionary();
             args.Add("id", new BString(nid));
             args.Add("target", new BString(DHTHelper.GetRandomHashID()));
@@ -156,6 +162,12 @@ namespace GKNet.DHT
             sendData.Add("t", transactionID);
             sendData.Add("y", "q");
             sendData.Add("q", "get_peers");
+
+#if IP6
+            var want = new BList();
+            want.Add("n6");
+            sendData.Add("want", want);
+#endif
 
             var args = new BDictionary();
             args.Add("id", new BString(nid));

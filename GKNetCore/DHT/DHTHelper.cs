@@ -31,6 +31,14 @@ namespace GKNet.DHT
 {
     public static class DHTHelper
     {
+        public const int CompactNodeRecordLengthIP4 = 26; // 20 + 6
+        public const int CompactNodeRecordLengthIP6 = 38; // 20 + 18
+#if !IP6
+        public const int CompactNodeRecordLength = CompactNodeRecordLengthIP4;
+#else
+        public const int CompactNodeRecordLength = CompactNodeRecordLengthIP6;
+#endif
+
         private static Random r = new Random();
         private static SHA1 sha1 = new SHA1CryptoServiceProvider();
 
@@ -68,6 +76,15 @@ namespace GKNet.DHT
             }
         }
 
+        private static IPAddress PrepareAddress(IPAddress address)
+        {
+#if !IP6
+               return address;
+#else
+            return address.MapToIPv6();
+#endif
+        }
+
         public static List<IPEndPoint> ParseValuesList(BList data)
         {
             var result = new List<IPEndPoint>();
@@ -75,20 +92,25 @@ namespace GKNet.DHT
             foreach (var item in data) {
                 var str = item as BString;
                 var itemBytes = str.Value;
-                if (itemBytes.Length != 6) {
 
-                } else {
+                if (itemBytes.Length == 6) {
                     var ip = new IPAddress(itemBytes.Take(4).ToArray());
                     var port = BitConverter.ToUInt16(itemBytes, 4);
-                    var xnode = new IPEndPoint(ip, port);
+                    var xnode = new IPEndPoint(PrepareAddress(ip), port);
                     result.Add(xnode);
+                } else if (itemBytes.Length == 18) {
+                    var ip = new IPAddress(itemBytes.Take(16).ToArray());
+                    var port = BitConverter.ToUInt16(itemBytes, 16);
+                    var xnode = new IPEndPoint(PrepareAddress(ip), port);
+                    result.Add(xnode);
+                } else {
                 }
             }
 
             return result;
         }
 
-        public static List<DHTNode> ParseNodesList(byte[] data)
+        public static List<DHTNode> ParseNodesListIP4(byte[] data)
         {
             var result = new List<DHTNode>();
             for (int i = 0; i < data.Length; i += 26) {
@@ -101,7 +123,26 @@ namespace GKNet.DHT
                 var id = dd.Take(20).ToArray();
                 var ip = new IPAddress(dd.Skip(20).Take(4).ToArray());
                 var port = BitConverter.ToUInt16(dd, 24);
-                var tt = new DHTNode(id, new IPEndPoint(ip, port));
+                var tt = new DHTNode(id, new IPEndPoint(PrepareAddress(ip), port));
+                result.Add(tt);
+            }
+            return result;
+        }
+
+        public static List<DHTNode> ParseNodesListIP6(byte[] data)
+        {
+            var result = new List<DHTNode>();
+            for (int i = 0; i < data.Length; i += 38) {
+                var dd = data.Skip(i).Take(38).ToArray();
+                //var bc = dd.ToHexString();
+                //Console.WriteLine(bc);
+                var b = dd[36];
+                dd[36] = dd[37];
+                dd[37] = b;
+                var id = dd.Take(20).ToArray();
+                var ip = new IPAddress(dd.Skip(20).Take(16).ToArray());
+                var port = BitConverter.ToUInt16(dd, 36);
+                var tt = new DHTNode(id, new IPEndPoint(PrepareAddress(ip), port));
                 result.Add(tt);
             }
             return result;

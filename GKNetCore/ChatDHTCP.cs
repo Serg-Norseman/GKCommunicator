@@ -94,7 +94,7 @@ namespace GKNet
             fSTUNInfo = null;
 
             int dhtPort = DHTClient.PublicDHTPort;
-            fDHTClient = new DHTClient(IPAddress.Any, dhtPort, this, CLIENT_VER);
+            fDHTClient = new DHTClient(DHTClient.IPAnyAddress, dhtPort, this, CLIENT_VER);
             fDHTClient.PeersFound += delegate (object sender, PeersFoundEventArgs e) {
                 fLogger.WriteInfo(string.Format("Found DHT peers: {0}", e.Peers.Count));
 
@@ -337,7 +337,8 @@ namespace GKNet
             var pr = FindPeer(e.EndPoint.Address);
             fForm.OnMessageReceived(pr, e.Data.EncodeAsString());
 
-            string respType = e.Data.Get<BString>("r").ToString();
+            var resp = e.Data.Get<BString>("r");
+            string respType = (resp != null) ? resp.ToString() : "";
             switch (respType) {
                 case "handshake":
                     /*var pr = FindPeer(e.Peer.Address);
