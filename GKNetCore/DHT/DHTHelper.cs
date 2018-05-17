@@ -76,7 +76,7 @@ namespace GKNet.DHT
             }
         }
 
-        private static IPAddress PrepareAddress(IPAddress address)
+        public static IPAddress PrepareAddress(IPAddress address)
         {
 #if !IP6
                return address;

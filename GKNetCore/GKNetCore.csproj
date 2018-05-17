@@ -40,6 +40,10 @@
       <HintPath>..\libs\Mono.Nat.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.SQLite">
+      <HintPath>..\libs\mswin\System.Data.SQLite.dll</HintPath>
+    </Reference>
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
@@ -70,6 +74,7 @@
     <Compile Include="DHT\MessageEventArgs.cs" />
     <Compile Include="DHT\PeerEventArgs.cs" />
     <Compile Include="DHT\PeerPingedEventArgs.cs" />
+    <Compile Include="Database.cs" />
     <Compile Include="IChatForm.cs" />
     <Compile Include="DHT\BTClient.cs" />
     <Compile Include="DHT\DHTClient.cs" />

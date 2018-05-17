@@ -220,7 +220,7 @@ namespace GKNet
                 }
             }
 
-            if (fPublicEndPoint != null && fPublicEndPoint.Address.Equals(peerAddress) && !peer.IsLocal) {
+            if (CheckLocalAddress(peerAddress) && !peer.IsLocal) {
                 peer.IsLocal = true;
                 result = true;
             }
@@ -249,12 +249,17 @@ namespace GKNet
                 }
             }
 
-            if (fPublicEndPoint != null && fPublicEndPoint.Address.Equals(peerAddress) && !peer.IsLocal) {
+            if (CheckLocalAddress(peerAddress) && !peer.IsLocal) {
                 peer.IsLocal = true;
                 result = true;
             }
 
             return result;
+        }
+
+        public bool CheckLocalAddress(IPAddress peerAddress)
+        {
+            return ((fPublicEndPoint != null) && (DHTHelper.PrepareAddress(fPublicEndPoint.Address).Equals(peerAddress)));
         }
 
         public Peer AddPeer(IPAddress peerAddress, int port)

@@ -21,6 +21,7 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using GKNet;
@@ -56,9 +57,18 @@ namespace GKCommunicatorApp
             fCore.Disconnect();
         }
 
-        private void AddChatText(string text)
+        private void AddChatText(string text, Color color)
         {
-            lstChatMsgs.AppendText(text + "\r\n");
+            lstChatMsgs.AppendText("\r\n");
+            int selStart = lstChatMsgs.Text.Length - 1;
+            lstChatMsgs.AppendText(DateTime.Now.ToString());
+            int selEnd = lstChatMsgs.Text.Length - 1;
+            lstChatMsgs.AppendText("\r\n");
+            lstChatMsgs.AppendText(text);
+
+            lstChatMsgs.SelectionStart = selStart;
+            lstChatMsgs.SelectionLength = selEnd - selStart + 1;
+            lstChatMsgs.SelectionColor = Color.Red;
         }
 
         private void btnConnect_Click(object sender, EventArgs e)
@@ -138,7 +148,7 @@ namespace GKCommunicatorApp
         void IChatForm.OnMessageReceived(Peer sender, string message)
         {
             Invoke((MethodInvoker)delegate {
-                AddChatText(message);
+                AddChatText(message, Color.Black);
             });
         }
 
