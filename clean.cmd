@@ -9,5 +9,4 @@ rmdir .\GKCommunicatorApp\obj /s /q
 rmdir .\GKCommunicatorPlugin\bin /s /q
 rmdir .\GKCommunicatorPlugin\obj /s /q
 
-del logFile
 del msbuild.log

@@ -19,8 +19,11 @@
  */
 
 using System;
+using System.Net;
+using System.Net.Sockets;
 using System.Windows.Forms;
 using GKNet;
+using LumiSoft.Net.STUN.Client;
 
 namespace GKCommunicatorApp
 {
@@ -33,13 +36,39 @@ namespace GKCommunicatorApp
 
         private void SysInfoWin_Load(object sender, EventArgs e)
         {
-            var peerInfo = new PeerInfo();
+            var peerInfo = new PeerProfile();
             peerInfo.ResetSystem();
 
             textBox1.Text += "UserName: " + peerInfo.UserName + "\r\n";
             textBox1.Text += "UserCountry: " + peerInfo.Country + "\r\n";
             textBox1.Text += "TimeZone: " + peerInfo.TimeZone + "\r\n";
-            textBox1.Text += "Languages: " + peerInfo.Languages + "\r\n";
+            textBox1.Text += "Languages: " + peerInfo.Languages + "\r\n\r\n\r\n";
+
+            string server = "stun.ekiga.net";
+
+            this.Cursor = Cursors.WaitCursor;
+            try {
+                if (string.IsNullOrEmpty(server)) {
+                    MessageBox.Show(this, "Please specify STUN server!", "Error:", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+                socket.Bind(new IPEndPoint(IPAddress.Any, 0));
+
+                STUN_Result result = STUN_Client.Query(server, 3478, socket);
+                textBox1.Text += "NET type: " + result.NetType.ToString() + "\r\n";
+                textBox1.Text += "Local end point: " + socket.LocalEndPoint.ToString() + "\r\n";
+                if (result.NetType != STUN_NetType.UdpBlocked) {
+                    textBox1.Text += "Public end point: " + result.PublicEndPoint.ToString() + "\r\n";
+                } else {
+                    textBox1.Text += "Public end point: -\r\n";
+                }
+            } catch (Exception x) {
+                MessageBox.Show(this, "Error: " + x.ToString(), "Error:", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            } finally {
+                this.Cursor = Cursors.Default;
+            }
         }
     }
 }

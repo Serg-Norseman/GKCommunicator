@@ -34,7 +34,7 @@ using LumiSoft.Net.STUN.Client;
 
 namespace GKNet
 {
-    public class ChatDHTCP : IChatCore, IDHTPeersHolder
+    public sealed class CommunicatorCore : ICommunicatorCore, IDHTPeersHolder
     {
         public const string CLIENT_VER = "GKC";
 
@@ -79,7 +79,7 @@ namespace GKNet
             set { fTCPListenerPort = value; }
         }
 
-        public ChatDHTCP(IChatForm form)
+        public CommunicatorCore(IChatForm form)
         {
             if (form == null) {
                 throw new ArgumentNullException("form");
@@ -355,7 +355,7 @@ namespace GKNet
 
                 case "getpeerinfo":
                     var args = e.Data.Get<BDictionary>("rv");
-                    var peerInfo = new PeerInfo();
+                    var peerInfo = new PeerProfile();
                     peerInfo.Load(args);
                     fForm.OnMessageReceived(pr, peerInfo.UserName);
                     fForm.OnMessageReceived(pr, peerInfo.Country);

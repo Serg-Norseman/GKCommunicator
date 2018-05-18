@@ -68,7 +68,7 @@
     <Compile Include="BencodeNET\Parsing\IBObjectParser.cs" />
     <Compile Include="BencodeNET\Parsing\ParseUtil.cs" />
     <Compile Include="BencodeNET\UtilityExtensions.cs" />
-    <Compile Include="ChatDHTCP.cs" />
+    <Compile Include="CommunicatorCore.cs" />
     <Compile Include="DHT\IDHTPeer.cs" />
     <Compile Include="DHT\IDHTPeersHolder.cs" />
     <Compile Include="DHT\MessageEventArgs.cs" />
@@ -83,13 +83,13 @@
     <Compile Include="DHT\DHTNode.cs" />
     <Compile Include="DHT\DHTRoutingTable.cs" />
     <Compile Include="DHT\PeersFoundEventArgs.cs" />
-    <Compile Include="IChatCore.cs" />
+    <Compile Include="ICommunicatorCore.cs" />
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\Log4NetHelper.cs" />
     <Compile Include="Logging\LogManager.cs" />
+    <Compile Include="Message.cs" />
     <Compile Include="NATMapper.cs" />
     <Compile Include="Peer.cs" />
-    <Compile Include="PeerInfo.cs" />
     <Compile Include="PeerProfile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProtocolHelper.cs" />

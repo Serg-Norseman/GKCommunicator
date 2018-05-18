@@ -33,9 +33,8 @@ namespace GKCommunicatorApp
     {
         private delegate void NoArgDelegate();
 
+        private readonly ICommunicatorCore fCore;
         private readonly ILogger fLogger;
-        private string fMemberName;
-        private IChatCore fCore;
 
         public ChatForm()
         {
@@ -49,7 +48,7 @@ namespace GKCommunicatorApp
             }
             fLogger = LogManager.GetLogger(ProtocolHelper.LOG_FILE, ProtocolHelper.LOG_LEVEL, "ChatForm");
 
-            fCore = new ChatDHTCP(this);
+            fCore = new CommunicatorCore(this);
         }
 
         void WindowMain_Closing(object sender, CancelEventArgs e)
@@ -76,7 +75,7 @@ namespace GKCommunicatorApp
             btnConnect.Enabled = false;
             lblConnectionStatus.Visible = true;
 
-            fCore.MemberName = fMemberName;
+            fCore.Profile.UserName = txtMemberName.Text;
             fCore.TCPListenerPort = ProtocolHelper.PublicTCPPort;
 
             // join the P2P mesh from a worker thread
@@ -122,13 +121,6 @@ namespace GKCommunicatorApp
         private void miExternalIP_Click(object sender, EventArgs e)
         {
             LoadExtFile("https://2ip.ru/");
-        }
-
-        private void miSTUNInfo_Click(object sender, EventArgs e)
-        {
-            using (var dlgStunInfo = new StunInfoDlg()) {
-                dlgStunInfo.ShowDialog();
-            }
         }
 
         #region IChatForm members

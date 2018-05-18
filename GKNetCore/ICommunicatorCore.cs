@@ -23,10 +23,10 @@ using System.Net;
 
 namespace GKNet
 {
-    public interface IChatCore
+    public interface ICommunicatorCore
     {
-        string MemberName { get; set; }
         IList<Peer> Peers { get; }
+        UserProfile Profile { get; }
         int TCPListenerPort { get; set; }
 
         void Connect();

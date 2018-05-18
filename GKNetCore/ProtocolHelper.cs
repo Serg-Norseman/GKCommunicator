@@ -101,7 +101,7 @@ namespace GKNet
             data.Add("r", "getpeerinfo");
 
             var retvals = new BDictionary();
-            var peerInfo = new PeerInfo();
+            var peerInfo = new PeerProfile();
             peerInfo.ResetSystem();
             peerInfo.Save(retvals);
             data.Add("rv", retvals);

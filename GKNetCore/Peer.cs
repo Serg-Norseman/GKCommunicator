@@ -28,13 +28,19 @@ namespace GKNet
         Unknown, Unchecked, Checked
     }
 
+    public enum PresenceStatus
+    {
+        Unknown, Offline, Hidden /*Invisible?*/, Online, Away, Busy, Idle
+    }
+
     public class Peer : IDHTPeer
     {
         public IPAddress Address { get; private set; }
         public IPEndPoint EndPoint { get; private set; }
-        public PeerState State { get; set; }
-        public PeerProfile Profile { get; private set; }
         public bool IsLocal { get; set; }
+        public PresenceStatus Presence { get; set; }
+        public PeerProfile Profile { get; private set; }
+        public PeerState State { get; set; }
 
         public Peer(IPAddress address, int port)
         {

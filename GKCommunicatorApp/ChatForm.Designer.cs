@@ -35,7 +35,6 @@
             this.miDHTLog = new System.Windows.Forms.ToolStripMenuItem();
             this.miSysInfo = new System.Windows.Forms.ToolStripMenuItem();
             this.miExternalIP = new System.Windows.Forms.ToolStripMenuItem();
-            this.miSTUNInfo = new System.Windows.Forms.ToolStripMenuItem();
             this.miHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.lblConnectionStatus = new System.Windows.Forms.ToolStripStatusLabel();
@@ -98,8 +97,7 @@
             this.miService.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.miDHTLog,
             this.miSysInfo,
-            this.miExternalIP,
-            this.miSTUNInfo});
+            this.miExternalIP});
             this.miService.Name = "miService";
             this.miService.Size = new System.Drawing.Size(68, 24);
             this.miService.Text = "Service";
@@ -107,30 +105,23 @@
             // miDHTLog
             // 
             this.miDHTLog.Name = "miDHTLog";
-            this.miDHTLog.Size = new System.Drawing.Size(213, 26);
+            this.miDHTLog.Size = new System.Drawing.Size(216, 26);
             this.miDHTLog.Text = "DHT Log";
             this.miDHTLog.Click += new System.EventHandler(this.miDHTLog_Click);
             // 
             // miSysInfo
             // 
             this.miSysInfo.Name = "miSysInfo";
-            this.miSysInfo.Size = new System.Drawing.Size(213, 26);
+            this.miSysInfo.Size = new System.Drawing.Size(216, 26);
             this.miSysInfo.Text = "System Information";
             this.miSysInfo.Click += new System.EventHandler(this.miSysInfo_Click);
             // 
             // miExternalIP
             // 
             this.miExternalIP.Name = "miExternalIP";
-            this.miExternalIP.Size = new System.Drawing.Size(213, 26);
+            this.miExternalIP.Size = new System.Drawing.Size(216, 26);
             this.miExternalIP.Text = "External IP";
             this.miExternalIP.Click += new System.EventHandler(this.miExternalIP_Click);
-            // 
-            // miSTUNInfo
-            // 
-            this.miSTUNInfo.Name = "miSTUNInfo";
-            this.miSTUNInfo.Size = new System.Drawing.Size(213, 26);
-            this.miSTUNInfo.Text = "STUN Info";
-            this.miSTUNInfo.Click += new System.EventHandler(this.miSTUNInfo_Click);
             // 
             // miHelp
             // 
@@ -369,6 +360,5 @@
         private System.Windows.Forms.RichTextBox lstChatMsgs;
         private System.Windows.Forms.ToolStripMenuItem miExternalIP;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem miSTUNInfo;
     }
 }
