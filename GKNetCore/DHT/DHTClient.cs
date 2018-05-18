@@ -101,13 +101,17 @@ namespace GKNet.DHT
             byte[] optionOutValue = new byte[4];
 
             fSocket = new Socket(IPAddressFamily, SocketType.Dgram, ProtocolType.Udp);
+#if !NET35
             fSocket.SetIPProtectionLevel(IPProtectionLevel.Unrestricted);
+#endif
 #if !IP6
             fSocket.Ttl = 255;
             fSocket.IOControl((IOControlCode)SIO_UDP_CONNRESET, optionInValue, optionOutValue);
             fSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
 #else
+#if !NET35
             fSocket.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.IPv6Only, false);
+#endif
 #endif
             fSocket.Bind(fLocalIP);
         }
@@ -183,7 +187,7 @@ namespace GKNet.DHT
             fSearchRunned = false;
         }
 
-        #region Receive messages and data
+#region Receive messages and data
 
         private void BeginRecv()
         {
@@ -472,9 +476,9 @@ namespace GKNet.DHT
             Send(ipinfo, DHTMessage.CreateGetPeersResponse(t, neighbor, infoHash.Value, peersList, nodesList));
         }
 
-        #endregion
+#endregion
 
-        #region Events processing
+#region Events processing
 
         private void RaisePeersFound(byte[] infoHash, List<IPEndPoint> peers)
         {
@@ -504,9 +508,9 @@ namespace GKNet.DHT
             }
         }
 
-        #endregion
+#endregion
 
-        #region Transactions
+#region Transactions
 
         public void SetTransaction(BString transactionId, DHTMessage message)
         {
@@ -531,9 +535,9 @@ namespace GKNet.DHT
             return result;
         }
 
-        #endregion
+#endregion
 
-        #region Queries and responses
+#region Queries and responses
 
         private void SendPingQuery(IPEndPoint address)
         {
@@ -606,6 +610,6 @@ namespace GKNet.DHT
             }
         }
 
-        #endregion
+#endregion
     }
 }

@@ -52,7 +52,9 @@ namespace GKNet.TCP
             // Create the new socket on which we'll be listening.
             fSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             // global with NAT traversal
+#if !NET35
             fSocket.SetIPProtectionLevel(IPProtectionLevel.Unrestricted);
+#endif
             // Bind the socket to the address and port.
             fSocket.Bind(new IPEndPoint(IPAddress.Any, port));
             // Start listening.

@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>GKNet</RootNamespace>
     <AssemblyName>GKNetCore</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;IP6</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;IP6;NET35</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -89,6 +89,7 @@
     <Compile Include="Logging\LogManager.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="NATMapper.cs" />
+    <Compile Include="NetHelper.cs" />
     <Compile Include="Peer.cs" />
     <Compile Include="PeerProfile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
