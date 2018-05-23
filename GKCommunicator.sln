@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GKCommunicatorApp", "GKComm
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GKNetCore", "GKNetCore\GKNetCore.csproj", "{FEE68CF6-1D60-4E90-AEF3-6AFA4A8C977D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GKCommunicatorTests", "GKCommunicatorTests\GKCommunicatorTests.csproj", "{18B26357-E957-4EC7-B975-2694E2EBDE18}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{FEE68CF6-1D60-4E90-AEF3-6AFA4A8C977D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FEE68CF6-1D60-4E90-AEF3-6AFA4A8C977D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FEE68CF6-1D60-4E90-AEF3-6AFA4A8C977D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18B26357-E957-4EC7-B975-2694E2EBDE18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18B26357-E957-4EC7-B975-2694E2EBDE18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18B26357-E957-4EC7-B975-2694E2EBDE18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18B26357-E957-4EC7-B975-2694E2EBDE18}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

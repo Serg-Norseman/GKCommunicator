@@ -12,6 +12,10 @@
 /GKCommunicatorPlugin/bin/
 /GKCommunicatorPlugin/obj/
 
+/GKCommunicatorTests/bin/
+/GKCommunicatorTests/obj/
+/GKCommunicatorTests/OpenCover/
+
 /temp/
 
 /libs/linux/
