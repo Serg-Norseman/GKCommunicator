@@ -49,6 +49,8 @@ namespace GKCommunicatorApp
             fLogger = LogManager.GetLogger(ProtocolHelper.LOG_FILE, ProtocolHelper.LOG_LEVEL, "ChatForm");
 
             fCore = new CommunicatorCore(this);
+
+            UpdateStatus();
         }
 
         private void Connect()
@@ -71,6 +73,11 @@ namespace GKCommunicatorApp
         private void UpdateStatus()
         {
             miConnect.Enabled = !fCore.IsConnected;
+            miDisconnect.Enabled = fCore.IsConnected;
+
+            btnSend.Enabled = fCore.IsConnected;
+            btnSendToAll.Enabled = fCore.IsConnected;
+
             btnConnect.Enabled = !fCore.IsConnected;
             lblConnectionStatus.Visible = fCore.IsConnected;
         }

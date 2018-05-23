@@ -11,5 +11,6 @@ rmdir .\GKCommunicatorPlugin\obj /s /q
 
 rmdir .\GKCommunicatorTests\bin /s /q
 rmdir .\GKCommunicatorTests\obj /s /q
+rmdir .\GKCommunicatorTests\OpenCover /s /q
 
 del msbuild.log
