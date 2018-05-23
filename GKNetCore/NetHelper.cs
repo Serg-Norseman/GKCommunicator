@@ -70,6 +70,7 @@ namespace GKNet
             } catch { return null; }
         }
 
+#if NET35
         // IPv4 192.168.1.1 maps as ::FFFF:192.168.1.1
         public static IPAddress MapToIPv6(this IPAddress address)
         {
@@ -80,15 +81,13 @@ namespace GKNet
             byte[] labels = new byte[16];
             labels[10] = 0xFF;
             labels[11] = 0xFF;
-
-            /*labels[12 6] = (ushort)(((address.Address & 0x0000FF00) >> 8) | ((address.Address & 0x000000FF) << 8));
-            labels[13 6] = (ushort)(((address.Address & 0x0000FF00) >> 8) | ((address.Address & 0x000000FF) << 8));
-            labels[14 7] = (ushort)(((address.Address & 0xFF000000) >> 24) | ((address.Address & 0x00FF0000) >> 8));
-            labels[15 7] = (ushort)(((address.Address & 0xFF000000) >> 24) | ((address.Address & 0x00FF0000) >> 8));
-            return new IPAddress(labels, 0);*/
-
-            string ipv4str = address.ToString();
-            return IPAddress.Parse("::ffff:" + ipv4str);
+            labels[12] = (byte)((address.Address & 0x000000FF));
+            labels[13] = (byte)((address.Address & 0x0000FF00) >> 8);
+            labels[14] = (byte)((address.Address & 0x00FF0000) >> 16);
+            labels[15] = (byte)((address.Address & 0xFF000000) >> 24);
+            IPAddress res = new IPAddress(labels, 0);
+            return res;
         }
+#endif
     }
 }

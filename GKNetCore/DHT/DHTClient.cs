@@ -111,6 +111,8 @@ namespace GKNet.DHT
 #else
 #if !NET35
             fSocket.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.IPv6Only, false);
+#else
+            fSocket.SetSocketOption(SocketOptionLevel.IPv6, (SocketOptionName)27, false);
 #endif
 #endif
             fSocket.Bind(fLocalIP);
