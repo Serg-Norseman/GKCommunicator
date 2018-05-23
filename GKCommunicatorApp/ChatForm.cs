@@ -40,7 +40,7 @@ namespace GKCommunicatorApp
         {
             InitializeComponent();
 
-            Closing += new CancelEventHandler(WindowMain_Closing);
+            Closing += new CancelEventHandler(ChatForm_Closing);
             txtMemberName.Focus();
 
             if (File.Exists(ProtocolHelper.LOG_FILE)) {
@@ -51,36 +51,57 @@ namespace GKCommunicatorApp
             fCore = new CommunicatorCore(this);
         }
 
-        void WindowMain_Closing(object sender, CancelEventArgs e)
+        private void Connect()
         {
-            fCore.Disconnect();
-        }
-
-        private void AddChatText(string text, Color color)
-        {
-            lstChatMsgs.AppendText("\r\n");
-            int selStart = lstChatMsgs.Text.Length - 1;
-            lstChatMsgs.AppendText(DateTime.Now.ToString());
-            int selEnd = lstChatMsgs.Text.Length - 1;
-            lstChatMsgs.AppendText("\r\n");
-            lstChatMsgs.AppendText(text);
-
-            lstChatMsgs.SelectionStart = selStart;
-            lstChatMsgs.SelectionLength = selEnd - selStart + 1;
-            lstChatMsgs.SelectionColor = Color.Red;
-        }
-
-        private void btnConnect_Click(object sender, EventArgs e)
-        {
-            btnConnect.Enabled = false;
-            lblConnectionStatus.Visible = true;
-
             fCore.Profile.UserName = txtMemberName.Text;
             fCore.TCPListenerPort = ProtocolHelper.PublicTCPPort;
 
             // join the P2P mesh from a worker thread
             NoArgDelegate executor = new NoArgDelegate(fCore.Connect);
             executor.BeginInvoke(null, null);
+        }
+
+        private void Disconnect()
+        {
+            fCore.Disconnect();
+
+            UpdateStatus();
+        }
+
+        private void UpdateStatus()
+        {
+            miConnect.Enabled = !fCore.IsConnected;
+            btnConnect.Enabled = !fCore.IsConnected;
+            lblConnectionStatus.Visible = fCore.IsConnected;
+        }
+
+        private void ChatForm_Closing(object sender, CancelEventArgs e)
+        {
+            Disconnect();
+        }
+
+        private void AddTextChunk(string text, Color color)
+        {
+            int selStart = lstChatMsgs.Text.Length - 1;
+            lstChatMsgs.AppendText(text);
+            int selEnd = lstChatMsgs.Text.Length - 1;
+
+            lstChatMsgs.SelectionStart = selStart;
+            lstChatMsgs.SelectionLength = selEnd - selStart + 1;
+            lstChatMsgs.SelectionColor = color;
+        }
+
+        private void AddChatText(string text, Color color)
+        {
+            lstChatMsgs.AppendText("\r\n");
+            AddTextChunk(DateTime.Now.ToString(), Color.Red);
+            lstChatMsgs.AppendText("\r\n");
+            AddTextChunk(text, Color.Navy);
+        }
+
+        private void btnConnect_Click(object sender, EventArgs e)
+        {
+            Connect();
         }
 
         private void btnSendToAll_Click(object sender, EventArgs e)
@@ -120,7 +141,27 @@ namespace GKCommunicatorApp
 
         private void miExternalIP_Click(object sender, EventArgs e)
         {
-            LoadExtFile("https://2ip.ru/");
+            LoadExtFile("http://checkip.dyndns.com/");
+        }
+
+        private void miExit_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void miConnect_Click(object sender, EventArgs e)
+        {
+            Connect();
+        }
+
+        private void miDisconnect_Click(object sender, EventArgs e)
+        {
+            Disconnect();
+        }
+
+        private void miProfile_Click(object sender, EventArgs e)
+        {
+            // not implemented yet
         }
 
         #region IChatForm members
@@ -134,6 +175,8 @@ namespace GKCommunicatorApp
                     lstMembers.Items.Add(peer);
                 }
                 lstMembers.EndUpdate();
+
+                UpdateStatus();
             });
         }
 
@@ -141,6 +184,8 @@ namespace GKCommunicatorApp
         {
             Invoke((MethodInvoker)delegate {
                 AddChatText(message, Color.Black);
+
+                UpdateStatus();
             });
         }
 
@@ -148,6 +193,8 @@ namespace GKCommunicatorApp
         {
             Invoke((MethodInvoker)delegate {
                 //AddChatText(member + " joined the chatroom.");
+
+                UpdateStatus();
             });
         }
 
@@ -155,6 +202,8 @@ namespace GKCommunicatorApp
         {
             Invoke((MethodInvoker)delegate {
                 //AddChatText(member + " left the chatroom.");
+
+                UpdateStatus();
             });
         }
 

@@ -109,6 +109,14 @@ namespace GKNet
                     command.CommandType = CommandType.Text;
                     command.ExecuteNonQuery();
                 }
+
+                using (SQLiteCommand command = new SQLiteCommand(connection)) {
+                    command.CommandText = @"create table [Nodes] (
+                    [address] char(40) not null,
+                    [port] int not null);";
+                    command.CommandType = CommandType.Text;
+                    command.ExecuteNonQuery();
+                }
             }
         }
     }

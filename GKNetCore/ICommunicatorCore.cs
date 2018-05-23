@@ -25,6 +25,7 @@ namespace GKNet
 {
     public interface ICommunicatorCore
     {
+        bool IsConnected { get; }
         IList<Peer> Peers { get; }
         UserProfile Profile { get; }
         int TCPListenerPort { get; set; }

@@ -51,6 +51,12 @@
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.btnSendToAll = new System.Windows.Forms.Button();
             this.btnSend = new System.Windows.Forms.Button();
+            this.miConnect = new System.Windows.Forms.ToolStripMenuItem();
+            this.miDisconnect = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.miProfile = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
+            this.miExit = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.panTempHeader.SuspendLayout();
@@ -82,6 +88,13 @@
             // 
             // miConnection
             // 
+            this.miConnection.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.miConnect,
+            this.miDisconnect,
+            this.toolStripMenuItem1,
+            this.miProfile,
+            this.toolStripMenuItem2,
+            this.miExit});
             this.miConnection.Name = "miConnection";
             this.miConnection.Size = new System.Drawing.Size(96, 24);
             this.miConnection.Text = "Connection";
@@ -301,6 +314,44 @@
             this.btnSend.UseVisualStyleBackColor = true;
             this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
             // 
+            // miConnect
+            // 
+            this.miConnect.Name = "miConnect";
+            this.miConnect.Size = new System.Drawing.Size(216, 26);
+            this.miConnect.Text = "Connect";
+            this.miConnect.Click += new System.EventHandler(this.miConnect_Click);
+            // 
+            // miDisconnect
+            // 
+            this.miDisconnect.Name = "miDisconnect";
+            this.miDisconnect.Size = new System.Drawing.Size(216, 26);
+            this.miDisconnect.Text = "Disconnect";
+            this.miDisconnect.Click += new System.EventHandler(this.miDisconnect_Click);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(213, 6);
+            // 
+            // miProfile
+            // 
+            this.miProfile.Name = "miProfile";
+            this.miProfile.Size = new System.Drawing.Size(216, 26);
+            this.miProfile.Text = "Profile";
+            this.miProfile.Click += new System.EventHandler(this.miProfile_Click);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(213, 6);
+            // 
+            // miExit
+            // 
+            this.miExit.Name = "miExit";
+            this.miExit.Size = new System.Drawing.Size(216, 26);
+            this.miExit.Text = "Exit";
+            this.miExit.Click += new System.EventHandler(this.miExit_Click);
+            // 
             // ChatForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(120F, 120F);
@@ -360,5 +411,11 @@
         private System.Windows.Forms.RichTextBox lstChatMsgs;
         private System.Windows.Forms.ToolStripMenuItem miExternalIP;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem miConnect;
+        private System.Windows.Forms.ToolStripMenuItem miDisconnect;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem miProfile;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem miExit;
     }
 }

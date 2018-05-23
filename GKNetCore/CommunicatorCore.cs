@@ -52,6 +52,11 @@ namespace GKNet
         private TCPDuplexClient fTCPClient;
         private int fTCPListenerPort;
 
+        public bool IsConnected
+        {
+            get { return fConnected; }
+        }
+
         public string MemberName
         {
             get { return fMemberName; }
