@@ -113,8 +113,8 @@ namespace BencodeNET.Objects
 
         public static bool operator ==(BString first, BString second)
         {
-            if (ReferenceEquals(first, null))
-                return ReferenceEquals(second, null);
+            if (first is null)
+                return second is null;
 
             return first.Equals(second);
         }

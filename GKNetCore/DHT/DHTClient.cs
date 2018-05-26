@@ -94,19 +94,20 @@ namespace GKNet.DHT
             fSearchRunned = false;
             fTransactions = new Dictionary<int, DHTMessage>();
 
-            const long IOC_IN = 0x80000000;
-            const long IOC_VENDOR = 0x18000000;
-            const long SIO_UDP_CONNRESET = IOC_IN | IOC_VENDOR | 12;
-            byte[] optionInValue = { Convert.ToByte(false) };
-            byte[] optionOutValue = new byte[4];
-
             fSocket = new Socket(IPAddressFamily, SocketType.Dgram, ProtocolType.Udp);
 #if !NET35
             fSocket.SetIPProtectionLevel(IPProtectionLevel.Unrestricted);
 #endif
 #if !IP6
             fSocket.Ttl = 255;
+
+            const long IOC_IN = 0x80000000;
+            const long IOC_VENDOR = 0x18000000;
+            const long SIO_UDP_CONNRESET = IOC_IN | IOC_VENDOR | 12;
+            byte[] optionInValue = { Convert.ToByte(false) };
+            byte[] optionOutValue = new byte[4];
             fSocket.IOControl((IOControlCode)SIO_UDP_CONNRESET, optionInValue, optionOutValue);
+
             fSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
 #else
 #if !NET35

@@ -78,15 +78,15 @@ namespace GKNet
                 return address;
             }
 
+            byte[] addr = address.GetAddressBytes();
             byte[] labels = new byte[16];
             labels[10] = 0xFF;
             labels[11] = 0xFF;
-            labels[12] = (byte)((address.Address & 0x000000FF));
-            labels[13] = (byte)((address.Address & 0x0000FF00) >> 8);
-            labels[14] = (byte)((address.Address & 0x00FF0000) >> 16);
-            labels[15] = (byte)((address.Address & 0xFF000000) >> 24);
-            IPAddress res = new IPAddress(labels, 0);
-            return res;
+            labels[12] = addr[0];
+            labels[13] = addr[1];
+            labels[14] = addr[2];
+            labels[15] = addr[3];
+            return new IPAddress(labels, 0);
         }
 #endif
     }

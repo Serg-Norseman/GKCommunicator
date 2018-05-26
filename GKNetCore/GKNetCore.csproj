@@ -96,6 +96,7 @@
     <Compile Include="DHT\PeerEventArgs.cs" />
     <Compile Include="DHT\PeerPingedEventArgs.cs" />
     <Compile Include="Database.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="IChatForm.cs" />
     <Compile Include="DHT\BTClient.cs" />
     <Compile Include="DHT\DHTClient.cs" />

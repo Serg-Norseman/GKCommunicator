@@ -92,13 +92,11 @@ namespace GKNet
 
             SQLiteConnection.CreateFile(baseName);
 
-            using (SQLiteConnection connection = (SQLiteConnection)SQLiteFactory.Instance.CreateConnection())
-            {
+            using (SQLiteConnection connection = (SQLiteConnection)SQLiteFactory.Instance.CreateConnection()) {
                 connection.ConnectionString = "Data Source = " + baseName;
                 connection.Open();
 
-                using (SQLiteCommand command = new SQLiteCommand(connection))
-                {
+                using (SQLiteCommand command = new SQLiteCommand(connection)) {
                     command.CommandText = @"create table [Messages] (
                     [id] integer primary key autoincrement not null,
                     [sender] char(20) not null,
@@ -111,9 +109,34 @@ namespace GKNet
                 }
 
                 using (SQLiteCommand command = new SQLiteCommand(connection)) {
-                    command.CommandText = @"create table [Nodes] (
+                    command.CommandText = @"create table [DHTNodes] (
+                    [node_id] char(20) not null,
                     [address] char(40) not null,
                     [port] int not null);";
+                    command.CommandType = CommandType.Text;
+                    command.ExecuteNonQuery();
+                }
+
+                using (SQLiteCommand command = new SQLiteCommand(connection)) {
+                    command.CommandText = @"create table [Peers] (
+                    [node_id] char(20) not null,
+                    [address] char(40) not null,
+                    [port] int not null,
+                    [user_name] varchar(40) not null,
+                    [country] varchar(200),
+                    [timezone] varchar(200),
+                    [langs] varchar(200));";
+                    command.CommandType = CommandType.Text;
+                    command.ExecuteNonQuery();
+                }
+
+                using (SQLiteCommand command = new SQLiteCommand(connection)) {
+                    command.CommandText = @"create table [Settings] (
+                    [self_id] char(20) not null,
+                    [user_name] varchar(40) not null,
+                    [ctry_visible] int not null,
+                    [tz_visible] int not null,
+                    [langs_visible] int not null);";
                     command.CommandType = CommandType.Text;
                     command.ExecuteNonQuery();
                 }
