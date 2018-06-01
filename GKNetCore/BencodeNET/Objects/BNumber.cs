@@ -112,8 +112,8 @@ namespace BencodeNET.Objects
 
         public static bool operator ==(BNumber bnumber, BNumber other)
         {
-            if (bnumber is null && other is null) return true;
-            if (bnumber is null || other is null) return false;
+            if (bnumber == null && other == null) return true;
+            if (bnumber == null || other == null) return false;
             return bnumber.Value == other.Value;
         }
 
