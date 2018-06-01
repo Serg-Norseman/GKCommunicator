@@ -90,6 +90,7 @@
     <Compile Include="BencodeNET\Parsing\ParseUtil.cs" />
     <Compile Include="BencodeNET\UtilityExtensions.cs" />
     <Compile Include="CommunicatorCore.cs" />
+    <Compile Include="ConnectivitySettings.cs" />
     <Compile Include="DHT\IDHTPeer.cs" />
     <Compile Include="DHT\IDHTPeersHolder.cs" />
     <Compile Include="DHT\MessageEventArgs.cs" />

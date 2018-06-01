@@ -21,3 +21,4 @@ Roadmap
 - [ ] A simple bulletin board of investigations and search of kins (only in the implementation of the plugin)
 - [ ] Mutual identity and signing of user profiles (trusted collocutors and unchecked network members)
 - [ ] "Web of Trust" elements with PGP certificates
+- [ ] Proxy
