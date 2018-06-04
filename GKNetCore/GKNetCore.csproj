@@ -20,6 +20,7 @@
     <SignAssembly>False</SignAssembly>
     <DelaySign>False</DelaySign>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -53,6 +54,12 @@
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(CIMode)'=='true'">
+    <DefineConstants>$(DefineConstants);CI_MODE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(MonoCS)'=='true'">
+    <DefineConstants>$(DefineConstants);__MonoCS__</DefineConstants>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="log4net">
       <HintPath>..\libs\log4net.dll</HintPath>
@@ -65,7 +72,7 @@
     <Reference Include="System.Data.SQLite">
       <HintPath>..\libs\mswin\System.Data.SQLite.dll</HintPath>
     </Reference>
-    <Reference Include="System.XML" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BencodeNET\Exceptions\BencodeException.cs" />
