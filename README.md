@@ -1,5 +1,8 @@
 # GKCommunicator
 
+[![BCH compliance](https://bettercodehub.com/edge/badge/Serg-Norseman/GKCommunicator?branch=master)](https://bettercodehub.com/)
+[![CodeFactor](https://www.codefactor.io/repository/github/serg-norseman/gkcommunicator/badge)](https://www.codefactor.io/repository/github/serg-norseman/gkcommunicator)
+
 This communication application is a sub-project of GEDKeeper (two part: application and embedded plugin).
 This is a distributed, decentralized, serverless, peer-to-peer (P2P) chat client. 
 The distributed P2P core is based on the Kademlia DHT. Supported: IPv4 / IPv6, Mainline DHT, UDP / TCP. The network message protocol is bencode.
