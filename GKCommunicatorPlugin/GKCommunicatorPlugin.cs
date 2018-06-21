@@ -27,16 +27,12 @@ using GKCore.Interfaces;
 
 [assembly: AssemblyTitle("GKCommunicatorPlugin")]
 [assembly: AssemblyDescription("GEDKeeper Communicator plugin")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("GEDKeeper")]
 [assembly: AssemblyCopyright("Copyright © 2018 by Sergey V. Zhdanovskih")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyVersion("0.1.0.0")]
 [assembly: AssemblyCulture("")]
 [assembly: CLSCompliant(true)]
 [assembly: ComVisible(false)]
-[assembly: AssemblyVersion("0.1.0.0")]
-[assembly: AssemblyFileVersion("0.1.0.0")]
 
 namespace GKCommunicatorPlugin
 {
