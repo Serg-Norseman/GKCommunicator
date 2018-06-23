@@ -62,7 +62,8 @@ namespace GKNet
             }
 
             try {
-                string externalIP = GetPublicAddress().ToString();
+                var addr = GetPublicAddress();
+                string externalIP = (addr == null) ? "" : addr.ToString();
                 /*externalIP = (new WebClient()).DownloadString("http://checkip.dyndns.org/");
                 externalIP = (new Regex(@"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"))
                              .Matches(externalIP)[0].ToString();*/

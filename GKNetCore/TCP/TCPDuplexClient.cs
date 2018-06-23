@@ -107,7 +107,11 @@ namespace GKNet.TCP
 
         public TCPConnection GetConnection(IPEndPoint point, bool canCreate = true)
         {
-            var result = fConnections.FirstOrDefault((x) => x.EndPoint.Equals(point));
+            if (point == null) {
+                return null;
+            }
+
+            var result = fConnections.FirstOrDefault((x) => point.Equals(x.EndPoint));
             if (result == null && canCreate) {
                 result = CreateConnection(point);
             }
@@ -116,12 +120,13 @@ namespace GKNet.TCP
 
         public TCPConnection CreateConnection(IPEndPoint point)
         {
+            Socket extSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             try {
-                var extSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 extSocket.Connect(point);
                 return new TCPConnection(this, extSocket, false);
             } catch (Exception ex) {
                 fLogger.WriteError("TCPDuplexClient.CreateConnection() exception", ex);
+                if (extSocket != null) extSocket.Close();
                 return null;
             }
         }

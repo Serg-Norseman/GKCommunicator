@@ -305,6 +305,11 @@ namespace GKNet.DHT
             var valuesList = returnValues.Get<BList>("values");
             var nodesStr = returnValues.Get<BString>("nodes");
 
+            if (id == null || id.Length == 0) {
+                // response is invalid
+                return;
+            }
+
             fRoutingTable.UpdateNode(new DHTNode(id.Value, ipinfo));
 
             // according to bep_????, most types of response contain a list of nodes
@@ -316,21 +321,14 @@ namespace GKNet.DHT
             bool canAnnounce = false;
             switch (queryType) {
                 case QueryType.ping:
-                    if ((id != null && id.Length != 0)) {
-                        // correct and complete response
                         RaisePeerPinged(ipinfo, id.Value);
-                    }
                     break;
 
                 case QueryType.find_node:
-                    if ((id != null && id.Length != 0)) {
-                        // correct and complete response
-                    }
                     break;
 
                 case QueryType.get_peers:
-                    if ((id != null && id.Length != 0) && (tokStr != null && tokStr.Length != 0)) {
-                        // correct and complete response
+                    if (tokStr != null && tokStr.Length != 0) {
                         if (!ProcessValuesStr(ipinfo, valuesList)) {
                             canAnnounce = true;
                         }
@@ -338,9 +336,6 @@ namespace GKNet.DHT
                     break;
 
                 case QueryType.announce_peer:
-                    if ((id != null && id.Length != 0)) {
-                        // correct and complete response
-                    }
                     break;
 
                 case QueryType.none:

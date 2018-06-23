@@ -178,7 +178,7 @@ namespace GKNet
         public void Connect()
         {
             // FIXME: sometimes it does not work correctly
-            fLogger.WriteInfo("Public IP: " + NetHelper.GetPublicIPAddress().ToString());
+            fLogger.WriteInfo("Public IP: " + NetHelper.GetPublicIPAddress());
 
             var snkInfoHash = ProtocolHelper.CreateSignInfoKey();
             fLogger.WriteInfo("Search for: " + snkInfoHash.ToHexString());
