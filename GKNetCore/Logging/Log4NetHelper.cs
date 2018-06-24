@@ -131,9 +131,9 @@ namespace GKNet.Logging
             fLog.Error(string.IsNullOrEmpty(fContext) ? msg : string.Format("[{0}] {1}", fContext, msg));
         }
 
-        public void WriteError(string msg, Exception e)
+        public void WriteError(string msg, Exception ex)
         {
-            fLog.Error(string.IsNullOrEmpty(fContext) ? msg : string.Format("[{0}] {1}", fContext, msg), e);
+            fLog.Error(string.IsNullOrEmpty(fContext) ? msg : string.Format("[{0}] {1}", fContext, msg), ex);
         }
 
         public void WriteNumError(int num, Exception ex)

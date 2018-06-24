@@ -38,18 +38,17 @@ namespace GKNet
     {
         public const string CLIENT_VER = "GKC";
 
-        private IChatForm fForm;
-
         private bool fConnected;
-        private DHTClient fDHTClient;
+        private readonly DHTClient fDHTClient;
+        private readonly IChatForm fForm;
         private readonly ILogger fLogger;
         private string fMemberName;
         private readonly BencodeParser fParser;
-        private IList<Peer> fPeers;
+        private readonly IList<Peer> fPeers;
         private readonly UserProfile fProfile;
         private IPEndPoint fPublicEndPoint;
         private STUN_Result fSTUNInfo;
-        private TCPDuplexClient fTCPClient;
+        private readonly TCPDuplexClient fTCPClient;
         private int fTCPListenerPort;
 
         public bool IsConnected

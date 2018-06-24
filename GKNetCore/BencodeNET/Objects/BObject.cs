@@ -9,8 +9,9 @@ namespace BencodeNET.Objects
     /// </summary>
     public abstract class BObject : IBObject
     {
-        internal BObject()
-        { }
+        protected BObject()
+        {
+        }
 
         /// <summary>
         /// Encodes the object and returns the result as a string using <see cref="Encoding.UTF8"/>.
@@ -100,8 +101,9 @@ namespace BencodeNET.Objects
     /// <typeparam name="T">Type of the underlying value.</typeparam>
     public abstract class BObject<T> : BObject
     {
-        internal BObject()
-        { }
+        protected BObject()
+        {
+        }
 
         /// <summary>
         /// The underlying value of the <see cref="BObject{T}"/>.

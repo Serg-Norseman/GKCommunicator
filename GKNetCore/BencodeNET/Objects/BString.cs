@@ -13,7 +13,7 @@ namespace BencodeNET.Objects
     /// <remarks>
     /// The underlying value is a <see cref="byte"/> array.
     /// </remarks>
-    public class BString : BObject<byte[]>, IComparable<BString>
+    public sealed class BString : BObject<byte[]>, IComparable<BString>, IEquatable<BString>
     {
         /// <summary>
         /// The maximum number of digits that can be handled as the length part of a bencoded string.
@@ -124,19 +124,17 @@ namespace BencodeNET.Objects
             return !(first == second);
         }
 
-        public override bool Equals(object other)
+        public override bool Equals(object obj)
         {
-            if (other is BString)
-                return Value.SequenceEqual(((BString)other).Value);
+            if (obj is BString)
+                return Value.SequenceEqual(((BString)obj).Value);
 
             return false;
         }
 
-        public bool Equals(BString bstring)
+        public bool Equals(BString other)
         {
-            if (bstring == null)
-                return false;
-            return Value.SequenceEqual(bstring.Value);
+            return (other == null) ? false : Value.SequenceEqual(other.Value);
         }
 
         public override int GetHashCode()
