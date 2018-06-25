@@ -140,21 +140,20 @@ namespace GKNet
                 using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp)) {
                     socket.Bind(new IPEndPoint(IPAddress.Any, 0));
 
-                    DetectSTUN(socket);
+                    DetectSTUN("stun.ekiga.net", socket);
                     //NATMapper.CreateNATMapping(this, stunResult);
                 }
             }).Start();
         }
 
-        private void DetectSTUN(Socket socket)
+        private void DetectSTUN(string stunServer, Socket socket)
         {
-            string stunServer = "stun.ekiga.net";
+            if (string.IsNullOrEmpty(stunServer)) {
+                throw new Exception("Not specified STUN server");
+            }
+
             STUN_Result result = null;
             try {
-                if (string.IsNullOrEmpty(stunServer)) {
-                    throw new Exception("Please specify STUN server!");
-                }
-
                 result = STUN_Client.Query(stunServer, 3478, socket);
 
                 fLogger.WriteInfo("STUN Info:");
