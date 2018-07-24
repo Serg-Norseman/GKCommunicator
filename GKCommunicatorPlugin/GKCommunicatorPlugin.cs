@@ -20,8 +20,6 @@
 
 using System;
 using System.Reflection;
-using System.Runtime.InteropServices;
-
 using GKCore;
 using GKCore.Interfaces;
 
@@ -31,8 +29,6 @@ using GKCore.Interfaces;
 [assembly: AssemblyCopyright("Copyright © 2018 by Sergey V. Zhdanovskih")]
 [assembly: AssemblyVersion("0.1.0.0")]
 [assembly: AssemblyCulture("")]
-[assembly: CLSCompliant(true)]
-[assembly: ComVisible(false)]
 
 namespace GKCommunicatorPlugin
 {
