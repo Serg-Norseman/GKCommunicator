@@ -72,7 +72,6 @@ namespace BencodeNET.Objects
         {
             if (bint == null) throw new InvalidCastException();
             return bint.Value > 0;
-
         }
 
         public static implicit operator DateTime? (BNumber number)
@@ -112,8 +111,8 @@ namespace BencodeNET.Objects
 
         public static bool operator ==(BNumber bnumber, BNumber other)
         {
-            if (bnumber == null && other == null) return true;
-            if (bnumber == null || other == null) return false;
+            if (object.ReferenceEquals(bnumber, null) && object.ReferenceEquals(other, null)) return true;
+            if (object.ReferenceEquals(bnumber, null) || object.ReferenceEquals(other, null)) return false;
             return bnumber.Value == other.Value;
         }
 

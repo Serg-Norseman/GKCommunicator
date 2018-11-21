@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Linq;
-using System.Net.Sockets;
-
-using GKNet.DHT;
-using NUnit.Framework;
-using GKNet;
 using System.Net;
+using System.Net.Sockets;
+using BencodeNET.Objects;
+using GKNet;
+using NUnit.Framework;
 
-namespace GKCommunicatorTests
+namespace GKNet
 {
     [TestFixture]
     public class NetHelperTests
@@ -22,39 +21,27 @@ namespace GKCommunicatorTests
         }
 
         [Test]
-        public void DHTHelper_Tests()
-        {
-            var tid = DHTHelper.GetTransactionId();
-            Assert.IsNotNull(tid);
-            Assert.AreEqual(2, tid.Length);
-
-            var randId = DHTHelper.GetRandomID();
-            Assert.IsNotNull(randId);
-            Assert.AreEqual(20, randId.Length);
-
-            var randShaId = DHTHelper.GetRandomHashID();
-            Assert.IsNotNull(randShaId);
-            Assert.AreEqual(20, randShaId.Length);
-        }
-
-        [Test]
         public void UserProfile_Tests()
         {
             UserProfile profile = new UserProfile();
-            
+
             profile.ResetSystem();
-            
+
             Assert.IsFalse(profile.IsCountryVisible);
             profile.IsCountryVisible = true;
             Assert.IsTrue(profile.IsCountryVisible);
-            
+
             Assert.IsFalse(profile.IsLanguagesVisible);
             profile.IsLanguagesVisible = true;
             Assert.IsTrue(profile.IsLanguagesVisible);
-            
+
             Assert.IsFalse(profile.IsTimeZoneVisible);
             profile.IsTimeZoneVisible = true;
             Assert.IsTrue(profile.IsTimeZoneVisible);
+
+            BDictionary data = new BDictionary();
+            profile.Save(data);
+            profile.Load(data);
         }
     }
 }

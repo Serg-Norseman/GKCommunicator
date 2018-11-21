@@ -1,0 +1,10 @@
+language: csharp
+solution: GKCommunicator.sln
+
+install:
+  - sudo apt-get install nunit-console
+  - nuget restore ./GKCommunicator.sln
+
+script:
+  - xbuild /p:Configuration=Debug /p:CIMode=true /p:MonoCS=true ./GKCommunicator.sln
+  - nunit-console ./GKCommunicatorTests/bin/Debug/GKCommunicatorTests.dll

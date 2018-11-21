@@ -26,6 +26,7 @@ using System.Net.Sockets;
 using System.Threading;
 using BencodeNET.Objects;
 using BencodeNET.Parsing;
+using BSLib;
 using GKNet.Logging;
 
 namespace GKNet.DHT
@@ -411,7 +412,7 @@ namespace GKNet.DHT
 
             fRoutingTable.UpdateNode(new DHTNode(id.Value, ipinfo));
 
-            if (!DHTHelper.ArraysEqual(infoHash.Value, fSearchInfoHash)) {
+            if (!Algorithms.ArraysEqual(infoHash.Value, fSearchInfoHash)) {
                 // skip response for another infohash query
                 return;
             }
@@ -469,7 +470,7 @@ namespace GKNet.DHT
             fRoutingTable.UpdateNode(new DHTNode(id.Value, ipinfo));
 
             var neighbor = DHTHelper.GetNeighbor(infoHash.Value, fLocalID);
-            var peersList = (DHTHelper.ArraysEqual(infoHash.Value, fSearchInfoHash)) ? fPeersHolder.GetPeersList() : null;
+            var peersList = (Algorithms.ArraysEqual(infoHash.Value, fSearchInfoHash)) ? fPeersHolder.GetPeersList() : null;
             var nodesList = fRoutingTable.FindNodes(infoHash.Value);
             Send(ipinfo, DHTMessage.CreateGetPeersResponse(t, neighbor, infoHash.Value, peersList, nodesList));
         }

@@ -61,6 +61,9 @@
     <DefineConstants>$(DefineConstants);__MonoCS__</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BSLib">
+      <HintPath>..\libs\BSLib.dll</HintPath>
+    </Reference>
     <Reference Include="log4net">
       <HintPath>..\libs\log4net.dll</HintPath>
     </Reference>

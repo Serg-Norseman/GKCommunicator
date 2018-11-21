@@ -23,6 +23,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using BSLib;
 
 namespace GKNet.DHT
 {
@@ -109,7 +110,7 @@ namespace GKNet.DHT
 
             DHTNode existNode = null;
             if (fKTable.TryGetValue(node.RouteId, out existNode)) {
-                if (DHTHelper.ArraysEqual(node.ID, existNode.ID)) {
+                if (Algorithms.ArraysEqual(node.ID, existNode.ID)) {
                     node = existNode;
                 } else {
                     // replace to new

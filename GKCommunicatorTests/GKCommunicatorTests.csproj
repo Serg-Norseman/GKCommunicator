@@ -38,6 +38,10 @@
     <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DHT\DHTHelperTests.cs" />
+    <Compile Include="DHT\DHTMessageTests.cs" />
+    <Compile Include="DHT\DHTNodeTests.cs" />
+    <Compile Include="DHT\DHTRoutingTableTests.cs" />
     <Compile Include="NetHelperTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -49,6 +53,9 @@
       <Project>{fee68cf6-1d60-4e90-aef3-6afa4a8c977d}</Project>
       <Name>GKNetCore</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DHT" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

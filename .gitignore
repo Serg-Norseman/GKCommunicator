@@ -1,21 +1,13 @@
 **/.vs/
+**/[Bb]in/
+**/[Oo]bj/
+**/OpenCover/
+**/ProfilingSessions/
+
 *.suo
 *.userprefs
 *.DotSettings.user
 
-/GKNetCore/bin/
-/GKNetCore/obj/
-
-/GKCommunicatorApp/bin/
-/GKCommunicatorApp/obj/
-
-/GKCommunicatorPlugin/bin/
-/GKCommunicatorPlugin/obj/
-
-/GKCommunicatorTests/bin/
-/GKCommunicatorTests/obj/
-/GKCommunicatorTests/OpenCover/
-
 /temp/
-
 /libs/linux/
+run-gource.cmd

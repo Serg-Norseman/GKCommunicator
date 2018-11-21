@@ -60,7 +60,6 @@ namespace GKNet.DHT
 
         public static byte[] GetRandomID()
         {
-            var r = new Random();
             byte[] result = new byte[20];
             r.NextBytes(result);
             return result;
@@ -68,8 +67,7 @@ namespace GKNet.DHT
 
         public static byte[] GetRandomHashID()
         {
-            var result = new byte[20];
-            r.NextBytes(result);
+            var result = GetRandomID();
             lock (sha1) {
                 result = sha1.ComputeHash(result);
                 return result;
@@ -169,24 +167,6 @@ namespace GKNet.DHT
             for (int i = 10; i < 20; i++)
                 result[i] = nid[i];
             return result;
-        }
-
-        public static bool ArraysEqual<T>(T[] a1, T[] a2)
-        {
-            if (ReferenceEquals(a1, a2))
-                return true;
-
-            if (a1 == null || a2 == null)
-                return false;
-
-            if (a1.Length != a2.Length)
-                return false;
-
-            EqualityComparer<T> comparer = EqualityComparer<T>.Default;
-            for (int i = 0; i < a1.Length; i++) {
-                if (!comparer.Equals(a1[i], a2[i])) return false;
-            }
-            return true;
         }
 
         // TODO: ATTENTION, the quantity is not more than according to specification!

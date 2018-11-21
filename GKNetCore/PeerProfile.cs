@@ -33,7 +33,6 @@ namespace GKNet
 
         public PeerProfile()
         {
-
         }
 
         public void ResetSystem()
@@ -48,7 +47,7 @@ namespace GKNet
             var s = result.Split(' ');
             var offset = localZone.GetUtcOffset(DateTime.Now);
             var offsetStr = (offset.TotalMilliseconds < 0) ? offset.ToString() : "+" + offset.ToString();
-            TimeZone = string.Format("{0} (UTC{1})", result, offsetStr);//(s[0]);
+            TimeZone = string.Format("{0} (UTC{1})", result, offsetStr); // (s[0]);
 
             string langs = "";
             /*foreach (InputLanguage c in InputLanguage.InstalledInputLanguages) {

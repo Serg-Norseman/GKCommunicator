@@ -31,7 +31,6 @@ namespace GKNet.Logging
         void WriteInfo(string str, params object[] args);
 
         void WriteError(string msg);
-
         void WriteError(string msg, Exception ex);
 
         void WriteNumError(int num, Exception ex);

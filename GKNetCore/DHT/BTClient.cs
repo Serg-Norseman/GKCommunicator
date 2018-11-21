@@ -80,7 +80,6 @@ namespace GKNet.DHT
             fDataBuffer.AddRange(fBuffer.Take(recvCount));
             Check();
             if (fState == 1) {
-
             }
             fSocket.BeginReceive(fBuffer, 0, fBuffer.Length, SocketFlags.None, EndRecvData, null);
         }
@@ -152,7 +151,6 @@ namespace GKNet.DHT
                     fState = 2;
                     return true;
                 } else if (fState == 2) {
-
                 }
             }
             return false;
