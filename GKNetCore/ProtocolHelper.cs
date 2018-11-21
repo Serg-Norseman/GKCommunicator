@@ -23,7 +23,7 @@ using GKNet.DHT;
 
 namespace GKNet
 {
-    public class ProtocolHelper
+    public static class ProtocolHelper
     {
         public const string NETWORK_SIGN = "GEDKEEPER NETWORK";
         public const string LOG_FILE = "./GKCommunicator.log";
