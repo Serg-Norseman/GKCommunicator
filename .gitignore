@@ -1,12 +1,13 @@
 **/.vs/
 **/[Bb]in/
 **/[Oo]bj/
-**/OpenCover/
 **/ProfilingSessions/
 
 *.suo
 *.userprefs
 *.DotSettings.user
+
+/GKCommunicatorTests/OpenCover/
 
 /temp/
 /libs/linux/

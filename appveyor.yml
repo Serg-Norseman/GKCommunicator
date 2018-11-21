@@ -10,15 +10,12 @@ configuration: Debug
 
 platform: Any CPU
 
-before_build:
-  - nuget restore
-  - choco install opencover.portable
-  - choco install codecov
-
 build:
   project: GKCommunicator.sln
   verbosity: minimal
 
 after_test:
-  - OpenCover.Console.exe -register:user -target:"nunit-console-x86.exe" -targetargs:".\GKCommunicatorTests\bin\Debug\GKCommunicatorTests.dll /noxml" -output:".\coverage.xml" -filter:"+[*]* "
-  - codecov -f "coverage.xml"
+  - .\packages\OpenCover\OpenCover.Console.exe -register:user -target:"nunit-console-x86.exe" -targetdir:"C:\projects\GKCommunicator\GKCommunicatorTests\bin\Debug" -targetargs:"\"C:\projects\GKCommunicator\GKCommunicatorTests\bin\Debug\GKCommunicatorTests.dll\" /noxml" -output:".\coverage.xml" -filter:"+[*]* "
+  - "SET PATH=C:\\Python34;C:\\Python34\\Scripts;%PATH%"
+  - pip install codecov
+  - codecov -f "coverage.xml" -X gcov
