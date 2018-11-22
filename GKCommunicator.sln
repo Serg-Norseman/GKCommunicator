@@ -1,13 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
+# Visual Studio 2012
+# SharpDevelop 5.1
 VisualStudioVersion = 15.0.27004.2008
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GKCommunicatorApp", "GKCommunicatorApp\GKCommunicatorApp.csproj", "{02B95D50-63D6-41F7-A46A-C169FB004304}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GKNetCore", "GKNetCore\GKNetCore.csproj", "{FEE68CF6-1D60-4E90-AEF3-6AFA4A8C977D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GKCommunicatorTests", "GKCommunicatorTests\GKCommunicatorTests.csproj", "{18B26357-E957-4EC7-B975-2694E2EBDE18}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GKNetCore.Tests", "GKNetCore.Tests\GKNetCore.Tests.csproj", "{18B26357-E957-4EC7-B975-2694E2EBDE18}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

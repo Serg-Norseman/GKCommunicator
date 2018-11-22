@@ -51,6 +51,11 @@ namespace GKNet
         private readonly TCPDuplexClient fTCPClient;
         private int fTCPListenerPort;
 
+        public DHTClient DHTClient
+        {
+            get { return fDHTClient; }
+        }
+
         public bool IsConnected
         {
             get { return fConnected; }
@@ -118,7 +123,6 @@ namespace GKNet
 
                 if (changed) {
                     fForm.OnPeersListChanged();
-                    SendData(e.EndPoint, ProtocolHelper.CreateGetPeerInfoQuery());
                 }
             };
             fDHTClient.QueryReceived += OnQueryReceive;
@@ -132,12 +136,14 @@ namespace GKNet
 
         private void NATHolePunching()
         {
-            //DetectSTUN(fDHTClient.Socket);
-
             new Thread(() => {
                 Thread.Sleep(10000);
 
+                //DetectSTUN("stun.ekiga.net", fDHTClient.Socket);
+                //NATMapper.CreateNATMapping(fSTUNInfo);
+
                 using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp)) {
+                    socket.SetIPProtectionLevel(IPProtectionLevel.Unrestricted);
                     socket.Bind(new IPEndPoint(IPAddress.Any, 0));
 
                     DetectSTUN("stun.ekiga.net", socket);
@@ -160,8 +166,8 @@ namespace GKNet
                 fLogger.WriteInfo("NetType: {0}", result.NetType.ToString());
                 fLogger.WriteInfo("LocalEndPoint: {0}", socket.LocalEndPoint.ToString());
                 if (result.NetType != STUN_NetType.UdpBlocked) {
-                    fPublicEndPoint = new IPEndPoint(result.PublicEndPoint.Address, ProtocolHelper.PublicTCPPort);
-                    fLogger.WriteInfo("PublicEndPoint: {0}", result.PublicEndPoint.ToString());
+                    fPublicEndPoint = result.PublicEndPoint;
+                    fLogger.WriteInfo("PublicEndPoint: {0}", fPublicEndPoint.ToString());
                 } else {
                     fPublicEndPoint = null;
                     fLogger.WriteInfo("PublicEndPoint: -");
@@ -171,6 +177,7 @@ namespace GKNet
             }
 
             fSTUNInfo = result;
+            fDHTClient.PublicEndPoint = fPublicEndPoint;
         }
 
         public void Connect()
@@ -216,22 +223,15 @@ namespace GKNet
             if (peer == null) {
                 peer = AddPeer(peerAddress, peerEndPoint.Port);
                 result = true;
-            } else {
-                if ((peer.EndPoint.Port != peerEndPoint.Port) && (peer.State != PeerState.Checked)) {
-                    peer.EndPoint.Port = peerEndPoint.Port;
-                    result = true;
-                }
-            }
-
-            if (CheckLocalAddress(peerAddress) && !peer.IsLocal) {
-                peer.IsLocal = true;
-                result = true;
             }
 
             if (peer.State != PeerState.Checked) {
+                peer.EndPoint.Port = peerEndPoint.Port;
                 peer.State = PeerState.Checked;
                 result = true;
             }
+
+            SendData(peer.EndPoint, ProtocolHelper.CreateGetPeerInfoQuery());
 
             return result;
         }
@@ -245,17 +245,16 @@ namespace GKNet
             if (peer == null) {
                 peer = AddPeer(peerAddress, peerEndPoint.Port);
                 result = true;
-            } else {
-                if ((peer.EndPoint.Port != peerEndPoint.Port) && (peer.State != PeerState.Checked)) {
-                    peer.EndPoint.Port = peerEndPoint.Port;
-                    result = true;
-                }
             }
 
             if (CheckLocalAddress(peerAddress) && !peer.IsLocal) {
                 peer.IsLocal = true;
                 result = true;
             }
+
+            fDHTClient.SendPingQuery(peerEndPoint);
+            fDHTClient.SendPingQuery(new IPEndPoint(peerAddress, fDHTClient.LocalEndPoint.Port));
+            fDHTClient.SendPingQuery(new IPEndPoint(peerAddress, fPublicEndPoint.Port));
 
             return result;
         }
@@ -267,7 +266,7 @@ namespace GKNet
 
         public Peer AddPeer(IPAddress peerAddress, int port)
         {
-            fLogger.WriteInfo(string.Format("Found new peer: {0}", peerAddress));
+            fLogger.WriteInfo(string.Format("Found new peer: {0}:{1}", peerAddress, port));
 
             lock (fPeers) {
                 Peer peer = new Peer(peerAddress, port);

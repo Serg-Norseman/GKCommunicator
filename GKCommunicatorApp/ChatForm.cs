@@ -36,6 +36,11 @@ namespace GKCommunicatorApp
         private readonly ICommunicatorCore fCore;
         private readonly ILogger fLogger;
 
+        public ICommunicatorCore Core
+        {
+            get { return fCore; }
+        }
+
         public ChatForm()
         {
             InitializeComponent();
@@ -136,12 +141,12 @@ namespace GKCommunicatorApp
 
         private void miDHTLog_Click(object sender, EventArgs e)
         {
-            LoadExtFile(ProtocolHelper.LOG_FILE);
+            LoadExtFile(Path.Combine(Database.GetAppPath(), ProtocolHelper.LOG_FILE));
         }
 
         private void miSysInfo_Click(object sender, EventArgs e)
         {
-            using (var dlgSysInfo = new SysInfoWin()) {
+            using (var dlgSysInfo = new SysInfoWin(this)) {
                 dlgSysInfo.ShowDialog();
             }
         }

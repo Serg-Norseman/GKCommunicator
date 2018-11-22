@@ -46,7 +46,7 @@ namespace GKNet
 
         #region Private methods
 
-        private static string GetAppPath()
+        public static string GetAppPath()
         {
             Module[] mods = Assembly.GetExecutingAssembly().GetModules();
             string fn = mods[0].FullyQualifiedName;

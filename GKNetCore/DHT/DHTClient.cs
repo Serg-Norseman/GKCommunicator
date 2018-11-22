@@ -71,6 +71,11 @@ namespace GKNet.DHT
             get { return fLocalID; }
         }
 
+        public IPEndPoint LocalEndPoint
+        {
+            get { return fLocalIP; }
+        }
+
         public Socket Socket
         {
             get { return fSocket; }
@@ -211,7 +216,7 @@ namespace GKNet.DHT
                     OnRecvMessage(buffer, (IPEndPoint)remoteAddress);
                 }
             } catch (Exception ex) {
-                fLogger.WriteError("DHTClient.EndRecv.1(): ", ex);
+                //fLogger.WriteError("DHTClient.EndRecv.1(): ", ex);
             }
 
             bool notsuccess = false;
@@ -220,7 +225,7 @@ namespace GKNet.DHT
                     BeginRecv();
                     notsuccess = false;
                 } catch (Exception ex) {
-                    fLogger.WriteError("DHTClient.EndRecv.2(): ", ex);
+                    //fLogger.WriteError("DHTClient.EndRecv.2(): ", ex);
                     notsuccess = true;
                 }
             } while (notsuccess);
@@ -346,9 +351,11 @@ namespace GKNet.DHT
             }
 
             if (canAnnounce) {
-                SendAnnouncePeerQuery(ipinfo, fSearchInfoHash, 1, fLocalIP.Port, tokStr);
+                SendAnnouncePeerQuery(ipinfo, fSearchInfoHash, 1, /*fLocalIP.Port*/PublicEndPoint.Port, tokStr);
             }
         }
+
+        public IPEndPoint PublicEndPoint;
 
         private bool ProcessValuesStr(IPEndPoint ipinfo, BList valuesList)
         {
@@ -359,13 +366,6 @@ namespace GKNet.DHT
                 if (values.Count > 0) {
                     fLogger.WriteDebug("Receive {0} values (peers) from {1}", values.Count, ipinfo.ToString());
                     RaisePeersFound(fSearchInfoHash, values);
-
-                    // FIXME: it's temp debug code
-                    foreach (var val in values) {
-                        SendPingQuery(val);
-                        SendPingQuery(new IPEndPoint(val.Address, fLocalIP.Port));
-                    }
-
                     result = true;
                 }
             }
@@ -538,7 +538,7 @@ namespace GKNet.DHT
 
 #region Queries and responses
 
-        private void SendPingQuery(IPEndPoint address)
+        internal void SendPingQuery(IPEndPoint address)
         {
             fLogger.WriteDebug("Send peer ping " + address.ToString());
 

@@ -20,6 +20,7 @@
 
 using System.Collections.Generic;
 using System.Net;
+using GKNet.DHT;
 
 namespace GKNet
 {
@@ -29,6 +30,7 @@ namespace GKNet
         IList<Peer> Peers { get; }
         UserProfile Profile { get; }
         int TCPListenerPort { get; set; }
+        DHTClient DHTClient { get; }
 
         void Connect();
         void Disconnect();

@@ -26,7 +26,7 @@ namespace GKNet
     public static class ProtocolHelper
     {
         public const string NETWORK_SIGN = "GEDKEEPER NETWORK";
-        public const string LOG_FILE = "./GKCommunicator.log";
+        public const string LOG_FILE = "GKCommunicator.log";
         public const string LOG_LEVEL = "DEBUG";
 
         //public const int PublicTCPPort = DHTClient.PublicDHTPort;

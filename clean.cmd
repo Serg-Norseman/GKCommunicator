@@ -9,8 +9,8 @@ rmdir .\GKCommunicatorApp\obj /s /q
 rmdir .\GKCommunicatorPlugin\bin /s /q
 rmdir .\GKCommunicatorPlugin\obj /s /q
 
-rmdir .\GKCommunicatorTests\bin /s /q
-rmdir .\GKCommunicatorTests\obj /s /q
-rmdir .\GKCommunicatorTests\OpenCover /s /q
+rmdir .\GKNetCore.Tests\bin /s /q
+rmdir .\GKNetCore.Tests\obj /s /q
+rmdir .\GKNetCore.Tests\OpenCover /s /q
 
 del msbuild.log

@@ -29,9 +29,16 @@ namespace GKCommunicatorApp
 {
     public partial class SysInfoWin : Form
     {
-        public SysInfoWin()
+        private ChatForm fChatForm;
+
+        public SysInfoWin() : this(null)
+        {
+        }
+
+        public SysInfoWin(ChatForm chatForm)
         {
             InitializeComponent();
+            fChatForm = chatForm;
         }
 
         private void SysInfoWin_Load(object sender, EventArgs e)
@@ -53,8 +60,9 @@ namespace GKCommunicatorApp
                     return;
                 }
 
-                Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-                socket.Bind(new IPEndPoint(IPAddress.Any, 0));
+                /*Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+                socket.Bind(new IPEndPoint(IPAddress.Any, 0));*/
+                Socket socket = fChatForm.Core.DHTClient.Socket;
 
                 STUN_Result result = STUN_Client.Query(server, 3478, socket);
                 textBox1.Text += "NET type: " + result.NetType.ToString() + "\r\n";
