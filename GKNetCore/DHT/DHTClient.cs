@@ -279,7 +279,8 @@ namespace GKNet.DHT
                                 var args = dic.Get<BDictionary>("a");
                                 if (args != null) {
                                     var id = args.Get<BString>("id");
-                                    RaiseQueryReceived(ipinfo, id.Value, dic);
+                                    byte[] idVal = (id != null) ? id.Value : null;
+                                    RaiseQueryReceived(ipinfo, idVal, dic);
                                 }
                                 break;
                         }
