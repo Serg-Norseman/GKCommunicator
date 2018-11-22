@@ -18,6 +18,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+//#define DHT_DEBUG
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -275,8 +277,10 @@ namespace GKNet.DHT
 
                             default:
                                 var args = dic.Get<BDictionary>("a");
-                                var id = args.Get<BString>("id");
-                                RaiseQueryReceived(ipinfo, id.Value, dic);
+                                if (args != null) {
+                                    var id = args.Get<BString>("id");
+                                    RaiseQueryReceived(ipinfo, id.Value, dic);
+                                }
                                 break;
                         }
                         break;
@@ -364,7 +368,7 @@ namespace GKNet.DHT
                 var values = DHTHelper.ParseValuesList(valuesList);
 
                 if (values.Count > 0) {
-                    fLogger.WriteDebug("Receive {0} values (peers) from {1}", values.Count, ipinfo.ToString());
+                    WriteDHTDebug("Receive {0} values (peers) from {1}", values.Count, ipinfo.ToString());
                     RaisePeersFound(fSearchInfoHash, values);
                     result = true;
                 }
@@ -384,7 +388,7 @@ namespace GKNet.DHT
                     throw new Exception("sd");
                 }
 
-                fLogger.WriteDebug("Receive {0} nodes from {1}", nodesList.Count, ipinfo.ToString());
+                WriteDHTDebug("Receive {0} nodes from {1}", nodesList.Count, ipinfo.ToString());
 
                 bool nodesUpdated = false;
                 foreach (var t in nodesList) {
@@ -610,5 +614,12 @@ namespace GKNet.DHT
         }
 
 #endregion
+
+        private void WriteDHTDebug(string str, params object[] args)
+        {
+            #if DHT_DEBUG
+            fLogger.WriteDebug(str, args);
+            #endif
+        }
     }
 }

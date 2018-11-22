@@ -15,7 +15,7 @@ build:
   verbosity: minimal
 
 after_test:
-  - .\packages\OpenCover\OpenCover.Console.exe -register:user -target:"nunit-console-x86.exe" -targetdir:"C:\projects\GKCommunicator\GKCommunicatorTests\bin\Debug" -targetargs:"\"C:\projects\GKCommunicator\GKCommunicatorTests\bin\Debug\GKCommunicatorTests.dll\" /noxml" -output:".\coverage.xml" -filter:"+[*]* "
+  - .\packages\OpenCover\OpenCover.Console.exe -register:user -target:"nunit-console-x86.exe" -targetdir:"C:\projects\GKCommunicator\GKNetCore.Tests\bin\Debug" -targetargs:"\"C:\projects\GKCommunicator\GKNetCore.Tests\bin\Debug\GKNetCore.Tests.dll\" /noxml" -output:".\coverage.xml" -filter:"+[*]* "
   - "SET PATH=C:\\Python34;C:\\Python34\\Scripts;%PATH%"
   - pip install codecov
   - codecov -f "coverage.xml" -X gcov

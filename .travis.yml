@@ -7,4 +7,4 @@ install:
 
 script:
   - xbuild /p:Configuration=Debug /p:CIMode=true /p:MonoCS=true ./GKCommunicator.sln
-  - nunit-console ./GKCommunicatorTests/bin/Debug/GKCommunicatorTests.dll
+  - nunit-console ./GKNetCore.Tests/bin/Debug/GKNetCore.Tests.dll
