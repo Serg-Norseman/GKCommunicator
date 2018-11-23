@@ -250,7 +250,6 @@ namespace GKNet
             lock (fPeers) {
                 Peer peer = new Peer(peerAddress, port);
                 fPeers.Add(peer);
-                fForm.OnPeersListChanged();
                 return peer;
             }
         }
@@ -281,13 +280,14 @@ namespace GKNet
 
         private void CheckPeers()
         {
-            foreach (var peer in fPeers) {
+            // FIXME: think through this logic better!
+            /*foreach (var peer in fPeers) {
                 if (!peer.IsLocal) {
                     peer.State = PeerState.Unchecked;
                     SendData(peer.EndPoint, ProtocolHelper.CreateHandshakeQuery(DHTHelper.GetTransactionId(), fDHTClient.LocalID));
                 }
             }
-            fForm.OnPeersListChanged();
+            fForm.OnPeersListChanged();*/
         }
 
         private void OnPeersFound(object sender, PeersFoundEventArgs e)
@@ -360,9 +360,8 @@ namespace GKNet
                     break;
 
                 case "get_peer_info":
-                    var args = e.Data.Get<BDictionary>("rv");
                     var peerInfo = new PeerProfile();
-                    peerInfo.Load(args);
+                    peerInfo.Load(resp);
                     fForm.OnMessageReceived(pr, peerInfo.UserName);
                     fForm.OnMessageReceived(pr, peerInfo.Country);
                     fForm.OnMessageReceived(pr, peerInfo.TimeZone);
@@ -428,8 +427,8 @@ namespace GKNet
 
         public void SendToAll(string message)
         {
-            foreach (var p in fPeers) {
-                SendMessage(p, message);
+            foreach (var peer in fPeers) {
+                SendMessage(peer, message);
             }
         }
 

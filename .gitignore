@@ -7,7 +7,7 @@
 *.userprefs
 *.DotSettings.user
 
-/GKCommunicatorTests/OpenCover/
+/GKNetCore.Tests/OpenCover/
 
 /temp/
 /libs/linux/

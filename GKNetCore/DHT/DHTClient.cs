@@ -100,8 +100,10 @@ namespace GKNet.DHT
             fTransactions = new Dictionary<int, DHTMessage>();
 
             fSocket = new Socket(IPAddressFamily, SocketType.Dgram, ProtocolType.Udp);
-            fSocket.SetIPProtectionLevel(IPProtectionLevel.Unrestricted);
 
+            // FIXME: unsupported?
+            #if !__MonoCS__
+            fSocket.SetIPProtectionLevel(IPProtectionLevel.Unrestricted);
             #if !IP6
             const long IOC_IN = 0x80000000;
             const long IOC_VENDOR = 0x18000000;
@@ -109,6 +111,11 @@ namespace GKNet.DHT
             byte[] optionInValue = { Convert.ToByte(false) };
             byte[] optionOutValue = new byte[4];
             fSocket.IOControl((IOControlCode)SIO_UDP_CONNRESET, optionInValue, optionOutValue);
+            #else
+            #endif
+            #endif
+
+            #if !IP6
             fSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             fSocket.Ttl = 255;
             #else

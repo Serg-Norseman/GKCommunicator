@@ -59,14 +59,20 @@ namespace GKNet
 
         public void Load(BDictionary data)
         {
-            UserName = data.Get<BString>("uname").Value.ToString();
-            Country = data.Get<BString>("uctry").Value.ToString();
-            TimeZone = data.Get<BString>("utz").Value.ToString();
-            Languages = data.Get<BString>("ulangs").Value.ToString();
+            if (data == null)
+                throw new ArgumentNullException("data");
+
+            UserName = data.Get<BString>("uname").ToString();
+            Country = data.Get<BString>("uctry").ToString();
+            TimeZone = data.Get<BString>("utz").ToString();
+            Languages = data.Get<BString>("ulangs").ToString();
         }
 
         public void Save(BDictionary data)
         {
+            if (data == null)
+                throw new ArgumentNullException("data");
+
             data.Add("uname", UserName);
             data.Add("uctry", Country);
             data.Add("utz", TimeZone);
