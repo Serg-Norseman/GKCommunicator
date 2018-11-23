@@ -40,6 +40,19 @@ namespace GKNet
     {
         private SQLiteConnection fConnection;
 
+        public bool IsConnected
+        {
+            get { return (fConnection != null); }
+        }
+
+        public bool IsExists
+        {
+            get {
+                string baseName = GetBaseName();
+                return File.Exists(baseName);
+            }
+        }
+
         public Database()
         {
         }
@@ -62,7 +75,7 @@ namespace GKNet
 
         public void Connect()
         {
-            if (fConnection != null)
+            if (IsConnected)
                 throw new DatabaseException("Database already connected");
 
             string baseName = GetBaseName();
@@ -78,12 +91,50 @@ namespace GKNet
 
         public void Disconnect()
         {
-            if (fConnection == null)
+            if (!IsConnected)
                 throw new DatabaseException("Database already disconnected");
 
             fConnection.Close();
             fConnection.Dispose();
             fConnection = null;
+        }
+
+        public string GetParameterValue(string paramName)
+        {
+            if (!IsConnected)
+                throw new DatabaseException("Database disconnected");
+
+            using (SQLiteCommand cmd = fConnection.CreateCommand()) {
+                cmd.CommandText = "select [value] from Settings where [parameter] = \"" + paramName + "\"";
+                SQLiteDataReader r = cmd.ExecuteReader();
+                if (r.Read()) {
+                    return r.GetString(0);
+                } else {
+                    return string.Empty;
+                }
+            }
+        }
+
+        public void SetParameterValue(string paramName, string paramValue)
+        {
+            if (!IsConnected)
+                throw new DatabaseException("Database disconnected");
+
+            using (SQLiteCommand cmd = fConnection.CreateCommand()) {
+                cmd.CommandText = string.Format("replace into Settings (parameter, value) values (\"{0}\", \"{1}\")", paramName, paramValue);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public static void DeleteDatabase()
+        {
+            string baseName = GetBaseName();
+            try {
+                if (File.Exists(baseName)) {
+                    File.Delete(baseName);
+                }
+            } catch {
+            }
         }
 
         public static void CreateDatabase()
@@ -130,13 +181,11 @@ namespace GKNet
                     command.ExecuteNonQuery();
                 }
 
+                // self_id, user_name, ctry_visible, tz_visible, langs_visible
                 using (SQLiteCommand command = new SQLiteCommand(connection)) {
                     command.CommandText = @"create table [Settings] (
-                    [self_id] char(20) not null,
-                    [user_name] varchar(40) not null,
-                    [ctry_visible] int not null,
-                    [tz_visible] int not null,
-                    [langs_visible] int not null);";
+                    [parameter] varchar(200) primary key,
+                    [value] varchar(200) not null);";
                     command.CommandType = CommandType.Text;
                     command.ExecuteNonQuery();
                 }

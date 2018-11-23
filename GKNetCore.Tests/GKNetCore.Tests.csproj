@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommunicatorCoreTests.cs" />
+    <Compile Include="DatabaseTests.cs" />
     <Compile Include="DHT\DHTClientTests.cs" />
     <Compile Include="DHT\DHTHelperTests.cs" />
     <Compile Include="DHT\DHTMessageTests.cs" />

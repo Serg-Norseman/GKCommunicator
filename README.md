@@ -21,7 +21,7 @@ Roadmap
 - [x] IPv6 (DHT, UDP, TCP)
 
 - [ ] Stabilize the chat and discovery of peers
-- [ ] Add database’s support
+- [x] Add database’s support
 - [ ] Simple user’s profile
 - [ ] Simple storage and formatting of history
 - [ ] A simple bulletin board of investigations and search of kins (only in the implementation of the plugin)
