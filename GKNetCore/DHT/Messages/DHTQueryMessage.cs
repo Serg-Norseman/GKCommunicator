@@ -18,15 +18,25 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace GKNet
-{
-    public interface IChatForm
-    {
-        ICommunicatorCore Core { get; }
+using System.Collections.Generic;
+using System.Linq;
+using BencodeNET.Objects;
+using BencodeNET.Parsing;
 
-        void OnJoin(Peer member);
-        void OnLeave(Peer member);
-        void OnMessageReceived(Peer sender, string message);
-        void OnPeersListChanged();
+namespace GKNet.DHT
+{
+    public class DHTQueryMessage : DHTMessage
+    {
+        public DHTQueryMessage(MessageType type, QueryType queryType, BDictionary data) : base(type, queryType, data)
+        {
+        }
+
+        protected override void Parse()
+        {
+            base.Parse();
+
+            string strQueryType = fData.Get<BString>("q").ToString();
+            fQueryType = GetQueryType(strQueryType);
+        }
     }
 }

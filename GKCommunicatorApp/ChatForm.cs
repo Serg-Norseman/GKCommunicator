@@ -144,18 +144,6 @@ namespace GKCommunicatorApp
             LoadExtFile(Path.Combine(Database.GetAppPath(), ProtocolHelper.LOG_FILE));
         }
 
-        private void miSysInfo_Click(object sender, EventArgs e)
-        {
-            using (var dlgSysInfo = new SysInfoWin(this)) {
-                dlgSysInfo.ShowDialog();
-            }
-        }
-
-        private void miExternalIP_Click(object sender, EventArgs e)
-        {
-            LoadExtFile("http://checkip.dyndns.com/");
-        }
-
         private void miExit_Click(object sender, EventArgs e)
         {
             Close();
@@ -173,7 +161,9 @@ namespace GKCommunicatorApp
 
         private void miProfile_Click(object sender, EventArgs e)
         {
-            // not implemented yet
+            using (var dlg = new ProfileDlg(this)) {
+                dlg.ShowDialog();
+            }
         }
 
         #region IChatForm members

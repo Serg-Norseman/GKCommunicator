@@ -12,9 +12,26 @@ namespace GKNet.DHT
         [Test]
         public void Test_ctor()
         {
+            var node = new DHTNode(new IPEndPoint(IPAddress.Any, 0));
+            Assert.IsNotNull(node);
+            Assert.IsNull(node.ID);
+        }
+
+        [Test]
+        public void Test_ctor2()
+        {
             var randId = DHTHelper.GetRandomID();
             var node = new DHTNode(randId, new IPEndPoint(IPAddress.Any, 0));
             Assert.IsNotNull(node);
+            Assert.AreEqual(randId, node.ID);
+        }
+
+        [Test]
+        public void Test_ToString()
+        {
+            var randId = DHTHelper.GetRandomID();
+            var node = new DHTNode(randId, new IPEndPoint(IPAddress.Any, 0));
+            Assert.IsNotNullOrEmpty(node.ToString());
         }
     }
 }

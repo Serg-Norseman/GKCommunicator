@@ -10,6 +10,8 @@ namespace GKNet
     {
         private class ChatForm : IChatForm
         {
+            public ICommunicatorCore Core { get { return null; } }
+
             public void OnJoin(Peer member)
             {
             }
@@ -37,6 +39,11 @@ namespace GKNet
             var core = new CommunicatorCore(chatForm);
             Assert.IsNotNull(core);
             Assert.AreEqual(false, core.IsConnected);
+            Assert.IsNotNull(core.DHTClient);
+            Assert.IsNotNull(core.Profile);
+            Assert.IsNotNull(core.Peers);
+            //Assert.IsNull(core.STUNInfo);
+            Assert.IsNotNull(core.GetPeersList());
 
             var peer = core.AddPeer(IPAddress.Any, 1111);
             Assert.IsNotNull(peer);

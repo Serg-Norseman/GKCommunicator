@@ -21,13 +21,13 @@
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Text.RegularExpressions;
 
 namespace GKNet
 {
     public static class NetHelper
     {
-        // Fatal problem:
-        // if there is an address statically assigned to the corporate network,
+        // FIXME: Fatal problem - if there is an address statically assigned to the corporate network,
         // then there is still no correct external address
         private static IPAddress GetPublicAddress()
         {
@@ -62,18 +62,16 @@ namespace GKNet
             }
 
             try {
-                var addr = GetPublicAddress();
-                string externalIP = (addr == null) ? "" : addr.ToString();
-                /*externalIP = (new WebClient()).DownloadString("http://checkip.dyndns.org/");
-                externalIP = (new Regex(@"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"))
-                             .Matches(externalIP)[0].ToString();*/
+                //var addr = GetPublicAddress();
+                //string externalIP = (addr == null) ? "" : addr.ToString();
+                string externalIP = (new WebClient()).DownloadString("http://checkip.dyndns.org/");
+                externalIP = (new Regex(@"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}")).Matches(externalIP)[0].ToString();
                 return externalIP;
             } catch { return null; }
         }
 
-#if NET35
         // IPv4 192.168.1.1 maps as ::FFFF:192.168.1.1
-        public static IPAddress MapToIPv6(this IPAddress address)
+        public static IPAddress MapIPv4ToIPv6(IPAddress address)
         {
             if (address.AddressFamily == AddressFamily.InterNetworkV6) {
                 return address;
@@ -89,6 +87,5 @@ namespace GKNet
             labels[15] = addr[3];
             return new IPAddress(labels, 0);
         }
-#endif
     }
 }

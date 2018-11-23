@@ -26,6 +26,8 @@ namespace GKNet
     public static class ProtocolHelper
     {
         public const string NETWORK_SIGN = "GEDKEEPER NETWORK";
+        public const string CLIENT_VER = "GKC";
+
         public const string LOG_FILE = "GKCommunicator.log";
         public const string LOG_LEVEL = "DEBUG";
 
@@ -34,6 +36,7 @@ namespace GKNet
         public const int PublicTCPPort = 11000;
         public const int DebugTCPPort = 11200;
 
+        public const string STUNServer = "stun.ekiga.net";
 
         public static byte[] CreateSignInfoKey()
         {
@@ -42,66 +45,83 @@ namespace GKNet
             return DHTHelper.CalculateInfoHashBytes(subnetKey);
         }
 
-        public static BDictionary CreateHandshakeQuery()
+        public static BDictionary CreateHandshakeQuery(BString transactionID, byte[] nodeId)
         {
             var data = new BDictionary();
+            data.Add("t", transactionID);
             data.Add("y", "q");
             data.Add("q", "handshake");
 
             var args = new BDictionary();
+            args.Add("id", new BString(nodeId));
             args.Add("app", "GEDKeeper Communicator");
             args.Add("ver", "2.14.0");
-
             data.Add("a", args);
 
             return data;
         }
 
-        public static BDictionary CreateHandshakeResponse()
+        public static BDictionary CreateHandshakeResponse(BString transactionID, byte[] nodeId)
         {
             var data = new BDictionary();
+            data.Add("t", transactionID);
             data.Add("y", "r");
-            data.Add("r", "handshake");
+
+            var r = new BDictionary();
+            r.Add("q", "handshake");
+            r.Add("id", new BString(nodeId));
+            r.Add("app", "GEDKeeper Communicator");
+            r.Add("ver", "2.14.0");
+            data.Add("r", r);
 
             return data;
         }
 
-        public static BDictionary CreateChatMessage(string message)
+        public static BDictionary CreateChatMessage(BString transactionID, byte[] nodeId, string message)
         {
             var data = new BDictionary();
+            data.Add("t", transactionID);
             data.Add("y", "q");
             data.Add("q", "chat");
 
             var args = new BDictionary();
+            args.Add("id", new BString(nodeId));
             args.Add("msg", message);
-
             data.Add("a", args);
 
-            data.Add("handshake", "gkn");
+            data.Add("handshake", "gkn"); // ???
 
             return data;
         }
 
-        public static BDictionary CreateGetPeerInfoQuery()
+        public static BDictionary CreateGetPeerInfoQuery(BString transactionID, byte[] nodeId)
         {
             var data = new BDictionary();
+            data.Add("t", transactionID);
             data.Add("y", "q");
-            data.Add("q", "getpeerinfo");
+            data.Add("q", "get_peer_info");
+
+            var args = new BDictionary();
+            args.Add("id", new BString(nodeId));
+            data.Add("a", args);
 
             return data;
         }
 
-        public static BDictionary CreateGetPeerInfoResponse()
+        public static BDictionary CreateGetPeerInfoResponse(BString transactionID, byte[] nodeId)
         {
-            var data = new BDictionary();
-            data.Add("y", "r");
-            data.Add("r", "getpeerinfo");
-
-            var retvals = new BDictionary();
             var peerInfo = new PeerProfile();
             peerInfo.ResetSystem();
-            peerInfo.Save(retvals);
-            data.Add("rv", retvals);
+
+            var data = new BDictionary();
+            data.Add("t", transactionID);
+            data.Add("y", "r");
+
+            var r = new BDictionary();
+            r.Add("q", "get_peer_info");
+            r.Add("id", new BString(nodeId));
+            peerInfo.Save(r);
+            data.Add("r", r);
 
             return data;
         }

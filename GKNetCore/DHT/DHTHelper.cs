@@ -33,11 +33,12 @@ namespace GKNet.DHT
     {
         public const int CompactNodeRecordLengthIP4 = 26; // 20 + 6
         public const int CompactNodeRecordLengthIP6 = 38; // 20 + 18
-#if !IP6
+
+        #if !IP6
         public const int CompactNodeRecordLength = CompactNodeRecordLengthIP4;
-#else
+        #else
         public const int CompactNodeRecordLength = CompactNodeRecordLengthIP6;
-#endif
+        #endif
 
         private static Random r = new Random();
         private static SHA1 sha1 = new SHA1CryptoServiceProvider();
@@ -76,11 +77,11 @@ namespace GKNet.DHT
 
         public static IPAddress PrepareAddress(IPAddress address)
         {
-#if !IP6
-               return address;
-#else
+            #if !IP6
+            return address;
+            #else
             return address.MapToIPv6();
-#endif
+            #endif
         }
 
         public static List<IPEndPoint> ParseValuesList(BList data)

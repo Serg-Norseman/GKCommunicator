@@ -21,7 +21,9 @@ namespace GKNet.DHT
         [Test]
         public void Test_CreateHandshakeQuery()
         {
-            var msg = ProtocolHelper.CreateHandshakeQuery();
+            var tid = DHTHelper.GetTransactionId();
+            var nodeId = DHTHelper.GetRandomID();
+            var msg = ProtocolHelper.CreateHandshakeQuery(tid, nodeId);
             Assert.IsNotNull(msg);
             // TODO: test contents
         }
@@ -29,7 +31,9 @@ namespace GKNet.DHT
         [Test]
         public void Test_CreateHandshakeResponse()
         {
-            var msg = ProtocolHelper.CreateHandshakeResponse();
+            var tid = DHTHelper.GetTransactionId();
+            var nodeId = DHTHelper.GetRandomID();
+            var msg = ProtocolHelper.CreateHandshakeResponse(tid, nodeId);
             Assert.IsNotNull(msg);
             // TODO: test contents
         }
@@ -37,7 +41,9 @@ namespace GKNet.DHT
         [Test]
         public void Test_CreateChatMessage()
         {
-            var msg = ProtocolHelper.CreateChatMessage("test");
+            var tid = DHTHelper.GetTransactionId();
+            var nodeId = DHTHelper.GetRandomID();
+            var msg = ProtocolHelper.CreateChatMessage(tid, nodeId, "test");
             Assert.IsNotNull(msg);
             // TODO: test contents
         }
@@ -45,7 +51,9 @@ namespace GKNet.DHT
         [Test]
         public void Test_CreateGetPeerInfoQuery()
         {
-            var msg = ProtocolHelper.CreateGetPeerInfoQuery();
+            var tid = DHTHelper.GetTransactionId();
+            var nodeId = DHTHelper.GetRandomID();
+            var msg = ProtocolHelper.CreateGetPeerInfoQuery(tid, nodeId);
             Assert.IsNotNull(msg);
             // TODO: test contents
         }
@@ -53,7 +61,9 @@ namespace GKNet.DHT
         [Test]
         public void Test_CreateGetPeerInfoResponse()
         {
-            var msg = ProtocolHelper.CreateGetPeerInfoResponse();
+            var tid = DHTHelper.GetTransactionId();
+            var nodeId = DHTHelper.GetRandomID();
+            var msg = ProtocolHelper.CreateGetPeerInfoResponse(tid, nodeId);
             Assert.IsNotNull(msg);
             // TODO: test contents
         }

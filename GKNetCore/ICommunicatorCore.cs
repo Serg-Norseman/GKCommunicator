@@ -21,6 +21,7 @@
 using System.Collections.Generic;
 using System.Net;
 using GKNet.DHT;
+using LumiSoft.Net.STUN.Client;
 
 namespace GKNet
 {
@@ -31,6 +32,7 @@ namespace GKNet
         UserProfile Profile { get; }
         int TCPListenerPort { get; set; }
         DHTClient DHTClient { get; }
+        STUN_Result STUNInfo { get; }
 
         void Connect();
         void Disconnect();
