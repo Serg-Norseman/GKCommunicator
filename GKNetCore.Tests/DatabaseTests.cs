@@ -1,29 +1,28 @@
 ﻿using System;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
-using BencodeNET.Objects;
 using GKNet;
 using NUnit.Framework;
+using DB = GKNet.LtDatabase;
 
 namespace GKNet
 {
     [TestFixture]
     public class DatabaseTests
     {
+        //#if !CI_MODE
+
         [Test]
         public void Test_ctor()
         {
-            var db = new Database();
+            var db = new DB();
             Assert.IsNotNull(db);
         }
 
         [Test]
         public void Test_Connection()
         {
-            var db = new Database();
+            var db = new DB();
 
-            Database.DeleteDatabase();
+            DB.DeleteDatabase();
             Assert.IsFalse(db.IsExists);
 
             Assert.IsFalse(db.IsConnected);
@@ -41,7 +40,7 @@ namespace GKNet
         [Test]
         public void Test_Parameters()
         {
-            var db = new Database();
+            var db = new DB();
 
             Assert.Throws(typeof(DatabaseException), () => { db.GetParameterValue("user_name"); }); // disconnected
             Assert.Throws(typeof(DatabaseException), () => { db.SetParameterValue("user_name", "fail"); }); // disconnected
@@ -58,5 +57,7 @@ namespace GKNet
 
             db.Disconnect();
         }
+
+        //#endif
     }
 }

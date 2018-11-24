@@ -6,9 +6,9 @@
 [![BCH compliance](https://bettercodehub.com/edge/badge/serg-norseman/gkcommunicator?branch=master)](https://bettercodehub.com/)
 [![CodeFactor](https://www.codefactor.io/repository/github/serg-norseman/gkcommunicator/badge)](https://www.codefactor.io/repository/github/serg-norseman/gkcommunicator)
 
-This communication application is a sub-project of GEDKeeper (two part: application and embedded plugin).
+This communication application is a sub-project of GEDKeeper (two part: application and plugin).
 This is a distributed, decentralized, serverless, peer-to-peer (P2P) chat client. 
-The distributed P2P core is based on the Kademlia DHT. Supported: IPv4 / IPv6, Mainline DHT, UDP / TCP. The network message protocol is bencode.
+The distributed P2P core is based on the Kademlia DHT. Supported: IPv4 / IPv6, Mainline DHT, UDP / TCP. The network message protocol is Bencode.
 
 Roadmap
 
@@ -17,13 +17,14 @@ Roadmap
 - [x] STUN detection for external IP and NAT's type
 - [x] UDP hole-punching
 - [x] Simple UDP Chat
-- [ ] TCP ???
 - [x] IPv6 (DHT, UDP, TCP)
+- [x] Database support (SQLite)
+- [x] Formatting of history
 
+- [ ] TCP
 - [ ] Stabilize the chat and discovery of peers
-- [x] Add database’s support
 - [ ] Simple user’s profile
-- [ ] Simple storage and formatting of history
+- [ ] Simple storage
 - [ ] A simple bulletin board of investigations and search of kins (only in the implementation of the plugin)
 - [ ] Mutual identity and signing of user profiles (trusted collocutors and unchecked network members)
 - [ ] "Web of Trust" elements with PGP certificates

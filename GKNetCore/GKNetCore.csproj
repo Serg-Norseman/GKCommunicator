@@ -59,9 +59,22 @@
   <PropertyGroup Condition="'$(MonoCS)'=='true'">
     <DefineConstants>$(DefineConstants);__MonoCS__</DefineConstants>
   </PropertyGroup>
+  <ItemGroup Condition="!$(DefineConstants.Contains(';__MonoCS__'))">
+    <Reference Include="System.Data.SQLite">
+      <HintPath>..\libs\mswin\System.Data.SQLite.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup Condition="$(DefineConstants.Contains(';__MonoCS__'))">
+    <Reference Include="System.Data.SQLite">
+      <HintPath>..\libs\linux\System.Data.SQLite.dll</HintPath>
+    </Reference>
+  </ItemGroup>
   <ItemGroup>
     <Reference Include="BSLib">
       <HintPath>..\libs\BSLib.dll</HintPath>
+    </Reference>
+    <Reference Include="LiteDB">
+      <HintPath>..\libs\LiteDB.dll</HintPath>
     </Reference>
     <Reference Include="log4net">
       <HintPath>..\libs\log4net.dll</HintPath>
@@ -71,9 +84,6 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Data.SQLite">
-      <HintPath>..\libs\mswin\System.Data.SQLite.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -120,6 +130,7 @@
     <Compile Include="DHT\DHTRoutingTable.cs" />
     <Compile Include="DHT\PeersFoundEventArgs.cs" />
     <Compile Include="ICommunicatorCore.cs" />
+    <Compile Include="LiteDatabase.cs" />
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\Log4NetHelper.cs" />
     <Compile Include="Logging\LogManager.cs" />
