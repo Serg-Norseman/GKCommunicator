@@ -45,6 +45,7 @@
     <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="CommunicatorCoreTests.cs" />
     <Compile Include="DatabaseTests.cs" />
     <Compile Include="DHT\DHTClientTests.cs" />
@@ -55,7 +56,6 @@
     <Compile Include="MessageTests.cs" />
     <Compile Include="NetHelperTests.cs" />
     <Compile Include="PeerTests.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProtocolHelperTests.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,15 +1,9 @@
 ﻿using System.Reflection;
-using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("GKCommunicatorApp")]
 [assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("GKCommunicator")]
 [assembly: AssemblyCopyright("Copyright © 2018 by Sergey V. Zhdanovskih")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyVersion("0.8.60.0")]
 [assembly: AssemblyCulture("")]
-[assembly: ComVisible(false)]
-[assembly: Guid("c5499f93-1280-4457-9289-103c611ce88c")]
-[assembly: AssemblyVersion("0.1.45.0")]
-[assembly: AssemblyFileVersion("0.1.45.0")]
+[assembly: AssemblyConfiguration("")]
