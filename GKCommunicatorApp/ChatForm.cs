@@ -46,13 +46,12 @@ namespace GKCommunicatorApp
             InitializeComponent();
 
             Closing += new CancelEventHandler(ChatForm_Closing);
-            txtMemberName.Focus();
 
             if (File.Exists(ProtocolHelper.LOG_FILE)) {
                 File.Delete(ProtocolHelper.LOG_FILE);
             }
-            fLogger = LogManager.GetLogger(ProtocolHelper.LOG_FILE, ProtocolHelper.LOG_LEVEL, "ChatForm");
 
+            fLogger = LogManager.GetLogger(ProtocolHelper.LOG_FILE, ProtocolHelper.LOG_LEVEL, "ChatForm");
             fCore = new CommunicatorCore(this);
 
             UpdateStatus();
@@ -60,7 +59,6 @@ namespace GKCommunicatorApp
 
         private void Connect()
         {
-            fCore.Profile.UserName = txtMemberName.Text;
             fCore.TCPListenerPort = ProtocolHelper.PublicTCPPort;
 
             // join the P2P mesh from a worker thread

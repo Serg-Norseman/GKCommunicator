@@ -98,6 +98,7 @@ namespace GKNet
             fForm = form;
             fLogger = LogManager.GetLogger(ProtocolHelper.LOG_FILE, ProtocolHelper.LOG_LEVEL, "ChatDHTCP");
             fProfile = new UserProfile();
+            fProfile.ResetSystem();
             fParser = new BencodeParser();
             fPeers = new List<Peer>();
             fSTUNInfo = null;
@@ -362,10 +363,7 @@ namespace GKNet
                 case "get_peer_info":
                     var peerInfo = new PeerProfile();
                     peerInfo.Load(resp);
-                    fForm.OnMessageReceived(pr, peerInfo.UserName);
-                    fForm.OnMessageReceived(pr, peerInfo.Country);
-                    fForm.OnMessageReceived(pr, peerInfo.TimeZone);
-                    fForm.OnMessageReceived(pr, peerInfo.Languages);
+                    fForm.OnMessageReceived(pr, peerInfo.UserName + "/" + peerInfo.Country  + "/" + peerInfo.TimeZone + "/" + peerInfo.Languages);
                     break;
             }
         }

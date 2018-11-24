@@ -44,8 +44,6 @@
             this.lblConnectionStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.panTempHeader = new System.Windows.Forms.Panel();
             this.btnConnect = new System.Windows.Forms.Button();
-            this.txtMemberName = new System.Windows.Forms.TextBox();
-            this.lblMemberName = new System.Windows.Forms.Label();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.lstMembers = new System.Windows.Forms.ListBox();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -182,8 +180,6 @@
             // panTempHeader
             // 
             this.panTempHeader.Controls.Add(this.btnConnect);
-            this.panTempHeader.Controls.Add(this.txtMemberName);
-            this.panTempHeader.Controls.Add(this.lblMemberName);
             this.panTempHeader.Dock = System.Windows.Forms.DockStyle.Top;
             this.panTempHeader.Location = new System.Drawing.Point(0, 24);
             this.panTempHeader.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
@@ -201,24 +197,6 @@
             this.btnConnect.Text = "Connect";
             this.btnConnect.UseVisualStyleBackColor = true;
             this.btnConnect.Click += new System.EventHandler(this.btnConnect_Click);
-            // 
-            // txtMemberName
-            // 
-            this.txtMemberName.Location = new System.Drawing.Point(101, 3);
-            this.txtMemberName.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.txtMemberName.Name = "txtMemberName";
-            this.txtMemberName.Size = new System.Drawing.Size(314, 24);
-            this.txtMemberName.TabIndex = 4;
-            // 
-            // lblMemberName
-            // 
-            this.lblMemberName.AutoSize = true;
-            this.lblMemberName.Location = new System.Drawing.Point(6, 6);
-            this.lblMemberName.Margin = new System.Windows.Forms.Padding(6);
-            this.lblMemberName.Name = "lblMemberName";
-            this.lblMemberName.Size = new System.Drawing.Size(91, 17);
-            this.lblMemberName.TabIndex = 3;
-            this.lblMemberName.Text = "MemberName";
             // 
             // splitContainer1
             // 
@@ -353,7 +331,6 @@
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.panTempHeader.ResumeLayout(false);
-            this.panTempHeader.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
@@ -380,8 +357,6 @@
         private System.Windows.Forms.ToolStripStatusLabel lblConnectionStatus;
         private System.Windows.Forms.Panel panTempHeader;
         private System.Windows.Forms.Button btnConnect;
-        private System.Windows.Forms.TextBox txtMemberName;
-        private System.Windows.Forms.Label lblMemberName;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.ListBox lstMembers;
         private System.Windows.Forms.SplitContainer splitContainer2;

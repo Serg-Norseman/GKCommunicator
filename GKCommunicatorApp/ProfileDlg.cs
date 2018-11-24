@@ -19,8 +19,6 @@
  */
 
 using System;
-using System.Net;
-using System.Net.Sockets;
 using System.Windows.Forms;
 using GKNet;
 using LumiSoft.Net.STUN.Client;
@@ -43,13 +41,11 @@ namespace GKCommunicatorApp
 
         private void Form_Load(object sender, EventArgs e)
         {
-            var peerInfo = new PeerProfile();
-            peerInfo.ResetSystem();
-
-            AddProperty("UserName", peerInfo.UserName);
-            AddProperty("UserCountry", peerInfo.Country);
-            AddProperty("TimeZone", peerInfo.TimeZone);
-            AddProperty("Languages", peerInfo.Languages);
+            UserProfile userProfile = fChatForm.Core.Profile;
+            txtUserName.Text = userProfile.UserName;
+            txtCountry.Text = userProfile.Country;
+            txtTimeZone.Text = userProfile.TimeZone;
+            txtLanguages.Text = userProfile.Languages;
 
             var stunInfo = fChatForm.Core.STUNInfo;
             AddProperty("NET type", stunInfo.NetType.ToString());
