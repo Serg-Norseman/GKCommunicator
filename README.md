@@ -18,7 +18,7 @@ Roadmap
 - [x] UDP hole-punching
 - [x] Simple UDP Chat
 - [x] IPv6 (DHT, UDP, TCP)
-- [x] Database support (SQLite)
+- [x] Database support (SQLite, LiteDB)
 - [x] Formatting of history
 
 - [ ] TCP

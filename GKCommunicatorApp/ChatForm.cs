@@ -141,7 +141,7 @@ namespace GKCommunicatorApp
 
         private void miDHTLog_Click(object sender, EventArgs e)
         {
-            LoadExtFile(Path.Combine(Database.GetAppPath(), ProtocolHelper.LOG_FILE));
+            LoadExtFile(Path.Combine(NetHelper.GetAppPath(), ProtocolHelper.LOG_FILE));
         }
 
         private void miExit_Click(object sender, EventArgs e)

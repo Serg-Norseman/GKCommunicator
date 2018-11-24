@@ -20,28 +20,17 @@
 
 using System;
 using System.Data;
-using System.Linq;
+using System.Data.SQLite;
 using System.IO;
-using System.Reflection;
-using LiteDB;
 
-namespace GKNet
+namespace GKNet.Database
 {
-    public class Parameter
-    {
-        [BsonId]
-        public Guid Id { get; set; }
-
-        public string Name { get; set; }
-        public string Value { get; set; }
-    }
-
     /// <summary>
     /// 
     /// </summary>
-    public class LtDatabase
+    public class SQLDatabase : IDatabase
     {
-        private LiteDatabase fConnection;
+        private SQLiteConnection fConnection;
 
         public bool IsConnected
         {
@@ -56,25 +45,14 @@ namespace GKNet
             }
         }
 
-        public LtDatabase()
+        public SQLDatabase()
         {
-        }
-
-        #region Private methods
-
-        public static string GetAppPath()
-        {
-            Module[] mods = Assembly.GetExecutingAssembly().GetModules();
-            string fn = mods[0].FullyQualifiedName;
-            return Path.GetDirectoryName(fn) + Path.DirectorySeparatorChar;
         }
 
         private static string GetBaseName()
         {
-            return GetAppPath() + "gkcommunicator.db";
+            return NetHelper.GetAppPath() + "gkcommunicator.sl3";
         }
-
-        #endregion
 
         public void Connect()
         {
@@ -87,7 +65,9 @@ namespace GKNet
                 CreateDatabase();
             }
 
-            fConnection = new LiteDatabase(baseName);
+            fConnection = (SQLiteConnection)SQLiteFactory.Instance.CreateConnection();
+            fConnection.ConnectionString = "Data Source = " + baseName;
+            fConnection.Open();
         }
 
         public void Disconnect()
@@ -95,6 +75,7 @@ namespace GKNet
             if (!IsConnected)
                 throw new DatabaseException("Database already disconnected");
 
+            fConnection.Close();
             fConnection.Dispose();
             fConnection = null;
         }
@@ -104,10 +85,15 @@ namespace GKNet
             if (!IsConnected)
                 throw new DatabaseException("Database disconnected");
 
-            var col = fConnection.GetCollection<Parameter>("settings");
-            var paramQuery = col.Find(x => x.Name == paramName);
-            var param = paramQuery.FirstOrDefault();
-            return (param == null) ? string.Empty : param.Value;
+            using (SQLiteCommand cmd = fConnection.CreateCommand()) {
+                cmd.CommandText = "select [value] from Settings where [parameter] = \"" + paramName + "\"";
+                SQLiteDataReader r = cmd.ExecuteReader();
+                if (r.Read()) {
+                    return r.GetString(0);
+                } else {
+                    return string.Empty;
+                }
+            }
         }
 
         public void SetParameterValue(string paramName, string paramValue)
@@ -115,22 +101,13 @@ namespace GKNet
             if (!IsConnected)
                 throw new DatabaseException("Database disconnected");
 
-            var col = fConnection.GetCollection<Parameter>("settings");
-            var paramQuery = col.Find(x => x.Name == paramName);
-            var param = paramQuery.FirstOrDefault();
-            if (param != null) {
-                param.Value = paramValue;
-                col.Update(param);
-            } else {
-                param = new Parameter() {
-                    Name = paramName,
-                    Value = paramValue
-                };
-                col.Insert(param);
+            using (SQLiteCommand cmd = fConnection.CreateCommand()) {
+                cmd.CommandText = string.Format("replace into Settings (parameter, value) values (\"{0}\", \"{1}\")", paramName, paramValue);
+                cmd.ExecuteNonQuery();
             }
         }
 
-        public static void DeleteDatabase()
+        public void DeleteDatabase()
         {
             string baseName = GetBaseName();
             try {
@@ -141,12 +118,12 @@ namespace GKNet
             }
         }
 
-        public static void CreateDatabase()
+        public void CreateDatabase()
         {
             string baseName = GetBaseName();
 
-            using (var connection = new LiteDatabase(baseName)) {
-            /*SQLiteConnection.CreateFile(baseName);
+            SQLiteConnection.CreateFile(baseName);
+
             using (SQLiteConnection connection = (SQLiteConnection)SQLiteFactory.Instance.CreateConnection()) {
                 connection.ConnectionString = "Data Source = " + baseName;
                 connection.Open();
@@ -183,19 +160,16 @@ namespace GKNet
                     [langs] varchar(200));";
                     command.CommandType = CommandType.Text;
                     command.ExecuteNonQuery();
-                }*/
-
-                var col = connection.GetCollection<Parameter>("settings");
-                col.EnsureIndex(x => x.Name, true);
+                }
 
                 // self_id, user_name, ctry_visible, tz_visible, langs_visible
-                /*using (SQLiteCommand command = new SQLiteCommand(connection)) {
+                using (SQLiteCommand command = new SQLiteCommand(connection)) {
                     command.CommandText = @"create table [Settings] (
                     [parameter] varchar(200) primary key,
                     [value] varchar(200) not null);";
                     command.CommandType = CommandType.Text;
                     command.ExecuteNonQuery();
-                }*/
+                }
             }
         }
     }

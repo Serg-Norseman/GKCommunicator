@@ -1,7 +1,6 @@
 ﻿using System;
-using GKNet;
+using GKNet.Database;
 using NUnit.Framework;
-using DB = GKNet.LtDatabase;
 
 namespace GKNet
 {
@@ -10,52 +9,55 @@ namespace GKNet
     {
         //#if !CI_MODE
 
-        [Test]
-        public void Test_ctor()
+        private IDatabase fDb;
+
+        [TestFixtureSetUp]
+        public void SetUp()
         {
-            var db = new DB();
-            Assert.IsNotNull(db);
+            fDb = new LtDatabase();
+            Assert.IsNotNull(fDb);
+        }
+
+        [TestFixtureTearDown]
+        public void TearDown()
+        {
         }
 
         [Test]
         public void Test_Connection()
         {
-            var db = new DB();
+            fDb.DeleteDatabase();
+            Assert.IsFalse(fDb.IsExists);
 
-            DB.DeleteDatabase();
-            Assert.IsFalse(db.IsExists);
+            Assert.IsFalse(fDb.IsConnected);
+            fDb.Connect();
+            Assert.IsTrue(fDb.IsConnected);
+            Assert.Throws(typeof(DatabaseException), () => { fDb.Connect(); }); // already connected
 
-            Assert.IsFalse(db.IsConnected);
-            db.Connect();
-            Assert.IsTrue(db.IsConnected);
-            Assert.Throws(typeof(DatabaseException), () => { db.Connect(); }); // already connected
+            fDb.Disconnect();
+            Assert.IsFalse(fDb.IsConnected);
+            Assert.Throws(typeof(DatabaseException), () => { fDb.Disconnect(); }); // already disconnected
 
-            db.Disconnect();
-            Assert.IsFalse(db.IsConnected);
-            Assert.Throws(typeof(DatabaseException), () => { db.Disconnect(); }); // already disconnected
-
-            Assert.IsTrue(db.IsExists);
+            Assert.IsTrue(fDb.IsExists);
         }
 
         [Test]
         public void Test_Parameters()
         {
-            var db = new DB();
+            Assert.Throws(typeof(DatabaseException), () => { fDb.GetParameterValue("user_name"); }); // disconnected
+            Assert.Throws(typeof(DatabaseException), () => { fDb.SetParameterValue("user_name", "fail"); }); // disconnected
 
-            Assert.Throws(typeof(DatabaseException), () => { db.GetParameterValue("user_name"); }); // disconnected
-            Assert.Throws(typeof(DatabaseException), () => { db.SetParameterValue("user_name", "fail"); }); // disconnected
+            fDb.Connect();
 
-            db.Connect();
+            Assert.AreEqual(string.Empty, fDb.GetParameterValue("user_name"));
 
-            Assert.AreEqual(string.Empty, db.GetParameterValue("user_name"));
+            fDb.SetParameterValue("user_name", "Kashchei");
+            Assert.AreEqual("Kashchei", fDb.GetParameterValue("user_name"));
 
-            db.SetParameterValue("user_name", "Kashchei");
-            Assert.AreEqual("Kashchei", db.GetParameterValue("user_name"));
+            fDb.SetParameterValue("user_name", "Baba Yaga");
+            Assert.AreEqual("Baba Yaga", fDb.GetParameterValue("user_name"));
 
-            db.SetParameterValue("user_name", "Baba Yaga");
-            Assert.AreEqual("Baba Yaga", db.GetParameterValue("user_name"));
-
-            db.Disconnect();
+            fDb.Disconnect();
         }
 
         //#endif

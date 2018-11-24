@@ -18,15 +18,24 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System.IO;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace GKNet
 {
     public static class NetHelper
     {
+        public static string GetAppPath()
+        {
+            Module[] mods = Assembly.GetExecutingAssembly().GetModules();
+            string fn = mods[0].FullyQualifiedName;
+            return Path.GetDirectoryName(fn) + Path.DirectorySeparatorChar;
+        }
+
         // FIXME: Fatal problem - if there is an address statically assigned to the corporate network,
         // then there is still no correct external address
         private static IPAddress GetPublicAddress()
