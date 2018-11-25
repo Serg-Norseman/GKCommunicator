@@ -2,15 +2,36 @@
 {
     partial class ChatForm
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
         private System.ComponentModel.IContainer components = null;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStrip toolStrip1;
+        private System.Windows.Forms.ToolStripMenuItem miConnection;
+        private System.Windows.Forms.ToolStripMenuItem miService;
+        private System.Windows.Forms.ToolStripMenuItem miHelp;
+        private System.Windows.Forms.ToolStripMenuItem miView;
+        private System.Windows.Forms.ToolStripMenuItem miDHTLog;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel lblConnectionStatus;
+        private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.ListView lstMembers;
+        private System.Windows.Forms.SplitContainer splitContainer2;
+        private System.Windows.Forms.TextBox txtChatMsg;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+        private System.Windows.Forms.Button btnSendToAll;
+        private System.Windows.Forms.Button btnSend;
+        private System.Windows.Forms.RichTextBox lstChatMsgs;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem miConnect;
+        private System.Windows.Forms.ToolStripMenuItem miDisconnect;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem miProfile;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem miExit;
+        private System.Windows.Forms.ToolStripButton tbConnect;
+        private System.Windows.Forms.ToolStripButton tbDisconnect;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripButton tbProfile;
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null)) {
@@ -19,12 +40,6 @@
             base.Dispose(disposing);
         }
 
-        #region Windows Form Designer generated code
-
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
@@ -40,12 +55,15 @@
             this.miService = new System.Windows.Forms.ToolStripMenuItem();
             this.miDHTLog = new System.Windows.Forms.ToolStripMenuItem();
             this.miHelp = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.tbConnect = new System.Windows.Forms.ToolStripButton();
+            this.tbDisconnect = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.tbProfile = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.lblConnectionStatus = new System.Windows.Forms.ToolStripStatusLabel();
-            this.panTempHeader = new System.Windows.Forms.Panel();
-            this.btnConnect = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.lstMembers = new System.Windows.Forms.ListBox();
+            this.lstMembers = new System.Windows.Forms.ListView();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.lstChatMsgs = new System.Windows.Forms.RichTextBox();
@@ -54,8 +72,8 @@
             this.btnSendToAll = new System.Windows.Forms.Button();
             this.btnSend = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
+            this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
-            this.panTempHeader.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -77,7 +95,7 @@
             this.miHelp});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(626, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(731, 24);
             this.menuStrip1.TabIndex = 9;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -159,6 +177,50 @@
             this.miHelp.Size = new System.Drawing.Size(44, 20);
             this.miHelp.Text = "Help";
             // 
+            // toolStrip1
+            // 
+            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tbConnect,
+            this.tbDisconnect,
+            this.toolStripSeparator1,
+            this.tbProfile});
+            this.toolStrip1.Location = new System.Drawing.Point(0, 24);
+            this.toolStrip1.Name = "toolStrip1";
+            this.toolStrip1.Size = new System.Drawing.Size(731, 25);
+            this.toolStrip1.TabIndex = 13;
+            // 
+            // tbConnect
+            // 
+            this.tbConnect.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tbConnect.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbConnect.Name = "tbConnect";
+            this.tbConnect.Size = new System.Drawing.Size(56, 22);
+            this.tbConnect.Text = "Connect";
+            this.tbConnect.Click += new System.EventHandler(this.miConnect_Click);
+            // 
+            // tbDisconnect
+            // 
+            this.tbDisconnect.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tbDisconnect.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbDisconnect.Name = "tbDisconnect";
+            this.tbDisconnect.Size = new System.Drawing.Size(70, 22);
+            this.tbDisconnect.Text = "Disconnect";
+            this.tbDisconnect.Click += new System.EventHandler(this.miDisconnect_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            // 
+            // tbProfile
+            // 
+            this.tbProfile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tbProfile.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbProfile.Name = "tbProfile";
+            this.tbProfile.Size = new System.Drawing.Size(45, 22);
+            this.tbProfile.Text = "Profile";
+            this.tbProfile.Click += new System.EventHandler(this.miProfile_Click);
+            // 
             // statusStrip1
             // 
             this.statusStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
@@ -167,7 +229,7 @@
             this.statusStrip1.Location = new System.Drawing.Point(0, 420);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 13, 0);
-            this.statusStrip1.Size = new System.Drawing.Size(626, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(731, 22);
             this.statusStrip1.TabIndex = 10;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -177,31 +239,10 @@
             this.lblConnectionStatus.Size = new System.Drawing.Size(214, 17);
             this.lblConnectionStatus.Text = " Attemping to connect. Please standby.";
             // 
-            // panTempHeader
-            // 
-            this.panTempHeader.Controls.Add(this.btnConnect);
-            this.panTempHeader.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panTempHeader.Location = new System.Drawing.Point(0, 24);
-            this.panTempHeader.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
-            this.panTempHeader.Name = "panTempHeader";
-            this.panTempHeader.Size = new System.Drawing.Size(626, 34);
-            this.panTempHeader.TabIndex = 11;
-            // 
-            // btnConnect
-            // 
-            this.btnConnect.Location = new System.Drawing.Point(422, 0);
-            this.btnConnect.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.btnConnect.Name = "btnConnect";
-            this.btnConnect.Size = new System.Drawing.Size(180, 30);
-            this.btnConnect.TabIndex = 5;
-            this.btnConnect.Text = "Connect";
-            this.btnConnect.UseVisualStyleBackColor = true;
-            this.btnConnect.Click += new System.EventHandler(this.btnConnect_Click);
-            // 
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 58);
+            this.splitContainer1.Location = new System.Drawing.Point(0, 49);
             this.splitContainer1.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.splitContainer1.Name = "splitContainer1";
             // 
@@ -212,8 +253,8 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(626, 362);
-            this.splitContainer1.SplitterDistance = 203;
+            this.splitContainer1.Size = new System.Drawing.Size(731, 371);
+            this.splitContainer1.SplitterDistance = 237;
             this.splitContainer1.SplitterWidth = 3;
             this.splitContainer1.TabIndex = 12;
             // 
@@ -221,13 +262,13 @@
             // 
             this.lstMembers.ContextMenuStrip = this.contextMenuStrip1;
             this.lstMembers.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lstMembers.FormattingEnabled = true;
-            this.lstMembers.ItemHeight = 17;
             this.lstMembers.Location = new System.Drawing.Point(0, 0);
             this.lstMembers.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.lstMembers.Name = "lstMembers";
-            this.lstMembers.Size = new System.Drawing.Size(203, 362);
+            this.lstMembers.Size = new System.Drawing.Size(237, 371);
             this.lstMembers.TabIndex = 4;
+            this.lstMembers.UseCompatibleStateImageBehavior = false;
+            this.lstMembers.View = System.Windows.Forms.View.List;
             // 
             // contextMenuStrip1
             // 
@@ -251,8 +292,8 @@
             // 
             this.splitContainer2.Panel2.Controls.Add(this.txtChatMsg);
             this.splitContainer2.Panel2.Controls.Add(this.flowLayoutPanel1);
-            this.splitContainer2.Size = new System.Drawing.Size(420, 362);
-            this.splitContainer2.SplitterDistance = 206;
+            this.splitContainer2.Size = new System.Drawing.Size(491, 371);
+            this.splitContainer2.SplitterDistance = 210;
             this.splitContainer2.TabIndex = 0;
             // 
             // lstChatMsgs
@@ -262,7 +303,7 @@
             this.lstChatMsgs.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.lstChatMsgs.Name = "lstChatMsgs";
             this.lstChatMsgs.ReadOnly = true;
-            this.lstChatMsgs.Size = new System.Drawing.Size(420, 206);
+            this.lstChatMsgs.Size = new System.Drawing.Size(491, 210);
             this.lstChatMsgs.TabIndex = 0;
             this.lstChatMsgs.Text = "";
             // 
@@ -273,7 +314,7 @@
             this.txtChatMsg.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtChatMsg.Multiline = true;
             this.txtChatMsg.Name = "txtChatMsg";
-            this.txtChatMsg.Size = new System.Drawing.Size(420, 110);
+            this.txtChatMsg.Size = new System.Drawing.Size(491, 115);
             this.txtChatMsg.TabIndex = 6;
             this.txtChatMsg.Text = "test";
             // 
@@ -283,15 +324,15 @@
             this.flowLayoutPanel1.Controls.Add(this.btnSend);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 110);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 115);
             this.flowLayoutPanel1.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(420, 42);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(491, 42);
             this.flowLayoutPanel1.TabIndex = 0;
             // 
             // btnSendToAll
             // 
-            this.btnSendToAll.Location = new System.Drawing.Point(327, 4);
+            this.btnSendToAll.Location = new System.Drawing.Point(398, 4);
             this.btnSendToAll.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnSendToAll.Name = "btnSendToAll";
             this.btnSendToAll.Size = new System.Drawing.Size(90, 34);
@@ -302,7 +343,7 @@
             // 
             // btnSend
             // 
-            this.btnSend.Location = new System.Drawing.Point(231, 4);
+            this.btnSend.Location = new System.Drawing.Point(302, 4);
             this.btnSend.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnSend.Name = "btnSend";
             this.btnSend.Size = new System.Drawing.Size(90, 34);
@@ -315,10 +356,10 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.ClientSize = new System.Drawing.Size(626, 442);
+            this.ClientSize = new System.Drawing.Size(731, 442);
             this.Controls.Add(this.splitContainer1);
-            this.Controls.Add(this.panTempHeader);
             this.Controls.Add(this.statusStrip1);
+            this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.menuStrip1);
             this.Font = new System.Drawing.Font("Calibri", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.MainMenuStrip = this.menuStrip1;
@@ -328,9 +369,10 @@
             this.Text = "GKCommunicator";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.toolStrip1.ResumeLayout(false);
+            this.toolStrip1.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
-            this.panTempHeader.ResumeLayout(false);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
@@ -345,32 +387,5 @@
             this.PerformLayout();
 
         }
-
-        #endregion
-        private System.Windows.Forms.MenuStrip menuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem miConnection;
-        private System.Windows.Forms.ToolStripMenuItem miService;
-        private System.Windows.Forms.ToolStripMenuItem miHelp;
-        private System.Windows.Forms.ToolStripMenuItem miView;
-        private System.Windows.Forms.ToolStripMenuItem miDHTLog;
-        private System.Windows.Forms.StatusStrip statusStrip1;
-        private System.Windows.Forms.ToolStripStatusLabel lblConnectionStatus;
-        private System.Windows.Forms.Panel panTempHeader;
-        private System.Windows.Forms.Button btnConnect;
-        private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.ListBox lstMembers;
-        private System.Windows.Forms.SplitContainer splitContainer2;
-        private System.Windows.Forms.TextBox txtChatMsg;
-        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
-        private System.Windows.Forms.Button btnSendToAll;
-        private System.Windows.Forms.Button btnSend;
-        private System.Windows.Forms.RichTextBox lstChatMsgs;
-        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem miConnect;
-        private System.Windows.Forms.ToolStripMenuItem miDisconnect;
-        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem miProfile;
-        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
-        private System.Windows.Forms.ToolStripMenuItem miExit;
     }
 }

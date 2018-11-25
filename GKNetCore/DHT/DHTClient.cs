@@ -53,6 +53,7 @@ namespace GKNet.DHT
         private byte[] fBuffer = new byte[65535];
         private long fLastNodesUpdateTime;
         private byte[] fLocalID;
+        private IPEndPoint fPublicEndPoint;
         private IList<IPAddress> fRouters;
         private byte[] fSearchInfoHash;
         private bool fSearchRunned;
@@ -74,6 +75,12 @@ namespace GKNet.DHT
         public IPEndPoint LocalEndPoint
         {
             get { return fLocalIP; }
+        }
+
+        public IPEndPoint PublicEndPoint
+        {
+            get { return fPublicEndPoint; }
+            set { fPublicEndPoint = value; }
         }
 
         public Socket Socket
@@ -156,6 +163,8 @@ namespace GKNet.DHT
 
         public void SearchNodes(byte[] searchInfoHash)
         {
+            WriteDHTDebug("Search for: " + searchInfoHash.ToHexString());
+
             fSearchInfoHash = searchInfoHash;
             fSearchRunned = true;
 
@@ -362,11 +371,9 @@ namespace GKNet.DHT
             }
 
             if (canAnnounce) {
-                SendAnnouncePeerQuery(ipinfo, fSearchInfoHash, 1, /*fLocalIP.Port*/PublicEndPoint.Port, tokStr);
+                SendAnnouncePeerQuery(ipinfo, fSearchInfoHash, 1, fPublicEndPoint.Port, tokStr);
             }
         }
-
-        public IPEndPoint PublicEndPoint;
 
         private bool ProcessValuesStr(IPEndPoint ipinfo, BList valuesList)
         {
@@ -546,7 +553,7 @@ namespace GKNet.DHT
 
         internal void SendPingQuery(IPEndPoint address)
         {
-            fLogger.WriteDebug("Send peer ping " + address.ToString());
+            WriteDHTDebug("Send peer ping " + address.ToString());
 
             var transactionID = DHTHelper.GetTransactionId();
             byte[] nid = fLocalID;

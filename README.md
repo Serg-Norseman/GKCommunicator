@@ -13,16 +13,15 @@ The distributed P2P core is based on the Kademlia DHT. Supported: IPv4 / IPv6, M
 Roadmap
 
 - [x] DHT
-- [x] UPnP port's mapping
-- [x] STUN detection for external IP and NAT's type
-- [x] UDP hole-punching
-- [x] Simple UDP Chat
-- [x] IPv6 (DHT, UDP, TCP)
+- [x] STUN detection of public IP and NAT's type
+- [x] UDP hole-punching and UPnP port's mapping
+- [x] IPv4 and IPv6
+- [x] Simple UDP chat
 - [x] Database support (SQLite, LiteDB)
 - [x] Formatting of history
+- [x] Stabilize the chat and discovery of peers
 
 - [ ] TCP
-- [ ] Stabilize the chat and discovery of peers
 - [ ] Simple user’s profile
 - [ ] Simple storage
 - [ ] A simple bulletin board of investigations and search of kins (only in the implementation of the plugin)

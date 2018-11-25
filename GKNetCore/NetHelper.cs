@@ -38,7 +38,7 @@ namespace GKNet
 
         // FIXME: Fatal problem - if there is an address statically assigned to the corporate network,
         // then there is still no correct external address
-        private static IPAddress GetPublicAddress()
+        public static IPAddress GetPublicAddress()
         {
             NetworkInterface[] networkInterfaces = NetworkInterface.GetAllNetworkInterfaces();
 
@@ -64,15 +64,13 @@ namespace GKNet
             return default(IPAddress);
         }
 
-        public static string GetPublicIPAddress()
+        public static string GetPublicAddressEx()
         {
             if (!NetworkInterface.GetIsNetworkAvailable()) {
                 return null;
             }
 
             try {
-                //var addr = GetPublicAddress();
-                //string externalIP = (addr == null) ? "" : addr.ToString();
                 string externalIP = (new WebClient()).DownloadString("http://checkip.dyndns.org/");
                 externalIP = (new Regex(@"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}")).Matches(externalIP)[0].ToString();
                 return externalIP;

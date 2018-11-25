@@ -36,10 +36,14 @@ namespace GKCommunicatorApp
         private readonly ICommunicatorCore fCore;
         private readonly ILogger fLogger;
 
+        private bool fInitialized;
+
+
         public ICommunicatorCore Core
         {
             get { return fCore; }
         }
+
 
         public ChatForm()
         {
@@ -54,6 +58,7 @@ namespace GKCommunicatorApp
             fLogger = LogManager.GetLogger(ProtocolHelper.LOG_FILE, ProtocolHelper.LOG_LEVEL, "ChatForm");
             fCore = new CommunicatorCore(this);
 
+            fInitialized = false;
             UpdateStatus();
         }
 
@@ -75,14 +80,16 @@ namespace GKCommunicatorApp
 
         private void UpdateStatus()
         {
-            miConnect.Enabled = !fCore.IsConnected;
-            miDisconnect.Enabled = fCore.IsConnected;
+            miConnect.Enabled = fInitialized && !fCore.IsConnected;
+            miDisconnect.Enabled = fInitialized && fCore.IsConnected;
 
-            btnSend.Enabled = fCore.IsConnected;
-            btnSendToAll.Enabled = fCore.IsConnected;
+            tbConnect.Enabled = fInitialized && !fCore.IsConnected;
+            tbDisconnect.Enabled = fInitialized && fCore.IsConnected;
 
-            btnConnect.Enabled = !fCore.IsConnected;
-            lblConnectionStatus.Visible = fCore.IsConnected;
+            btnSend.Enabled = fInitialized && fCore.IsConnected;
+            btnSendToAll.Enabled = fInitialized && fCore.IsConnected;
+
+            lblConnectionStatus.Visible = fInitialized && fCore.IsConnected;
         }
 
         private void ChatForm_Closing(object sender, CancelEventArgs e)
@@ -109,11 +116,6 @@ namespace GKCommunicatorApp
             AddTextChunk(text, Color.Navy);
         }
 
-        private void btnConnect_Click(object sender, EventArgs e)
-        {
-            Connect();
-        }
-
         private void btnSendToAll_Click(object sender, EventArgs e)
         {
             var msgText = txtChatMsg.Text;
@@ -127,7 +129,9 @@ namespace GKCommunicatorApp
 
         private void btnSend_Click(object sender, EventArgs e)
         {
-            var peerItem = (lstMembers.SelectedItem as Peer);
+            if (lstMembers.SelectedItems.Count == 0) return;
+
+            var peerItem = (lstMembers.SelectedItems[0].Tag as Peer);
             var msgText = txtChatMsg.Text;
 
             if ((!String.IsNullOrEmpty(msgText)) && (peerItem != null)) {
@@ -166,13 +170,22 @@ namespace GKCommunicatorApp
 
         #region IChatForm members
 
+        void IChatForm.OnInitialized()
+        {
+            fInitialized = true;
+            Invoke((MethodInvoker)delegate {
+                UpdateStatus();
+            });
+        }
+
         void IChatForm.OnPeersListChanged()
         {
             Invoke((MethodInvoker)delegate {
                 lstMembers.BeginUpdate();
                 lstMembers.Items.Clear();
                 foreach (var peer in fCore.Peers) {
-                    lstMembers.Items.Add(peer);
+                    var listItem = lstMembers.Items.Add(peer.ToString());
+                    listItem.Tag = peer;
                 }
                 lstMembers.EndUpdate();
 

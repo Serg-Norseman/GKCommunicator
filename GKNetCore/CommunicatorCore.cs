@@ -18,6 +18,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+//#define CORE_DEBUG
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,6 +38,8 @@ namespace GKNet
 {
     public sealed class CommunicatorCore : ICommunicatorCore, IDHTPeersHolder
     {
+        private readonly static byte[] GKNInfoHash = ProtocolHelper.CreateSignInfoKey();
+
         private bool fConnected;
         private readonly DHTClient fDHTClient;
         private readonly IChatForm fForm;
@@ -118,11 +122,6 @@ namespace GKNet
         private void NATHolePunching()
         {
             new Thread(() => {
-                Thread.Sleep(1000);
-
-                //DetectSTUN(ProtocolHelper.STUNServer, fDHTClient.Socket);
-                //NATMapper.CreateNATMapping(fSTUNInfo);
-
                 using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp)) {
                     socket.SetIPProtectionLevel(IPProtectionLevel.Unrestricted);
                     socket.Bind(new IPEndPoint(IPAddress.Any, 0));
@@ -130,6 +129,7 @@ namespace GKNet
                     DetectSTUN(ProtocolHelper.STUNServer, socket);
                     //NATMapper.CreateNATMapping(this, stunResult);
                 }
+                fForm.OnInitialized();
             }).Start();
         }
 
@@ -163,14 +163,9 @@ namespace GKNet
 
         public void Connect()
         {
-            fLogger.WriteInfo("Public IP: " + NetHelper.GetPublicIPAddress());
-
-            var snkInfoHash = ProtocolHelper.CreateSignInfoKey();
-            fLogger.WriteInfo("Search for: " + snkInfoHash.ToHexString());
-
             fDHTClient.Run();
             fDHTClient.JoinNetwork();
-            fDHTClient.SearchNodes(snkInfoHash);
+            fDHTClient.SearchNodes(GKNInfoHash);
 
             fTCPClient.Connect(fTCPListenerPort);
 
@@ -232,6 +227,7 @@ namespace GKNet
                 result = true;
             }
 
+            // FIXME: find out which ping gets the answer!
             fDHTClient.SendPingQuery(peerEndPoint);
             fDHTClient.SendPingQuery(new IPEndPoint(peerAddress, fDHTClient.LocalEndPoint.Port));
             fDHTClient.SendPingQuery(new IPEndPoint(peerAddress, fPublicEndPoint.Port));
@@ -293,7 +289,7 @@ namespace GKNet
 
         private void OnPeersFound(object sender, PeersFoundEventArgs e)
         {
-            fLogger.WriteInfo(string.Format("Found DHT peers: {0}", e.Peers.Count));
+            WriteCoreDebug("Found DHT peers: {0}", e.Peers.Count);
 
             bool changed = false;
             foreach (var p in e.Peers) {
@@ -307,7 +303,7 @@ namespace GKNet
 
         private void OnPeerPinged(object sender, PeerPingedEventArgs e)
         {
-            fLogger.WriteInfo(string.Format("Peer pinged: {0}", e.EndPoint));
+            WriteCoreDebug("Peer pinged: {0}", e.EndPoint);
 
             bool changed = CheckPeer(e.EndPoint);
 
@@ -318,10 +314,9 @@ namespace GKNet
 
         private void OnQueryReceive(object sender, MessageEventArgs e)
         {
-            fLogger.WriteDebug(string.Format("Query received: {0}", e.EndPoint));
+            WriteCoreDebug("Query received: {0} :: {1}", e.EndPoint, e.Data.EncodeAsString());
 
             var pr = FindPeer(e.EndPoint.Address);
-            fForm.OnMessageReceived(pr, e.Data.EncodeAsString());
 
             string queryType = e.Data.Get<BString>("q").ToString();
             var args = e.Data.Get<BDictionary>("a");
@@ -344,10 +339,9 @@ namespace GKNet
 
         private void OnResponseReceive(object sender, MessageEventArgs e)
         {
-            fLogger.WriteDebug(string.Format("Response received: {0}", e.EndPoint));
+            WriteCoreDebug("Response received: {0} :: {1}", e.EndPoint, e.Data.EncodeAsString());
 
             var pr = FindPeer(e.EndPoint.Address);
-            fForm.OnMessageReceived(pr, e.Data.EncodeAsString());
 
             var resp = e.Data.Get<BDictionary>("r");
             var qt = resp.Get<BString>("q");
@@ -438,5 +432,23 @@ namespace GKNet
             }
             return result;
         }
+
+        #region Debug logging
+
+        private void WriteCoreDebug(string str)
+        {
+            #if CORE_DEBUG
+            fLogger.WriteDebug(str);
+            #endif
+        }
+
+        private void WriteCoreDebug(string str, params object[] args)
+        {
+            #if CORE_DEBUG
+            fLogger.WriteDebug(str, args);
+            #endif
+        }
+
+        #endregion
     }
 }

@@ -12,6 +12,10 @@ namespace GKNet
         {
             public ICommunicatorCore Core { get { return null; } }
 
+            public void OnInitialized()
+            {
+            }
+
             public void OnJoin(Peer member)
             {
             }
