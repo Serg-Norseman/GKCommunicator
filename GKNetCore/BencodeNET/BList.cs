@@ -3,9 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using BencodeNET.Parsing;
 
-namespace BencodeNET.Objects
+namespace BencodeNET
 {
     /// <summary>
     /// Represents a bencoded list of <see cref="IBObject"/>.

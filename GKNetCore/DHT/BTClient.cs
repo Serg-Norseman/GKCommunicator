@@ -24,8 +24,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using BencodeNET.Objects;
-using BencodeNET.Parsing;
+using BencodeNET;
 
 namespace GKNet.DHT
 {

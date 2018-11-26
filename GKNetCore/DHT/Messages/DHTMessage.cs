@@ -20,8 +20,8 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using BencodeNET.Objects;
-using BencodeNET.Parsing;
+using System.Text;
+using BencodeNET;
 
 namespace GKNet.DHT
 {
@@ -88,6 +88,12 @@ namespace GKNet.DHT
         {
             var clientVer = fData.Get<BString>("v");
             fClientVer = (clientVer == null) ? string.Empty : clientVer.ToString();
+        }
+
+        public static DHTMessage ParseBuffer(string bencodedString)
+        {
+            var buffer = Encoding.UTF8.GetBytes(bencodedString);
+            return ParseBuffer(buffer);
         }
 
         public static DHTMessage ParseBuffer(byte[] buffer)

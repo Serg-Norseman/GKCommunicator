@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BencodeNET.Exceptions
+namespace BencodeNET
 {
     /// <summary>
     /// Represents generic errors in this bencode library.

@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using BencodeNET.Objects;
+using BencodeNET;
 using GKNet;
 using NUnit.Framework;
 

@@ -25,7 +25,7 @@ using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
-using BencodeNET.Objects;
+using BencodeNET;
 
 namespace GKNet.DHT
 {

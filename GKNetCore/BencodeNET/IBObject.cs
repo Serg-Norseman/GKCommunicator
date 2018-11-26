@@ -1,8 +1,7 @@
 ﻿using System.IO;
 using System.Text;
-using BencodeNET.Parsing;
 
-namespace BencodeNET.Objects
+namespace BencodeNET
 {
     /// <summary>
     /// Represent a bencode value that can be encoded to bencode.
@@ -46,11 +45,5 @@ namespace BencodeNET.Objects
         /// <param name="stream">The stream to write to.</param>
         /// <returns>The used stream.</returns>
         BencodeStream EncodeTo(BencodeStream stream);
-
-        /// <summary>
-        /// Writes the object as bencode to the specified file.
-        /// </summary>
-        /// <param name="filePath">The file path to write the encoded object to.</param>
-        void EncodeTo(string filePath);
     }
 }

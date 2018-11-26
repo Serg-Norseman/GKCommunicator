@@ -1,7 +1,6 @@
 ﻿using System;
-using BencodeNET.Parsing;
 
-namespace BencodeNET.Objects
+namespace BencodeNET
 {
     /// <summary>
     /// Represents a bencoded number (integer).

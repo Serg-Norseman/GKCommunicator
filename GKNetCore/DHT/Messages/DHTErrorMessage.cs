@@ -19,7 +19,7 @@
  */
 
 using System.Linq;
-using BencodeNET.Objects;
+using BencodeNET;
 
 namespace GKNet.DHT
 {

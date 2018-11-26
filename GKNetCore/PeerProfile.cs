@@ -19,7 +19,7 @@
  */
 
 using System;
-using BencodeNET.Objects;
+using BencodeNET;
 
 namespace GKNet
 {

@@ -18,10 +18,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System.Collections.Generic;
 using System.Linq;
-using BencodeNET.Objects;
-using BencodeNET.Parsing;
+using BencodeNET;
 
 namespace GKNet.DHT
 {

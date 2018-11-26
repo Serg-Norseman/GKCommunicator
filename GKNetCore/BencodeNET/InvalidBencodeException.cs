@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BencodeNET.Exceptions
+namespace BencodeNET
 {
     /// <summary>
     /// Represents parse errors when encountering invalid bencode of some sort.

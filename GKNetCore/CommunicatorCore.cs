@@ -27,8 +27,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using BencodeNET.Objects;
-using BencodeNET.Parsing;
+using BencodeNET;
 using GKNet.DHT;
 using GKNet.Logging;
 using GKNet.TCP;
@@ -123,7 +122,9 @@ namespace GKNet
         {
             new Thread(() => {
                 using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp)) {
+                    #if !__MonoCS__
                     socket.SetIPProtectionLevel(IPProtectionLevel.Unrestricted);
+                    #endif
                     socket.Bind(new IPEndPoint(IPAddress.Any, 0));
 
                     DetectSTUN(ProtocolHelper.STUNServer, socket);
@@ -227,10 +228,9 @@ namespace GKNet
                 result = true;
             }
 
-            // FIXME: find out which ping gets the answer!
-            fDHTClient.SendPingQuery(peerEndPoint);
+            // FIXME: find out which ping gets the answer! check it for a long time testing!
+            //fDHTClient.SendPingQuery(peerEndPoint);
             fDHTClient.SendPingQuery(new IPEndPoint(peerAddress, fDHTClient.LocalEndPoint.Port));
-            fDHTClient.SendPingQuery(new IPEndPoint(peerAddress, fPublicEndPoint.Port));
 
             return result;
         }

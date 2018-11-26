@@ -26,7 +26,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using BencodeNET.Objects;
+using BencodeNET;
 using BSLib;
 using GKNet.Logging;
 
@@ -556,9 +556,7 @@ namespace GKNet.DHT
             WriteDHTDebug("Send peer ping " + address.ToString());
 
             var transactionID = DHTHelper.GetTransactionId();
-            byte[] nid = fLocalID;
-
-            var msg = DHTMessage.CreatePingQuery(transactionID, nid);
+            var msg = DHTMessage.CreatePingQuery(transactionID, fLocalID);
             SetTransaction(transactionID, msg);
             Send(address, msg);
         }

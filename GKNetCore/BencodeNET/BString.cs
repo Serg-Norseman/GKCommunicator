@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using BencodeNET.Parsing;
 
-namespace BencodeNET.Objects
+namespace BencodeNET
 {
     /// <summary>
     /// Represents a bencoded string, i.e. a byte-string.

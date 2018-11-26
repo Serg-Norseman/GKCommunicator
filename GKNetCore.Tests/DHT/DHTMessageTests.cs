@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using BencodeNET.Objects;
+using BencodeNET;
 using GKNet.DHT;
 using NUnit.Framework;
 
@@ -22,18 +22,19 @@ namespace GKNet.DHT
         [Test]
         public void Test_ParseBuffer_Empty()
         {
-            var msg = DHTMessage.ParseBuffer(null);
+            byte[] buffer = null;
+            var msg = DHTMessage.ParseBuffer(buffer);
             Assert.IsNull(msg);
 
-            msg = DHTMessage.ParseBuffer(new byte[] {});
+            buffer = new byte[] {};
+            msg = DHTMessage.ParseBuffer(buffer);
             Assert.IsNull(msg);
         }
 
         [Test]
         public void Test_ParseBuffer_ErrorMsg()
         {
-            var buffer = Encoding.ASCII.GetBytes("d1:eli201e23:A Generic Error Ocurrede1:t2:aa1:y1:ee");
-            var msg = DHTMessage.ParseBuffer(buffer);
+            var msg = DHTMessage.ParseBuffer("d1:eli201e23:A Generic Error Ocurrede1:t2:aa1:y1:ee");
             Assert.IsNotNull(msg);
             Assert.AreEqual(MessageType.Error, msg.Type);
             Assert.AreEqual(string.Empty, msg.ClientVer);
@@ -46,57 +47,95 @@ namespace GKNet.DHT
         [Test]
         public void Test_ParseBuffer_PingQuery()
         {
-            var buffer = Encoding.ASCII.GetBytes("d1:ad2:id20:abcdefghij0123456789e1:q4:ping1:t2:aa1:y1:qe");
-            var msg = DHTMessage.ParseBuffer(buffer);
+            var msg = DHTMessage.ParseBuffer("d1:ad2:id20:abcdefghij0123456789e1:q4:ping1:t2:aa1:y1:qe");
             Assert.IsNotNull(msg);
             Assert.AreEqual(MessageType.Query, msg.Type);
             Assert.AreEqual(string.Empty, msg.ClientVer);
-
-            //var errMsg = msg as DHTErrorMessage;
-            //Assert.AreEqual(201, errMsg.ErrCode);
-            //Assert.AreEqual("A Generic Error Ocurred", errMsg.ErrText);
+            Assert.AreEqual(QueryType.Ping, msg.QueryType);
+            // TODO: test contents
         }
 
         [Test]
         public void Test_ParseBuffer_PingResponse()
         {
-            var buffer = Encoding.ASCII.GetBytes("d1:rd2:id20:mnopqrstuvwxyz123456e1:t2:aa1:y1:re");
-            var msg = DHTMessage.ParseBuffer(buffer);
+            var msg = DHTMessage.ParseBuffer("d1:rd2:id20:mnopqrstuvwxyz123456e1:t2:aa1:y1:re");
             Assert.IsNotNull(msg);
             Assert.AreEqual(MessageType.Response, msg.Type);
             Assert.AreEqual(string.Empty, msg.ClientVer);
-
-            //var errMsg = msg as DHTErrorMessage;
-            //Assert.AreEqual(201, errMsg.ErrCode);
-            //Assert.AreEqual("A Generic Error Ocurred", errMsg.ErrText);
+            // TODO: test contents
         }
 
         [Test]
         public void Test_ParseBuffer_FindNodeQuery()
         {
-            var buffer = Encoding.ASCII.GetBytes("d1:ad2:id20:abcdefghij01234567896:target20:mnopqrstuvwxyz123456e1:q9:find_node1:t2:aa1:y1:qe");
-            var msg = DHTMessage.ParseBuffer(buffer);
+            var msg = DHTMessage.ParseBuffer("d1:ad2:id20:abcdefghij01234567896:target20:mnopqrstuvwxyz123456e1:q9:find_node1:t2:aa1:y1:qe");
             Assert.IsNotNull(msg);
             Assert.AreEqual(MessageType.Query, msg.Type);
             Assert.AreEqual(string.Empty, msg.ClientVer);
-
-            //var errMsg = msg as DHTErrorMessage;
-            //Assert.AreEqual(201, errMsg.ErrCode);
-            //Assert.AreEqual("A Generic Error Ocurred", errMsg.ErrText);
+            Assert.AreEqual(QueryType.FindNode, msg.QueryType);
+            // TODO: test contents
         }
 
         [Test]
         public void Test_ParseBuffer_FindNodeResponse()
         {
-            var buffer = Encoding.ASCII.GetBytes("d1:rd2:id20:0123456789abcdefghij5:nodes9:def456...e1:t2:aa1:y1:re");
-            var msg = DHTMessage.ParseBuffer(buffer);
+            var msg = DHTMessage.ParseBuffer("d1:rd2:id20:0123456789abcdefghij5:nodes9:def456...e1:t2:aa1:y1:re");
             Assert.IsNotNull(msg);
             Assert.AreEqual(MessageType.Response, msg.Type);
             Assert.AreEqual(string.Empty, msg.ClientVer);
+            // TODO: test contents
+        }
 
-            //var errMsg = msg as DHTErrorMessage;
-            //Assert.AreEqual(201, errMsg.ErrCode);
-            //Assert.AreEqual("A Generic Error Ocurred", errMsg.ErrText);
+        [Test]
+        public void Test_ParseBuffer_GetPeersQuery()
+        {
+            var msg = DHTMessage.ParseBuffer("d1:ad2:id20:abcdefghij01234567899:info_hash20:mnopqrstuvwxyz123456e1:q9:get_peers1:t2:aa1:y1:qe");
+            Assert.IsNotNull(msg);
+            Assert.AreEqual(MessageType.Query, msg.Type);
+            Assert.AreEqual(string.Empty, msg.ClientVer);
+            Assert.AreEqual(QueryType.GetPeers, msg.QueryType);
+            // TODO: test contents
+        }
+
+        [Test]
+        public void Test_ParseBuffer_GetPeersResponse1()
+        {
+            var msg = DHTMessage.ParseBuffer("d1:rd2:id20:abcdefghij01234567895:token8:aoeusnth6:valuesl15:axje.uidhtnmbrlee1:ti0e1:y1:re");
+            Assert.IsNotNull(msg);
+            Assert.AreEqual(MessageType.Response, msg.Type);
+            Assert.AreEqual(string.Empty, msg.ClientVer);
+            // TODO: test contents
+        }
+
+        [Test]
+        public void Test_ParseBuffer_GetPeersResponse2()
+        {
+            var msg = DHTMessage.ParseBuffer("d1:rd2:id20:abcdefghij01234567895:nodes9:def456...5:token8:aoeusnthe1:ti0e1:y1:re");
+            Assert.IsNotNull(msg);
+            Assert.AreEqual(MessageType.Response, msg.Type);
+            Assert.AreEqual(string.Empty, msg.ClientVer);
+            // TODO: test contents
+        }
+
+        [Test]
+        public void Test_ParseBuffer_AnnouncePeerQuery()
+        {
+            var msg = DHTMessage.ParseBuffer("d1:ad2:id20:abcdefghij01234567899:info_hash20:mnopqrstuvwxyz1234564:porti6881e5:token8:aoeusnthe1:q13:announce_peer1:t2:aa1:y1:qe");
+            Assert.IsNotNull(msg);
+            Assert.AreEqual(MessageType.Query, msg.Type);
+            Assert.AreEqual(string.Empty, msg.ClientVer);
+            Assert.AreEqual(QueryType.AnnouncePeer, msg.QueryType);
+            // TODO: test contents
+        }
+
+        [Test]
+        public void Test_ParseBuffer_AnnouncePeerResponse()
+        {
+            var msg = DHTMessage.ParseBuffer("d1:rd2:id20:mnopqrstuvwxyz123456e1:t2:aa1:y1:re");
+            Assert.IsNotNull(msg);
+            Assert.AreEqual(MessageType.Response, msg.Type);
+            Assert.AreEqual(string.Empty, msg.ClientVer);
+            // TODO: test contents
         }
 
         [Test]

@@ -28,16 +28,6 @@ namespace BencodeNET
             return dictionary.TryGetValue(key, out value) ? value : default(TValue);
         }
 
-        public static void Write(this Stream stream, char c)
-        {
-            stream.WriteByte((byte)c);
-        }
-
-        public static IEnumerable<T> Flatten<T>(this IEnumerable<IEnumerable<T>> source)
-        {
-            return source.SelectMany(x => x);
-        }
-
 #if NETSTANDARD
         public static bool IsAssignableFrom(this Type type, Type otherType)
         {

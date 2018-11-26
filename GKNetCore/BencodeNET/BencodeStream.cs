@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 
-namespace BencodeNET.Parsing
+namespace BencodeNET
 {
     /// <summary>
     /// A wrapper for <see cref="Stream"/> that makes it easier and faster to work
@@ -273,7 +273,7 @@ namespace BencodeNET.Parsing
         /// <param name="c">The char to write to the stream.</param>
         public void Write(char c)
         {
-            InnerStream.Write(c);
+            InnerStream.WriteByte((byte)c);
         }
 
         /// <summary>
