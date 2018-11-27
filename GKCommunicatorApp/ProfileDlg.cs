@@ -27,33 +27,48 @@ namespace GKCommunicatorApp
 {
     public partial class ProfileDlg : Form
     {
-        private ChatForm fChatForm;
+        private ICommunicatorCore fCore;
+        private PeerProfile fProfile;
 
-        public ProfileDlg() : this(null)
+        public ProfileDlg() : this(null, null)
         {
         }
 
-        public ProfileDlg(ChatForm chatForm)
+        public ProfileDlg(ICommunicatorCore core, PeerProfile profile)
         {
             InitializeComponent();
-            fChatForm = chatForm;
+            fCore = core;
+            fProfile = profile;
         }
 
         private void Form_Load(object sender, EventArgs e)
         {
-            UserProfile userProfile = fChatForm.Core.Profile;
-            txtUserName.Text = userProfile.UserName;
-            txtCountry.Text = userProfile.Country;
-            txtTimeZone.Text = userProfile.TimeZone;
-            txtLanguages.Text = userProfile.Languages;
+            txtUserName.Text = fProfile.UserName;
+            txtCountry.Text = fProfile.Country;
+            txtTimeZone.Text = fProfile.TimeZone;
+            txtLanguages.Text = fProfile.Languages;
 
-            var stunInfo = fChatForm.Core.STUNInfo;
-            AddProperty("NET type", stunInfo.NetType.ToString());
-            AddProperty("Local end point", fChatForm.Core.DHTClient.Socket.LocalEndPoint.ToString());
-            if (stunInfo.NetType != STUN_NetType.UdpBlocked) {
-                AddProperty("Public end point", stunInfo.PublicEndPoint.ToString());
+            var userProfile = fProfile as UserProfile;
+            if (userProfile != null) {
+                chkCountryVisible.Checked = userProfile.IsCountryVisible;
+                chkTimeZoneVisible.Checked = userProfile.IsTimeZoneVisible;
+                chkLanguagesVisible.Checked = userProfile.IsLanguagesVisible;
+
+                var stunInfo = fCore.STUNInfo;
+                AddProperty("NET type", stunInfo.NetType.ToString());
+                AddProperty("Local end point", fCore.DHTClient.Socket.LocalEndPoint.ToString());
+                if (stunInfo.NetType != STUN_NetType.UdpBlocked) {
+                    AddProperty("Public end point", stunInfo.PublicEndPoint.ToString());
+                } else {
+                    AddProperty("Public end point", "-");
+                }
             } else {
-                AddProperty("Public end point", "-");
+                chkCountryVisible.Visible = false;
+                chkTimeZoneVisible.Visible = false;
+                chkLanguagesVisible.Visible = false;
+
+                // invisible is not implemented
+                tabControl.TabPages.Remove(tabSysInfo);
             }
         }
 

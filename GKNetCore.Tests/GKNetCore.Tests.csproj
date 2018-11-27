@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="CommunicatorCoreTests.cs" />
+    <Compile Include="ConnectivitySettingsTests.cs" />
     <Compile Include="DatabaseTests.cs" />
     <Compile Include="DHT\DHTClientTests.cs" />
     <Compile Include="DHT\DHTHelperTests.cs" />
@@ -57,6 +58,7 @@
     <Compile Include="NetHelperTests.cs" />
     <Compile Include="PeerTests.cs" />
     <Compile Include="ProtocolHelperTests.cs" />
+    <Compile Include="UserProfileTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />

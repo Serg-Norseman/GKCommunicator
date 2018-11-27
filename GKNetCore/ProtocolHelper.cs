@@ -29,14 +29,12 @@ namespace GKNet
         public const string CLIENT_VER = "GKC";
 
         public const string LOG_FILE = "GKCommunicator.log";
-        public const string LOG_LEVEL = "DEBUG";
+        public const string LOG_LEVEL = "INFO"; // "DEBUG";
 
-        //public const int PublicTCPPort = DHTClient.PublicDHTPort;
-        //public const int DebugTCPPort = DHTClient.PublicDHTPort;
-        public const int PublicTCPPort = 11000;
-        public const int DebugTCPPort = 11200;
+        public const int PublicTCPPort = 11000; // DHTClient.PublicDHTPort;
 
         public const string STUNServer = "stun.ekiga.net";
+
 
         public static byte[] CreateSignInfoKey()
         {

@@ -19,6 +19,9 @@ namespace GKNet
             Assert.AreEqual(PeerState.Unknown, peer.State);
             Assert.IsNotNull(peer.Profile);
             string str = peer.ToString();
+
+            peer.Presence = PresenceStatus.Hidden;
+            Assert.AreEqual(PresenceStatus.Hidden, peer.Presence);
         }
     }
 }

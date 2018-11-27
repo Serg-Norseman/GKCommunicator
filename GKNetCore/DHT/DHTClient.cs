@@ -18,8 +18,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-//#define DHT_DEBUG
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -163,7 +161,7 @@ namespace GKNet.DHT
 
         public void SearchNodes(byte[] searchInfoHash)
         {
-            WriteDHTDebug("Search for: " + searchInfoHash.ToHexString());
+            fLogger.WriteDebug("Search for: {0}", searchInfoHash.ToHexString());
 
             fSearchInfoHash = searchInfoHash;
             fSearchRunned = true;
@@ -177,7 +175,7 @@ namespace GKNet.DHT
                         long nowTicks = DateTime.Now.Ticks;
                         if (nowTicks - fLastNodesUpdateTime > NodesUpdateRange.Ticks) {
                             fRoutingTable.Clear();
-                            WriteDHTDebug("DHT reset routing table");
+                            fLogger.WriteDebug("DHT reset routing table");
                         }
 
                         count = fRoutingTable.Count;
@@ -248,7 +246,7 @@ namespace GKNet.DHT
                 if (msg == null) return;
 
                 if (msg.IsSimilarTo(fClientVer)) {
-                    WriteDHTDebug(">>>> Received a message from a similar client from " + ipinfo.ToString());
+                    fLogger.WriteDebug(">>>> Received a message from a similar client from {0}", ipinfo);
                 }
 
                 switch (msg.Type) {
@@ -273,7 +271,7 @@ namespace GKNet.DHT
         {
             if (msg == null) return;
 
-            fLogger.WriteDebug("DHT error receive: " + msg.ErrCode + " / " + msg.ErrText);
+            fLogger.WriteDebug("DHT error receive: {0} / {1}", msg.ErrCode, msg.ErrText);
         }
 
         private void OnRecvQueryX(IPEndPoint ipinfo, DHTQueryMessage msg)
@@ -382,7 +380,7 @@ namespace GKNet.DHT
                 var values = DHTHelper.ParseValuesList(valuesList);
 
                 if (values.Count > 0) {
-                    WriteDHTDebug("Receive {0} values (peers) from {1}", values.Count, ipinfo.ToString());
+                    fLogger.WriteDebug("Receive {0} values (peers) from {1}", values.Count, ipinfo.ToString());
                     RaisePeersFound(fSearchInfoHash, values);
                     result = true;
                 }
@@ -402,7 +400,7 @@ namespace GKNet.DHT
                     throw new Exception("sd");
                 }
 
-                WriteDHTDebug("Receive {0} nodes from {1}", nodesList.Count, ipinfo.ToString());
+                fLogger.WriteDebug("Receive {0} nodes from {1}", nodesList.Count, ipinfo.ToString());
 
                 bool nodesUpdated = false;
                 foreach (var t in nodesList) {
@@ -553,7 +551,7 @@ namespace GKNet.DHT
 
         internal void SendPingQuery(IPEndPoint address)
         {
-            WriteDHTDebug("Send peer ping " + address.ToString());
+            fLogger.WriteDebug("Send peer ping {0}", address);
 
             var transactionID = DHTHelper.GetTransactionId();
             var msg = DHTMessage.CreatePingQuery(transactionID, fLocalID);
@@ -619,24 +617,6 @@ namespace GKNet.DHT
             } catch (Exception ex) {
                 fLogger.WriteError("Send(): ", ex);
             }
-        }
-
-        #endregion
-
-        #region Debug logging
-
-        private void WriteDHTDebug(string str)
-        {
-            #if DHT_DEBUG
-            fLogger.WriteDebug(str);
-            #endif
-        }
-
-        private void WriteDHTDebug(string str, params object[] args)
-        {
-            #if DHT_DEBUG
-            fLogger.WriteDebug(str, args);
-            #endif
         }
 
         #endregion

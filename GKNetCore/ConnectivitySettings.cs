@@ -41,62 +41,38 @@ namespace GKNet
 
         public string ProxyHost
         {
-            get {
-                return fProxyHost;
-            }
-            set {
-                fProxyHost = value;
-            }
+            get { return fProxyHost; }
+            set { fProxyHost = value; }
         }
 
         public int ProxyPort
         {
-            get {
-                return fProxyPort;
-            }
-            set {
-                fProxyPort = value;
-            }
+            get { return fProxyPort; }
+            set { fProxyPort = value; }
         }
 
         public string ProxyUsername
         {
-            get {
-                return fProxyUsername;
-            }
-            set {
-                fProxyUsername = value;
-            }
+            get { return fProxyUsername; }
+            set { fProxyUsername = value; }
         }
 
         public string ProxyPassword
         {
-            get {
-                return fProxyPassword;
-            }
-            set {
-                fProxyPassword = value;
-            }
+            get { return fProxyPassword; }
+            set { fProxyPassword = value; }
         }
 
         public ProxyType ProxyType
         {
-            get {
-                return fProxyType;
-            }
-            set {
-                fProxyType = value;
-            }
+            get { return fProxyType; }
+            set { fProxyType = value; }
         }
 
         public WebProxy WebProxy
         {
-            get {
-                return fWebProxy;
-            }
-            set {
-                fWebProxy = value;
-            }
+            get { return fWebProxy; }
+            set { fWebProxy = value; }
         }
 
 

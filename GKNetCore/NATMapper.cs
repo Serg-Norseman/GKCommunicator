@@ -50,8 +50,7 @@ namespace GKNet
             try {
                 INatDevice device = args.Device;
 
-                fLogger.WriteInfo("Device found");
-                fLogger.WriteInfo("Type: {0}", device.GetType().Name);
+                fLogger.WriteInfo("Device found, type: {0}", device.GetType().Name);
                 fLogger.WriteInfo("External IP: {0}", device.GetExternalIP());
 
                 try {
@@ -88,8 +87,7 @@ namespace GKNet
 
         private static void DeviceLost(object sender, DeviceEventArgs args)
         {
-            fLogger.WriteInfo("Device Lost");
-            fLogger.WriteInfo("Type: {0}", args.Device.GetType().Name);
+            fLogger.WriteInfo("Device lost, type: {0}", args.Device.GetType().Name);
         }
     }
 }

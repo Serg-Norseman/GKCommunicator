@@ -22,6 +22,7 @@ using System;
 
 namespace GKNet.Logging
 {
+    // Levels in order of increasing priority: ALL, DEBUG, INFO, WARN, ERROR, FATAL, OFF
     public interface ILogger
     {
         void WriteDebug(string msg);
@@ -33,6 +34,7 @@ namespace GKNet.Logging
         void WriteError(string msg);
         void WriteError(string msg, Exception ex);
 
+        // unused
         void WriteNumError(int num, Exception ex);
     }
 }

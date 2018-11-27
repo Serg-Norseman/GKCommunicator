@@ -18,8 +18,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-//#define CORE_DEBUG
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,8 +41,6 @@ namespace GKNet
         private readonly DHTClient fDHTClient;
         private readonly IChatForm fForm;
         private readonly ILogger fLogger;
-        private string fMemberName;
-        private readonly BencodeParser fParser;
         private readonly IList<Peer> fPeers;
         private readonly UserProfile fProfile;
         private IPEndPoint fPublicEndPoint;
@@ -61,12 +57,6 @@ namespace GKNet
         public bool IsConnected
         {
             get { return fConnected; }
-        }
-
-        public string MemberName
-        {
-            get { return fMemberName; }
-            set { fMemberName = value; }
         }
 
         public IList<Peer> Peers
@@ -100,11 +90,12 @@ namespace GKNet
             fConnected = false;
             fForm = form;
             fLogger = LogManager.GetLogger(ProtocolHelper.LOG_FILE, ProtocolHelper.LOG_LEVEL, "ChatDHTCP");
-            fProfile = new UserProfile();
-            fProfile.ResetSystem();
-            fParser = new BencodeParser();
             fPeers = new List<Peer>();
             fSTUNInfo = null;
+
+            fProfile = new UserProfile();
+            fProfile.ResetSystem();
+            // TODO: loading configuration from DB
 
             fDHTClient = new DHTClient(DHTClient.IPAnyAddress, DHTClient.PublicDHTPort, this, ProtocolHelper.CLIENT_VER);
             fDHTClient.PeersFound += OnPeersFound;
@@ -116,6 +107,8 @@ namespace GKNet
 
             fTCPClient = new TCPDuplexClient();
             fTCPClient.DataReceive += OnDataReceive;
+
+            fTCPListenerPort = ProtocolHelper.PublicTCPPort;
         }
 
         private void NATHolePunching()
@@ -145,15 +138,14 @@ namespace GKNet
                 result = STUN_Client.Query(stunServer, 3478, socket);
 
                 fLogger.WriteInfo("STUN Info:");
-                fLogger.WriteInfo("NetType: {0}", result.NetType.ToString());
-                fLogger.WriteInfo("LocalEndPoint: {0}", socket.LocalEndPoint.ToString());
+                fLogger.WriteInfo("NetType: {0}", result.NetType);
+                fLogger.WriteInfo("LocalEndPoint: {0}", socket.LocalEndPoint);
                 if (result.NetType != STUN_NetType.UdpBlocked) {
                     fPublicEndPoint = result.PublicEndPoint;
-                    fLogger.WriteInfo("PublicEndPoint: {0}", fPublicEndPoint.ToString());
                 } else {
                     fPublicEndPoint = null;
-                    fLogger.WriteInfo("PublicEndPoint: -");
                 }
+                fLogger.WriteInfo("PublicEndPoint: {0}", fPublicEndPoint);
             } catch (Exception ex) {
                 fLogger.WriteError("DetectSTUN() error", ex);
             }
@@ -201,7 +193,7 @@ namespace GKNet
                 result = true;
             }
 
-            if (peer.State != PeerState.Checked) {
+            if (peer.State != PeerState.Checked && !peer.IsLocal) {
                 peer.EndPoint.Port = peerEndPoint.Port;
                 peer.State = PeerState.Checked;
                 result = true;
@@ -223,11 +215,7 @@ namespace GKNet
                 result = true;
             }
 
-            if (CheckLocalAddress(peerAddress) && !peer.IsLocal) {
-                peer.IsLocal = true;
-                result = true;
-            }
-
+            // TODO: it's bad place for peers' ping!
             // FIXME: find out which ping gets the answer! check it for a long time testing!
             //fDHTClient.SendPingQuery(peerEndPoint);
             fDHTClient.SendPingQuery(new IPEndPoint(peerAddress, fDHTClient.LocalEndPoint.Port));
@@ -242,10 +230,11 @@ namespace GKNet
 
         public Peer AddPeer(IPAddress peerAddress, int port)
         {
-            fLogger.WriteInfo(string.Format("Found new peer: {0}:{1}", peerAddress, port));
+            fLogger.WriteInfo("Found new peer: {0}:{1}", peerAddress, port);
 
             lock (fPeers) {
                 Peer peer = new Peer(peerAddress, port);
+                peer.IsLocal = CheckLocalAddress(peerAddress);
                 fPeers.Add(peer);
                 return peer;
             }
@@ -289,21 +278,24 @@ namespace GKNet
 
         private void OnPeersFound(object sender, PeersFoundEventArgs e)
         {
-            WriteCoreDebug("Found DHT peers: {0}", e.Peers.Count);
-
             bool changed = false;
+            int newFounded = 0;
             foreach (var p in e.Peers) {
                 changed = UpdatePeer(p);
+                if (changed) {
+                    newFounded += 1;
+                }
             }
 
             if (changed) {
+                fLogger.WriteDebug("Found DHT peers: {0}", newFounded);
                 fForm.OnPeersListChanged();
             }
         }
 
         private void OnPeerPinged(object sender, PeerPingedEventArgs e)
         {
-            WriteCoreDebug("Peer pinged: {0}", e.EndPoint);
+            fLogger.WriteDebug("Peer pinged: {0}", e.EndPoint);
 
             bool changed = CheckPeer(e.EndPoint);
 
@@ -314,7 +306,7 @@ namespace GKNet
 
         private void OnQueryReceive(object sender, MessageEventArgs e)
         {
-            WriteCoreDebug("Query received: {0} :: {1}", e.EndPoint, e.Data.EncodeAsString());
+            fLogger.WriteDebug("Query received: {0} :: {1}", e.EndPoint, e.Data.EncodeAsString());
 
             var pr = FindPeer(e.EndPoint.Address);
 
@@ -339,7 +331,7 @@ namespace GKNet
 
         private void OnResponseReceive(object sender, MessageEventArgs e)
         {
-            WriteCoreDebug("Response received: {0} :: {1}", e.EndPoint, e.Data.EncodeAsString());
+            fLogger.WriteDebug("Response received: {0} :: {1}", e.EndPoint, e.Data.EncodeAsString());
 
             var pr = FindPeer(e.EndPoint.Address);
 
@@ -355,9 +347,9 @@ namespace GKNet
                     break;
 
                 case "get_peer_info":
-                    var peerInfo = new PeerProfile();
-                    peerInfo.Load(resp);
-                    fForm.OnMessageReceived(pr, peerInfo.UserName + "/" + peerInfo.Country  + "/" + peerInfo.TimeZone + "/" + peerInfo.Languages);
+                    if (pr != null) {
+                        pr.Profile.Load(resp);
+                    }
                     break;
             }
         }
@@ -432,23 +424,5 @@ namespace GKNet
             }
             return result;
         }
-
-        #region Debug logging
-
-        private void WriteCoreDebug(string str)
-        {
-            #if CORE_DEBUG
-            fLogger.WriteDebug(str);
-            #endif
-        }
-
-        private void WriteCoreDebug(string str, params object[] args)
-        {
-            #if CORE_DEBUG
-            fLogger.WriteDebug(str, args);
-            #endif
-        }
-
-        #endregion
     }
 }

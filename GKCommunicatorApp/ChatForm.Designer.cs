@@ -31,6 +31,7 @@
         private System.Windows.Forms.ToolStripButton tbDisconnect;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripButton tbProfile;
+        private System.Windows.Forms.ToolStripMenuItem miPeerProfile;
 
         protected override void Dispose(bool disposing)
         {
@@ -65,6 +66,7 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.lstMembers = new System.Windows.Forms.ListView();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.miPeerProfile = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.lstChatMsgs = new System.Windows.Forms.RichTextBox();
             this.txtChatMsg = new System.Windows.Forms.TextBox();
@@ -78,6 +80,7 @@
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
@@ -179,6 +182,7 @@
             // 
             // toolStrip1
             // 
+            this.toolStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tbConnect,
             this.tbDisconnect,
@@ -236,8 +240,8 @@
             // lblConnectionStatus
             // 
             this.lblConnectionStatus.Name = "lblConnectionStatus";
-            this.lblConnectionStatus.Size = new System.Drawing.Size(214, 17);
-            this.lblConnectionStatus.Text = " Attemping to connect. Please standby.";
+            this.lblConnectionStatus.Size = new System.Drawing.Size(12, 17);
+            this.lblConnectionStatus.Text = "-";
             // 
             // splitContainer1
             // 
@@ -254,7 +258,7 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
             this.splitContainer1.Size = new System.Drawing.Size(731, 371);
-            this.splitContainer1.SplitterDistance = 237;
+            this.splitContainer1.SplitterDistance = 236;
             this.splitContainer1.SplitterWidth = 3;
             this.splitContainer1.TabIndex = 12;
             // 
@@ -265,7 +269,7 @@
             this.lstMembers.Location = new System.Drawing.Point(0, 0);
             this.lstMembers.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.lstMembers.Name = "lstMembers";
-            this.lstMembers.Size = new System.Drawing.Size(237, 371);
+            this.lstMembers.Size = new System.Drawing.Size(236, 371);
             this.lstMembers.TabIndex = 4;
             this.lstMembers.UseCompatibleStateImageBehavior = false;
             this.lstMembers.View = System.Windows.Forms.View.List;
@@ -273,8 +277,17 @@
             // contextMenuStrip1
             // 
             this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.miPeerProfile});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(153, 48);
+            // 
+            // miPeerProfile
+            // 
+            this.miPeerProfile.Name = "miPeerProfile";
+            this.miPeerProfile.Size = new System.Drawing.Size(152, 22);
+            this.miPeerProfile.Text = "Profile";
+            this.miPeerProfile.Click += new System.EventHandler(this.miPeerProfile_Click);
             // 
             // splitContainer2
             // 
@@ -292,8 +305,8 @@
             // 
             this.splitContainer2.Panel2.Controls.Add(this.txtChatMsg);
             this.splitContainer2.Panel2.Controls.Add(this.flowLayoutPanel1);
-            this.splitContainer2.Size = new System.Drawing.Size(491, 371);
-            this.splitContainer2.SplitterDistance = 210;
+            this.splitContainer2.Size = new System.Drawing.Size(492, 371);
+            this.splitContainer2.SplitterDistance = 209;
             this.splitContainer2.TabIndex = 0;
             // 
             // lstChatMsgs
@@ -303,7 +316,7 @@
             this.lstChatMsgs.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.lstChatMsgs.Name = "lstChatMsgs";
             this.lstChatMsgs.ReadOnly = true;
-            this.lstChatMsgs.Size = new System.Drawing.Size(491, 210);
+            this.lstChatMsgs.Size = new System.Drawing.Size(492, 209);
             this.lstChatMsgs.TabIndex = 0;
             this.lstChatMsgs.Text = "";
             // 
@@ -314,7 +327,7 @@
             this.txtChatMsg.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtChatMsg.Multiline = true;
             this.txtChatMsg.Name = "txtChatMsg";
-            this.txtChatMsg.Size = new System.Drawing.Size(491, 115);
+            this.txtChatMsg.Size = new System.Drawing.Size(492, 116);
             this.txtChatMsg.TabIndex = 6;
             this.txtChatMsg.Text = "test";
             // 
@@ -324,15 +337,15 @@
             this.flowLayoutPanel1.Controls.Add(this.btnSend);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 115);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 116);
             this.flowLayoutPanel1.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(491, 42);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(492, 42);
             this.flowLayoutPanel1.TabIndex = 0;
             // 
             // btnSendToAll
             // 
-            this.btnSendToAll.Location = new System.Drawing.Point(398, 4);
+            this.btnSendToAll.Location = new System.Drawing.Point(399, 4);
             this.btnSendToAll.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnSendToAll.Name = "btnSendToAll";
             this.btnSendToAll.Size = new System.Drawing.Size(90, 34);
@@ -343,7 +356,7 @@
             // 
             // btnSend
             // 
-            this.btnSend.Location = new System.Drawing.Point(302, 4);
+            this.btnSend.Location = new System.Drawing.Point(303, 4);
             this.btnSend.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnSend.Name = "btnSend";
             this.btnSend.Size = new System.Drawing.Size(90, 34);
@@ -377,6 +390,7 @@
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
+            this.contextMenuStrip1.ResumeLayout(false);
             this.splitContainer2.Panel1.ResumeLayout(false);
             this.splitContainer2.Panel2.ResumeLayout(false);
             this.splitContainer2.Panel2.PerformLayout();

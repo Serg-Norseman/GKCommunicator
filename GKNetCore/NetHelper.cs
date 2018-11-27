@@ -18,6 +18,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.NetworkInformation;
@@ -34,6 +35,15 @@ namespace GKNet
             Module[] mods = Assembly.GetExecutingAssembly().GetModules();
             string fn = mods[0].FullyQualifiedName;
             return Path.GetDirectoryName(fn) + Path.DirectorySeparatorChar;
+        }
+
+        public static void LoadExtFile(string fileName)
+        {
+            if (File.Exists(fileName)) {
+                Process.Start(new ProcessStartInfo("file://" + fileName) { UseShellExecute = true });
+            } else {
+                Process.Start(fileName);
+            }
         }
 
         // FIXME: Fatal problem - if there is an address statically assigned to the corporate network,

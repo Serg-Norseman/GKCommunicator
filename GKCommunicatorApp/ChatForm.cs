@@ -20,7 +20,6 @@
 
 using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -49,24 +48,28 @@ namespace GKCommunicatorApp
         {
             InitializeComponent();
 
-            Closing += new CancelEventHandler(ChatForm_Closing);
+            Closing += ChatForm_Closing;
 
             if (File.Exists(ProtocolHelper.LOG_FILE)) {
                 File.Delete(ProtocolHelper.LOG_FILE);
             }
 
+            fInitialized = false;
+            lblConnectionStatus.Text = "Network initialization...";
+
             fLogger = LogManager.GetLogger(ProtocolHelper.LOG_FILE, ProtocolHelper.LOG_LEVEL, "ChatForm");
             fCore = new CommunicatorCore(this);
 
-            fInitialized = false;
             UpdateStatus();
         }
 
+        #region Private methods
+
         private void Connect()
         {
-            fCore.TCPListenerPort = ProtocolHelper.PublicTCPPort;
+            lblConnectionStatus.Text = "Attemping to connect. Please standby.";
 
-            // join the P2P mesh from a worker thread
+            // join the P2P network from a worker thread
             NoArgDelegate executor = new NoArgDelegate(fCore.Connect);
             executor.BeginInvoke(null, null);
         }
@@ -88,13 +91,6 @@ namespace GKCommunicatorApp
 
             btnSend.Enabled = fInitialized && fCore.IsConnected;
             btnSendToAll.Enabled = fInitialized && fCore.IsConnected;
-
-            lblConnectionStatus.Visible = fInitialized && fCore.IsConnected;
-        }
-
-        private void ChatForm_Closing(object sender, CancelEventArgs e)
-        {
-            Disconnect();
         }
 
         private void AddTextChunk(string text, Color color)
@@ -114,13 +110,30 @@ namespace GKCommunicatorApp
             AddTextChunk(DateTime.Now.ToString(), Color.Red);
             lstChatMsgs.AppendText("\r\n");
             AddTextChunk(text, Color.Navy);
+            lstChatMsgs.ScrollToCaret();
+        }
+
+        private void ShowProfile(PeerProfile profile)
+        {
+            using (var dlg = new ProfileDlg(fCore, profile)) {
+                dlg.ShowDialog();
+            }
+        }
+
+        #endregion
+
+        #region Event handlers
+
+        private void ChatForm_Closing(object sender, CancelEventArgs e)
+        {
+            Disconnect();
         }
 
         private void btnSendToAll_Click(object sender, EventArgs e)
         {
             var msgText = txtChatMsg.Text;
 
-            if (!String.IsNullOrEmpty(msgText)) {
+            if (!string.IsNullOrEmpty(msgText)) {
                 fCore.SendToAll(msgText);
                 txtChatMsg.Clear();
                 txtChatMsg.Focus();
@@ -134,16 +147,23 @@ namespace GKCommunicatorApp
             var peerItem = (lstMembers.SelectedItems[0].Tag as Peer);
             var msgText = txtChatMsg.Text;
 
-            if ((!String.IsNullOrEmpty(msgText)) && (peerItem != null)) {
+            if ((!string.IsNullOrEmpty(msgText)) && (peerItem != null)) {
                 fCore.Send(peerItem, msgText);
                 txtChatMsg.Clear();
                 txtChatMsg.Focus();
             }
         }
 
+        private Peer GetSelectedPeer()
+        {
+            if (lstMembers.SelectedItems.Count == 0) return null;
+
+            return (lstMembers.SelectedItems[0].Tag as Peer);
+        }
+
         private void miDHTLog_Click(object sender, EventArgs e)
         {
-            LoadExtFile(Path.Combine(NetHelper.GetAppPath(), ProtocolHelper.LOG_FILE));
+            NetHelper.LoadExtFile(Path.Combine(NetHelper.GetAppPath(), ProtocolHelper.LOG_FILE));
         }
 
         private void miExit_Click(object sender, EventArgs e)
@@ -163,17 +183,26 @@ namespace GKCommunicatorApp
 
         private void miProfile_Click(object sender, EventArgs e)
         {
-            using (var dlg = new ProfileDlg(this)) {
-                dlg.ShowDialog();
+            ShowProfile(fCore.Profile);
+        }
+
+        private void miPeerProfile_Click(object sender, EventArgs e)
+        {
+            var peer = GetSelectedPeer();
+            if (peer != null) {
+                ShowProfile(peer.Profile);
             }
         }
+
+        #endregion
 
         #region IChatForm members
 
         void IChatForm.OnInitialized()
         {
-            fInitialized = true;
             Invoke((MethodInvoker)delegate {
+                fInitialized = true;
+                lblConnectionStatus.Text = "Network initialized. You can start the connection.";
                 UpdateStatus();
             });
         }
@@ -181,13 +210,20 @@ namespace GKCommunicatorApp
         void IChatForm.OnPeersListChanged()
         {
             Invoke((MethodInvoker)delegate {
+                int membersNum = 0;
+
                 lstMembers.BeginUpdate();
                 lstMembers.Items.Clear();
                 foreach (var peer in fCore.Peers) {
+                    if (!peer.IsLocal) {
+                        membersNum += 1;
+                    }
                     var listItem = lstMembers.Items.Add(peer.ToString());
                     listItem.Tag = peer;
                 }
                 lstMembers.EndUpdate();
+
+                lblConnectionStatus.Text = string.Format("Members online: {0} ({1})", membersNum, fCore.Peers.Count);
 
                 UpdateStatus();
             });
@@ -205,6 +241,7 @@ namespace GKCommunicatorApp
         void IChatForm.OnJoin(Peer member)
         {
             Invoke((MethodInvoker)delegate {
+                lblConnectionStatus.Text = "Network connection established.";
                 //AddChatText(member + " joined the chatroom.");
 
                 UpdateStatus();
@@ -218,19 +255,6 @@ namespace GKCommunicatorApp
 
                 UpdateStatus();
             });
-        }
-
-        #endregion
-
-        #region External functions
-
-        public static void LoadExtFile(string fileName)
-        {
-            if (File.Exists(fileName)) {
-                Process.Start(new ProcessStartInfo("file://" + fileName) { UseShellExecute = true });
-            } else {
-                Process.Start(fileName);
-            }
         }
 
         #endregion
