@@ -14,3 +14,6 @@ rmdir .\GKNetCore.Tests\obj /s /q
 rmdir .\GKNetCore.Tests\OpenCover /s /q
 
 del msbuild.log
+
+rmdir .\cov-int /s /q
+del .\coverity.zip

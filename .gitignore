@@ -11,3 +11,7 @@
 
 /temp/
 run-gource.cmd
+
+/cov-int/
+build_coverity.cmd
+coverity.zip
