@@ -19,6 +19,7 @@
  */
 
 using System;
+using System.IO;
 
 namespace GKNet.Database
 {
@@ -32,18 +33,82 @@ namespace GKNet.Database
     /// <summary>
     /// 
     /// </summary>
-    public interface IDatabase
+    public abstract class IDatabase
     {
-        bool IsConnected { get; }
-        bool IsExists { get; }
+        public abstract bool IsConnected { get; }
 
-        void Connect();
-        void Disconnect();
+        public bool IsExists
+        {
+            get {
+                string baseName = GetBaseName();
+                return File.Exists(baseName);
+            }
+        }
 
-        void CreateDatabase();
-        void DeleteDatabase();
+        protected abstract string GetBaseName();
 
-        string GetParameterValue(string paramName);
-        void SetParameterValue(string paramName, string paramValue);
+        public abstract void Connect();
+        public abstract void Disconnect();
+
+        public abstract void CreateDatabase();
+
+        public void DeleteDatabase()
+        {
+            if (IsConnected) Disconnect();
+
+            string baseName = GetBaseName();
+            try {
+                if (File.Exists(baseName)) {
+                    File.Delete(baseName);
+                }
+            } catch {
+            }
+        }
+
+        public abstract string GetParameterValue(string paramName);
+        public abstract void SetParameterValue(string paramName, string paramValue);
+
+        public bool GetParameterBool(string paramName)
+        {
+            string val = GetParameterValue(paramName);
+            if (string.IsNullOrEmpty(val)) {
+                return false;
+            } else {
+                return bool.Parse(val);
+            }
+        }
+
+        public void SetParameterBool(string paramName, bool paramValue)
+        {
+            SetParameterValue(paramName, paramValue.ToString());
+        }
+
+        public void LoadProfile(UserProfile profile)
+        {
+            bool initialized = GetParameterBool("profile_initialized");
+            if (initialized) {
+                profile.UserName = GetParameterValue("user_name");
+                profile.Country = GetParameterValue("user_country");
+                profile.TimeZone = GetParameterValue("user_timezone");
+                profile.Languages = GetParameterValue("user_languages");
+            } else {
+                profile.ResetSystem();
+                SaveProfile(profile);
+            }
+        }
+
+        public void SaveProfile(UserProfile profile)
+        {
+            SetParameterBool("profile_initialized", true);
+            SetParameterValue("user_name", profile.UserName);
+            SetParameterValue("user_country", profile.Country);
+            SetParameterValue("user_timezone", profile.TimeZone);
+            SetParameterValue("user_languages", profile.Languages);
+        }
+
+        public static IDatabase CreateDefault()
+        {
+            return new LtDatabase();
+        }
     }
 }

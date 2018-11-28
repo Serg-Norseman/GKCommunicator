@@ -4,10 +4,17 @@ using System.Text;
 namespace BencodeNET
 {
     /// <summary>
-    /// Abstract base class with default implementation of most methods of <see cref="IBObject"/>.
+    /// Abstract base class of bencode objects with a specific underlying value type
+    /// with default implementation of most methods of <see cref="IBObject"/>.
     /// </summary>
-    public abstract class BObject : IBObject
+    public abstract class BObject<T> : IBObject
     {
+        /// <summary>
+        /// The underlying value of the <see cref="BObject{T}"/>.
+        /// </summary>
+        public abstract T Value { get; }
+
+
         protected BObject()
         {
         }
@@ -32,8 +39,7 @@ namespace BencodeNET
         /// </returns>
         public virtual string EncodeAsString(Encoding encoding)
         {
-            using (var stream = EncodeTo(new MemoryStream()))
-            {
+            using (var stream = EncodeTo(new MemoryStream())) {
                 return encoding.GetString(stream.ToArray());
             }
         }
@@ -44,8 +50,7 @@ namespace BencodeNET
         /// <returns>The raw bytes of the bencoded object.</returns>
         public virtual byte[] EncodeAsBytes()
         {
-            using (var stream = new MemoryStream())
-            {
+            using (var stream = new MemoryStream()) {
                 EncodeTo(stream);
                 return stream.ToArray();
             }
@@ -80,21 +85,5 @@ namespace BencodeNET
         /// </summary>
         /// <param name="stream">The stream to encode to.</param>
         protected abstract void EncodeObject(BencodeStream stream);
-    }
-
-    /// <summary>
-    /// Base class of bencode objects with a specific underlying value type.
-    /// </summary>
-    /// <typeparam name="T">Type of the underlying value.</typeparam>
-    public abstract class BObject<T> : BObject
-    {
-        protected BObject()
-        {
-        }
-
-        /// <summary>
-        /// The underlying value of the <see cref="BObject{T}"/>.
-        /// </summary>
-        public abstract T Value { get; }
     }
 }

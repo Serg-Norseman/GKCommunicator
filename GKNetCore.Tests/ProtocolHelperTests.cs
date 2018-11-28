@@ -61,9 +61,12 @@ namespace GKNet.DHT
         [Test]
         public void Test_CreateGetPeerInfoResponse()
         {
+            var peerInfo = new PeerProfile();
+            peerInfo.ResetSystem();
+
             var tid = DHTHelper.GetTransactionId();
             var nodeId = DHTHelper.GetRandomID();
-            var msg = ProtocolHelper.CreateGetPeerInfoResponse(tid, nodeId);
+            var msg = ProtocolHelper.CreateGetPeerInfoResponse(tid, nodeId, peerInfo);
             Assert.IsNotNull(msg);
             // TODO: test contents
         }

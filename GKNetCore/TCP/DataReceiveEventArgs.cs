@@ -25,13 +25,12 @@ namespace GKNet.TCP
 {
     public sealed class DataReceiveEventArgs : EventArgs
     {
-        private byte[] fData;
-        private IPEndPoint fPeer;
+        private readonly byte[] fData;
+        private readonly IPEndPoint fPeer;
 
-        public DataReceiveEventArgs(byte[] data, IPEndPoint peer)
+        public byte[] Data
         {
-            fData = data;
-            fPeer = peer;
+            get { return fData; }
         }
 
         public IPEndPoint Peer
@@ -39,9 +38,10 @@ namespace GKNet.TCP
             get { return fPeer; }
         }
 
-        public byte[] Data
+        public DataReceiveEventArgs(byte[] data, IPEndPoint peer)
         {
-            get { return fData; }
+            fData = data;
+            fPeer = peer;
         }
     }
 }

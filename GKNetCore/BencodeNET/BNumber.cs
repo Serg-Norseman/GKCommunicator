@@ -110,8 +110,8 @@ namespace BencodeNET
 
         public static bool operator ==(BNumber bnumber, BNumber other)
         {
-            if (object.ReferenceEquals(bnumber, null) && object.ReferenceEquals(other, null)) return true;
-            if (object.ReferenceEquals(bnumber, null) || object.ReferenceEquals(other, null)) return false;
+            if (ReferenceEquals(bnumber, null) && ReferenceEquals(other, null)) return true;
+            if (ReferenceEquals(bnumber, null) || ReferenceEquals(other, null)) return false;
             return bnumber.Value == other.Value;
         }
 

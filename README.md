@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/Serg-Norseman/GKCommunicator.svg?branch=master)](https://travis-ci.org/Serg-Norseman/GKCommunicator)
 [![Build status](https://ci.appveyor.com/api/projects/status/h0u8iwr3kvy6o9x1?svg=true)](https://ci.appveyor.com/project/serg-norseman/gkcommunicator)
 [![codecov.io](https://codecov.io/github/serg-norseman/gkcommunicator/coverage.svg?branch=master)](https://codecov.io/github/serg-norseman/gkcommunicator?branch=master)
-[![BCH compliance](https://bettercodehub.com/edge/badge/Serg-Norseman/GKCommunicator?branch=master)](https://bettercodehub.com/)
+[![BCH compliance](https://bettercodehub.com/edge/badge/Serg-Norseman/GKCommunicator?branch=master)](https://bettercodehub.com/results/Serg-Norseman/GKCommunicator)
 [![CodeFactor](https://www.codefactor.io/repository/github/serg-norseman/gkcommunicator/badge)](https://www.codefactor.io/repository/github/serg-norseman/gkcommunicator)
 
 This communication application is a sub-project of GEDKeeper (two part: application and plugin).
@@ -20,9 +20,9 @@ Roadmap
 - [x] Database support (SQLite, LiteDB)
 - [x] Formatting of history
 - [x] Stabilize the chat and discovery of peers
+- [x] Simple user’s profile
 
 - [ ] TCP
-- [ ] Simple user’s profile
 - [ ] Simple storage
 - [ ] A simple bulletin board of investigations and search of kins (only in the implementation of the plugin)
 - [ ] Mutual identity and signing of user profiles (trusted collocutors and unchecked network members)

@@ -49,7 +49,8 @@ namespace GKCommunicatorApp
             txtLanguages.Text = fProfile.Languages;
 
             var userProfile = fProfile as UserProfile;
-            if (userProfile != null) {
+            bool isUser = (userProfile != null);
+            if (isUser) {
                 chkCountryVisible.Checked = userProfile.IsCountryVisible;
                 chkTimeZoneVisible.Checked = userProfile.IsTimeZoneVisible;
                 chkLanguagesVisible.Checked = userProfile.IsLanguagesVisible;
@@ -70,12 +71,38 @@ namespace GKCommunicatorApp
                 // invisible is not implemented
                 tabControl.TabPages.Remove(tabSysInfo);
             }
+
+            txtUserName.ReadOnly = !isUser;
+            txtCountry.ReadOnly = !isUser;
+            txtTimeZone.ReadOnly = !isUser;
+            txtLanguages.ReadOnly = !isUser;
+
+            btnSave.Visible = isUser;
+            btnSave.Enabled = isUser;
         }
 
         private void AddProperty(string propName, string value)
         {
             var listItem = lvSysInfo.Items.Add(propName);
             listItem.SubItems.Add(value);
+        }
+
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            var userProfile = fProfile as UserProfile;
+
+            userProfile.UserName = txtUserName.Text;
+            userProfile.Country = txtCountry.Text;
+            userProfile.TimeZone = txtTimeZone.Text;
+            userProfile.Languages = txtLanguages.Text;
+
+            userProfile.IsCountryVisible = chkCountryVisible.Checked;
+            userProfile.IsTimeZoneVisible = chkTimeZoneVisible.Checked;
+            userProfile.IsLanguagesVisible = chkLanguagesVisible.Checked;
+
+            fCore.Database.SaveProfile(userProfile);
+
+            Close();
         }
     }
 }

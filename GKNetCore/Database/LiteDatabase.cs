@@ -20,12 +20,11 @@
 
 using System;
 using System.Linq;
-using System.IO;
 using LiteDB;
 
 namespace GKNet.Database
 {
-    public class Parameter
+    internal class Parameter
     {
         [BsonId]
         public Guid Id { get; set; }
@@ -37,47 +36,38 @@ namespace GKNet.Database
     /// <summary>
     /// 
     /// </summary>
-    public class LtDatabase : IDatabase
+    public sealed class LtDatabase : IDatabase
     {
         private LiteDatabase fConnection;
 
-        public bool IsConnected
+        public override bool IsConnected
         {
             get { return (fConnection != null); }
-        }
-
-        public bool IsExists
-        {
-            get {
-                string baseName = GetBaseName();
-                return File.Exists(baseName);
-            }
         }
 
         public LtDatabase()
         {
         }
 
-        private static string GetBaseName()
+        protected override string GetBaseName()
         {
             return NetHelper.GetAppPath() + "gkcommunicator.db";
         }
 
-        public void Connect()
+        public override void Connect()
         {
             if (IsConnected)
                 throw new DatabaseException("Database already connected");
 
-            string baseName = GetBaseName();
-
-            if (!File.Exists(baseName)) {
+            if (!IsExists) {
                 CreateDatabase();
             }
 
+            string baseName = GetBaseName();
             fConnection = new LiteDatabase(baseName);
         }
 
-        public void Disconnect()
+        public override void Disconnect()
         {
             if (!IsConnected)
                 throw new DatabaseException("Database already disconnected");
@@ -86,7 +76,7 @@ namespace GKNet.Database
             fConnection = null;
         }
 
-        public string GetParameterValue(string paramName)
+        public override string GetParameterValue(string paramName)
         {
             if (!IsConnected)
                 throw new DatabaseException("Database disconnected");
@@ -97,7 +87,7 @@ namespace GKNet.Database
             return (param == null) ? string.Empty : param.Value;
         }
 
-        public void SetParameterValue(string paramName, string paramValue)
+        public override void SetParameterValue(string paramName, string paramValue)
         {
             if (!IsConnected)
                 throw new DatabaseException("Database disconnected");
@@ -117,18 +107,7 @@ namespace GKNet.Database
             }
         }
 
-        public void DeleteDatabase()
-        {
-            string baseName = GetBaseName();
-            try {
-                if (File.Exists(baseName)) {
-                    File.Delete(baseName);
-                }
-            } catch {
-            }
-        }
-
-        public void CreateDatabase()
+        public override void CreateDatabase()
         {
             string baseName = GetBaseName();
 

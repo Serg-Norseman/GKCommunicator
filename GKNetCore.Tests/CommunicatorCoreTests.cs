@@ -39,21 +39,21 @@ namespace GKNet
             Assert.Throws(typeof(ArgumentNullException), () => { new CommunicatorCore(null); });
 
             var chatForm = new ChatForm();
+            using (var core = new CommunicatorCore(chatForm)) {
+                Assert.IsNotNull(core);
+                Assert.AreEqual(false, core.IsConnected);
+                Assert.IsNotNull(core.DHTClient);
+                Assert.IsNotNull(core.Profile);
+                Assert.IsNotNull(core.Peers);
+                //Assert.IsNull(core.STUNInfo);
+                Assert.IsNotNull(core.GetPeersList());
 
-            var core = new CommunicatorCore(chatForm);
-            Assert.IsNotNull(core);
-            Assert.AreEqual(false, core.IsConnected);
-            Assert.IsNotNull(core.DHTClient);
-            Assert.IsNotNull(core.Profile);
-            Assert.IsNotNull(core.Peers);
-            //Assert.IsNull(core.STUNInfo);
-            Assert.IsNotNull(core.GetPeersList());
+                var peer = core.AddPeer(IPAddress.Any, 1111);
+                Assert.IsNotNull(peer);
 
-            var peer = core.AddPeer(IPAddress.Any, 1111);
-            Assert.IsNotNull(peer);
-
-            peer = core.FindPeer(IPAddress.Any);
-            Assert.IsNotNull(peer);
+                peer = core.FindPeer(IPAddress.Any);
+                Assert.IsNotNull(peer);
+            }
         }
 
         [Test]

@@ -106,11 +106,8 @@ namespace GKNet
             return data;
         }
 
-        public static BDictionary CreateGetPeerInfoResponse(BString transactionID, byte[] nodeId)
+        public static BDictionary CreateGetPeerInfoResponse(BString transactionID, byte[] nodeId, PeerProfile peerProfile)
         {
-            var peerInfo = new PeerProfile();
-            peerInfo.ResetSystem();
-
             var data = new BDictionary();
             data.Add("t", transactionID);
             data.Add("y", "r");
@@ -118,7 +115,7 @@ namespace GKNet
             var r = new BDictionary();
             r.Add("q", "get_peer_info");
             r.Add("id", new BString(nodeId));
-            peerInfo.Save(r);
+            peerProfile.Save(r);
             data.Add("r", r);
 
             return data;

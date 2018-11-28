@@ -20,6 +20,7 @@
 
 using System.Collections.Generic;
 using System.Net;
+using GKNet.Database;
 using GKNet.DHT;
 using LumiSoft.Net.STUN.Client;
 
@@ -27,6 +28,7 @@ namespace GKNet
 {
     public interface ICommunicatorCore
     {
+        IDatabase Database { get; }
         bool IsConnected { get; }
         IList<Peer> Peers { get; }
         UserProfile Profile { get; }

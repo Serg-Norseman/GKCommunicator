@@ -26,13 +26,12 @@ namespace GKNet.DHT
 {
     public class PeersFoundEventArgs : EventArgs
     {
-        private byte[] fInfoHash;
-        private List<IPEndPoint> fPeers;
+        private readonly byte[] fInfoHash;
+        private readonly List<IPEndPoint> fPeers;
 
-        public PeersFoundEventArgs(byte[] infoHash, List<IPEndPoint> peers)
+        public byte[] InfoHash
         {
-            fInfoHash = infoHash;
-            fPeers = peers;
+            get { return fInfoHash; }
         }
 
         public List<IPEndPoint> Peers
@@ -40,9 +39,10 @@ namespace GKNet.DHT
             get { return fPeers; }
         }
 
-        public byte[] InfoHash
+        public PeersFoundEventArgs(byte[] infoHash, List<IPEndPoint> peers)
         {
-            get { return fInfoHash; }
+            fInfoHash = infoHash;
+            fPeers = peers;
         }
     }
 }

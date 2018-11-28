@@ -32,6 +32,14 @@ namespace GKNet
         {
             var conSet = new ConnectivitySettings("host", 1111, "login", "password", ProxyType.Socks4, null);
             Assert.IsNotNull(conSet);
+
+            Assert.AreEqual("host", conSet.ProxyHost);
+            Assert.AreEqual(1111, conSet.ProxyPort);
+            Assert.AreEqual("login", conSet.ProxyUsername);
+            Assert.AreEqual("password", conSet.ProxyPassword);
+            Assert.AreEqual(ProxyType.Socks4, conSet.ProxyType);
+            Assert.AreEqual(null, conSet.WebProxy);
+
             Assert.AreEqual("{ProxyHost=host, ProxyPort=1111}", conSet.ToString());
         }
     }

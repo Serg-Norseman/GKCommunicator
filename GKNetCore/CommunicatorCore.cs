@@ -26,6 +26,8 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using BencodeNET;
+using BSLib;
+using GKNet.Database;
 using GKNet.DHT;
 using GKNet.Logging;
 using GKNet.TCP;
@@ -33,11 +35,12 @@ using LumiSoft.Net.STUN.Client;
 
 namespace GKNet
 {
-    public sealed class CommunicatorCore : ICommunicatorCore, IDHTPeersHolder
+    public sealed class CommunicatorCore : BaseObject, ICommunicatorCore, IDHTPeersHolder
     {
         private readonly static byte[] GKNInfoHash = ProtocolHelper.CreateSignInfoKey();
 
         private bool fConnected;
+        private readonly IDatabase fDatabase;
         private readonly DHTClient fDHTClient;
         private readonly IChatForm fForm;
         private readonly ILogger fLogger;
@@ -48,6 +51,11 @@ namespace GKNet
         private readonly TCPDuplexClient fTCPClient;
         private int fTCPListenerPort;
 
+
+        public IDatabase Database
+        {
+            get { return fDatabase; }
+        }
 
         public DHTClient DHTClient
         {
@@ -94,8 +102,10 @@ namespace GKNet
             fSTUNInfo = null;
 
             fProfile = new UserProfile();
-            fProfile.ResetSystem();
-            // TODO: loading configuration from DB
+
+            fDatabase = IDatabase.CreateDefault();
+            fDatabase.Connect();
+            fDatabase.LoadProfile(fProfile);
 
             fDHTClient = new DHTClient(DHTClient.IPAnyAddress, DHTClient.PublicDHTPort, this, ProtocolHelper.CLIENT_VER);
             fDHTClient.PeersFound += OnPeersFound;
@@ -109,6 +119,14 @@ namespace GKNet
             fTCPClient.DataReceive += OnDataReceive;
 
             fTCPListenerPort = ProtocolHelper.PublicTCPPort;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing) {
+                fDatabase.Disconnect();
+            }
+            base.Dispose(disposing);
         }
 
         private void NATHolePunching()
@@ -318,7 +336,7 @@ namespace GKNet
                     break;
 
                 case "get_peer_info":
-                    SendData(e.EndPoint, ProtocolHelper.CreateGetPeerInfoResponse(DHTHelper.GetTransactionId(), fDHTClient.LocalID));
+                    SendData(e.EndPoint, ProtocolHelper.CreateGetPeerInfoResponse(DHTHelper.GetTransactionId(), fDHTClient.LocalID, fProfile));
                     break;
 
                 case "chat":

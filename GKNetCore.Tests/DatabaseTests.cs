@@ -14,7 +14,7 @@ namespace GKNet
         [TestFixtureSetUp]
         public void SetUp()
         {
-            fDb = new LtDatabase();
+            fDb = IDatabase.CreateDefault();
             Assert.IsNotNull(fDb);
         }
 

@@ -26,10 +26,9 @@ namespace GKNet
     public class PeerProfile
     {
         public string UserName { get; set; }
-
-        public string Country { get; private set; }
-        public string Languages { get; private set; }
-        public string TimeZone { get; private set; }
+        public string Country { get; set; }
+        public string Languages { get; set; }
+        public string TimeZone { get; set; }
 
         public PeerProfile()
         {
