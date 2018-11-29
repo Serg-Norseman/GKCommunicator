@@ -29,7 +29,8 @@ namespace BencodeNET
         /// Creates an empty dictionary.
         /// </summary>
         public BDictionary()
-        { }
+        {
+        }
 
         /// <summary>
         /// Creates a dictionary from key-value pairs.
@@ -134,7 +135,6 @@ namespace BencodeNET
             }
         }
 
-#pragma warning disable 1591
         protected override void EncodeObject(BencodeStream stream)
         {
             stream.Write('d');
@@ -150,28 +150,28 @@ namespace BencodeNET
         public ICollection<BString> Keys
         {
             get {
-                return Value.Keys;
+                return fValue.Keys;
             }
         }
 
         public ICollection<IBObject> Values
         {
             get {
-                return Value.Values;
+                return fValue.Values;
             }
         }
 
         public int Count
         {
             get {
-                return Value.Count;
+                return fValue.Count;
             }
         }
 
         public bool IsReadOnly
         {
             get {
-                return Value.IsReadOnly;
+                return fValue.IsReadOnly;
             }
         }
 
@@ -180,49 +180,48 @@ namespace BencodeNET
         /// </summary>
         public IBObject this[BString key]
         {
-            get { return ContainsKey(key) ? Value[key] : null; }
+            get { return ContainsKey(key) ? fValue[key] : null; }
             set {
-                if (value == null)
-                    throw new ArgumentNullException("value", "A null value cannot be added to a BDictionary");
-                Value[key] = value;
+                if (value == null) throw new ArgumentNullException("value", "A null value cannot be added to a BDictionary");
+                fValue[key] = value;
             }
         }
 
         public void Add(KeyValuePair<BString, IBObject> item)
         {
             if (item.Value == null) throw new ArgumentException("Must not contain a null value", "item");
-            Value.Add(item);
+            fValue.Add(item);
         }
 
         public void Add(BString key, IBObject value)
         {
             if (value == null) throw new ArgumentNullException("value");
-            Value.Add(key, value);
+            fValue.Add(key, value);
         }
 
         public void Clear()
         {
-            Value.Clear();
+            fValue.Clear();
         }
 
         public bool Contains(KeyValuePair<BString, IBObject> item)
         {
-            return Value.Contains(item);
+            return fValue.Contains(item);
         }
 
         public bool ContainsKey(BString key)
         {
-            return Value.ContainsKey(key);
+            return fValue.ContainsKey(key);
         }
 
         public void CopyTo(KeyValuePair<BString, IBObject>[] array, int arrayIndex)
         {
-            Value.CopyTo(array, arrayIndex);
+            fValue.CopyTo(array, arrayIndex);
         }
 
         public IEnumerator<KeyValuePair<BString, IBObject>> GetEnumerator()
         {
-            return Value.GetEnumerator();
+            return fValue.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -232,21 +231,20 @@ namespace BencodeNET
 
         public bool Remove(KeyValuePair<BString, IBObject> item)
         {
-            return Value.Remove(item);
+            return fValue.Remove(item);
         }
 
         public bool Remove(BString key)
         {
-            return Value.Remove(key);
+            return fValue.Remove(key);
         }
 
         public bool TryGetValue(BString key, out IBObject value)
         {
-            return Value.TryGetValue(key, out value);
+            return fValue.TryGetValue(key, out value);
         }
 
         #endregion
-#pragma warning restore 1591
     }
 
     /// <summary>

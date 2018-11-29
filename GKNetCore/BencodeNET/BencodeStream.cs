@@ -65,9 +65,7 @@ namespace BencodeNET
         /// </summary>
         public bool LeaveOpen
         {
-            get {
-                return fLeaveOpen;
-            }
+            get { return fLeaveOpen; }
         }
 
         /// <summary>
@@ -326,11 +324,9 @@ namespace BencodeNET
             }
         }
 
-#pragma warning disable 1591
         public static implicit operator BencodeStream(Stream stream)
         {
             return new BencodeStream(stream);
         }
-#pragma warning restore 1591
     }
 }

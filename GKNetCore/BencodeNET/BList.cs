@@ -134,7 +134,7 @@ namespace BencodeNET
         /// </summary>
         public IEnumerable<string> AsStrings(Encoding encoding)
         {
-            IList<BString> bstrings = this.AsType<BString>();
+            IList<BString> bstrings = AsType<BString>();
             return bstrings.Select(x => x.ToString(encoding));
         }
 
@@ -144,7 +144,7 @@ namespace BencodeNET
         /// </summary>
         public IEnumerable<long> AsNumbers()
         {
-            IList<BNumber> bnumbers = this.AsType<BNumber>();
+            IList<BNumber> bnumbers = AsType<BNumber>();
             return bnumbers.Select(x => x.Value);
         }
 
@@ -165,7 +165,6 @@ namespace BencodeNET
             }
         }
 
-#pragma warning disable 1591
         protected override void EncodeObject(BencodeStream stream)
         {
             stream.Write('l');
@@ -174,58 +173,56 @@ namespace BencodeNET
             }
             stream.Write('e');
         }
-#pragma warning restore 1591
 
         #region IList<IBObject> Members
-#pragma warning disable 1591
 
         public int Count
         {
             get {
-                return Value.Count;
+                return fValue.Count;
             }
         }
 
         public bool IsReadOnly
         {
             get {
-                return Value.IsReadOnly;
+                return fValue.IsReadOnly;
             }
         }
 
         public IBObject this[int index]
         {
-            get { return Value[index]; }
+            get { return fValue[index]; }
             set {
                 if (value == null) throw new ArgumentNullException("value");
-                Value[index] = value;
+                fValue[index] = value;
             }
         }
 
         public void Add(IBObject item)
         {
             if (item == null) throw new ArgumentNullException("item");
-            Value.Add(item);
+            fValue.Add(item);
         }
 
         public void Clear()
         {
-            Value.Clear();
+            fValue.Clear();
         }
 
         public bool Contains(IBObject item)
         {
-            return Value.Contains(item);
+            return fValue.Contains(item);
         }
 
         public void CopyTo(IBObject[] array, int arrayIndex)
         {
-            Value.CopyTo(array, arrayIndex);
+            fValue.CopyTo(array, arrayIndex);
         }
 
         public IEnumerator<IBObject> GetEnumerator()
         {
-            return Value.GetEnumerator();
+            return fValue.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -235,25 +232,24 @@ namespace BencodeNET
 
         public int IndexOf(IBObject item)
         {
-            return Value.IndexOf(item);
+            return fValue.IndexOf(item);
         }
 
         public void Insert(int index, IBObject item)
         {
-            Value.Insert(index, item);
+            fValue.Insert(index, item);
         }
 
         public bool Remove(IBObject item)
         {
-            return Value.Remove(item);
+            return fValue.Remove(item);
         }
 
         public void RemoveAt(int index)
         {
-            Value.RemoveAt(index);
+            fValue.RemoveAt(index);
         }
 
-#pragma warning restore 1591
         #endregion
     }
 
@@ -289,41 +285,40 @@ namespace BencodeNET
         }
 
         #region IList<T> Members
-#pragma warning disable 1591
 
         public new T this[int index]
         {
             get {
-                var obj = Value[index] as T;
+                var obj = fValue[index] as T;
                 if (obj == null) throw new InvalidCastException(string.Format("The object at index {0} is not of type {1}", index, typeof(T).FullName));
                 return obj;
             }
             set {
                 if (value == null) throw new ArgumentNullException("value");
-                Value[index] = value;
+                fValue[index] = value;
             }
         }
 
         public void Add(T item)
         {
             if (item == null) throw new ArgumentNullException("item");
-            Value.Add(item);
+            fValue.Add(item);
         }
 
         public bool Contains(T item)
         {
-            return Value.Contains(item);
+            return fValue.Contains(item);
         }
 
         public void CopyTo(T[] array, int arrayIndex)
         {
-            Value.CopyTo(array.Cast<IBObject>().ToArray(), arrayIndex);
+            fValue.CopyTo(array.Cast<IBObject>().ToArray(), arrayIndex);
         }
 
         public new IEnumerator<T> GetEnumerator()
         {
             var i = 0;
-            var enumerator = Value.GetEnumerator();
+            var enumerator = fValue.GetEnumerator();
             while (enumerator.MoveNext()) {
                 var obj = enumerator.Current as T;
                 if (obj == null) throw new InvalidCastException(string.Format("The object at index {0} is not of type {1}", i, typeof(T).FullName));
@@ -339,15 +334,14 @@ namespace BencodeNET
 
         public void Insert(int index, T item)
         {
-            Value.Insert(index, item);
+            fValue.Insert(index, item);
         }
 
         public bool Remove(T item)
         {
-            return Value.Remove(item);
+            return fValue.Remove(item);
         }
 
-#pragma warning restore 1591
         #endregion
     }
 }

@@ -47,37 +47,36 @@ namespace BencodeNET
             fValue = (datetime.HasValue) ? datetime.Value.Subtract(Epoch).Ticks / TimeSpan.TicksPerSecond : 0;
         }
 
-#pragma warning disable 1591
         protected override void EncodeObject(BencodeStream stream)
         {
             stream.Write('i');
-            stream.Write(Value);
+            stream.Write(fValue);
             stream.Write('e');
         }
 
         public static implicit operator int(BNumber bint)
         {
             if (bint == null) throw new InvalidCastException();
-            return (int)bint.Value;
+            return (int)bint.fValue;
         }
 
         public static implicit operator long(BNumber bint)
         {
             if (bint == null) throw new InvalidCastException();
-            return bint.Value;
+            return bint.fValue;
         }
 
         public static implicit operator bool(BNumber bint)
         {
             if (bint == null) throw new InvalidCastException();
-            return bint.Value > 0;
+            return bint.fValue > 0;
         }
 
         public static implicit operator DateTime? (BNumber number)
         {
             if (number == null) return null;
 
-            if (number.Value > int.MaxValue) {
+            if (number.fValue > int.MaxValue) {
                 try {
                     return Epoch.AddMilliseconds(number);
                 } catch (ArgumentOutOfRangeException) {
@@ -112,7 +111,7 @@ namespace BencodeNET
         {
             if (ReferenceEquals(bnumber, null) && ReferenceEquals(other, null)) return true;
             if (ReferenceEquals(bnumber, null) || ReferenceEquals(other, null)) return false;
-            return bnumber.Value == other.Value;
+            return bnumber.fValue == other.fValue;
         }
 
         public static bool operator !=(BNumber bnumber, BNumber other)
@@ -123,7 +122,7 @@ namespace BencodeNET
         public override bool Equals(object obj)
         {
             var bnumber = obj as BNumber;
-            return Value == (bnumber != null ? bnumber.Value : 0);
+            return fValue == (bnumber != null ? bnumber.fValue : 0);
         }
 
         /// <summary>
@@ -131,7 +130,7 @@ namespace BencodeNET
         /// </summary>
         public override int GetHashCode()
         {
-            return Value.GetHashCode();
+            return fValue.GetHashCode();
         }
 
         public int CompareTo(BNumber other)
@@ -139,28 +138,27 @@ namespace BencodeNET
             if (other == null)
                 return 1;
 
-            return Value.CompareTo(other.Value);
+            return fValue.CompareTo(other.fValue);
         }
 
         public override string ToString()
         {
-            return Value.ToString();
+            return fValue.ToString();
         }
 
         public string ToString(string format)
         {
-            return Value.ToString(format);
+            return fValue.ToString(format);
         }
 
         public string ToString(IFormatProvider formatProvider)
         {
-            return Value.ToString(formatProvider);
+            return fValue.ToString(formatProvider);
         }
 
         public string ToString(string format, IFormatProvider formatProvider)
         {
-            return Value.ToString(format, formatProvider);
+            return fValue.ToString(format, formatProvider);
         }
-#pragma warning restore 1591
     }
 }

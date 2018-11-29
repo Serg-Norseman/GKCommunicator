@@ -104,12 +104,13 @@ namespace GKCommunicatorApp
             lstChatMsgs.SelectionColor = color;
         }
 
-        private void AddChatText(string text, Color color)
+        private void AddChatText(string text, Color headerColor, Color textColor)
         {
             lstChatMsgs.AppendText("\r\n");
-            AddTextChunk(DateTime.Now.ToString(), Color.Red);
+            AddTextChunk(DateTime.Now.ToString(), headerColor);
             lstChatMsgs.AppendText("\r\n");
-            AddTextChunk(text, Color.Navy);
+            AddTextChunk(text, textColor);
+            lstChatMsgs.AppendText("\r\n");
             lstChatMsgs.ScrollToCaret();
         }
 
@@ -135,6 +136,8 @@ namespace GKCommunicatorApp
 
             if (!string.IsNullOrEmpty(msgText)) {
                 fCore.SendToAll(msgText);
+                AddChatText(msgText, Color.Navy, Color.Black);
+
                 txtChatMsg.Clear();
                 txtChatMsg.Focus();
             }
@@ -149,6 +152,8 @@ namespace GKCommunicatorApp
 
             if ((!string.IsNullOrEmpty(msgText)) && (peerItem != null)) {
                 fCore.Send(peerItem, msgText);
+                AddChatText(msgText, Color.Green, Color.Black);
+
                 txtChatMsg.Clear();
                 txtChatMsg.Focus();
             }
@@ -232,7 +237,7 @@ namespace GKCommunicatorApp
         void IChatForm.OnMessageReceived(Peer sender, string message)
         {
             Invoke((MethodInvoker)delegate {
-                AddChatText(message, Color.Black);
+                AddChatText(message, Color.Red, Color.Black);
 
                 UpdateStatus();
             });

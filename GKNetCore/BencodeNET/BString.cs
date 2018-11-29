@@ -19,17 +19,17 @@ namespace BencodeNET
         /// </summary>
         internal const int LengthMaxDigits = 10;
 
+        private readonly byte[] fValue;
+
         /// <summary>
         /// The underlying bytes of the string.
         /// </summary>
         public override byte[] Value
         {
             get {
-                return _value;
+                return fValue;
             }
         }
-
-        private readonly byte[] _value;
 
         /// <summary>
         /// Gets the length of the string in bytes.
@@ -37,7 +37,7 @@ namespace BencodeNET
         public int Length
         {
             get {
-                return _value.Length;
+                return fValue.Length;
             }
         }
 
@@ -68,7 +68,7 @@ namespace BencodeNET
             if (bytes == null) throw new ArgumentNullException("bytes");
 
             _encoding = encoding ?? DefaultEncoding;
-            _value = bytes as byte[] ?? bytes.ToArray();
+            fValue = bytes as byte[] ?? bytes.ToArray();
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace BencodeNET
             if (str == null) throw new ArgumentNullException("str");
 
             _encoding = encoding ?? DefaultEncoding;
-            _value = _encoding.GetBytes(str);
+            fValue = _encoding.GetBytes(str);
         }
 
         /// <summary>
@@ -97,12 +97,11 @@ namespace BencodeNET
             return EncodeAsString(_encoding);
         }
 
-#pragma warning disable 1591
         protected override void EncodeObject(BencodeStream stream)
         {
-            stream.Write(_value.Length);
+            stream.Write(fValue.Length);
             stream.Write(':');
-            stream.Write(_value);
+            stream.Write(fValue);
         }
 
         public static implicit operator BString(string value)
@@ -125,25 +124,25 @@ namespace BencodeNET
 
         public override bool Equals(object obj)
         {
-            if (obj is BString)
-                return Value.SequenceEqual(((BString)obj).Value);
+            BString bstr = obj as BString;
+            if (bstr != null)
+                return fValue.SequenceEqual(bstr.fValue);
 
             return false;
         }
 
         public bool Equals(BString other)
         {
-            return (other == null) ? false : Value.SequenceEqual(other.Value);
+            return (other == null) ? false : fValue.SequenceEqual(other.fValue);
         }
 
         public override int GetHashCode()
         {
-            var bytesToHash = Math.Min(Value.Length, 32);
+            var bytesToHash = Math.Min(fValue.Length, 32);
 
             long hashValue = 0;
-            for (var i = 0; i < bytesToHash; i++)
-            {
-                hashValue = (37 * hashValue + Value[i]) % int.MaxValue;
+            for (var i = 0; i < bytesToHash; i++) {
+                hashValue = (37 * hashValue + fValue[i]) % int.MaxValue;
             }
 
             return (int)hashValue;
@@ -166,16 +165,15 @@ namespace BencodeNET
                 if (i >= other.Length)
                     return 1;
 
-                if (this.Value[i] > other.Value[i])
+                if (this.fValue[i] > other.fValue[i])
                     return 1;
 
-                if (this.Value[i] < other.Value[i])
+                if (this.fValue[i] < other.fValue[i])
                     return -1;
             }
 
             return 0;
         }
-#pragma warning restore 1591
 
         /// <summary>
         /// Converts the underlying bytes to a string representation using the current value of the <see cref="Encoding"/> property.
@@ -185,7 +183,7 @@ namespace BencodeNET
         /// </returns>
         public override string ToString()
         {
-            return _encoding.GetString(_value);
+            return _encoding.GetString(fValue);
         }
 
         /// <summary>
@@ -198,7 +196,7 @@ namespace BencodeNET
         public string ToString(Encoding encoding)
         {
             encoding = encoding ?? _encoding;
-            return encoding.GetString(_value);
+            return encoding.GetString(fValue);
         }
     }
 }
