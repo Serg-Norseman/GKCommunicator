@@ -37,6 +37,9 @@
     <DefineConstants>$(DefineConstants);__MonoCS__</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BouncyCastle.OpenPgp">
+      <HintPath>..\libs\BouncyCastle.OpenPgp.dll</HintPath>
+    </Reference>
     <Reference Include="BSLib">
       <HintPath>..\libs\BSLib.dll</HintPath>
     </Reference>
@@ -60,6 +63,7 @@
     <Compile Include="MessageTests.cs" />
     <Compile Include="NetHelperTests.cs" />
     <Compile Include="PeerTests.cs" />
+    <Compile Include="PGPUtilitiesTests.cs" />
     <Compile Include="ProtocolHelperTests.cs" />
     <Compile Include="UserProfileTests.cs" />
   </ItemGroup>
@@ -74,6 +78,17 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="DHT" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Keys\newPublicKey.asc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Keys\privateKey.asc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Keys\publicKey.asc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

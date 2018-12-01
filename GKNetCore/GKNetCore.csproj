@@ -70,6 +70,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="BouncyCastle.OpenPgp">
+      <HintPath>..\libs\BouncyCastle.OpenPgp.dll</HintPath>
+    </Reference>
     <Reference Include="BSLib">
       <HintPath>..\libs\BSLib.dll</HintPath>
     </Reference>
@@ -100,6 +103,7 @@
     <Compile Include="BencodeNET\InvalidBencodeException.cs" />
     <Compile Include="BencodeNET\UnsupportedBencodeException.cs" />
     <Compile Include="BencodeNET\UtilityExtensions.cs" />
+    <Compile Include="PGP\PGPUtilities.cs" />
     <Compile Include="CommunicatorCore.cs" />
     <Compile Include="ConnectivitySettings.cs" />
     <Compile Include="Database\IDatabase.cs" />
@@ -144,6 +148,7 @@
     <Compile Include="UserProfile.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="PGP" />
     <Folder Include="DHT\Messages" />
     <Folder Include="Database" />
   </ItemGroup>
