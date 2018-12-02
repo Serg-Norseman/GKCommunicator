@@ -31,7 +31,7 @@ namespace GKNet.TCP
     public class TCPDuplexClient
     {
         private int fBacklog;
-        private List<TCPConnection> fConnections = new List<TCPConnection>();
+        private readonly List<TCPConnection> fConnections;
         private IPAddress fLocalAddress = IPAddress.Any;
         private int fLocalPort;
         internal readonly ILogger fLogger;
@@ -42,6 +42,7 @@ namespace GKNet.TCP
         public TCPDuplexClient()
         {
             fLogger = LogManager.GetLogger(ProtocolHelper.LOG_FILE, ProtocolHelper.LOG_LEVEL, "TCPDuplexClient");
+            fConnections = new List<TCPConnection>();
         }
 
         // This is the method that starts the server listening.

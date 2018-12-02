@@ -37,6 +37,9 @@ namespace GKNet.DHT
 
             var node2 = table.FindNode(nodeEndPoint);
             Assert.IsNotNull(node2);
+
+            node2 = table.FindNode(null);
+            Assert.IsNull(node2);
         }
 
         [Test]

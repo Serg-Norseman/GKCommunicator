@@ -14,11 +14,14 @@ namespace BencodeNET
     /// </remarks>
     public sealed class BString : BObject<byte[]>, IComparable<BString>, IEquatable<BString>
     {
+        private static readonly Encoding DefaultEncoding = Encoding.UTF8;
+
         /// <summary>
         /// The maximum number of digits that can be handled as the length part of a bencoded string.
         /// </summary>
         internal const int LengthMaxDigits = 10;
 
+        private Encoding fEncoding;
         private readonly byte[] fValue;
 
         /// <summary>
@@ -26,9 +29,7 @@ namespace BencodeNET
         /// </summary>
         public override byte[] Value
         {
-            get {
-                return fValue;
-            }
+            get { return fValue; }
         }
 
         /// <summary>
@@ -36,12 +37,8 @@ namespace BencodeNET
         /// </summary>
         public int Length
         {
-            get {
-                return fValue.Length;
-            }
+            get { return fValue.Length; }
         }
-
-        private static readonly Encoding DefaultEncoding = Encoding.UTF8;
 
         /// <summary>
         /// Gets or sets the encoding used as the default with <c>ToString()</c>.
@@ -49,14 +46,9 @@ namespace BencodeNET
         /// <exception cref="ArgumentNullException"></exception>
         public Encoding Encoding
         {
-            get {
-                return _encoding;
-            }
-            set {
-                _encoding = value ?? DefaultEncoding;
-            }
+            get { return fEncoding; }
+            set { fEncoding = value ?? DefaultEncoding; }
         }
-        private Encoding _encoding;
 
         /// <summary>
         /// Creates a <see cref="BString"/> from bytes with the specified encoding.
@@ -67,7 +59,7 @@ namespace BencodeNET
         {
             if (bytes == null) throw new ArgumentNullException("bytes");
 
-            _encoding = encoding ?? DefaultEncoding;
+            fEncoding = encoding ?? DefaultEncoding;
             fValue = bytes as byte[] ?? bytes.ToArray();
         }
 
@@ -81,8 +73,8 @@ namespace BencodeNET
         {
             if (str == null) throw new ArgumentNullException("str");
 
-            _encoding = encoding ?? DefaultEncoding;
-            fValue = _encoding.GetBytes(str);
+            fEncoding = encoding ?? DefaultEncoding;
+            fValue = fEncoding.GetBytes(str);
         }
 
         /// <summary>
@@ -94,7 +86,7 @@ namespace BencodeNET
         /// </returns>
         public override string EncodeAsString()
         {
-            return EncodeAsString(_encoding);
+            return EncodeAsString(fEncoding);
         }
 
         protected override void EncodeObject(BencodeStream stream)
@@ -133,7 +125,7 @@ namespace BencodeNET
 
         public bool Equals(BString other)
         {
-            return (other == null) ? false : fValue.SequenceEqual(other.fValue);
+            return (other != null) && fValue.SequenceEqual(other.fValue);
         }
 
         public override int GetHashCode()
@@ -155,8 +147,7 @@ namespace BencodeNET
 
             var maxLength = Math.Max(this.Length, other.Length);
 
-            for (var i = 0; i < maxLength; i++)
-            {
+            for (var i = 0; i < maxLength; i++) {
                 // This is shorter and thereby this is "less than" the other
                 if (i >= this.Length)
                     return -1;
@@ -183,7 +174,7 @@ namespace BencodeNET
         /// </returns>
         public override string ToString()
         {
-            return _encoding.GetString(fValue);
+            return fEncoding.GetString(fValue);
         }
 
         /// <summary>
@@ -195,7 +186,7 @@ namespace BencodeNET
         /// </returns>
         public string ToString(Encoding encoding)
         {
-            encoding = encoding ?? _encoding;
+            encoding = encoding ?? fEncoding;
             return encoding.GetString(fValue);
         }
     }

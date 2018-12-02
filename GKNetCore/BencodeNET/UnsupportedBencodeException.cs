@@ -12,18 +12,18 @@ namespace BencodeNET
         public long StreamPosition { get; set; }
 
         public UnsupportedBencodeException()
-        { }
+        {
+        }
 
-        public UnsupportedBencodeException(string message)
-            : base(message)
-        { }
+        public UnsupportedBencodeException(string message) : base(message)
+        {
+        }
 
-        public UnsupportedBencodeException(string message, Exception inner)
-            : base(message, inner)
-        { }
+        public UnsupportedBencodeException(string message, Exception inner) : base(message, inner)
+        {
+        }
 
-        public UnsupportedBencodeException(string message, long streamPosition)
-            : base(message)
+        public UnsupportedBencodeException(string message, long streamPosition) : base(message)
         {
             StreamPosition = streamPosition;
         }

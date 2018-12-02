@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using BSLib;
 
 namespace BencodeNET
 {
@@ -9,7 +10,7 @@ namespace BencodeNET
     /// with bencode and to read/write one byte at a time. Also has methods for peeking
     /// at the next byte (caching the read) and for reading the previous byte in stream.
     /// </summary>
-    public class BencodeStream : IDisposable
+    public class BencodeStream : BaseObject
     {
         private static readonly byte[] EmptyByteArray = new byte[0];
         private readonly bool fLeaveOpen;
@@ -212,40 +213,6 @@ namespace BencodeNET
         }
 
         /// <summary>
-        /// Reads the previous byte in the stream and decrements the position by 1.
-        /// </summary>
-        /// <returns>The previous byte in stream.</returns>
-        public int ReadPrevious()
-        {
-            if (InnerStream.Position == 0)
-                return -1;
-
-            _hasPeeked = false;
-
-            InnerStream.Position -= 1;
-
-            var bytes = new byte[1];
-
-            var readBytes = InnerStream.Read(bytes, 0, 1);
-            if (readBytes == 0)
-                return -1;
-
-            return bytes[0];
-        }
-
-        /// <summary>
-        /// Reads the previous char in the stream and decrements the position by 1.
-        /// </summary>
-        /// <returns>The previous char in the stream.</returns>
-        public char ReadPreviousChar()
-        {
-            var value = ReadPrevious();
-            if (value == -1)
-                return default(char);
-            return (char)value;
-        }
-
-        /// <summary>
         /// Writes a number to the stream.
         /// </summary>
         /// <param name="number">The number to write to the stream.</param>
@@ -303,25 +270,17 @@ namespace BencodeNET
         }
 
         /// <summary>
-        /// Releases all resources used by the <see cref="BencodeStream"/>.
-        /// <see cref="InnerStream"/> is also disposed unless <see cref="LeaveOpen"/> is true.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-        }
-
-        /// <summary>
         /// Disposes of <see cref="InnerStream"/> unless <see cref="LeaveOpen"/> is true.
         /// </summary>
         /// <param name="disposing"></param>
-        protected virtual void Dispose(bool disposing)
+        protected override void Dispose(bool disposing)
         {
             if (disposing) {
                 if (InnerStream != null && !LeaveOpen)
                     InnerStream.Dispose();
                 InnerStream = null;
             }
+            base.Dispose(disposing);
         }
 
         public static implicit operator BencodeStream(Stream stream)

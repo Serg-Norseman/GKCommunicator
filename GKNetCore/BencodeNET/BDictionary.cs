@@ -13,16 +13,14 @@ namespace BencodeNET
     /// </remarks>
     public sealed class BDictionary : BObject<IDictionary<BString, IBObject>>, IDictionary<BString, IBObject>
     {
-        private readonly IDictionary<BString, IBObject> fValue = new SortedDictionary<BString, IBObject>();
+        private readonly IDictionary<BString, IBObject> fValue;
 
         /// <summary>
         /// The underlying dictionary.
         /// </summary>
         public override IDictionary<BString, IBObject> Value
         {
-            get {
-                return fValue;
-            }
+            get { return fValue; }
         }
 
         /// <summary>
@@ -30,6 +28,7 @@ namespace BencodeNET
         /// </summary>
         public BDictionary()
         {
+            fValue = new SortedDictionary<BString, IBObject>();
         }
 
         /// <summary>
@@ -149,30 +148,22 @@ namespace BencodeNET
 
         public ICollection<BString> Keys
         {
-            get {
-                return fValue.Keys;
-            }
+            get { return fValue.Keys; }
         }
 
         public ICollection<IBObject> Values
         {
-            get {
-                return fValue.Values;
-            }
+            get { return fValue.Values; }
         }
 
         public int Count
         {
-            get {
-                return fValue.Count;
-            }
+            get { return fValue.Count; }
         }
 
         public bool IsReadOnly
         {
-            get {
-                return fValue.IsReadOnly;
-            }
+            get { return fValue.IsReadOnly; }
         }
 
         /// <summary>

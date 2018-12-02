@@ -18,6 +18,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System.IO;
+
 namespace GKNet
 {
     public class UserProfile : PeerProfile
@@ -25,5 +27,22 @@ namespace GKNet
         public bool IsCountryVisible { get; set; }
         public bool IsLanguagesVisible { get; set; }
         public bool IsTimeZoneVisible { get; set; }
+
+        public string PublicKey { get; private set; }
+        public string PrivateKey { get; private set; }
+
+        public void GenerateKey(string username = null, string password = null)
+        {
+            using (var publicKeyStream = new MemoryStream())
+            using (var privateKeyStream = new MemoryStream()) {
+                PGPUtilities.GenerateKey(publicKeyStream, privateKeyStream, username, password);
+
+                publicKeyStream.Seek(0, SeekOrigin.Begin);
+                privateKeyStream.Seek(0, SeekOrigin.Begin);
+
+                PublicKey = publicKeyStream.Stringify();
+                PrivateKey = privateKeyStream.Stringify();
+            }
+        }
     }
 }

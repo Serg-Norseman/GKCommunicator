@@ -5,9 +5,13 @@ using System.Linq;
 using System.Text;
 using Org.BouncyCastle.Bcpg;
 using Org.BouncyCastle.Bcpg.OpenPgp;
+using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Crypto.Generators;
+using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
 
-namespace GKNet.PGP
+namespace GKNet
 {
     public static class PGPUtilities
     {
@@ -346,6 +350,65 @@ namespace GKNet.PGP
         private static PgpSecretKey ReadSecretKeyFromString(string key)
         {
             return ReadSecretKey(new MemoryStream(Encoding.UTF8.GetBytes(key ?? string.Empty)));
+        }
+
+        public static void GenerateKey(string publicKeyFilePath, string privateKeyFilePath, string username = null,
+                                       string password = null, int strength = 1024, int certainty = 8)
+        {
+            if (String.IsNullOrEmpty(publicKeyFilePath))
+                throw new ArgumentException("PublicKeyFilePath");
+            if (String.IsNullOrEmpty(privateKeyFilePath))
+                throw new ArgumentException("PrivateKeyFilePath");
+
+            using (Stream pubs = File.Open(publicKeyFilePath, FileMode.OpenOrCreate))
+            using (Stream pris = File.Open(privateKeyFilePath, FileMode.OpenOrCreate))
+                GenerateKey(pubs, pris, username, password, strength, certainty);
+        }
+
+        public static void GenerateKey(Stream publicKeyStream, Stream privateKeyStream, string username = null,
+                                       string password = null, int strength = 1024, int certainty = 8, bool armor = true)
+        {
+            username = username == null ? string.Empty : username;
+            password = password == null ? string.Empty : password;
+
+            IAsymmetricCipherKeyPairGenerator kpg = new RsaKeyPairGenerator();
+            kpg.Init(new RsaKeyGenerationParameters(BigInteger.ValueOf(0x13), new SecureRandom(), strength, certainty));
+            AsymmetricCipherKeyPair kp = kpg.GenerateKeyPair();
+
+            ExportKeyPair(privateKeyStream, publicKeyStream, kp.Public, kp.Private, username, password.ToCharArray(), armor);
+        }
+
+        private static void ExportKeyPair(Stream secretOut, Stream publicOut,
+            AsymmetricKeyParameter publicKey, AsymmetricKeyParameter privateKey,
+            string identity, char[] passPhrase, bool armor)
+        {
+            if (secretOut == null)
+                throw new ArgumentException("secretOut");
+            if (publicOut == null)
+                throw new ArgumentException("publicOut");
+
+            if (armor) {
+                secretOut = new ArmoredOutputStream(secretOut);
+            }
+
+            PgpSecretKey secretKey = new PgpSecretKey(
+                                         PgpSignature.DefaultCertification, PublicKeyAlgorithmTag.RsaGeneral,
+                                         publicKey, privateKey, DateTime.Now, identity,
+                                         SymmetricKeyAlgorithmTag.TripleDes, passPhrase, null, null, new SecureRandom());
+
+            secretKey.Encode(secretOut);
+
+            secretOut.Dispose();
+
+            if (armor) {
+                publicOut = new ArmoredOutputStream(publicOut);
+            }
+
+            PgpPublicKey key = secretKey.PublicKey;
+
+            key.Encode(publicOut);
+
+            publicOut.Dispose();
         }
     }
 }

@@ -16,11 +16,16 @@ namespace BencodeNET
         private readonly Dictionary<Type, ParseProc> fParsers;
 
         /// <summary>
+        /// The encoding use for parsing.
+        /// </summary>
+        public Encoding Encoding { get; protected set; }
+
+        /// <summary>
         /// Creates an instance using <see cref="System.Text.Encoding.UTF8"/> and the default parsers.
         /// </summary>
-        public BencodeParser()
-            : this(Encoding.UTF8)
-        { }
+        public BencodeParser() : this(Encoding.UTF8)
+        {
+        }
 
         /// <summary>
         /// Creates an instance using the specified encoding and the default parsers.
@@ -30,8 +35,7 @@ namespace BencodeNET
         {
             Encoding = encoding;
 
-            fParsers = new Dictionary<Type, ParseProc>()
-            {
+            fParsers = new Dictionary<Type, ParseProc>() {
                 { typeof(BString), ParseStr },
                 { typeof(BNumber), ParseNumber },
                 { typeof(BList), ParseList },
@@ -40,16 +44,11 @@ namespace BencodeNET
         }
 
         /// <summary>
-        /// The encoding use for parsing.
-        /// </summary>
-        public Encoding Encoding { get; protected set; }
-
-        /// <summary>
         /// Parses a bencoded string into an <see cref="IBObject"/>.
         /// </summary>
         /// <param name="bencodedString">The bencoded string to parse.</param>
         /// <returns>The parsed object.</returns>
-        public IBObject ParseString(string bencodedString)
+        public IBObject Parse(string bencodedString)
         {
             using (var stream = bencodedString.AsStream(Encoding)) {
                 return Parse(stream);
@@ -112,7 +111,7 @@ namespace BencodeNET
         /// <typeparam name="T">The type of <see cref="IBObject"/> to parse as.</typeparam>
         /// <param name="bencodedString">The bencoded string to parse.</param>
         /// <returns>The parsed object.</returns>
-        public T ParseString<T>(string bencodedString) where T : class, IBObject
+        public T Parse<T>(string bencodedString) where T : class, IBObject
         {
             using (var stream = bencodedString.AsStream(Encoding)) {
                 return Parse<T>(stream);
@@ -183,39 +182,32 @@ namespace BencodeNET
                 throw InvalidBencodeException<BDictionary>.BelowMinimumLength(MinimumDictLength, stream.Length, startPosition);
 
             // Dictionaries must start with 'd'
-            if (stream.ReadChar() != 'd')
-                throw InvalidBencodeException<BDictionary>.UnexpectedChar('d', stream.ReadPreviousChar(), startPosition);
+            char c = stream.ReadChar();
+            if (c != 'd')
+                throw InvalidBencodeException<BDictionary>.UnexpectedChar('d', c, startPosition);
 
             var dictionary = new BDictionary();
             // Loop until next character is the end character 'e' or end of stream
-            while (stream.Peek() != 'e' && stream.Peek() != -1)
-            {
+            while (stream.Peek() != 'e' && stream.Peek() != -1) {
                 BString key;
-                try
-                {
+                try {
                     // Decode next string in stream as the key
                     key = ParseStr(stream);
-                }
-                catch (BencodeException<BString> ex)
-                {
+                } catch (BencodeException<BString> ex) {
                     throw InvalidDictException("Could not parse dictionary key. Keys must be strings.", ex, startPosition);
                 }
 
                 IBObject value;
-                try
-                {
+                try {
                     // Decode next object in stream as the value
                     value = Parse(stream);
-                }
-                catch (BencodeException ex)
-                {
+                } catch (BencodeException ex) {
                     throw InvalidDictException(
                         string.Format("Could not parse dictionary value for the key '{0}'. There needs to be a value for each key.", key),
                         ex, startPosition);
                 }
 
-                if (dictionary.ContainsKey(key))
-                {
+                if (dictionary.ContainsKey(key)) {
                     throw InvalidDictException(
                         string.Format("The dictionary already contains the key '{0}'. Duplicate keys are not supported.", key), startPosition);
                 }
@@ -223,10 +215,10 @@ namespace BencodeNET
                 dictionary.Add(key, value);
             }
 
-            if (stream.ReadChar() != 'e')
-            {
+            c = stream.ReadChar();
+            if (c != 'e') {
                 if (stream.EndOfStream) throw InvalidBencodeException<BDictionary>.MissingEndChar();
-                throw InvalidBencodeException<BDictionary>.InvalidEndChar(stream.ReadPreviousChar(), stream.Position);
+                throw InvalidBencodeException<BDictionary>.InvalidEndChar(c, stream.Position);
             }
 
             return dictionary;
@@ -343,19 +335,17 @@ namespace BencodeNET
             var startPosition = stream.Position;
 
             // Numbers must start with 'i'
-            if (stream.ReadChar() != 'i')
-                throw InvalidBencodeException<BNumber>.UnexpectedChar('i', stream.ReadPreviousChar(), stream.Position);
+            char c = stream.ReadChar();
+            if (c != 'i')
+                throw InvalidBencodeException<BNumber>.UnexpectedChar('i', c, stream.Position);
 
             var digits = new StringBuilder();
-            char c;
-            for (c = stream.ReadChar(); c != 'e' && c != default(char); c = stream.ReadChar())
-            {
+            for (c = stream.ReadChar(); c != 'e' && c != default(char); c = stream.ReadChar()) {
                 digits.Append(c);
             }
 
             // Last read character should be 'e'
-            if (c != 'e')
-            {
+            if (c != 'e') {
                 if (stream.EndOfStream) throw InvalidBencodeException<BNumber>.MissingEndChar();
                 throw InvalidBencodeException<BNumber>.InvalidEndChar(c, stream.Position);
             }
@@ -364,8 +354,7 @@ namespace BencodeNET
             var numberOfDigits = isNegative ? digits.Length - 1 : digits.Length;
 
             // We do not support numbers that cannot be stored as a long (Int64)
-            if (numberOfDigits > BNumber.MaxDigits)
-            {
+            if (numberOfDigits > BNumber.MaxDigits) {
                 throw UnsupportedNumException(
                     string.Format("The number '{0}' has more than 19 digits and cannot be stored as a long (Int64) and therefore is not supported.", digits),
                     startPosition);
@@ -386,8 +375,7 @@ namespace BencodeNET
                 throw InvalidNumException("'-0' is not a valid number.", startPosition);
 
             long number;
-            if (!TryParseLongFast(digits.ToString(), out number))
-            {
+            if (!TryParseLongFast(digits.ToString(), out number)) {
                 var nonSignChars = isNegative ? digits.ToString(1, digits.Length - 1) : digits.ToString();
                 if (nonSignChars.Any(x => !x.IsDigit()))
                     throw InvalidNumException(string.Format("The value '{0}' is not a valid number.", digits), startPosition);
@@ -435,22 +423,22 @@ namespace BencodeNET
                 throw InvalidBencodeException<BList>.BelowMinimumLength(MinimumListLength, stream.Length, stream.Position);
 
             // Lists must start with 'l'
-            if (stream.ReadChar() != 'l')
-                throw InvalidBencodeException<BList>.UnexpectedChar('l', stream.ReadPreviousChar(), stream.Position);
+            char c = stream.ReadChar();
+            if (c != 'l')
+                throw InvalidBencodeException<BList>.UnexpectedChar('l', c, stream.Position);
 
             var list = new BList();
             // Loop until next character is the end character 'e' or end of stream
-            while (stream.Peek() != 'e' && stream.Peek() != -1)
-            {
+            while (stream.Peek() != 'e' && stream.Peek() != -1) {
                 // Decode next object in stream
                 var bObject = Parse(stream);
                 list.Add(bObject);
             }
 
-            if (stream.ReadChar() != 'e')
-            {
+            c = stream.ReadChar();
+            if (c != 'e') {
                 if (stream.EndOfStream) throw InvalidBencodeException<BList>.MissingEndChar();
-                throw InvalidBencodeException<BList>.InvalidEndChar(stream.ReadPreviousChar(), stream.Position);
+                throw InvalidBencodeException<BList>.InvalidEndChar(c, stream.Position);
             }
 
             return list;

@@ -27,14 +27,16 @@ namespace LumiSoft.Net.STUN.Message
     /// </summary>
     public class STUN_ChangeRequest
     {
-        private bool m_ChangeIP = true;
-        private bool m_ChangePort = true;
+        private readonly bool fChangeIP;
+        private readonly bool fChangePort;
 
         /// <summary>
         /// Default constructor.
         /// </summary>
         public STUN_ChangeRequest()
         {
+            fChangeIP = true;
+            fChangePort = true;
         }
 
         /// <summary>
@@ -44,8 +46,8 @@ namespace LumiSoft.Net.STUN.Message
         /// <param name="changePort">Specifies if STUN server must send response to different port than request was received.</param>
         public STUN_ChangeRequest(bool changeIP, bool changePort)
         {
-            m_ChangeIP = changeIP;
-            m_ChangePort = changePort;
+            fChangeIP = changeIP;
+            fChangePort = changePort;
         }
 
         /// <summary>
@@ -53,9 +55,7 @@ namespace LumiSoft.Net.STUN.Message
         /// </summary>
         public bool ChangeIP
         {
-            get { return m_ChangeIP; }
-
-            set { m_ChangeIP = value; }
+            get { return fChangeIP; }
         }
 
         /// <summary>
@@ -63,9 +63,7 @@ namespace LumiSoft.Net.STUN.Message
         /// </summary>
         public bool ChangePort
         {
-            get { return m_ChangePort; }
-
-            set { m_ChangePort = value; }
+            get { return fChangePort; }
         }
     }
 }

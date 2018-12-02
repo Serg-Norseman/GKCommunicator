@@ -4,7 +4,7 @@ using System.Text;
 using NUnit.Framework;
 using Org.BouncyCastle.Bcpg.OpenPgp;
 
-namespace GKNet.PGP
+namespace GKNet
 {
     public class PGPUtilitiesTests
     {
@@ -181,6 +181,16 @@ namespace GKNet.PGP
         private string GetSignatureString(string text)
         {
             return Encoding.ASCII.GetString(GetSignature(text));
+        }
+
+        [Test]
+        public void GenerateKey()
+        {
+            using (var publicKeyStream = new MemoryStream())
+            using (var privateKeyStream = new MemoryStream()) {
+                //PGPUtilities.GenerateKey(@"C:\TEMP\keys\public.asc", @"C:\TEMP\keys\private.asc", "email@email.com", "password");
+                PGPUtilities.GenerateKey(publicKeyStream, privateKeyStream, "email@email.com", "password");
+            }
         }
     }
 }

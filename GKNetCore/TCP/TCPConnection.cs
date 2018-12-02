@@ -21,7 +21,6 @@
 using System;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 
 namespace GKNet.TCP
 {
@@ -30,9 +29,8 @@ namespace GKNet.TCP
         protected internal string fId;
 
         private byte[] fBuffer = new byte[65535];
-        private TCPDuplexClient fDuplexClient;
-        private Encoding fEncoding = Encoding.UTF8;
-        private Socket fSocket;
+        private readonly TCPDuplexClient fDuplexClient;
+        private readonly Socket fSocket;
 
         public IPEndPoint EndPoint
         {

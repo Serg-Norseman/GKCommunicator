@@ -70,7 +70,7 @@ namespace LumiSoft.Net.STUN.Message
         #endregion
 
         private STUN_MessageType m_Type = STUN_MessageType.BindingRequest;
-        private Guid m_pTransactionID = Guid.Empty;
+        private Guid m_pTransactionID;
         private IPEndPoint m_pMappedAddress = null;
         private IPEndPoint m_pResponseAddress = null;
         private STUN_ChangeRequest m_pChangeRequest = null;

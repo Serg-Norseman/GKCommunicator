@@ -34,6 +34,10 @@ namespace GKNet
 
             Assert.Throws(typeof(ArgumentNullException), () => { profile.Save(null); });
             Assert.Throws(typeof(ArgumentNullException), () => { profile.Load(null); });
+
+            profile.GenerateKey("user@email.com", "password");
+            Assert.IsNotNullOrEmpty(profile.PublicKey);
+            Assert.IsNotNullOrEmpty(profile.PrivateKey);
         }
     }
 }

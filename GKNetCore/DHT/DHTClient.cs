@@ -48,14 +48,13 @@ namespace GKNet.DHT
         public const int PublicDHTPort = 6881;
         public const int KTableSize = 2048;
 
-        private byte[] fBuffer = new byte[65535];
+        private byte[] fBuffer;
         private long fLastNodesUpdateTime;
         private byte[] fLocalID;
         private IPEndPoint fPublicEndPoint;
         private IList<IPAddress> fRouters;
         private byte[] fSearchInfoHash;
         private bool fSearchRunned;
-        private Socket fSocket;
 
         private readonly string fClientVer;
         private readonly IPEndPoint fDefaultIP;
@@ -63,6 +62,7 @@ namespace GKNet.DHT
         private readonly ILogger fLogger;
         private readonly IDHTPeersHolder fPeersHolder;
         private readonly DHTRoutingTable fRoutingTable;
+        private readonly Socket fSocket;
         private readonly Dictionary<int, DHTMessage> fTransactions;
 
         public byte[] LocalID
@@ -94,6 +94,7 @@ namespace GKNet.DHT
 
         public DHTClient(IPAddress addr, int port, IDHTPeersHolder peersHolder, string clientVer)
         {
+            fBuffer = new byte[65535];
             fClientVer = clientVer;
             fDefaultIP = new IPEndPoint(IPLoopbackAddress, 0);
             fLocalID = DHTHelper.GetRandomID();

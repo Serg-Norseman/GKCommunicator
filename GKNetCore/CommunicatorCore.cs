@@ -148,7 +148,7 @@ namespace GKNet
         private void DetectSTUN(string stunServer, Socket socket)
         {
             if (string.IsNullOrEmpty(stunServer)) {
-                throw new Exception("Not specified STUN server");
+                throw new ArgumentException("Not specified STUN server");
             }
 
             STUN_Result result = null;
@@ -203,6 +203,7 @@ namespace GKNet
         public bool CheckPeer(IPEndPoint peerEndPoint)
         {
             bool result = false;
+            if (peerEndPoint == null) return false;
 
             var peerAddress = peerEndPoint.Address;
             Peer peer = FindPeer(peerAddress);
@@ -225,6 +226,7 @@ namespace GKNet
         public bool UpdatePeer(IPEndPoint peerEndPoint)
         {
             bool result = false;
+            if (peerEndPoint == null) return false;
 
             var peerAddress = peerEndPoint.Address;
             Peer peer = FindPeer(peerAddress);

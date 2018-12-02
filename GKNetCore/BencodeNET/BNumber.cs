@@ -23,9 +23,7 @@ namespace BencodeNET
         /// </summary>
         public override long Value
         {
-            get {
-                return fValue;
-            }
+            get { return fValue; }
         }
 
         /// <summary>

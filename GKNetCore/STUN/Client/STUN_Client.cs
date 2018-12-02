@@ -47,7 +47,7 @@ namespace LumiSoft.Net.STUN.Client
     /// }
     /// </code>
     /// </example>
-    public class STUN_Client
+    public static class STUN_Client
     {
         /// <summary>
         /// Gets NAT info from STUN server.
@@ -203,7 +203,7 @@ namespace LumiSoft.Net.STUN.Client
             }
         }
 
-        private void GetSharedSecret()
+        private static void GetSharedSecret()
         {
             /*
                 *) Open TLS connection to STUN server.

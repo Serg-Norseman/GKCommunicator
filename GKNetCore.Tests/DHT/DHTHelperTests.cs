@@ -41,6 +41,14 @@ namespace GKNet.DHT
         }
 
         [Test]
+        public void Test_BytesToHexString()
+        {
+            var bytes = new byte[] { 0xFF, 0xAF, 0x05, 0x77, 0xAB };
+            string str = DHTHelper.BytesToHexString(bytes).ToLowerInvariant();
+            Assert.AreEqual("ffaf0577ab", str);
+        }
+
+        [Test]
         public void Test_GetNeighbor()
         {
             var bytes1 = new byte[] { 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11 };

@@ -8,16 +8,16 @@ namespace BencodeNET
     public class BencodeException : Exception
     {
         public BencodeException()
-        { }
+        {
+        }
 
-        public BencodeException(string message)
-            : base(message)
+        public BencodeException(string message) : base(message)
+        {
+        }
 
-        { }
-
-        public BencodeException(string message, Exception inner)
-            : base(message, inner)
-        { }
+        public BencodeException(string message, Exception inner) : base(message, inner)
+        {
+        }
     }
 
     /// <summary>
@@ -37,15 +37,15 @@ namespace BencodeNET
         }
 
         public BencodeException()
-        { }
+        {
+        }
 
-        public BencodeException(string message)
-            : base(message)
+        public BencodeException(string message) : base(message)
+        {
+        }
 
-        { }
-
-        public BencodeException(string message, Exception inner)
-            : base(message, inner)
-        { }
+        public BencodeException(string message, Exception inner) : base(message, inner)
+        {
+        }
     }
 }

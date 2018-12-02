@@ -27,8 +27,8 @@ namespace LumiSoft.Net.STUN.Message
     /// </summary>
     public class STUN_ErrorCode
     {
-        private int m_Code = 0;
-        private string m_ReasonText = "";
+        private readonly int fCode;
+        private readonly string fReasonText;
 
         /// <summary>
         /// Default constructor.
@@ -37,8 +37,8 @@ namespace LumiSoft.Net.STUN.Message
         /// <param name="reasonText">Reason text.</param>
         public STUN_ErrorCode(int code, string reasonText)
         {
-            m_Code = code;
-            m_ReasonText = reasonText;
+            fCode = code;
+            fReasonText = reasonText;
         }
 
         /// <summary>
@@ -46,8 +46,7 @@ namespace LumiSoft.Net.STUN.Message
         /// </summary>
         public int Code
         {
-            get { return m_Code; }
-            set { m_Code = value; }
+            get { return fCode; }
         }
 
         /// <summary>
@@ -55,8 +54,7 @@ namespace LumiSoft.Net.STUN.Message
         /// </summary>
         public string ReasonText
         {
-            get { return m_ReasonText; }
-            set { m_ReasonText = value; }
+            get { return fReasonText; }
         }
     }
 }
