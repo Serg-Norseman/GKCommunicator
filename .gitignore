@@ -11,6 +11,7 @@
 
 /temp/
 run-gource.cmd
+bsl_copy.cmd
 
 /cov-int/
 build_coverity.cmd

@@ -62,7 +62,6 @@
     <Compile Include="DHT\DHTNodeTests.cs" />
     <Compile Include="DHT\DHTRoutingTableTests.cs" />
     <Compile Include="MessageTests.cs" />
-    <Compile Include="NetHelperTests.cs" />
     <Compile Include="PeerTests.cs" />
     <Compile Include="PGPUtilitiesTests.cs" />
     <Compile Include="ProtocolHelperTests.cs" />

@@ -102,7 +102,6 @@
     <Compile Include="BencodeNET\IBObject.cs" />
     <Compile Include="BencodeNET\InvalidBencodeException.cs" />
     <Compile Include="BencodeNET\UnsupportedBencodeException.cs" />
-    <Compile Include="BencodeNET\UtilityExtensions.cs" />
     <Compile Include="PGPUtilities.cs" />
     <Compile Include="CommunicatorCore.cs" />
     <Compile Include="ConnectivitySettings.cs" />

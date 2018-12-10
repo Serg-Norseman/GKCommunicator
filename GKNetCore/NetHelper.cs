@@ -20,11 +20,7 @@
 
 using System.Diagnostics;
 using System.IO;
-using System.Net;
-using System.Net.NetworkInformation;
-using System.Net.Sockets;
 using System.Reflection;
-using System.Text.RegularExpressions;
 
 namespace GKNet
 {
@@ -44,65 +40,6 @@ namespace GKNet
             } else {
                 Process.Start(fileName);
             }
-        }
-
-        // FIXME: Fatal problem - if there is an address statically assigned to the corporate network,
-        // then there is still no correct external address
-        public static IPAddress GetPublicAddress()
-        {
-            NetworkInterface[] networkInterfaces = NetworkInterface.GetAllNetworkInterfaces();
-
-            // weed out addresses of virtual adapters (VirtualBox, VMWare, Tunngle, etc.)
-            foreach (NetworkInterface network in networkInterfaces) {
-                IPInterfaceProperties properties = network.GetIPProperties();
-                if (properties.GatewayAddresses.Count == 0) {
-                    // all the magic is in this line
-                    continue;
-                }
-
-                foreach (IPAddressInformation address in properties.UnicastAddresses) {
-                    if (address.Address.AddressFamily != AddressFamily.InterNetwork)
-                        continue;
-
-                    if (IPAddress.IsLoopback(address.Address))
-                        continue;
-
-                    return address.Address;
-                }
-            }
-
-            return default(IPAddress);
-        }
-
-        public static string GetPublicAddressEx()
-        {
-            if (!NetworkInterface.GetIsNetworkAvailable()) {
-                return null;
-            }
-
-            try {
-                string externalIP = (new WebClient()).DownloadString("http://checkip.dyndns.org/");
-                externalIP = (new Regex(@"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}")).Matches(externalIP)[0].ToString();
-                return externalIP;
-            } catch { return null; }
-        }
-
-        // IPv4 192.168.1.1 maps as ::FFFF:192.168.1.1
-        public static IPAddress MapIPv4ToIPv6(IPAddress address)
-        {
-            if (address.AddressFamily == AddressFamily.InterNetworkV6) {
-                return address;
-            }
-
-            byte[] addr = address.GetAddressBytes();
-            byte[] labels = new byte[16];
-            labels[10] = 0xFF;
-            labels[11] = 0xFF;
-            labels[12] = addr[0];
-            labels[13] = addr[1];
-            labels[14] = addr[2];
-            labels[15] = addr[3];
-            return new IPAddress(labels, 0);
         }
     }
 }

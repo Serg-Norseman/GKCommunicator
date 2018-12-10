@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using BSLib;
 using NUnit.Framework;
 using Org.BouncyCastle.Bcpg.OpenPgp;
 

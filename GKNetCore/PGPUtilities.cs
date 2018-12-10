@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using BSLib;
 using Org.BouncyCastle.Bcpg;
 using Org.BouncyCastle.Bcpg.OpenPgp;
 using Org.BouncyCastle.Crypto;
@@ -15,8 +16,6 @@ namespace GKNet
 {
     public static class PGPUtilities
     {
-        private static readonly Encoding DefaultEncoding = Encoding.UTF8;
-
         public static PgpPublicKey ImportPublicKey(this Stream publicIn, bool forEncryption = true)
         {
             return new PgpPublicKeyRingBundle(PgpUtilities.GetDecoderStream(publicIn)).
@@ -32,18 +31,6 @@ namespace GKNet
             .OfType<PgpSecretKeyRing>()
             .SelectMany(x => x.GetSecretKeys().OfType<PgpSecretKey>())
             .FirstOrDefault();
-        }
-
-        public static Stream Streamify(this string theString, Encoding encoding = null)
-        {
-            return new MemoryStream((encoding ?? DefaultEncoding).GetBytes(theString));
-        }
-
-        public static string Stringify(this Stream theStream, Encoding encoding = null)
-        {
-            using (var reader = new StreamReader(theStream, encoding ?? DefaultEncoding)) {
-                return reader.ReadToEnd();
-            }
         }
 
         public static Stream PgpEncrypt(this Stream toEncrypt, PgpPublicKey encryptionKey, bool armor = true, bool verify = false)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using BSLib;
 
 namespace BencodeNET
 {
@@ -50,7 +51,7 @@ namespace BencodeNET
         /// <returns>The parsed object.</returns>
         public IBObject Parse(string bencodedString)
         {
-            using (var stream = bencodedString.AsStream(Encoding)) {
+            using (var stream = bencodedString.Streamify(Encoding)) {
                 return Parse(stream);
             }
         }
@@ -113,7 +114,7 @@ namespace BencodeNET
         /// <returns>The parsed object.</returns>
         public T Parse<T>(string bencodedString) where T : class, IBObject
         {
-            using (var stream = bencodedString.AsStream(Encoding)) {
+            using (var stream = bencodedString.Streamify(Encoding)) {
                 return Parse<T>(stream);
             }
         }
