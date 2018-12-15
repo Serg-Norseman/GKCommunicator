@@ -22,6 +22,7 @@ using System;
 using System.Reflection;
 using GKCore;
 using GKCore.Interfaces;
+using GKCore.Plugins;
 
 [assembly: AssemblyTitle("GKCommunicatorPlugin")]
 [assembly: AssemblyDescription("GEDKeeper Communicator plugin")]
@@ -32,68 +33,30 @@ using GKCore.Interfaces;
 
 namespace GKCommunicatorPlugin
 {
-    public class Plugin : IPlugin
+    public class Plugin : OrdinaryPlugin
     {
-        private const string DISPLAY_NAME = "GKCommunicatorPlugin";
-
-        private IHost fHost;
+        private string fDisplayName = "GKCommunicatorPlugin";
         private ILangMan fLangMan;
 
-        public string DisplayName { get { return DISPLAY_NAME; } }
-        public IHost Host { get { return fHost; } }
-        public ILangMan LangMan { get { return fLangMan; } }
-        public IImage Icon { get { return null; } }
-        public PluginCategory Category { get { return PluginCategory.Common; } }
+        public override string DisplayName { get { return fDisplayName; } }
+        public override ILangMan LangMan { get { return fLangMan; } }
+        public override IImage Icon { get { return null; } }
+        public override PluginCategory Category { get { return PluginCategory.Common; } }
 
-        public void Execute()
+        public override void Execute()
         {
             /*using (PluginForm frm = new PluginForm(this)) {
                 frm.ShowDialog();
             }*/
         }
 
-        public void OnHostClosing(HostClosingEventArgs eventArgs)
-        {
-        }
-        public void OnHostActivate()
-        {
-        }
-        public void OnHostDeactivate()
-        {
-        }
-
-        public void OnLanguageChange()
+        public override void OnLanguageChange()
         {
             try {
-                fLangMan = fHost.CreateLangMan(this);
+                fLangMan = Host.CreateLangMan(this);
             } catch (Exception ex) {
                 Logger.LogWrite("GKCommunicatorPlugin.OnLanguageChange(): " + ex.Message);
             }
-        }
-
-        public bool Startup(IHost host)
-        {
-            bool result = true;
-            try {
-                fHost = host;
-                // Implement any startup code here
-            } catch (Exception ex) {
-                Logger.LogWrite("GKCommunicatorPlugin.Startup(): " + ex.Message);
-                result = false;
-            }
-            return result;
-        }
-
-        public bool Shutdown()
-        {
-            bool result = true;
-            try {
-                // Implement any shutdown code here
-            } catch (Exception ex) {
-                Logger.LogWrite("GKCommunicatorPlugin.Shutdown(): " + ex.Message);
-                result = false;
-            }
-            return result;
         }
     }
 }
