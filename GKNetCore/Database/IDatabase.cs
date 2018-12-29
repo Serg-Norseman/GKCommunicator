@@ -20,6 +20,7 @@
 
 using System;
 using System.IO;
+using GKNet.Logging;
 
 namespace GKNet.Database
 {
@@ -35,6 +36,8 @@ namespace GKNet.Database
     /// </summary>
     public abstract class IDatabase
     {
+        protected readonly ILogger fLogger;
+
         public abstract bool IsConnected { get; }
 
         public bool IsExists
@@ -43,6 +46,11 @@ namespace GKNet.Database
                 string baseName = GetBaseName();
                 return File.Exists(baseName);
             }
+        }
+
+        protected IDatabase()
+        {
+            fLogger = LogManager.GetLogger(ProtocolHelper.LOG_FILE, ProtocolHelper.LOG_LEVEL, "IDatabase");
         }
 
         protected abstract string GetBaseName();
@@ -61,7 +69,8 @@ namespace GKNet.Database
                 if (File.Exists(baseName)) {
                     File.Delete(baseName);
                 }
-            } catch {
+            } catch (Exception ex) {
+                fLogger.WriteError("IDatabase.DeleteDatabase()", ex);
             }
         }
 

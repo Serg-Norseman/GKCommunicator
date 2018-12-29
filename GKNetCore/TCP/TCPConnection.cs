@@ -76,7 +76,7 @@ namespace GKNet.TCP
                 }
 
                 byte[] data = new byte[nBytesRec];
-                Array.Copy(fBuffer, 0, data, 0, nBytesRec);
+                Buffer.BlockCopy(fBuffer, 0, data, 0, nBytesRec);
                 fDuplexClient.RaiseDataReceive(data, (IPEndPoint)fSocket.RemoteEndPoint);
 
                 // Whenever you decide the connection should be closed, call 

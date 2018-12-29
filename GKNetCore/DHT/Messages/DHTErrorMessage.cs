@@ -25,8 +25,8 @@ namespace GKNet.DHT
 {
     public class DHTErrorMessage : DHTMessage
     {
-        public long ErrCode;
-        public string ErrText;
+        public long ErrCode { get; private set; }
+        public string ErrText { get; private set; }
 
         public DHTErrorMessage(MessageType type, QueryType queryType, BDictionary data) : base(type, queryType, data)
         {

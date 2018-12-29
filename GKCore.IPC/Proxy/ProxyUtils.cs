@@ -64,7 +64,7 @@ namespace GKCore.Proxy
         /// <returns></returns>
         public static ModuleBuilder GetModule(AssemblyBuilder asmBuilder, String moduleName)
         {
-            ModuleBuilder builder = asmBuilder.DefineDynamicModule(moduleName, true);//"EmitMethods", "EmitMethods.dll");
+            ModuleBuilder builder = asmBuilder.DefineDynamicModule(moduleName, true);
             return builder;
         }
 

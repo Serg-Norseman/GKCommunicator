@@ -10,4 +10,3 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1005:Delegate invocation can be simplified.")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0016:Use 'throw' expression")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0041:Use 'is null' check")]
-
