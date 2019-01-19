@@ -53,15 +53,12 @@ namespace GKNet.TCP
             // Create the new socket on which we'll be listening.
             fSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             // global with NAT traversal
-#if !NET35
             fSocket.SetIPProtectionLevel(IPProtectionLevel.Unrestricted);
-#endif
             // Bind the socket to the address and port.
             fSocket.Bind(new IPEndPoint(IPAddress.Any, port));
             // Start listening.
             fSocket.Listen(fBacklog);
-            // Set up the callback to be notified when somebody requests
-            // a new connection.
+            // Set up the callback to be notified when somebody requests a new connection.
             fSocket.BeginAccept(OnConnectRequest, fSocket);
         }
 
@@ -80,15 +77,13 @@ namespace GKNet.TCP
 
         protected internal void AddConnection(TCPConnection connection)
         {
+            if (connection != null && !fConnections.Contains(connection))
             fConnections.Add(connection);
         }
 
-        protected internal void RemoveConnection(string id)
+        protected internal void RemoveConnection(TCPConnection connection)
         {
-            // получаем по id закрытое подключение
-            TCPConnection connection = fConnections.FirstOrDefault(c => c.fId == id);
-            // и удаляем его из списка подключений
-            if (connection != null)
+            if (connection != null && fConnections.Contains(connection))
                 fConnections.Remove(connection);
         }
 
@@ -132,17 +127,11 @@ namespace GKNet.TCP
             }
         }
 
-        /*public void Send(IPEndPoint point, string msg)
-        {
-            var newConn = CreateConnection(point);
-            newConn.Send(Encoding.UTF8.GetBytes(msg));
-        }
-
         public void Send(IPEndPoint point, byte[] data)
         {
-            var newConn = CreateConnection(point);
-            newConn.Send(data);
-        }*/
+            var conn = GetConnection(point, true);
+            conn.Send(data);
+        }
 
         public void RaiseDataReceive(byte[] data, IPEndPoint peer)
         {

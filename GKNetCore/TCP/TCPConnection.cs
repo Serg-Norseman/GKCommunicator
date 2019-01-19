@@ -26,8 +26,6 @@ namespace GKNet.TCP
 {
     public class TCPConnection
     {
-        protected internal string fId;
-
         private byte[] fBuffer = new byte[65535];
         private readonly TCPDuplexClient fDuplexClient;
         private readonly Socket fSocket;
@@ -39,7 +37,6 @@ namespace GKNet.TCP
 
         public TCPConnection(TCPDuplexClient client, Socket socket, bool receive = true)
         {
-            fId = Guid.NewGuid().ToString();
             fDuplexClient = client;
             fDuplexClient.AddConnection(this);
 
@@ -104,7 +101,7 @@ namespace GKNet.TCP
                 fSocket.Shutdown(SocketShutdown.Both);
                 fSocket.Close();
             }
-            fDuplexClient.RemoveConnection(fId);
+            fDuplexClient.RemoveConnection(this);
         }
     }
 }

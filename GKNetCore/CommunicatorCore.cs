@@ -271,10 +271,7 @@ namespace GKNet
         {
             fDHTClient.Send(endPoint, data);
 
-            /*var conn = fTCPClient.GetConnection(endPoint);
-            if (conn != null) {
-                conn.Send(data.EncodeAsBytes());
-            }*/
+            fTCPClient.Send(endPoint, data.EncodeAsBytes());
         }
 
         public void SendMessage(Peer peer, string message)
@@ -377,10 +374,11 @@ namespace GKNet
         private void OnDataReceive(object sender, DataReceiveEventArgs e)
         {
             // TODO: TCP channel of data, future?
-            /*var dic = fParser.Parse<BDictionary>(e.Data);
-            fForm.OnMessageReceived(null, dic.EncodeAsString());
+            var parser = new BencodeParser();
+            var dic = parser.Parse<BDictionary>(e.Data);
+            fForm.OnMessageReceived(null, "TCP: " + dic.EncodeAsString());
 
-            string msgType = dic.Get<BString>("y").ToString();
+            /*string msgType = dic.Get<BString>("y").ToString();
             switch (msgType) {
                 case "q":
                     string queryType = dic.Get<BString>("q").ToString();
