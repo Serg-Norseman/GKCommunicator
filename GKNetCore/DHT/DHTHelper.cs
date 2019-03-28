@@ -26,6 +26,7 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using BencodeNET;
+using BSLib;
 
 namespace GKNet.DHT
 {
@@ -80,7 +81,7 @@ namespace GKNet.DHT
             #if !IP6
             return address;
             #else
-            return address.MapToIPv6();
+            return BSLib.NetHelper.MapIPv4ToIPv6(address);
             #endif
         }
 

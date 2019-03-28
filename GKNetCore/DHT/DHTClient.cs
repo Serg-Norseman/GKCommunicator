@@ -155,7 +155,7 @@ namespace GKNet.DHT
             #else
             fRouters = new List<IPAddress>();
             foreach (var r in routers) {
-                fRouters.Add(r.MapToIPv6());
+                fRouters.Add(DHTHelper.PrepareAddress(r));
             }
             #endif
         }
