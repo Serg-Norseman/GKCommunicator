@@ -103,7 +103,6 @@ namespace GKNet.DHT
                     var port = BitConverter.ToUInt16(itemBytes, 16);
                     var xnode = new IPEndPoint(PrepareAddress(ip), port);
                     result.Add(xnode);
-                } else {
                 }
             }
 
@@ -115,8 +114,7 @@ namespace GKNet.DHT
             var result = new List<DHTNode>();
             for (int i = 0; i < data.Length; i += 26) {
                 var dd = data.Skip(i).Take(26).ToArray();
-                //var bc = dd.ToHexString();
-                //Console.WriteLine(bc);
+
                 var b = dd[24];
                 dd[24] = dd[25];
                 dd[25] = b;
@@ -134,8 +132,7 @@ namespace GKNet.DHT
             var result = new List<DHTNode>();
             for (int i = 0; i < data.Length; i += 38) {
                 var dd = data.Skip(i).Take(38).ToArray();
-                //var bc = dd.ToHexString();
-                //Console.WriteLine(bc);
+
                 var b = dd[36];
                 dd[36] = dd[37];
                 dd[37] = b;
@@ -195,11 +192,12 @@ namespace GKNet.DHT
 
         public static byte[] CompactNodes(IList<DHTNode> nodesList)
         {
-            byte[] nodesArray = new byte[nodesList.Count * 26];
-            var i = 0;
-            foreach (var node in nodesList) {
+            int nodesCount = nodesList.Count;
+            byte[] nodesArray = new byte[nodesCount * 26];
+            for (int i = 0; i < nodesCount; i++) {
+                var node = nodesList[i];
                 var compact = CompactNode(node);
-                Array.Copy(compact, 0, nodesArray, i * 26, 26);
+                Buffer.BlockCopy(compact, 0, nodesArray, i * 26, 26);
             }
             return nodesArray;
         }
@@ -210,8 +208,8 @@ namespace GKNet.DHT
             ushort port = (ushort)node.EndPoint.Port;
 
             var info = new byte[26];
-            Array.Copy(node.ID, info, 20);
-            Array.Copy(address.GetAddressBytes(), 0, info, 20, 4);
+            Buffer.BlockCopy(node.ID, 0, info, 0, 20);
+            Buffer.BlockCopy(address.GetAddressBytes(), 0, info, 20, 4);
             info[24] = (byte)((port >> 8) & 0xFF);
             info[25] = (byte)(port & 0xFF);
             return info;
@@ -223,7 +221,7 @@ namespace GKNet.DHT
             ushort port = (ushort)endPoint.Port;
 
             var info = new byte[6];
-            Array.Copy(address.GetAddressBytes(), 0, info, 0, 4);
+            Buffer.BlockCopy(address.GetAddressBytes(), 0, info, 0, 4);
             info[4] = (byte)((port >> 8) & 0xFF);
             info[5] = (byte)(port & 0xFF);
             return info;
@@ -240,12 +238,13 @@ namespace GKNet.DHT
         /// <returns>A byte-array of the 20-byte SHA1 hash.</returns>
         public static byte[] CalculateInfoHashBytes(BDictionary info)
         {
-            using (var sha1 = SHA1.Create())
             using (var stream = new MemoryStream()) {
                 info.EncodeTo(stream);
                 stream.Position = 0;
 
-                return sha1.ComputeHash(stream);
+                lock (sha1) {
+                    return sha1.ComputeHash(stream);
+                }
             }
         }
 

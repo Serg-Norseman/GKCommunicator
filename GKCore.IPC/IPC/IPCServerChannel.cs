@@ -194,7 +194,6 @@ namespace GKCore.IPC
                     } catch (Exception e) {
                         error = e.ToString();
                     }
-
                 } else
                     error = "Could not find method";
             } else

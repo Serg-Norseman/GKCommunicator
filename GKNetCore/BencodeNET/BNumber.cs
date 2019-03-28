@@ -54,19 +54,16 @@ namespace BencodeNET
 
         public static implicit operator int(BNumber bint)
         {
-            if (bint == null) throw new InvalidCastException();
             return (int)bint.fValue;
         }
 
         public static implicit operator long(BNumber bint)
         {
-            if (bint == null) throw new InvalidCastException();
             return bint.fValue;
         }
 
         public static implicit operator bool(BNumber bint)
         {
-            if (bint == null) throw new InvalidCastException();
             return bint.fValue > 0;
         }
 

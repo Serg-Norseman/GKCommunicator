@@ -75,12 +75,12 @@ namespace GKNet.DHT
             fLock = new object();
         }
 
-        /*public void UpdateNodes(IEnumerable<DHTNode> nodes)
+        public void UpdateNodes(IEnumerable<DHTNode> nodes)
         {
             foreach (var node in nodes) {
                 UpdateNode(node);
             }
-        }*/
+        }
 
         public void UpdateNode(DHTNode node)
         {

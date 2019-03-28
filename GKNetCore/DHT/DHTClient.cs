@@ -209,7 +209,6 @@ namespace GKNet.DHT
 
         private void BeginRecv()
         {
-            //EndPoint remoteAddress = new IPEndPoint(IPLoopbackAddress, 0);
             EndPoint remoteAddress = new IPEndPoint(IPAnyAddress, 0);
             fSocket.BeginReceiveFrom(fBuffer, 0, fBuffer.Length, SocketFlags.None, ref remoteAddress, EndRecv, null);
         }
@@ -221,7 +220,7 @@ namespace GKNet.DHT
                 int count = fSocket.EndReceiveFrom(result, ref remoteAddress);
                 if (count > 0) {
                     byte[] buffer = new byte[count];
-                    Array.Copy(fBuffer, 0, buffer, 0, count);
+                    Buffer.BlockCopy(fBuffer, 0, buffer, 0, count);
                     OnRecvMessage((IPEndPoint)remoteAddress, buffer);
                 }
             } catch (Exception ex) {
@@ -403,13 +402,8 @@ namespace GKNet.DHT
 
                 fLogger.WriteDebug("Receive {0} nodes from {1}", nodesList.Count, ipinfo.ToString());
 
-                bool nodesUpdated = false;
-                foreach (var t in nodesList) {
-                    fRoutingTable.UpdateNode(t);
-                    nodesUpdated = true;
-                }
-
-                if (nodesUpdated) {
+                if (nodesList.Count > 0) {
+                    fRoutingTable.UpdateNodes(nodesList);
                     fLastNodesUpdateTime = DateTime.Now.Ticks;
                 }
             }
