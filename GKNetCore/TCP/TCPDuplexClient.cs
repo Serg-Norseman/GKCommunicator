@@ -130,7 +130,9 @@ namespace GKNet.TCP
         public void Send(IPEndPoint point, byte[] data)
         {
             var conn = GetConnection(point, true);
-            conn.Send(data);
+            if (conn != null) {
+                conn.Send(data);
+            }
         }
 
         public void RaiseDataReceive(byte[] data, IPEndPoint peer)
