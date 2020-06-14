@@ -224,7 +224,7 @@ namespace GKNet.DHT
                     OnRecvMessage((IPEndPoint)remoteAddress, buffer);
                 }
             } catch (Exception ex) {
-                //fLogger.WriteError("DHTClient.EndRecv.1(): ", ex);
+                //fLogger.WriteError("DHTClient.EndRecv.1()", ex);
             }
 
             bool notsuccess = false;
@@ -233,7 +233,7 @@ namespace GKNet.DHT
                     BeginRecv();
                     notsuccess = false;
                 } catch (Exception ex) {
-                    //fLogger.WriteError("DHTClient.EndRecv.2(): ", ex);
+                    //fLogger.WriteError("DHTClient.EndRecv.2()", ex);
                     notsuccess = true;
                 }
             } while (notsuccess);
@@ -263,7 +263,7 @@ namespace GKNet.DHT
                         break;
                 }
             } catch (Exception ex) {
-                fLogger.WriteError("DHTClient.OnRecvMessage(): ", ex);
+                fLogger.WriteError("DHTClient.OnRecvMessage()", ex);
             }
         }
 
@@ -606,11 +606,11 @@ namespace GKNet.DHT
                     try {
                         fSocket.EndReceive(ar);
                     } catch (Exception ex) {
-                        fLogger.WriteError("Send.1(" + address.ToString() + "): ", ex);
+                        fLogger.WriteError("Send.1(" + address.ToString() + ")", ex);
                     }
                 }, null);
             } catch (Exception ex) {
-                fLogger.WriteError("Send(): ", ex);
+                fLogger.WriteError("Send()", ex);
             }
         }
 

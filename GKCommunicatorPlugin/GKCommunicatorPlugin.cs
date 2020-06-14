@@ -56,7 +56,7 @@ namespace GKCommunicatorPlugin
             try {
                 fLangMan = Host.CreateLangMan(this);
             } catch (Exception ex) {
-                Logger.WriteError("GKCommunicatorPlugin.OnLanguageChange(): ", ex);
+                Logger.WriteError("GKCommunicatorPlugin.OnLanguageChange()", ex);
             }
         }
     }
