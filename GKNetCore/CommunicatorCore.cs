@@ -113,7 +113,7 @@ namespace GKNet
             fDHTClient.QueryReceived += OnQueryReceive;
             fDHTClient.ResponseReceived += OnResponseReceive;
 
-            NATHolePunching();
+            NATHolePunching(fDHTClient.Socket);
 
             fTCPClient = new TCPDuplexClient();
             fTCPClient.DataReceive += OnDataReceive;
@@ -129,10 +129,10 @@ namespace GKNet
             base.Dispose(disposing);
         }
 
-        private void NATHolePunching()
+        private void NATHolePunching(Socket socket)
         {
             new Thread(() => {
-                using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp)) {
+                /*using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp)) {
                     #if !__MonoCS__
                     socket.SetIPProtectionLevel(IPProtectionLevel.Unrestricted);
                     #endif
@@ -140,7 +140,11 @@ namespace GKNet
 
                     DetectSTUN(ProtocolHelper.STUNServer, socket);
                     //NATMapper.CreateNATMapping(this, stunResult);
-                }
+                }*/
+
+                DetectSTUN(ProtocolHelper.STUNServer, socket);
+                NATMapper.CreateNATMapping(fSTUNInfo);
+
                 fForm.OnInitialized();
             }).Start();
         }

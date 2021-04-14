@@ -29,11 +29,13 @@ namespace GKNet
     public static class NATMapper
     {
         private static ILogger fLogger;
+        private static STUN_Result fStunResult;
 
         public static void CreateNATMapping(STUN_Result stunResult)
         {
             fLogger = LogManager.GetLogger(ProtocolHelper.LOG_FILE, ProtocolHelper.LOG_LEVEL, "NATMapper");
 
+            fStunResult = stunResult;
             if (stunResult.NetType == STUN_NetType.OpenInternet) {
                 return;
             }
@@ -54,23 +56,24 @@ namespace GKNet
                 fLogger.WriteInfo("External IP: {0}", device.GetExternalIP());
 
                 try {
-                    Mapping m = device.GetSpecificMapping(Mono.Nat.Protocol.Tcp, ProtocolHelper.PublicTCPPort);
+                    Mapping m;
+                    /*Mapping m = device.GetSpecificMapping(Mono.Nat.Protocol.Tcp, ProtocolHelper.PublicTCPPort);
                     if (m != null) {
                         fLogger.WriteInfo("Specific Mapping: protocol={0}, public={1}, private={2}", m.Protocol, m.PublicPort, m.PrivatePort);
-                    } else {
+                    } else {*/
                         m = new Mapping(Mono.Nat.Protocol.Tcp, ProtocolHelper.PublicTCPPort, ProtocolHelper.PublicTCPPort);
                         device.CreatePortMap(m);
                         fLogger.WriteInfo("Create Mapping: protocol={0}, public={1}, private={2}", m.Protocol, m.PublicPort, m.PrivatePort);
-                    }
+                    //}
 
-                    m = device.GetSpecificMapping(Mono.Nat.Protocol.Udp, DHTClient.PublicDHTPort);
+                    /*m = device.GetSpecificMapping(Mono.Nat.Protocol.Udp, DHTClient.PublicDHTPort);
                     if (m != null) {
                         fLogger.WriteInfo("Specific Mapping: protocol={0}, public={1}, private={2}", m.Protocol, m.PublicPort, m.PrivatePort);
-                    } else {
-                        m = new Mapping(Mono.Nat.Protocol.Udp, DHTClient.PublicDHTPort, DHTClient.PublicDHTPort);
+                    } else {*/
+                        m = new Mapping(Mono.Nat.Protocol.Udp, DHTClient.PublicDHTPort, fStunResult.PublicEndPoint.Port);
                         device.CreatePortMap(m);
                         fLogger.WriteInfo("Create Mapping: protocol={0}, public={1}, private={2}", m.Protocol, m.PublicPort, m.PrivatePort);
-                    }
+                    //}
                 } catch {
                     fLogger.WriteInfo("Couldnt get specific mapping");
                 }

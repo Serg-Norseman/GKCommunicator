@@ -29,7 +29,7 @@ namespace GKNet
         public const string CLIENT_VER = "GKC";
 
         public const string LOG_FILE = "GKCommunicator.log";
-        public const string LOG_LEVEL = "INFO"; // "DEBUG";
+        public const string LOG_LEVEL = "DEBUG"; // "DEBUG";
 
         public const int PublicTCPPort = 11000; // DHTClient.PublicDHTPort;
 
