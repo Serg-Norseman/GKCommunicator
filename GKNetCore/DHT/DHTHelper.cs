@@ -26,7 +26,6 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using BencodeNET;
-using BSLib;
 
 namespace GKNet.DHT
 {

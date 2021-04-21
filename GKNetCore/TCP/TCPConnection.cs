@@ -53,8 +53,7 @@ namespace GKNet.TCP
         // Call this method to set this connection's socket up to receive data.
         private void BeginReceive()
         {
-            fSocket.BeginReceive(fBuffer, 0, fBuffer.Length, SocketFlags.None,
-                    new AsyncCallback(OnBytesReceived), this);
+            fSocket.BeginReceive(fBuffer, 0, fBuffer.Length, SocketFlags.None, OnBytesReceived, this);
         }
 
         // This is the method that is called whenever the socket receives
@@ -81,8 +80,7 @@ namespace GKNet.TCP
                 // as you want to keep processing incoming data...
 
                 // Set up again to get the next chunk of data.
-                fSocket.BeginReceive(fBuffer, 0, fBuffer.Length, SocketFlags.None,
-                    new AsyncCallback(OnBytesReceived), this);
+                fSocket.BeginReceive(fBuffer, 0, fBuffer.Length, SocketFlags.None, OnBytesReceived, this);
             } catch (ObjectDisposedException ex) {
                 fDuplexClient.fLogger.WriteError("TCPConnection.OnBytesReceived()", ex);
             } catch (SocketException ex) {

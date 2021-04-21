@@ -37,7 +37,7 @@ namespace GKNet
 {
     public sealed class CommunicatorCore : BaseObject, ICommunicatorCore, IDHTPeersHolder
     {
-        private readonly static byte[] GKNInfoHash = ProtocolHelper.CreateSignInfoKey();
+        private static readonly byte[] GKNInfoHash = ProtocolHelper.CreateSignInfoKey();
 
         private bool fConnected;
         private readonly IDatabase fDatabase;

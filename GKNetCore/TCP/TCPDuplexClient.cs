@@ -23,7 +23,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using GKNet.Logging;
 
 namespace GKNet.TCP
@@ -78,7 +77,7 @@ namespace GKNet.TCP
         protected internal void AddConnection(TCPConnection connection)
         {
             if (connection != null && !fConnections.Contains(connection))
-            fConnections.Add(connection);
+                fConnections.Add(connection);
         }
 
         protected internal void RemoveConnection(TCPConnection connection)

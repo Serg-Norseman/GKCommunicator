@@ -98,7 +98,7 @@ namespace GKNet.DHT
                 return;
             }
 
-            DHTNode existNode = null;
+            DHTNode existNode;
             if (fKTable.TryGetValue(node.RouteId, out existNode)) {
                 if (Algorithms.ArraysEqual(node.ID, existNode.ID)) {
                     node = existNode;
@@ -165,7 +165,7 @@ namespace GKNet.DHT
 
         public DHTNode FindNode(IPEndPoint endPoint)
         {
-            DHTNode node = null;
+            DHTNode node;
             if (endPoint != null && fKTable.TryGetValue(endPoint.ToString(), out node)) {
                 return node;
             } else {

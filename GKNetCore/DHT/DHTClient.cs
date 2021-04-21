@@ -227,7 +227,7 @@ namespace GKNet.DHT
                 //fLogger.WriteError("DHTClient.EndRecv.1()", ex);
             }
 
-            bool notsuccess = false;
+            bool notsuccess;
             do {
                 try {
                     BeginRecv();
@@ -528,7 +528,7 @@ namespace GKNet.DHT
             QueryType result = QueryType.None;
 
             if (transactionId != null && transactionId.Length == 2) {
-                DHTMessage message = null;
+                DHTMessage message;
                 int tid = BitConverter.ToInt16(transactionId.Value, 0);
 
                 if (fTransactions.TryGetValue(tid, out message)) {
