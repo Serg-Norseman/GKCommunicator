@@ -7,7 +7,7 @@
  *      You can use it in any project, commercial and no-commercial.
  *      Redistributing compiled binary not limited any way.
  * 
- *   *) It's allowed to complile source code parts to your application,
+ *   *) It's allowed to compile source code parts to your application,
  *      but then you may not rename class names and namespaces.
  * 
  *   *) Anything is possible, if special agreement between LumiSoft.

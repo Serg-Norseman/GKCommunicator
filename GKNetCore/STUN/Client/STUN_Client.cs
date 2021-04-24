@@ -7,7 +7,7 @@
  *      You can use it in any project, commercial and no-commercial.
  *      Redistributing compiled binary not limited any way.
  * 
- *   *) It's allowed to complile source code parts to your application,
+ *   *) It's allowed to compile source code parts to your application,
  *      but then you may not rename class names and namespaces.
  * 
  *   *) Anything is possible, if special agreement between LumiSoft.
@@ -55,7 +55,7 @@ namespace LumiSoft.Net.STUN.Client
         /// <param name="host">STUN server name or IP.</param>
         /// <param name="port">STUN server port. Default port is 3478.</param>
         /// <param name="socket">UDP socket to use.</param>
-        /// <returns>Returns UDP netwrok info.</returns>
+        /// <returns>Returns UDP network info.</returns>
         /// <exception cref="Exception">Throws exception if unexpected error happens.</exception>
         public static STUN_Result Query(string host, int port, Socket socket)
         {
@@ -72,7 +72,7 @@ namespace LumiSoft.Net.STUN.Client
                 throw new ArgumentException("Socket must be UDP socket !");
             }
 
-            IPEndPoint remoteEndPoint = new IPEndPoint(System.Net.Dns.GetHostAddresses(host)[0], port);
+            IPEndPoint remoteEndPoint = new IPEndPoint(Dns.GetHostAddresses(host)[0], port);
 
             socket.ReceiveTimeout = 3000;
             socket.SendTimeout = 3000;

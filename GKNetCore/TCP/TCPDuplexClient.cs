@@ -86,7 +86,7 @@ namespace GKNet.TCP
                 fConnections.Remove(connection);
         }
 
-        // This is the method that is called when the socket recives a request
+        // This is the method that is called when the socket receives a request
         // for a new connection.
         private void OnConnectRequest(IAsyncResult result)
         {

@@ -61,7 +61,7 @@ namespace GKNet
                     if (m != null) {
                         fLogger.WriteInfo("Specific Mapping: protocol={0}, public={1}, private={2}", m.Protocol, m.PublicPort, m.PrivatePort);
                     } else {*/
-                        m = new Mapping(Mono.Nat.Protocol.Tcp, ProtocolHelper.PublicTCPPort, ProtocolHelper.PublicTCPPort);
+                        m = new Mapping(Protocol.Tcp, ProtocolHelper.PublicTCPPort, ProtocolHelper.PublicTCPPort);
                         device.CreatePortMap(m);
                         fLogger.WriteInfo("Create Mapping: protocol={0}, public={1}, private={2}", m.Protocol, m.PublicPort, m.PrivatePort);
                     //}
@@ -70,12 +70,12 @@ namespace GKNet
                     if (m != null) {
                         fLogger.WriteInfo("Specific Mapping: protocol={0}, public={1}, private={2}", m.Protocol, m.PublicPort, m.PrivatePort);
                     } else {*/
-                        m = new Mapping(Mono.Nat.Protocol.Udp, DHTClient.PublicDHTPort, fStunResult.PublicEndPoint.Port);
+                        m = new Mapping(Protocol.Udp, DHTClient.PublicDHTPort, fStunResult.PublicEndPoint.Port);
                         device.CreatePortMap(m);
                         fLogger.WriteInfo("Create Mapping: protocol={0}, public={1}, private={2}", m.Protocol, m.PublicPort, m.PrivatePort);
                     //}
                 } catch {
-                    fLogger.WriteInfo("Couldnt get specific mapping");
+                    fLogger.WriteInfo("Couldn't get specific mapping");
                 }
 
                 foreach (Mapping mp in device.GetAllMappings()) {
