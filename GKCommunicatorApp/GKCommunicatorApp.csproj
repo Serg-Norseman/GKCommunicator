@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="..\GKConfigurations.targets" />
   <PropertyGroup>
     <Configuration Condition="'$(Configuration)'==''">Debug</Configuration>
     <AssemblyName>GKCommunicatorApp</AssemblyName>
@@ -12,8 +13,8 @@
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <StartupObject>GKCommunicatorApp.Program</StartupObject>
+    <Prefer32Bit>True</Prefer32Bit>
   </PropertyGroup>
-  <Import Project="..\GKConfigurations.targets" />
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <OutputPath>bin\Release\</OutputPath>
   </PropertyGroup>
