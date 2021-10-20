@@ -108,7 +108,7 @@ namespace GKNet.DHT
             fSocket = new Socket(IPAddressFamily, SocketType.Dgram, ProtocolType.Udp);
 
             // FIXME: unsupported?
-            #if !__MonoCS__
+            #if !MONO
             fSocket.SetIPProtectionLevel(IPProtectionLevel.Unrestricted);
             #if !IP6
             const long IOC_IN = 0x80000000;

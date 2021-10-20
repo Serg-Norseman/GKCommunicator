@@ -13,8 +13,10 @@
   </PropertyGroup>
   <Import Project="..\GKConfigurations.targets" />
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>bin\Debug\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>bin\Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup Condition=" '$(MONO)' != 'true' ">
     <Reference Include="System.Data.SQLite">
