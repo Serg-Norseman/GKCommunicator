@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using BencodeNET;
@@ -269,6 +270,25 @@ namespace GKNet.DHT
         public static string BytesToHexString(byte[] bytes)
         {
             return BitConverter.ToString(bytes).Replace("-", "");
+        }
+
+        public static void SetIPProtectionLevelUnrestricted(this Socket socket)
+        {
+            #if !MONO
+            socket.SetIPProtectionLevel(IPProtectionLevel.Unrestricted);
+            #else
+            const int IPProtectionLevel = 23;
+            const int Unrestricted = 10;
+
+            if (socket.AddressFamily == AddressFamily.InterNetworkV6) {
+                socket.SetSocketOption(SocketOptionLevel.IPv6, (SocketOptionName)IPProtectionLevel, Unrestricted);
+                return;
+            }
+            if (socket.AddressFamily == AddressFamily.InterNetwork) {
+                socket.SetSocketOption(SocketOptionLevel.IP, (SocketOptionName)IPProtectionLevel, Unrestricted);
+                return;
+            }
+            #endif
         }
     }
 }

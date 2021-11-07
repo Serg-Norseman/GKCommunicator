@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using GKNet.DHT;
 using GKNet.Logging;
 
 namespace GKNet.TCP
@@ -52,7 +53,7 @@ namespace GKNet.TCP
             // Create the new socket on which we'll be listening.
             fSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             // global with NAT traversal
-            fSocket.SetIPProtectionLevel(IPProtectionLevel.Unrestricted);
+            fSocket.SetIPProtectionLevelUnrestricted();
             // Bind the socket to the address and port.
             fSocket.Bind(new IPEndPoint(IPAddress.Any, port));
             // Start listening.

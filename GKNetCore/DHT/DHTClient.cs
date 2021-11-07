@@ -106,10 +106,10 @@ namespace GKNet.DHT
             fTransactions = new Dictionary<int, DHTMessage>();
 
             fSocket = new Socket(IPAddressFamily, SocketType.Dgram, ProtocolType.Udp);
+            fSocket.SetIPProtectionLevelUnrestricted();
 
             // FIXME: unsupported?
             #if !MONO
-            fSocket.SetIPProtectionLevel(IPProtectionLevel.Unrestricted);
             #if !IP6
             const long IOC_IN = 0x80000000;
             const long IOC_VENDOR = 0x18000000;

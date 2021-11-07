@@ -133,9 +133,7 @@ namespace GKNet
         {
             new Thread(() => {
                 /*using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp)) {
-                    #if !MONO
-                    socket.SetIPProtectionLevel(IPProtectionLevel.Unrestricted);
-                    #endif
+                    socket.SetIPProtectionLevelUnrestricted();
                     socket.Bind(new IPEndPoint(IPAddress.Any, 0));
 
                     DetectSTUN(ProtocolHelper.STUNServer, socket);
