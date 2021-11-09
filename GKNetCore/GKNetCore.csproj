@@ -18,14 +18,14 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <OutputPath>bin\Release\</OutputPath>
   </PropertyGroup>
-  <ItemGroup Condition=" '$(MONO)' != 'true' ">
-    <Reference Include="System.Data.SQLite">
-      <HintPath>..\libs\mswin\System.Data.SQLite.dll</HintPath>
+  <ItemGroup Condition=" '$(MonoCS)' != 'true' ">
+    <Reference Include="BSLib.SQLite">
+      <HintPath>..\libs\mswin\BSLib.SQLite.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup Condition=" '$(MONO)' == 'true' ">
-    <Reference Include="System.Data.SQLite">
-      <HintPath>..\libs\linux\System.Data.SQLite.dll</HintPath>
+  <ItemGroup Condition=" '$(MonoCS)' == 'true' ">
+    <Reference Include="BSLib.SQLite">
+      <HintPath>..\libs\linux\BSLib.SQLite.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -34,9 +34,6 @@
     </Reference>
     <Reference Include="BSLib">
       <HintPath>..\libs\BSLib.dll</HintPath>
-    </Reference>
-    <Reference Include="LiteDB">
-      <HintPath>..\libs\LiteDB.dll</HintPath>
     </Reference>
     <Reference Include="log4net">
       <HintPath>..\libs\log4net.dll</HintPath>
@@ -61,12 +58,11 @@
     <Compile Include="BencodeNET\IBObject.cs" />
     <Compile Include="BencodeNET\InvalidBencodeException.cs" />
     <Compile Include="BencodeNET\UnsupportedBencodeException.cs" />
+    <Compile Include="Database\Parameter.cs" />
     <Compile Include="PGPUtilities.cs" />
     <Compile Include="CommunicatorCore.cs" />
     <Compile Include="ConnectivitySettings.cs" />
-    <Compile Include="Database\IDatabase.cs" />
-    <Compile Include="Database\LiteDatabase.cs" />
-    <Compile Include="Database\SQLDatabase.cs" />
+    <Compile Include="Database\GKNetDatabase.cs" />
     <Compile Include="DHT\IDHTPeer.cs" />
     <Compile Include="DHT\IDHTPeersHolder.cs" />
     <Compile Include="DHT\MessageEventArgs.cs" />

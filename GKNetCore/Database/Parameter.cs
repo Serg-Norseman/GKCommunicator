@@ -1,6 +1,6 @@
 ﻿/*
  *  "GKCommunicator", the chat and bulletin board of the genealogical network.
- *  Copyright (C) 2018 by Sergey V. Zhdanovskih.
+ *  Copyright (C) 2018-2021 by Sergey V. Zhdanovskih.
  *
  *  This file is part of "GEDKeeper".
  *
@@ -18,32 +18,17 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System.Collections.Generic;
-using System.Net;
-using GKNet.Database;
-using GKNet.DHT;
-using LumiSoft.Net.STUN.Client;
+using SQLite;
 
-namespace GKNet
+namespace GKNet.Database
 {
-    public interface ICommunicatorCore
+    [Table("Settings")]
+    public class Parameter
     {
-        GKNetDatabase Database { get; }
-        bool IsConnected { get; }
-        IList<Peer> Peers { get; }
-        UserProfile Profile { get; }
-        int TCPListenerPort { get; set; }
-        DHTClient DHTClient { get; }
-        STUN_Result STUNInfo { get; }
+        [MaxLength(200), PrimaryKey]
+        public string parameter { get; set; }
 
-        void Connect();
-        void Disconnect();
-        void Join(string member);
-        void Leave(string member);
-        void Send(Peer target, string message);
-        void SendToAll(string message);
-
-        Peer AddPeer(IPAddress peerAddress, int port);
-        Peer FindPeer(IPAddress peerAddress);
+        [MaxLength(200), NotNull]
+        public string value { get; set; }
     }
 }

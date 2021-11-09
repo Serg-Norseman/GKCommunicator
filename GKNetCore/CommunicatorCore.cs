@@ -40,7 +40,7 @@ namespace GKNet
         private static readonly byte[] GKNInfoHash = ProtocolHelper.CreateSignInfoKey();
 
         private bool fConnected;
-        private readonly IDatabase fDatabase;
+        private readonly GKNetDatabase fDatabase;
         private readonly DHTClient fDHTClient;
         private readonly IChatForm fForm;
         private readonly ILogger fLogger;
@@ -52,7 +52,7 @@ namespace GKNet
         private int fTCPListenerPort;
 
 
-        public IDatabase Database
+        public GKNetDatabase Database
         {
             get { return fDatabase; }
         }
@@ -103,7 +103,7 @@ namespace GKNet
 
             fProfile = new UserProfile();
 
-            fDatabase = IDatabase.CreateDefault();
+            fDatabase = new GKNetDatabase();
             fDatabase.Connect();
             fDatabase.LoadProfile(fProfile);
 

@@ -9,12 +9,12 @@ namespace GKNet
     {
         //#if !CI_MODE
 
-        private IDatabase fDb;
+        private GKNetDatabase fDb;
 
         [TestFixtureSetUp]
         public void SetUp()
         {
-            fDb = IDatabase.CreateDefault();
+            fDb = new GKNetDatabase();
             Assert.IsNotNull(fDb);
         }
 

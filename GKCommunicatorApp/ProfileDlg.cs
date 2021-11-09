@@ -56,12 +56,14 @@ namespace GKCommunicatorApp
                 chkLanguagesVisible.Checked = userProfile.IsLanguagesVisible;
 
                 var stunInfo = fCore.STUNInfo;
-                AddProperty("NET type", stunInfo.NetType.ToString());
-                AddProperty("Local end point", fCore.DHTClient.Socket.LocalEndPoint.ToString());
-                if (stunInfo.NetType != STUN_NetType.UdpBlocked) {
-                    AddProperty("Public end point", stunInfo.PublicEndPoint.ToString());
-                } else {
-                    AddProperty("Public end point", "-");
+                if (stunInfo != null) {
+                    AddProperty("NET type", stunInfo.NetType.ToString());
+                    AddProperty("Local end point", fCore.DHTClient.Socket.LocalEndPoint.ToString());
+                    if (stunInfo.NetType != STUN_NetType.UdpBlocked) {
+                        AddProperty("Public end point", stunInfo.PublicEndPoint.ToString());
+                    } else {
+                        AddProperty("Public end point", "-");
+                    }
                 }
             } else {
                 chkCountryVisible.Visible = false;
