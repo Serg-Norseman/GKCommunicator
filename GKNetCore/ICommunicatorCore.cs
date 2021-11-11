@@ -1,6 +1,6 @@
 ﻿/*
  *  "GKCommunicator", the chat and bulletin board of the genealogical network.
- *  Copyright (C) 2018 by Sergey V. Zhdanovskih.
+ *  Copyright (C) 2018-2021 by Sergey V. Zhdanovskih.
  *
  *  This file is part of "GEDKeeper".
  *
@@ -35,6 +35,9 @@ namespace GKNet
         int TCPListenerPort { get; set; }
         DHTClient DHTClient { get; }
         STUN_Result STUNInfo { get; }
+        IPAddress NATExternalIP { get; set; }
+        int NATExternalPort { get; set; }
+        IPEndPoint PublicEndPoint { get; set; }
 
         void Connect();
         void Disconnect();
@@ -43,7 +46,7 @@ namespace GKNet
         void Send(Peer target, string message);
         void SendToAll(string message);
 
-        Peer AddPeer(IPAddress peerAddress, int port);
+        Peer AddPeer(IPEndPoint peerEndPoint);
         Peer FindPeer(IPAddress peerAddress);
     }
 }

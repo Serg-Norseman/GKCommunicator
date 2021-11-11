@@ -1,6 +1,6 @@
 ﻿/*
  *  "GKCommunicator", the chat and bulletin board of the genealogical network.
- *  Copyright (C) 2018 by Sergey V. Zhdanovskih.
+ *  Copyright (C) 2018-2021 by Sergey V. Zhdanovskih.
  *
  *  This file is part of "GEDKeeper".
  *
@@ -17,6 +17,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+//#define DEBUG_DHT_INTERNALS
 
 using System;
 using System.Collections.Generic;
@@ -150,14 +152,10 @@ namespace GKNet.DHT
                 "router.utorrent.com"
             }.Select(x => Dns.GetHostEntry(x).AddressList[0]).ToList();
 
-            #if !IP6
-            fRouters = routers;
-            #else
             fRouters = new List<IPAddress>();
             foreach (var r in routers) {
                 fRouters.Add(DHTHelper.PrepareAddress(r));
             }
-            #endif
         }
 
         public void SearchNodes(byte[] searchInfoHash)
@@ -302,7 +300,9 @@ namespace GKNet.DHT
                     if (args != null) {
                         var id = args.Get<BString>("id");
                         byte[] idVal = (id != null) ? id.Value : null;
-                        RaiseQueryReceived(ipinfo, idVal, data);
+                        if (QueryReceived != null) {
+                            QueryReceived(this, new MessageEventArgs(ipinfo, idVal, data));
+                        }
                     }
                     break;
             }
@@ -345,7 +345,9 @@ namespace GKNet.DHT
             bool canAnnounce = false;
             switch (queryType) {
                 case QueryType.Ping:
-                    RaisePeerPinged(ipinfo, id.Value);
+                    if (PeerPinged != null) {
+                        PeerPinged(this, new PeerPingedEventArgs(ipinfo, id.Value));
+                    }
                     break;
 
                 case QueryType.FindNode:
@@ -364,7 +366,9 @@ namespace GKNet.DHT
 
                 case QueryType.None:
                     // TransactionId bad or unknown
-                    RaiseResponseReceived(ipinfo, id.Value, data);
+                    if (ResponseReceived != null) {
+                        ResponseReceived(this, new MessageEventArgs(ipinfo, id.Value, data));
+                    }
                     break;
             }
 
@@ -380,8 +384,14 @@ namespace GKNet.DHT
                 var values = DHTHelper.ParseValuesList(valuesList);
 
                 if (values.Count > 0) {
+#if DEBUG_DHT_INTERNALS
                     fLogger.WriteDebug("Receive {0} values (peers) from {1}", values.Count, ipinfo.ToString());
-                    RaisePeersFound(fSearchInfoHash, values);
+#endif
+
+                    if (PeersFound != null) {
+                        PeersFound(this, new PeersFoundEventArgs(fSearchInfoHash, values));
+                    }
+
                     result = true;
                 }
             }
@@ -396,13 +406,13 @@ namespace GKNet.DHT
                     nodesList = DHTHelper.ParseNodesListIP4(nodesStr.Value);
                 } else if (nodesStr.Value.Length % DHTHelper.CompactNodeRecordLengthIP6 == 0) {
                     nodesList = DHTHelper.ParseNodesListIP6(nodesStr.Value);
-                } else {
-                    throw new Exception("sd");
                 }
 
-                fLogger.WriteDebug("Receive {0} nodes from {1}", nodesList.Count, ipinfo.ToString());
+                if (nodesList != null && nodesList.Count > 0) {
+#if DEBUG_DHT_INTERNALS
+                    fLogger.WriteDebug("Receive {0} nodes from {1}", nodesList.Count, ipinfo.ToString());
+#endif
 
-                if (nodesList.Count > 0) {
                     fRoutingTable.UpdateNodes(nodesList);
                     fLastNodesUpdateTime = DateTime.Now.Ticks;
                 }
@@ -483,38 +493,6 @@ namespace GKNet.DHT
 
         #endregion
 
-        #region Events processing
-
-        private void RaisePeersFound(byte[] infoHash, List<IPEndPoint> peers)
-        {
-            if (PeersFound != null) {
-                PeersFound(this, new PeersFoundEventArgs(infoHash, peers));
-            }
-        }
-
-        private void RaisePeerPinged(IPEndPoint peerEndPoint, byte[] nodeId)
-        {
-            if (PeerPinged != null) {
-                PeerPinged(this, new PeerPingedEventArgs(peerEndPoint, nodeId));
-            }
-        }
-
-        private void RaiseQueryReceived(IPEndPoint peerEndPoint, byte[] nodeId, BDictionary data)
-        {
-            if (QueryReceived != null) {
-                QueryReceived(this, new MessageEventArgs(peerEndPoint, nodeId, data));
-            }
-        }
-
-        private void RaiseResponseReceived(IPEndPoint peerEndPoint, byte[] nodeId, BDictionary data)
-        {
-            if (ResponseReceived != null) {
-                ResponseReceived(this, new MessageEventArgs(peerEndPoint, nodeId, data));
-            }
-        }
-
-        #endregion
-
         #region Transactions
 
         public void SetTransaction(BString transactionId, DHTMessage message)
@@ -566,13 +544,17 @@ namespace GKNet.DHT
 
         internal void SendAnnouncePeerQuery(IPEndPoint address, byte[] infoHash, byte implied_port, int port, BString token)
         {
+//#if DEBUG_DHT_INTERNALS
+            fLogger.WriteDebug("Send announce peer query {0}, {1}, {2}", address, implied_port, port);
+//#endif
+
             DHTNode node = fRoutingTable.FindNode(address);
             if (node != null) {
                 long nowTicks = DateTime.Now.Ticks;
-                if (nowTicks - node.LastAnnouncementTime < AnnounceLife.Ticks) {
+                if (nowTicks - node.LastAnnouncementTicks < AnnounceLife.Ticks) {
                     return;
                 }
-                node.LastAnnouncementTime = nowTicks;
+                node.LastAnnouncementTicks = nowTicks;
                 // TODO: update announce by timer, every 30m
             }
 

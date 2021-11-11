@@ -84,7 +84,6 @@
     <Compile Include="Logging\Log4NetHelper.cs" />
     <Compile Include="Logging\LogManager.cs" />
     <Compile Include="Message.cs" />
-    <Compile Include="NATMapper.cs" />
     <Compile Include="NetHelper.cs" />
     <Compile Include="Peer.cs" />
     <Compile Include="PeerProfile.cs" />

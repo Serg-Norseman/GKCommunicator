@@ -1,6 +1,6 @@
 ﻿/*
  *  "GKCommunicator", the chat and bulletin board of the genealogical network.
- *  Copyright (C) 2018 by Sergey V. Zhdanovskih.
+ *  Copyright (C) 2018-2021 by Sergey V. Zhdanovskih.
  *
  *  This file is part of "GEDKeeper".
  *
@@ -22,7 +22,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using BencodeNET;
@@ -32,6 +31,7 @@ using GKNet.DHT;
 using GKNet.Logging;
 using GKNet.TCP;
 using LumiSoft.Net.STUN.Client;
+using Mono.Nat;
 
 namespace GKNet
 {
@@ -46,7 +46,6 @@ namespace GKNet
         private readonly ILogger fLogger;
         private readonly IList<Peer> fPeers;
         private readonly UserProfile fProfile;
-        private IPEndPoint fPublicEndPoint;
         private STUN_Result fSTUNInfo;
         private readonly TCPDuplexClient fTCPClient;
         private int fTCPListenerPort;
@@ -82,6 +81,24 @@ namespace GKNet
             get { return fSTUNInfo; }
         }
 
+        public IPAddress NATExternalIP
+        {
+            get;
+            set;
+        }
+
+        public int NATExternalPort
+        {
+            get;
+            set;
+        }
+
+        public IPEndPoint PublicEndPoint
+        {
+            get { return fDHTClient.PublicEndPoint; }
+            set { fDHTClient.PublicEndPoint = value; }
+        }
+
         public int TCPListenerPort
         {
             get { return fTCPListenerPort; }
@@ -113,7 +130,7 @@ namespace GKNet
             fDHTClient.QueryReceived += OnQueryReceive;
             fDHTClient.ResponseReceived += OnResponseReceive;
 
-            NATHolePunching(fDHTClient.Socket);
+            NATHolePunching();
 
             fTCPClient = new TCPDuplexClient();
             fTCPClient.DataReceive += OnDataReceive;
@@ -129,49 +146,97 @@ namespace GKNet
             base.Dispose(disposing);
         }
 
-        private void NATHolePunching(Socket socket)
+        private void NATHolePunching()
         {
             new Thread(() => {
-                /*using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp)) {
-                    socket.SetIPProtectionLevelUnrestricted();
-                    socket.Bind(new IPEndPoint(IPAddress.Any, 0));
-
-                    DetectSTUN(ProtocolHelper.STUNServer, socket);
-                    //NATMapper.CreateNATMapping(this, stunResult);
-                }*/
-
-                DetectSTUN(ProtocolHelper.STUNServer, socket);
-                NATMapper.CreateNATMapping(fSTUNInfo);
+                DetectSTUN();
+                CreateNATMapping();
 
                 fForm.OnInitialized();
             }).Start();
         }
 
-        private void DetectSTUN(string stunServer, Socket socket)
+        private void DetectSTUN()
         {
-            if (string.IsNullOrEmpty(stunServer)) {
-                throw new ArgumentException("Not specified STUN server");
-            }
-
             STUN_Result result = null;
             try {
-                result = STUN_Client.Query(stunServer, 3478, socket);
+                var socket = fDHTClient.Socket;
+                result = STUN_Client.Query(ProtocolHelper.STUNServer, 3478, socket);
 
                 fLogger.WriteInfo("STUN Info:");
                 fLogger.WriteInfo("NetType: {0}", result.NetType);
                 fLogger.WriteInfo("LocalEndPoint: {0}", socket.LocalEndPoint);
                 if (result.NetType != STUN_NetType.UdpBlocked) {
-                    fPublicEndPoint = result.PublicEndPoint;
+                    PublicEndPoint = result.PublicEndPoint;
                 } else {
-                    fPublicEndPoint = null;
+                    PublicEndPoint = null;
                 }
-                fLogger.WriteInfo("PublicEndPoint: {0}", fPublicEndPoint);
+                fLogger.WriteInfo("PublicEndPoint [STUN]: {0}", PublicEndPoint);
             } catch (Exception ex) {
                 fLogger.WriteError("DetectSTUN() error", ex);
             }
 
             fSTUNInfo = result;
-            fDHTClient.PublicEndPoint = fPublicEndPoint;
+        }
+
+        public void CreateNATMapping()
+        {
+            NatUtility.DeviceFound += DeviceFound;
+            NatUtility.DeviceLost += DeviceLost;
+            NatUtility.StartDiscovery();
+            fLogger.WriteInfo("NAT Discovery started");
+        }
+
+        private void DeviceFound(object sender, DeviceEventArgs args)
+        {
+            try {
+                INatDevice device = args.Device;
+
+                fLogger.WriteInfo("Device found, type: {0}", device.GetType().Name);
+                if (device.GetType().Name == "PmpNatDevice") {
+                    fLogger.WriteInfo("Device skipped");
+                    return;
+                }
+
+                fLogger.WriteInfo("External IP: {0}", device.GetExternalIP());
+                NATExternalIP = device.GetExternalIP();
+
+                try {
+                    Mapping m;
+                    /*Mapping m = device.GetSpecificMapping(Mono.Nat.Protocol.Tcp, ProtocolHelper.PublicTCPPort);
+                    if (m != null) {
+                        fLogger.WriteInfo("Specific Mapping: protocol={0}, public={1}, private={2}", m.Protocol, m.PublicPort, m.PrivatePort);
+                    } else {*/
+                    /*m = new Mapping(Protocol.Tcp, ProtocolHelper.PublicTCPPort, ProtocolHelper.PublicTCPPort);
+                    device.CreatePortMap(m);
+                    fLogger.WriteInfo("Create Mapping: protocol={0}, public={1}, private={2}", m.Protocol, m.PublicPort, m.PrivatePort);*/
+                    //}
+
+                    m = new Mapping(Protocol.Udp, DHTClient.PublicDHTPort, DHTClient.PublicDHTPort);
+                    device.CreatePortMap(m);
+                    m = device.GetSpecificMapping(Protocol.Udp, DHTClient.PublicDHTPort);
+                    fLogger.WriteInfo("Create Mapping: protocol={0}, public={1}, private={2}", m.Protocol, m.PublicPort, m.PrivatePort);
+                    NATExternalPort = m.PublicPort;
+
+                    PublicEndPoint = new IPEndPoint(NATExternalIP, m.PublicPort);
+                    fLogger.WriteInfo("PublicEndPoint [NAT]: {0}", PublicEndPoint);
+                } catch {
+                    fLogger.WriteInfo("Couldn't get specific mapping");
+                }
+
+                foreach (Mapping mp in device.GetAllMappings()) {
+                    fLogger.WriteInfo("Existing Mapping: protocol={0}, public={1}, private={2}", mp.Protocol, mp.PublicPort, mp.PrivatePort);
+                }
+
+                fLogger.WriteInfo("NAT Discovery finished");
+            } catch (Exception ex) {
+                fLogger.WriteError("NATMapper.DeviceFound()", ex);
+            }
+        }
+
+        private void DeviceLost(object sender, DeviceEventArgs args)
+        {
+            fLogger.WriteInfo("Device lost, type: {0}", args.Device.GetType().Name);
         }
 
         public void Connect()
@@ -207,10 +272,9 @@ namespace GKNet
             bool result = false;
             if (peerEndPoint == null) return false;
 
-            var peerAddress = peerEndPoint.Address;
-            Peer peer = FindPeer(peerAddress);
+            Peer peer = FindPeer(peerEndPoint.Address);
             if (peer == null) {
-                peer = AddPeer(peerAddress, peerEndPoint.Port);
+                peer = AddPeer(peerEndPoint);
                 result = true;
             }
 
@@ -230,33 +294,37 @@ namespace GKNet
             bool result = false;
             if (peerEndPoint == null) return false;
 
-            var peerAddress = peerEndPoint.Address;
-            Peer peer = FindPeer(peerAddress);
+            Peer peer = FindPeer(peerEndPoint.Address);
             if (peer == null) {
-                peer = AddPeer(peerAddress, peerEndPoint.Port);
+                peer = AddPeer(peerEndPoint);
                 result = true;
             }
 
-            // TODO: it's bad place for peers' ping!
-            // FIXME: find out which ping gets the answer! check it for a long time testing!
-            //fDHTClient.SendPingQuery(peerEndPoint);
-            fDHTClient.SendPingQuery(new IPEndPoint(peerAddress, fDHTClient.LocalEndPoint.Port));
+            if (!peer.IsLocal) {
+                // TODO: it's bad place for peers' ping!
+                // FIXME: find out which ping gets the answer! check it for a long time testing!
+                DateTime dtNow = DateTime.Now;
+                if (dtNow - peer.LastPingTime > TimeSpan.FromMinutes(1)) {
+                    fDHTClient.SendPingQuery(peerEndPoint);
+                    peer.LastPingTime = dtNow;
+                }
+            }
 
             return result;
         }
 
         public bool CheckLocalAddress(IPAddress peerAddress)
         {
-            return ((fPublicEndPoint != null) && (DHTHelper.PrepareAddress(fPublicEndPoint.Address).Equals(peerAddress)));
+            return ((PublicEndPoint != null) && (DHTHelper.PrepareAddress(PublicEndPoint.Address).Equals(peerAddress)));
         }
 
-        public Peer AddPeer(IPAddress peerAddress, int port)
+        public Peer AddPeer(IPEndPoint peerEndPoint)
         {
-            fLogger.WriteInfo("Found new peer: {0}:{1}", peerAddress, port);
+            fLogger.WriteInfo("Found new peer: {0}", peerEndPoint);
 
             lock (fPeers) {
-                Peer peer = new Peer(peerAddress, port);
-                peer.IsLocal = CheckLocalAddress(peerAddress);
+                Peer peer = new Peer(peerEndPoint.Address, peerEndPoint.Port);
+                peer.IsLocal = CheckLocalAddress(peerEndPoint.Address);
                 fPeers.Add(peer);
                 return peer;
             }
@@ -273,11 +341,13 @@ namespace GKNet
         {
             fDHTClient.Send(endPoint, data);
 
-            fTCPClient.Send(endPoint, data.EncodeAsBytes());
+            //fTCPClient.Send(endPoint, data.EncodeAsBytes());
         }
 
         public void SendMessage(Peer peer, string message)
         {
+            fLogger.WriteDebug("SendMessage: {0}, `{1}`", peer.EndPoint, message);
+
             SendData(peer.EndPoint, ProtocolHelper.CreateChatMessage(DHTHelper.GetTransactionId(), fDHTClient.LocalID, message));
         }
 
@@ -298,16 +368,13 @@ namespace GKNet
         private void OnPeersFound(object sender, PeersFoundEventArgs e)
         {
             bool changed = false;
-            int newFounded = 0;
             foreach (var p in e.Peers) {
+                fLogger.WriteDebug("Receive peer {0}", p);
+
                 changed = UpdatePeer(p);
-                if (changed) {
-                    newFounded += 1;
-                }
             }
 
             if (changed) {
-                fLogger.WriteDebug("Found DHT peers: {0}", newFounded);
                 fForm.OnPeersListChanged();
             }
         }
@@ -432,7 +499,9 @@ namespace GKNet
         public void SendToAll(string message)
         {
             foreach (var peer in fPeers) {
-                SendMessage(peer, message);
+                if (!peer.IsLocal) {
+                    SendMessage(peer, message);
+                }
             }
         }
 

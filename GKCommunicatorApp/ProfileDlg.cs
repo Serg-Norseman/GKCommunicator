@@ -1,6 +1,6 @@
 ﻿/*
  *  "GKCommunicator", the chat and bulletin board of the genealogical network.
- *  Copyright (C) 2018 by Sergey V. Zhdanovskih.
+ *  Copyright (C) 2018-2021 by Sergey V. Zhdanovskih.
  *
  *  This file is part of "GEDKeeper".
  *
@@ -65,6 +65,9 @@ namespace GKCommunicatorApp
                         AddProperty("Public end point", "-");
                     }
                 }
+
+                AddProperty("External IP", fCore.NATExternalIP.ToString());
+                AddProperty("External Port", fCore.NATExternalPort.ToString());
             } else {
                 chkCountryVisible.Visible = false;
                 chkTimeZoneVisible.Visible = false;

@@ -1,6 +1,6 @@
 ﻿/*
  *  "GKCommunicator", the chat and bulletin board of the genealogical network.
- *  Copyright (C) 2018 by Sergey V. Zhdanovskih.
+ *  Copyright (C) 2018-2021 by Sergey V. Zhdanovskih.
  *
  *  This file is part of "GEDKeeper".
  *
@@ -34,7 +34,7 @@ namespace GKNet.DHT
         public byte[] ID { get; private set; }
         public IPEndPoint EndPoint { get; private set; }
 
-        public long LastAnnouncementTime { get; set; }
+        public long LastAnnouncementTicks { get; set; }
         public long LastUpdateTime { get; set; }
 
         public string RouteId

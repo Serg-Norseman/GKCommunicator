@@ -12,6 +12,18 @@ namespace GKNet.DHT
     {
         private class DHTPeersHolder : IDHTPeersHolder
         {
+            public IPAddress NATExternalIP
+            {
+                get;
+                set;
+            }
+
+            public int NATExternalPort
+            {
+                get;
+                set;
+            }
+
             public IList<IDHTPeer> GetPeersList()
             {
                 return new List<IDHTPeer>();

@@ -50,7 +50,7 @@ namespace GKNet
                 Assert.IsNotNull(core.GetPeersList());
                 Assert.IsNotNull(core.Database);
 
-                var peer = core.AddPeer(IPAddress.Any, 1111);
+                var peer = core.AddPeer(new IPEndPoint(IPAddress.Any, 1111));
                 Assert.IsNotNull(peer);
 
                 peer = core.FindPeer(IPAddress.Any);

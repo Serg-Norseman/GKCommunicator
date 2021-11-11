@@ -1,6 +1,6 @@
 ﻿/*
  *  "GKCommunicator", the chat and bulletin board of the genealogical network.
- *  Copyright (C) 2018 by Sergey V. Zhdanovskih.
+ *  Copyright (C) 2018-2021 by Sergey V. Zhdanovskih.
  *
  *  This file is part of "GEDKeeper".
  *
@@ -18,6 +18,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System;
 using System.Net;
 using GKNet.DHT;
 
@@ -41,6 +42,7 @@ namespace GKNet
         public PresenceStatus Presence { get; set; }
         public PeerProfile Profile { get; private set; }
         public PeerState State { get; set; }
+        public DateTime LastPingTime { get; set; }
 
         public Peer(IPAddress address, int port)
         {

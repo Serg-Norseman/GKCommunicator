@@ -21,6 +21,9 @@ csharp_new_line_before_open_brace = methods, properties, events, indexers, types
 csharp_new_line_before_else = false
 csharp_new_line_before_catch = false
 csharp_new_line_before_finally = false
+csharp_indent_preprocessor_if = 4
+csharp_indent_preprocessor_other = 4
+csharp_indent_preprocessor_region = 4
 
 [*.{md,yml}]
 indent_style = space

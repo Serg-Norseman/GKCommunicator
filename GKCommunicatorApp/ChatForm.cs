@@ -1,6 +1,6 @@
 ﻿/*
  *  "GKCommunicator", the chat and bulletin board of the genealogical network.
- *  Copyright (C) 2018 by Sergey V. Zhdanovskih.
+ *  Copyright (C) 2018-2021 by Sergey V. Zhdanovskih.
  *
  *  This file is part of "GEDKeeper".
  *
@@ -104,10 +104,11 @@ namespace GKCommunicatorApp
             lstChatMsgs.SelectionColor = color;
         }
 
-        private void AddChatText(string text, Color headerColor, Color textColor)
+        private void AddChatText(Peer sender, string text, Color headerColor, Color textColor)
         {
+            string senderText = (sender == null) ? " [local]" : string.Format(" [{0}]", sender.EndPoint);
             lstChatMsgs.AppendText("\r\n");
-            AddTextChunk(DateTime.Now.ToString(), headerColor);
+            AddTextChunk(DateTime.Now.ToString() + senderText, headerColor);
             lstChatMsgs.AppendText("\r\n");
             AddTextChunk(text, textColor);
             lstChatMsgs.AppendText("\r\n");
@@ -135,27 +136,25 @@ namespace GKCommunicatorApp
             var msgText = txtChatMsg.Text;
 
             if (!string.IsNullOrEmpty(msgText)) {
-                fCore.SendToAll(msgText);
-                AddChatText(msgText, Color.Navy, Color.Black);
-
+                AddChatText(null, msgText, Color.Navy, Color.Black);
                 txtChatMsg.Clear();
                 txtChatMsg.Focus();
+
+                fCore.SendToAll(msgText);
             }
         }
 
         private void btnSend_Click(object sender, EventArgs e)
         {
-            if (lstMembers.SelectedItems.Count == 0) return;
-
-            var peerItem = (lstMembers.SelectedItems[0].Tag as Peer);
+            var peerItem = GetSelectedPeer();
             var msgText = txtChatMsg.Text;
 
-            if ((!string.IsNullOrEmpty(msgText)) && (peerItem != null)) {
-                fCore.Send(peerItem, msgText);
-                AddChatText(msgText, Color.Green, Color.Black);
-
+            if ((!string.IsNullOrEmpty(msgText)) && (peerItem != null && !peerItem.IsLocal)) {
+                AddChatText(null, msgText, Color.Green, Color.Black);
                 txtChatMsg.Clear();
                 txtChatMsg.Focus();
+
+                fCore.Send(peerItem, msgText);
             }
         }
 
@@ -237,7 +236,7 @@ namespace GKCommunicatorApp
         void IChatForm.OnMessageReceived(Peer sender, string message)
         {
             Invoke((MethodInvoker)delegate {
-                AddChatText(message, Color.Red, Color.Black);
+                AddChatText(sender, message, Color.Red, Color.Black);
 
                 UpdateStatus();
             });
