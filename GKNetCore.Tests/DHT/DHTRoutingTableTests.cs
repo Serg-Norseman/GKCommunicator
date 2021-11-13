@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Net;
-using GKNet.DHT;
+﻿using System.Net;
 using NUnit.Framework;
 
 namespace GKNet.DHT

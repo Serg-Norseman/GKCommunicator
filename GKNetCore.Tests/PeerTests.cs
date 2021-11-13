@@ -1,9 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
-using BencodeNET;
-using GKNet;
+﻿using System.Net;
 using NUnit.Framework;
 
 namespace GKNet
@@ -14,7 +9,7 @@ namespace GKNet
         [Test]
         public void Test_ctor()
         {
-            var peer = new Peer(IPAddress.Any, 0);
+            var peer = new Peer(new IPEndPoint(IPAddress.Any, 1111));
             Assert.IsNotNull(peer);
             Assert.AreEqual(PeerState.Unknown, peer.State);
             Assert.IsNotNull(peer.Profile);

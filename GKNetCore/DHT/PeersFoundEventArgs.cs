@@ -18,16 +18,17 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
 using System.Collections.Generic;
 using System.Net;
+using BencodeNET;
 
 namespace GKNet.DHT
 {
-    public class PeersFoundEventArgs : EventArgs
+    public class PeersFoundEventArgs : PeerEventArgs
     {
         private readonly byte[] fInfoHash;
         private readonly List<IPEndPoint> fPeers;
+        private readonly BString fToken;
 
         public byte[] InfoHash
         {
@@ -39,10 +40,16 @@ namespace GKNet.DHT
             get { return fPeers; }
         }
 
-        public PeersFoundEventArgs(byte[] infoHash, List<IPEndPoint> peers)
+        public BString Token
+        {
+            get { return fToken; }
+        }
+
+        public PeersFoundEventArgs(IPEndPoint peerEndPoint, byte[] nodeId, byte[] infoHash, List<IPEndPoint> peers, BString token) : base(peerEndPoint, nodeId)
         {
             fInfoHash = infoHash;
             fPeers = peers;
+            fToken = token;
         }
     }
 }

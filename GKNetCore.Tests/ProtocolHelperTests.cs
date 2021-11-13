@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using BencodeNET;
-using GKNet.DHT;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace GKNet.DHT
 {
@@ -15,7 +10,9 @@ namespace GKNet.DHT
         {
             var infoKey = ProtocolHelper.CreateSignInfoKey();
             Assert.IsNotNull(infoKey);
-            // TODO: test contents
+
+            var hexStr = DHTHelper.BytesToHexString(infoKey);
+            Assert.AreEqual("3E42E4C836FD3779FF6D16DA5FA65F17DB756EB9", hexStr);
         }
 
         [Test]

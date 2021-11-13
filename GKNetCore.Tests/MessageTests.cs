@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
-using BencodeNET;
-using GKNet;
 using NUnit.Framework;
 
 namespace GKNet

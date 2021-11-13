@@ -1,5 +1,4 @@
-﻿using System;
-using GKNet.Database;
+﻿using GKNet.Database;
 using NUnit.Framework;
 
 namespace GKNet

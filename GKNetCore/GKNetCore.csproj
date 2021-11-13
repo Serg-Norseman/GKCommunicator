@@ -72,7 +72,6 @@
     <Compile Include="DHT\Messages\DHTResponseMessage.cs" />
     <Compile Include="DHT\PeerEventArgs.cs" />
     <Compile Include="DHT\PeerPingedEventArgs.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="IChatForm.cs" />
     <Compile Include="DHT\DHTClient.cs" />
     <Compile Include="DHT\DHTHelper.cs" />

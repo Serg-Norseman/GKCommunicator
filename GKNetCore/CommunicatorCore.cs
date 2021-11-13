@@ -49,6 +49,7 @@ namespace GKNet
         private STUN_Result fSTUNInfo;
         private readonly TCPDuplexClient fTCPClient;
         private int fTCPListenerPort;
+        private Semaphore fUPnPSem = new Semaphore(0, 1);
 
 
         public GKNetDatabase Database
@@ -130,12 +131,12 @@ namespace GKNet
             fDHTClient.QueryReceived += OnQueryReceive;
             fDHTClient.ResponseReceived += OnResponseReceive;
 
-            NATHolePunching();
-
             fTCPClient = new TCPDuplexClient();
             fTCPClient.DataReceive += OnDataReceive;
 
             fTCPListenerPort = ProtocolHelper.PublicTCPPort;
+
+            NATHolePunching();
         }
 
         protected override void Dispose(bool disposing)
@@ -150,7 +151,7 @@ namespace GKNet
         {
             new Thread(() => {
                 DetectSTUN();
-                CreateNATMapping();
+                CreatePortMapping();
 
                 fForm.OnInitialized();
             }).Start();
@@ -179,12 +180,17 @@ namespace GKNet
             fSTUNInfo = result;
         }
 
-        public void CreateNATMapping()
+        public void CreatePortMapping()
         {
-            NatUtility.DeviceFound += DeviceFound;
-            NatUtility.DeviceLost += DeviceLost;
-            NatUtility.StartDiscovery();
-            fLogger.WriteInfo("NAT Discovery started");
+            new Thread(() => {
+                NatUtility.DeviceFound += DeviceFound;
+                NatUtility.DeviceLost += DeviceLost;
+                fLogger.WriteInfo("NAT Discovery started");
+                NatUtility.StartDiscovery();
+                fUPnPSem.WaitOne();
+                fLogger.WriteInfo("NAT Discovery stopped");
+                NatUtility.StopDiscovery();
+            }).Start();
         }
 
         private void DeviceFound(object sender, DeviceEventArgs args)
@@ -212,23 +218,24 @@ namespace GKNet
                     fLogger.WriteInfo("Create Mapping: protocol={0}, public={1}, private={2}", m.Protocol, m.PublicPort, m.PrivatePort);*/
                     //}
 
+                    m = device.GetSpecificMapping(Protocol.Udp, DHTClient.PublicDHTPort);
+                    if (m != null) {
+                        device.DeletePortMap(m);
+                    }
                     m = new Mapping(Protocol.Udp, DHTClient.PublicDHTPort, DHTClient.PublicDHTPort);
                     device.CreatePortMap(m);
-                    m = device.GetSpecificMapping(Protocol.Udp, DHTClient.PublicDHTPort);
                     fLogger.WriteInfo("Create Mapping: protocol={0}, public={1}, private={2}", m.Protocol, m.PublicPort, m.PrivatePort);
-                    NATExternalPort = m.PublicPort;
 
-                    PublicEndPoint = new IPEndPoint(NATExternalIP, m.PublicPort);
-                    fLogger.WriteInfo("PublicEndPoint [NAT]: {0}", PublicEndPoint);
-                } catch {
-                    fLogger.WriteInfo("Couldn't get specific mapping");
+                    NATExternalPort = m.PublicPort;
+                } catch (Exception ex) {
+                    fLogger.WriteError("Couldn't create specific mapping", ex);
                 }
 
                 foreach (Mapping mp in device.GetAllMappings()) {
                     fLogger.WriteInfo("Existing Mapping: protocol={0}, public={1}, private={2}", mp.Protocol, mp.PublicPort, mp.PrivatePort);
                 }
 
-                fLogger.WriteInfo("NAT Discovery finished");
+                fUPnPSem.Release();
             } catch (Exception ex) {
                 fLogger.WriteError("NATMapper.DeviceFound()", ex);
             }
@@ -241,21 +248,15 @@ namespace GKNet
 
         public void Connect()
         {
-            fDHTClient.Run();
-            fDHTClient.JoinNetwork();
-            fDHTClient.SearchNodes(GKNInfoHash);
+            fDHTClient.Start(GKNInfoHash);
 
             fTCPClient.Connect(fTCPListenerPort);
 
             fConnected = true;
             new Thread(() => {
-                int x = 0;
                 while (fConnected) {
-                    if (++x >= 60) {
-                        CheckPeers();
-                        x = 0;
-                    }
-                    Thread.Sleep(1000);
+                    HandshakePeers();
+                    Thread.Sleep(60000);
                 }
             }).Start();
         }
@@ -264,41 +265,51 @@ namespace GKNet
         {
             fConnected = false;
             fTCPClient.Disconnect();
-            fDHTClient.StopSearch();
+            fDHTClient.Stop();
         }
 
+        /// <summary>
+        /// Peer confirmation after receiving a ping from it.
+        /// </summary>
+        /// <param name="peerEndPoint"></param>
+        /// <returns></returns>
         public bool CheckPeer(IPEndPoint peerEndPoint)
         {
             bool result = false;
             if (peerEndPoint == null) return false;
 
-            Peer peer = FindPeer(peerEndPoint.Address);
+            Peer peer = FindPeer(peerEndPoint);
             if (peer == null) {
                 peer = AddPeer(peerEndPoint);
                 result = true;
             }
 
             if (peer.State != PeerState.Checked && !peer.IsLocal) {
-                peer.EndPoint.Port = peerEndPoint.Port;
                 peer.State = PeerState.Checked;
+                SendData(peer.EndPoint, ProtocolHelper.CreateGetPeerInfoQuery(DHTHelper.GetTransactionId(), fDHTClient.LocalID));
                 result = true;
             }
-
-            SendData(peer.EndPoint, ProtocolHelper.CreateGetPeerInfoQuery(DHTHelper.GetTransactionId(), fDHTClient.LocalID));
 
             return result;
         }
 
+        /// <summary>
+        /// Peer update after receiving it from DHT nodes.
+        /// </summary>
+        /// <param name="peerEndPoint"></param>
+        /// <returns></returns>
         public bool UpdatePeer(IPEndPoint peerEndPoint)
         {
             bool result = false;
             if (peerEndPoint == null) return false;
 
-            Peer peer = FindPeer(peerEndPoint.Address);
+            Peer peer = FindPeer(peerEndPoint);
             if (peer == null) {
                 peer = AddPeer(peerEndPoint);
                 result = true;
             }
+
+            peer.LastUpdateTime = DateTime.Now;
 
             if (!peer.IsLocal) {
                 // TODO: it's bad place for peers' ping!
@@ -306,6 +317,7 @@ namespace GKNet
                 DateTime dtNow = DateTime.Now;
                 if (dtNow - peer.LastPingTime > TimeSpan.FromMinutes(1)) {
                     fDHTClient.SendPingQuery(peerEndPoint);
+                    fDHTClient.SendPingQuery(new IPEndPoint(peerEndPoint.Address, DHTClient.PublicDHTPort));
                     peer.LastPingTime = dtNow;
                 }
             }
@@ -323,16 +335,16 @@ namespace GKNet
             fLogger.WriteInfo("Found new peer: {0}", peerEndPoint);
 
             lock (fPeers) {
-                Peer peer = new Peer(peerEndPoint.Address, peerEndPoint.Port);
+                Peer peer = new Peer(peerEndPoint);
                 peer.IsLocal = CheckLocalAddress(peerEndPoint.Address);
                 fPeers.Add(peer);
                 return peer;
             }
         }
 
-        public Peer FindPeer(IPAddress peerAddress)
+        public Peer FindPeer(IPEndPoint peerEndPoint)
         {
-            return fPeers.FirstOrDefault(x => x.Address.Equals(peerAddress));
+            return fPeers.FirstOrDefault(x => x.EndPoint.Equals(peerEndPoint));
         }
 
         #region Protocol features
@@ -353,7 +365,17 @@ namespace GKNet
 
         #endregion
 
-        private void CheckPeers()
+        /*private void CheckLocals(IPEndPoint peerEndPoint, BString token)
+        {
+            var dtNow = DateTime.Now;
+            foreach (var p in fPeers) {
+                if (p.IsLocal && (dtNow - p.LastUpdateTime > TimeSpan.FromMinutes(2))) {
+                    fDHTClient.SendAnnouncePeerQuery(peerEndPoint, GKNInfoHash, 1, DHTClient.PublicDHTPort, token);
+                }
+            }
+        }*/
+
+        private void HandshakePeers()
         {
             // FIXME: think through this logic better!
             /*foreach (var peer in fPeers) {
@@ -369,9 +391,9 @@ namespace GKNet
         {
             bool changed = false;
             foreach (var p in e.Peers) {
-                fLogger.WriteDebug("Receive peer {0}", p);
-
-                changed = UpdatePeer(p);
+                if (UpdatePeer(p)) {
+                    changed = true;
+                }
             }
 
             if (changed) {
@@ -394,7 +416,7 @@ namespace GKNet
         {
             fLogger.WriteDebug("Query received: {0} :: {1}", e.EndPoint, e.Data.EncodeAsString());
 
-            var pr = FindPeer(e.EndPoint.Address);
+            var pr = FindPeer(e.EndPoint);
 
             string queryType = e.Data.Get<BString>("q").ToString();
             var args = e.Data.Get<BDictionary>("a");
@@ -419,7 +441,7 @@ namespace GKNet
         {
             fLogger.WriteDebug("Response received: {0} :: {1}", e.EndPoint, e.Data.EncodeAsString());
 
-            var pr = FindPeer(e.EndPoint.Address);
+            var pr = FindPeer(e.EndPoint);
 
             var resp = e.Data.Get<BDictionary>("r");
             var qt = resp.Get<BString>("q");

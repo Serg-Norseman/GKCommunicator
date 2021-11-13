@@ -47,6 +47,6 @@ namespace GKNet
         void SendToAll(string message);
 
         Peer AddPeer(IPEndPoint peerEndPoint);
-        Peer FindPeer(IPAddress peerAddress);
+        Peer FindPeer(IPEndPoint peerEndPoint);
     }
 }

@@ -8,5 +8,5 @@
 *.DotSettings.user
 
 /temp/
-test_copy.cmd
+test_copy.*
 

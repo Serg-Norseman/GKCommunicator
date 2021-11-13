@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Net;
 using BencodeNET;
 using NUnit.Framework;
@@ -71,9 +69,11 @@ namespace GKNet.DHT
         [Test]
         public void Test_PeersFoundEventArgs()
         {
+            IPEndPoint peerEndPoint = new IPEndPoint(IPAddress.Any, 1111);
+            byte[] nodeId = DHTHelper.GetRandomID();
             byte[] infoHash = DHTHelper.GetRandomHashID();
             List<IPEndPoint> peers = new List<IPEndPoint>();
-            var evt = new PeersFoundEventArgs(infoHash, peers);
+            var evt = new PeersFoundEventArgs(peerEndPoint, nodeId, infoHash, peers, null);
             Assert.IsNotNull(evt);
             Assert.AreEqual(infoHash, evt.InfoHash);
             Assert.AreEqual(peers, evt.Peers);

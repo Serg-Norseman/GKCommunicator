@@ -25,13 +25,12 @@ using System.IO;
 using System.Windows.Forms;
 using GKNet;
 using GKNet.Logging;
+using LumiSoft.Net.STUN.Client;
 
 namespace GKCommunicatorApp
 {
     public partial class ChatForm : Form, IChatForm
     {
-        private delegate void NoArgDelegate();
-
         private readonly ICommunicatorCore fCore;
         private readonly ILogger fLogger;
 
@@ -47,6 +46,8 @@ namespace GKCommunicatorApp
         public ChatForm()
         {
             InitializeComponent();
+
+            lstMembers.Columns.Add("Peer", 400);
 
             Closing += ChatForm_Closing;
 
@@ -70,7 +71,7 @@ namespace GKCommunicatorApp
             lblConnectionStatus.Text = "Attemping to connect. Please standby.";
 
             // join the P2P network from a worker thread
-            NoArgDelegate executor = new NoArgDelegate(fCore.Connect);
+            var executor = new MethodInvoker(fCore.Connect);
             executor.BeginInvoke(null, null);
         }
 
@@ -122,6 +123,14 @@ namespace GKCommunicatorApp
             }
         }
 
+        private Peer GetSelectedPeer()
+        {
+            if (lstMembers.SelectedItems.Count == 0)
+                return null;
+
+            return (lstMembers.SelectedItems[0].Tag as Peer);
+        }
+
         #endregion
 
         #region Event handlers
@@ -156,13 +165,6 @@ namespace GKCommunicatorApp
 
                 fCore.Send(peerItem, msgText);
             }
-        }
-
-        private Peer GetSelectedPeer()
-        {
-            if (lstMembers.SelectedItems.Count == 0) return null;
-
-            return (lstMembers.SelectedItems[0].Tag as Peer);
         }
 
         private void miDHTLog_Click(object sender, EventArgs e)
@@ -205,9 +207,13 @@ namespace GKCommunicatorApp
         void IChatForm.OnInitialized()
         {
             Invoke((MethodInvoker)delegate {
-                fInitialized = true;
-                lblConnectionStatus.Text = "Network initialized. You can start the connection.";
-                UpdateStatus();
+                if (fCore.STUNInfo.NetType == STUN_NetType.UdpBlocked) {
+                    MessageBox.Show("STUN status: UDP blocked", "GKCommunicator", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                } else {
+                    fInitialized = true;
+                    lblConnectionStatus.Text = "Network initialized. You can start the connection.";
+                    UpdateStatus();
+                }
             });
         }
 
@@ -245,8 +251,7 @@ namespace GKCommunicatorApp
         void IChatForm.OnJoin(Peer member)
         {
             Invoke((MethodInvoker)delegate {
-                lblConnectionStatus.Text = "Network connection established.";
-                //AddChatText(member + " joined the chatroom.");
+                AddChatText(member, member + " joined the chat.", Color.Maroon, Color.DarkMagenta);
 
                 UpdateStatus();
             });
@@ -255,7 +260,7 @@ namespace GKCommunicatorApp
         void IChatForm.OnLeave(Peer member)
         {
             Invoke((MethodInvoker)delegate {
-                //AddChatText(member + " left the chatroom.");
+                AddChatText(member, member + " left the chat.", Color.Maroon, Color.DarkMagenta);
 
                 UpdateStatus();
             });

@@ -34,13 +34,17 @@ namespace GKNet.DHT
         public byte[] ID { get; private set; }
         public IPEndPoint EndPoint { get; private set; }
 
-        public long LastAnnouncementTicks { get; set; }
+        public long LastAnnouncementTime { get; set; }
+        public long LastGetPeersTime { get; set; }
         public long LastUpdateTime { get; set; }
 
         public string RouteId
         {
             get { return EndPoint == null ? string.Empty : EndPoint.ToString(); }
         }
+
+        public NodeType Type { get; set; }
+
 
         public DHTNode(IPEndPoint endPoint)
         {

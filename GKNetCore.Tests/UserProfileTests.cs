@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Linq;
 using BencodeNET;
-using GKNet;
 using NUnit.Framework;
 
 namespace GKNet

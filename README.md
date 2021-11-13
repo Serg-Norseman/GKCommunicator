@@ -8,7 +8,7 @@ Roadmap
 - [x] STUN detection of public IP and NAT's type
 - [x] UPnP port's mapping
 - [x] IPv4 and IPv6
-- [x] Simple UDP chat
+- [x] Simple chat
 - [x] SQLite database support
 - [x] Formatting of history
 - [x] Simple user’s profile

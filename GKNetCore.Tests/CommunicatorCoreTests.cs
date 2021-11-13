@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
 using GKNet.TCP;
 using NUnit.Framework;
@@ -53,7 +52,7 @@ namespace GKNet
                 var peer = core.AddPeer(new IPEndPoint(IPAddress.Any, 1111));
                 Assert.IsNotNull(peer);
 
-                peer = core.FindPeer(IPAddress.Any);
+                peer = core.FindPeer(new IPEndPoint(IPAddress.Any, 1111));
                 Assert.IsNotNull(peer);
 
                 bool res = core.CheckPeer(null);

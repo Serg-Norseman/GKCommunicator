@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using LumiSoft.Net.STUN.Client;
 using LumiSoft.Net.STUN.Message;
 using NUnit.Framework;

@@ -272,7 +272,7 @@
             this.lstMembers.Size = new System.Drawing.Size(236, 371);
             this.lstMembers.TabIndex = 4;
             this.lstMembers.UseCompatibleStateImageBehavior = false;
-            this.lstMembers.View = System.Windows.Forms.View.List;
+            this.lstMembers.View = System.Windows.Forms.View.Details;
             // 
             // contextMenuStrip1
             // 

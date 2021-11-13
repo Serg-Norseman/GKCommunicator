@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Net;
-using GKNet.DHT;
+﻿using System.Net;
 using NUnit.Framework;
 
 namespace GKNet.DHT
@@ -29,7 +26,7 @@ namespace GKNet.DHT
             Assert.AreEqual(randId, node.ID);
             Assert.AreEqual(endPoint, node.EndPoint);
 
-            Assert.AreEqual(0, node.LastAnnouncementTicks);
+            Assert.AreEqual(0, node.LastAnnouncementTime);
             Assert.AreEqual(0, node.LastUpdateTime);
         }
 

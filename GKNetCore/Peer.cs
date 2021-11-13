@@ -36,18 +36,17 @@ namespace GKNet
 
     public class Peer : IDHTPeer
     {
-        public IPAddress Address { get; private set; }
         public IPEndPoint EndPoint { get; private set; }
         public bool IsLocal { get; set; }
         public PresenceStatus Presence { get; set; }
         public PeerProfile Profile { get; private set; }
         public PeerState State { get; set; }
         public DateTime LastPingTime { get; set; }
+        public DateTime LastUpdateTime { get; set; }
 
-        public Peer(IPAddress address, int port)
+        public Peer(IPEndPoint peerEndPoint)
         {
-            Address = address;
-            EndPoint = new IPEndPoint(address, port);
+            EndPoint = peerEndPoint;
             State = PeerState.Unknown;
             Profile = new PeerProfile();
         }
