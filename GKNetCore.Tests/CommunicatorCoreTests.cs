@@ -41,7 +41,7 @@ namespace GKNet
             var chatForm = new ChatForm();
             using (var core = new CommunicatorCore(chatForm)) {
                 Assert.IsNotNull(core);
-                Assert.AreEqual(false, core.IsConnected);
+                Assert.AreEqual(ConnectionState.Disconnected, core.ConnectionState);
                 Assert.IsNotNull(core.DHTClient);
                 Assert.IsNotNull(core.Profile);
                 Assert.IsNotNull(core.Peers);

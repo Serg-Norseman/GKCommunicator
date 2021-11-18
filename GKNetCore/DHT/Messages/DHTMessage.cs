@@ -81,7 +81,7 @@ namespace GKNet.DHT
 
         public bool IsSimilarTo(string clientVer)
         {
-            return fClientVer == clientVer;
+            return (string.Compare(fClientVer, 0, clientVer, 0, 2) == 0);
         }
 
         protected virtual void Parse()
@@ -104,7 +104,11 @@ namespace GKNet.DHT
 
             var data = fParser.Parse<BDictionary>(buffer);
 
-            string strMsgType = data.Get<BString>("y").ToString();
+            var bsY = data.Get<BString>("y");
+            if (bsY == null)
+                return null;
+
+            string strMsgType = bsY.ToString();
             MessageType msgType = DHTMessage.GetMessageType(strMsgType);
 
             DHTMessage result;
@@ -251,7 +255,7 @@ namespace GKNet.DHT
 
             var args = new BDictionary();
             args.Add("id", new BString(nodeId));
-            if (implied_port != 0) {
+            /*if (implied_port != 0)*/ {
                 args.Add("implied_port", new BNumber(implied_port));
             }
             args.Add("info_hash", new BString(infoHash));

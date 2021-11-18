@@ -29,6 +29,7 @@ using BSLib;
 using GKNet.Database;
 using GKNet.DHT;
 using GKNet.Logging;
+using GKNet.STUN;
 using GKNet.TCP;
 using LumiSoft.Net.STUN.Client;
 using Mono.Nat;
@@ -39,7 +40,9 @@ namespace GKNet
     {
         private static readonly byte[] GKNInfoHash = ProtocolHelper.CreateSignInfoKey();
 
-        private bool fConnected;
+        private static readonly TimeSpan PingInterval = TimeSpan.FromMinutes(1);
+
+        private ConnectionState fConnectionState;
         private readonly GKNetDatabase fDatabase;
         private readonly DHTClient fDHTClient;
         private readonly IChatForm fForm;
@@ -52,6 +55,11 @@ namespace GKNet
         private Semaphore fUPnPSem = new Semaphore(0, 1);
 
 
+        public ConnectionState ConnectionState
+        {
+            get { return fConnectionState; }
+        }
+
         public GKNetDatabase Database
         {
             get { return fDatabase; }
@@ -60,11 +68,6 @@ namespace GKNet
         public DHTClient DHTClient
         {
             get { return fDHTClient; }
-        }
-
-        public bool IsConnected
-        {
-            get { return fConnected; }
         }
 
         public IList<Peer> Peers
@@ -80,18 +83,6 @@ namespace GKNet
         public STUN_Result STUNInfo
         {
             get { return fSTUNInfo; }
-        }
-
-        public IPAddress NATExternalIP
-        {
-            get;
-            set;
-        }
-
-        public int NATExternalPort
-        {
-            get;
-            set;
         }
 
         public IPEndPoint PublicEndPoint
@@ -113,11 +104,10 @@ namespace GKNet
                 throw new ArgumentNullException("form");
             }
 
-            fConnected = false;
+            fConnectionState = ConnectionState.Disconnected;
             fForm = form;
-            fLogger = LogManager.GetLogger(ProtocolHelper.LOG_FILE, ProtocolHelper.LOG_LEVEL, "ChatDHTCP");
+            fLogger = LogManager.GetLogger(ProtocolHelper.LOG_FILE, ProtocolHelper.LOG_LEVEL, "CommCore");
             fPeers = new List<Peer>();
-            fSTUNInfo = null;
 
             fProfile = new UserProfile();
 
@@ -125,60 +115,56 @@ namespace GKNet
             fDatabase.Connect();
             fDatabase.LoadProfile(fProfile);
 
+            IPEndPoint publicEndPoint;
+            try {
+                fSTUNInfo = STUNUtility.Detect(DHTClient.PublicDHTPort);
+                publicEndPoint = (fSTUNInfo.NetType != STUN_NetType.UdpBlocked) ? fSTUNInfo.PublicEndPoint : null;
+            } catch (Exception ex) {
+                fLogger.WriteError("DetectSTUN() error", ex);
+                publicEndPoint = null;
+            }
+
             fDHTClient = new DHTClient(DHTClient.IPAnyAddress, DHTClient.PublicDHTPort, this, ProtocolHelper.CLIENT_VER);
             fDHTClient.PeersFound += OnPeersFound;
             fDHTClient.PeerPinged += OnPeerPinged;
             fDHTClient.QueryReceived += OnQueryReceive;
             fDHTClient.ResponseReceived += OnResponseReceive;
 
+            PublicEndPoint = publicEndPoint;
+            AddPeer(PublicEndPoint);
+
             fTCPClient = new TCPDuplexClient();
             fTCPClient.DataReceive += OnDataReceive;
 
             fTCPListenerPort = ProtocolHelper.PublicTCPPort;
 
-            NATHolePunching();
+            //NATHolePunching();
         }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing) {
+                fDHTClient.PeersFound -= OnPeersFound;
+                fDHTClient.PeerPinged -= OnPeerPinged;
+                fDHTClient.QueryReceived -= OnQueryReceive;
+                fDHTClient.ResponseReceived -= OnResponseReceive;
+                fTCPClient.DataReceive -= OnDataReceive;
+
                 fDatabase.Disconnect();
             }
             base.Dispose(disposing);
         }
 
-        private void NATHolePunching()
+        /*private void NATHolePunching()
         {
             new Thread(() => {
-                DetectSTUN();
                 CreatePortMapping();
+
+                Thread.Sleep(1000);
 
                 fForm.OnInitialized();
             }).Start();
-        }
-
-        private void DetectSTUN()
-        {
-            STUN_Result result = null;
-            try {
-                var socket = fDHTClient.Socket;
-                result = STUN_Client.Query(ProtocolHelper.STUNServer, 3478, socket);
-
-                fLogger.WriteInfo("STUN Info:");
-                fLogger.WriteInfo("NetType: {0}", result.NetType);
-                fLogger.WriteInfo("LocalEndPoint: {0}", socket.LocalEndPoint);
-                if (result.NetType != STUN_NetType.UdpBlocked) {
-                    PublicEndPoint = result.PublicEndPoint;
-                } else {
-                    PublicEndPoint = null;
-                }
-                fLogger.WriteInfo("PublicEndPoint [STUN]: {0}", PublicEndPoint);
-            } catch (Exception ex) {
-                fLogger.WriteError("DetectSTUN() error", ex);
-            }
-
-            fSTUNInfo = result;
-        }
+        }*/
 
         public void CreatePortMapping()
         {
@@ -205,7 +191,6 @@ namespace GKNet
                 }
 
                 fLogger.WriteInfo("External IP: {0}", device.GetExternalIP());
-                NATExternalIP = device.GetExternalIP();
 
                 try {
                     Mapping m;
@@ -225,8 +210,6 @@ namespace GKNet
                     m = new Mapping(Protocol.Udp, DHTClient.PublicDHTPort, DHTClient.PublicDHTPort);
                     device.CreatePortMap(m);
                     fLogger.WriteInfo("Create Mapping: protocol={0}, public={1}, private={2}", m.Protocol, m.PublicPort, m.PrivatePort);
-
-                    NATExternalPort = m.PublicPort;
                 } catch (Exception ex) {
                     fLogger.WriteError("Couldn't create specific mapping", ex);
                 }
@@ -252,10 +235,10 @@ namespace GKNet
 
             fTCPClient.Connect(fTCPListenerPort);
 
-            fConnected = true;
+            fConnectionState = ConnectionState.Connection;
             new Thread(() => {
-                while (fConnected) {
-                    HandshakePeers();
+                while (fConnectionState != ConnectionState.Disconnected) {
+                    CheckPeers();
                     Thread.Sleep(60000);
                 }
             }).Start();
@@ -263,7 +246,7 @@ namespace GKNet
 
         public void Disconnect()
         {
-            fConnected = false;
+            fConnectionState = ConnectionState.Disconnected;
             fTCPClient.Disconnect();
             fDHTClient.Stop();
         }
@@ -303,6 +286,10 @@ namespace GKNet
             bool result = false;
             if (peerEndPoint == null) return false;
 
+            if (CheckLocalAddress(peerEndPoint.Address)) {
+                return false;
+            }
+
             Peer peer = FindPeer(peerEndPoint);
             if (peer == null) {
                 peer = AddPeer(peerEndPoint);
@@ -311,18 +298,25 @@ namespace GKNet
 
             peer.LastUpdateTime = DateTime.Now;
 
-            if (!peer.IsLocal) {
-                // TODO: it's bad place for peers' ping!
-                // FIXME: find out which ping gets the answer! check it for a long time testing!
-                DateTime dtNow = DateTime.Now;
-                if (dtNow - peer.LastPingTime > TimeSpan.FromMinutes(1)) {
-                    fDHTClient.SendPingQuery(peerEndPoint);
-                    fDHTClient.SendPingQuery(new IPEndPoint(peerEndPoint.Address, DHTClient.PublicDHTPort));
-                    peer.LastPingTime = dtNow;
-                }
-            }
+            SendPing(peer, true);
 
             return result;
+        }
+
+        private void SendPing(Peer peer, bool holePunch)
+        {
+            DateTime dtNow = DateTime.Now;
+            if (dtNow - peer.LastPingTime > PingInterval) {
+                if (!holePunch) {
+                    fDHTClient.SendPingQuery(peer.EndPoint, true);
+                } else {
+                    for (int i = 0; i < 10; i++) {
+                        fDHTClient.SendPingQuery(peer.EndPoint, false);
+                    }
+                }
+
+                peer.LastPingTime = dtNow;
+            }
         }
 
         public bool CheckLocalAddress(IPAddress peerAddress)
@@ -332,11 +326,14 @@ namespace GKNet
 
         public Peer AddPeer(IPEndPoint peerEndPoint)
         {
-            fLogger.WriteInfo("Found new peer: {0}", peerEndPoint);
-
             lock (fPeers) {
                 Peer peer = new Peer(peerEndPoint);
                 peer.IsLocal = CheckLocalAddress(peerEndPoint.Address);
+
+                if (!peer.IsLocal) {
+                    fLogger.WriteInfo("Found new peer: {0}", peerEndPoint);
+                }
+
                 fPeers.Add(peer);
                 return peer;
             }
@@ -365,26 +362,50 @@ namespace GKNet
 
         #endregion
 
-        /*private void CheckLocals(IPEndPoint peerEndPoint, BString token)
+        private void CheckPeers()
         {
-            var dtNow = DateTime.Now;
-            foreach (var p in fPeers) {
-                if (p.IsLocal && (dtNow - p.LastUpdateTime > TimeSpan.FromMinutes(2))) {
-                    fDHTClient.SendAnnouncePeerQuery(peerEndPoint, GKNInfoHash, 1, DHTClient.PublicDHTPort, token);
-                }
-            }
-        }*/
+            DateTime dtNow = DateTime.Now;
+            bool changed = false;
+            bool hasCheckedPeers = false;
 
-        private void HandshakePeers()
-        {
-            // FIXME: think through this logic better!
-            /*foreach (var peer in fPeers) {
-                if (!peer.IsLocal) {
+            for (int i = fPeers.Count - 1; i >= 0; i--) {
+                var peer = fPeers[i];
+                if (peer.IsLocal) continue;
+
+                bool isChecked = (peer.State == PeerState.Checked);
+
+                SendPing(peer, !isChecked);
+
+                if (!isChecked && dtNow - peer.LastUpdateTime > TimeSpan.FromMinutes(10)) {
+                    fPeers.Remove(peer);
+                    changed = true;
+                }
+
+                if (isChecked) {
+                    hasCheckedPeers = true;
+                }
+
+                /*{
                     peer.State = PeerState.Unchecked;
                     SendData(peer.EndPoint, ProtocolHelper.CreateHandshakeQuery(DHTHelper.GetTransactionId(), fDHTClient.LocalID));
+                }*/
+            }
+
+            if (hasCheckedPeers) {
+                if (fConnectionState == ConnectionState.Connection) {
+                    fConnectionState = ConnectionState.Connected;
+                    changed = true;
+                }
+            } else {
+                if (fConnectionState == ConnectionState.Connected) {
+                    fConnectionState = ConnectionState.Connection;
+                    changed = true;
                 }
             }
-            fForm.OnPeersListChanged();*/
+
+            if (changed) {
+                fForm.OnPeersListChanged();
+            }
         }
 
         private void OnPeersFound(object sender, PeersFoundEventArgs e)
@@ -403,8 +424,6 @@ namespace GKNet
 
         private void OnPeerPinged(object sender, PeerPingedEventArgs e)
         {
-            fLogger.WriteDebug("Peer pinged: {0}", e.EndPoint);
-
             bool changed = CheckPeer(e.EndPoint);
 
             if (changed) {

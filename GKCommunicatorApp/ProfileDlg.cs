@@ -21,7 +21,6 @@
 using System;
 using System.Windows.Forms;
 using GKNet;
-using LumiSoft.Net.STUN.Client;
 
 namespace GKCommunicatorApp
 {
@@ -51,30 +50,17 @@ namespace GKCommunicatorApp
             var userProfile = fProfile as UserProfile;
             bool isUser = (userProfile != null);
             if (isUser) {
+                txtEndPoint.Text = fCore.PublicEndPoint.ToString();
+
                 chkCountryVisible.Checked = userProfile.IsCountryVisible;
                 chkTimeZoneVisible.Checked = userProfile.IsTimeZoneVisible;
                 chkLanguagesVisible.Checked = userProfile.IsLanguagesVisible;
-
-                var stunInfo = fCore.STUNInfo;
-                if (stunInfo != null) {
-                    AddProperty("NET type", stunInfo.NetType.ToString());
-                    AddProperty("Local end point", fCore.DHTClient.Socket.LocalEndPoint.ToString());
-                    if (stunInfo.NetType != STUN_NetType.UdpBlocked) {
-                        AddProperty("Public end point", stunInfo.PublicEndPoint.ToString());
-                    } else {
-                        AddProperty("Public end point", "-");
-                    }
-                }
-
-                AddProperty("External IP", fCore.NATExternalIP.ToString());
-                AddProperty("External Port", fCore.NATExternalPort.ToString());
             } else {
+                txtEndPoint.Text = string.Empty;
+
                 chkCountryVisible.Visible = false;
                 chkTimeZoneVisible.Visible = false;
                 chkLanguagesVisible.Visible = false;
-
-                // invisible is not implemented
-                tabControl.TabPages.Remove(tabSysInfo);
             }
 
             txtUserName.ReadOnly = !isUser;
@@ -84,12 +70,6 @@ namespace GKCommunicatorApp
 
             btnSave.Visible = isUser;
             btnSave.Enabled = isUser;
-        }
-
-        private void AddProperty(string propName, string value)
-        {
-            var listItem = lvSysInfo.Items.Add(propName);
-            listItem.SubItems.Add(value);
         }
 
         private void btnSave_Click(object sender, EventArgs e)

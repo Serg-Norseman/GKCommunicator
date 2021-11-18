@@ -91,6 +91,7 @@ namespace GKNet.DHT
         public event EventHandler<PeersFoundEventArgs> PeersFound;
         public event EventHandler<PeerPingedEventArgs> PeerPinged;
 
+        public event EventHandler<DataEventArgs> DataReceived;
         public event EventHandler<MessageEventArgs> QueryReceived;
         public event EventHandler<MessageEventArgs> ResponseReceived;
 
@@ -109,6 +110,7 @@ namespace GKNet.DHT
             fSocket = new Socket(IPAddressFamily, SocketType.Dgram, ProtocolType.Udp);
             fSocket.SetIPProtectionLevelUnrestricted();
 
+            /*
             // FIXME: unsupported?
             #if !MONO
             #if !IP6
@@ -121,8 +123,10 @@ namespace GKNet.DHT
             #else
             #endif
             #endif
+            */
 
             #if !IP6
+            fSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ExclusiveAddressUse, false);
             fSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             fSocket.Ttl = 255;
             #else
@@ -134,6 +138,7 @@ namespace GKNet.DHT
 
         public void Start(byte[] searchInfoHash)
         {
+            fSearchRunned = true;
             BeginRecv();
             Bootstrap();
             SearchNodes(searchInfoHash);
@@ -164,7 +169,6 @@ namespace GKNet.DHT
             fLogger.WriteDebug("Search for: {0}", searchInfoHash.ToHexString());
 
             fSearchInfoHash = searchInfoHash;
-            fSearchRunned = true;
 
             new Thread(() => {
                 while (fSearchRunned) {
@@ -207,12 +211,18 @@ namespace GKNet.DHT
 
         private void BeginRecv()
         {
+            if (!fSearchRunned)
+                return;
+
             EndPoint remoteAddress = new IPEndPoint(IPAnyAddress, 0);
             fSocket.BeginReceiveFrom(fBuffer, 0, fBuffer.Length, SocketFlags.None, ref remoteAddress, EndRecv, null);
         }
 
         private void EndRecv(IAsyncResult result)
         {
+            if (!fSearchRunned)
+                return;
+
             try {
                 EndPoint remoteAddress = new IPEndPoint(IPAnyAddress, 0);
                 int count = fSocket.EndReceiveFrom(result, ref remoteAddress);
@@ -222,7 +232,7 @@ namespace GKNet.DHT
                     OnRecvMessage((IPEndPoint)remoteAddress, buffer);
                 }
             } catch (Exception ex) {
-                //fLogger.WriteError("DHTClient.EndRecv.1()", ex);
+                fLogger.WriteError("EndRecv.1()", ex);
             }
 
             bool notsuccess;
@@ -231,7 +241,7 @@ namespace GKNet.DHT
                     BeginRecv();
                     notsuccess = false;
                 } catch (Exception ex) {
-                    //fLogger.WriteError("DHTClient.EndRecv.2()", ex);
+                    fLogger.WriteError("EndRecv.2()", ex);
                     notsuccess = true;
                 }
             } while (notsuccess);
@@ -240,11 +250,16 @@ namespace GKNet.DHT
         private void OnRecvMessage(IPEndPoint ipinfo, byte[] data)
         {
             try {
+                if (DataReceived != null) {
+                    DataReceived(this, new DataEventArgs(ipinfo, data));
+                }
+
                 DHTMessage msg = DHTMessage.ParseBuffer(data);
                 if (msg == null) return;
 
                 if (msg.IsSimilarTo(fClientVer)) {
-                    fLogger.WriteDebug(">>>> Received a message from a similar client from {0}", ipinfo);
+                    // Received a message from a similar client
+                    DoPeersFoundEvent(new List<IPEndPoint>() { ipinfo });
                 }
 
                 switch (msg.Type) {
@@ -261,7 +276,7 @@ namespace GKNet.DHT
                         break;
                 }
             } catch (Exception ex) {
-                fLogger.WriteError("DHTClient.OnRecvMessage()", ex);
+                fLogger.WriteError("OnRecvMessage()", ex);
             }
         }
 
@@ -341,29 +356,19 @@ namespace GKNet.DHT
 
             switch (queryType) {
                 case QueryType.Ping:
-                    // id only
-                    if (PeerPinged != null) {
-                        PeerPinged(this, new PeerPingedEventArgs(ipinfo, id.Value));
-                    }
+                    OnRecvPingResponse(ipinfo, id.Value);
                     break;
 
                 case QueryType.FindNode:
-                    // according to bep_0005, find_node response contain a list of nodes
-                    ProcessNodesStr(ipinfo, nodesStr);
+                    OnRecvFindNodeResponse(ipinfo, id.Value, nodesStr);
                     break;
 
                 case QueryType.GetPeers:
-                    // according to bep_0005, get_peers response can contain a list of nodes
-                    ProcessNodesStr(ipinfo, nodesStr);
-                    if (tokStr != null && tokStr.Length != 0) {
-                        if (!ProcessValuesStr(ipinfo, id.Value, valuesList, tokStr)) {
-                            SendAnnouncePeerQuery(ipinfo, fSearchInfoHash, 1, fPublicEndPoint.Port, tokStr);
-                        }
-                    }
+                    OnRecvGetPeersResponse(ipinfo, id.Value, nodesStr, valuesList, tokStr);
                     break;
 
                 case QueryType.AnnouncePeer:
-                    // id only
+                    OnRecvAnnouncePeerResponse(ipinfo, id.Value);
                     break;
 
                 case QueryType.None:
@@ -373,6 +378,41 @@ namespace GKNet.DHT
                     }
                     break;
             }
+        }
+
+        private void OnRecvPingResponse(IPEndPoint ipinfo, byte[] nodeId)
+        {
+            // id only
+#if DEBUG_DHT_INTERNALS
+            fLogger.WriteDebug("Peer pinged: {0}", ipinfo);
+#endif
+            if (PeerPinged != null) {
+                PeerPinged(this, new PeerPingedEventArgs(ipinfo, nodeId));
+            }
+        }
+
+        private void OnRecvFindNodeResponse(IPEndPoint ipinfo, byte[] nodeId, BString nodesStr)
+        {
+            // according to bep_0005, find_node response contain a list of nodes
+            ProcessNodesStr(ipinfo, nodesStr);
+        }
+
+        private void OnRecvGetPeersResponse(IPEndPoint ipinfo, byte[] nodeId, BString nodesStr, BList valuesList, BString token)
+        {
+            // according to bep_0005, get_peers response can contain a list of nodes
+            ProcessNodesStr(ipinfo, nodesStr);
+
+            if (!ProcessValuesStr(ipinfo, nodeId, valuesList, token)) {
+                SendAnnouncePeerQuery(ipinfo, fSearchInfoHash, 0, fPublicEndPoint.Port, token);
+            }
+        }
+
+        private void OnRecvAnnouncePeerResponse(IPEndPoint ipinfo, byte[] nodeId)
+        {
+            // id only
+#if DEBUG_DHT_INTERNALS
+            fLogger.WriteDebug("Peer announced successfully to {0}", ipinfo);
+#endif
         }
 
         private bool ProcessValuesStr(IPEndPoint ipinfo, byte[] nodeId, BList valuesList, BString token)
@@ -394,9 +434,7 @@ namespace GKNet.DHT
                         }
                     }
 
-                    if (PeersFound != null) {
-                        PeersFound(this, new PeersFoundEventArgs(ipinfo, nodeId, fSearchInfoHash, values, token));
-                    }
+                    DoPeersFoundEvent(values);
                 }
             }
             return result;
@@ -433,7 +471,9 @@ namespace GKNet.DHT
             var impliedPort = args.Get<BNumber>("implied_port");
             int port = (impliedPort != null && impliedPort.Value == 1) ? ipinfo.Port : (int)args.Get<BNumber>("port").Value;
 
+#if DEBUG_DHT_INTERNALS
             fLogger.WriteDebug("Receive `announce_peer` query from {0} [{1}] for {2}", ipinfo.ToString(), id.Value.ToHexString(), infoHash.Value.ToHexString());
+#endif
 
             fRoutingTable.UpdateNode(new DHTNode(id.Value, ipinfo));
 
@@ -454,9 +494,9 @@ namespace GKNet.DHT
 
             var id = args.Get<BString>("id");
 
-//#if DEBUG_DHT_INTERNALS
+#if DEBUG_DHT_INTERNALS
             fLogger.WriteDebug("Receive `ping` query from {0} [{1}]", ipinfo.ToString(), id.Value.ToHexString());
-//#endif
+#endif
 
             fRoutingTable.UpdateNode(new DHTNode(id.Value, ipinfo));
 
@@ -471,7 +511,9 @@ namespace GKNet.DHT
             var id = args.Get<BString>("id");
             var target = args.Get<BString>("target");
 
+#if DEBUG_DHT_INTERNALS
             fLogger.WriteDebug("Receive `find_node` query from {0} [{1}]", ipinfo.ToString(), id.Value.ToHexString());
+#endif
 
             fRoutingTable.UpdateNode(new DHTNode(id.Value, ipinfo));
 
@@ -505,8 +547,12 @@ namespace GKNet.DHT
 
         public void SetTransaction(BString transactionId, DHTMessage message)
         {
-            int tid = BitConverter.ToInt16(transactionId.Value, 0);
-            fTransactions[tid] = message;
+            try {
+                int tid = BitConverter.ToInt16(transactionId.Value, 0);
+                fTransactions[tid] = message;
+            } catch (Exception ex) {
+                fLogger.WriteError("SetTransaction()", ex);
+            }
         }
 
         public QueryType CheckTransaction(BString transactionId)
@@ -530,14 +576,16 @@ namespace GKNet.DHT
 
         #region Queries and responses
 
-        internal void SendPingQuery(IPEndPoint address)
+        internal void SendPingQuery(IPEndPoint address, bool async = true)
         {
+#if DEBUG_DHT_INTERNALS
             fLogger.WriteDebug("Send peer ping {0}", address);
+#endif
 
             var transactionID = DHTHelper.GetTransactionId();
             var msg = DHTMessage.CreatePingQuery(transactionID, fLocalID);
             SetTransaction(transactionID, msg);
-            Send(address, msg);
+            Send(address, msg, async);
         }
 
         internal void SendFindNodeQuery(IPEndPoint address, byte[] data)
@@ -552,6 +600,10 @@ namespace GKNet.DHT
 
         internal void SendAnnouncePeerQuery(IPEndPoint address, byte[] infoHash, byte implied_port, int port, BString token)
         {
+            if (token == null || token.Length == 0) {
+                return;
+            }
+
             DHTNode node = fRoutingTable.FindNode(address);
             if (node != null) {
                 long nowTicks = DateTime.Now.Ticks;
@@ -559,7 +611,6 @@ namespace GKNet.DHT
                     return;
                 }
                 node.LastAnnouncementTime = nowTicks;
-                // TODO: update announce by timer, every 30m
             }
 
 #if DEBUG_DHT_INTERNALS
@@ -578,33 +629,61 @@ namespace GKNet.DHT
 
         internal void SendGetPeersQuery(IPEndPoint address, byte[] infoHash)
         {
+#if DEBUG_DHT_INTERNALS
+            fLogger.WriteDebug("Send get peers query {0}", address);
+#endif
+
             var transactionID = DHTHelper.GetTransactionId();
             var msg = DHTMessage.CreateGetPeersQuery(transactionID, fLocalID, infoHash);
             SetTransaction(transactionID, msg);
             Send(address, msg);
         }
 
-        public void Send(IPEndPoint address, DHTMessage msg)
+        public void Send(IPEndPoint address, DHTMessage msg, bool async = true)
         {
-            Send(address, msg.Data);
+            Send(address, msg.Data, async);
         }
 
-        public void Send(IPEndPoint address, BDictionary data)
+        public void Send(IPEndPoint address, BDictionary data, bool async = true)
         {
             try {
                 // according to bep_0005
                 data.Add("v", fClientVer);
 
                 byte[] dataArray = data.EncodeAsBytes();
-                fSocket.BeginSendTo(dataArray, 0, dataArray.Length, SocketFlags.None, address, (ar) => {
-                    try {
-                        fSocket.EndReceive(ar);
-                    } catch (Exception ex) {
-                        fLogger.WriteError("Send.1(" + address.ToString() + ")", ex);
-                    }
-                }, null);
+                Send(address, dataArray, async);
             } catch (Exception ex) {
                 fLogger.WriteError("Send()", ex);
+            }
+        }
+
+        public void Send(IPEndPoint address, byte[] data, bool async = true)
+        {
+            try {
+                if (async) {
+                    fSocket.BeginSendTo(data, 0, data.Length, SocketFlags.None, address, (ar) => {
+                        try {
+                            fSocket.EndSendTo(ar);
+                        } catch (Exception ex) {
+                            fLogger.WriteError("Send.1(" + address + ")", ex);
+                        }
+                    }, null);
+                } else {
+                    fSocket.SendTo(data, 0, data.Length, SocketFlags.None, address);
+                }
+            } catch (Exception ex) {
+                fLogger.WriteError("Send()", ex);
+            }
+        }
+
+        #endregion
+
+        #region Events
+
+        private void DoPeersFoundEvent(List<IPEndPoint> values)
+        {
+            if (PeersFound != null) {
+                PeersFound(this, new PeersFoundEventArgs(values));
             }
         }
 

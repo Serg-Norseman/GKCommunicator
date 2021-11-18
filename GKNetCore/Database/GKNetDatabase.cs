@@ -125,7 +125,7 @@ namespace GKNet.Database
                     File.Delete(baseName);
                 }
             } catch (Exception ex) {
-                fLogger.WriteError("IDatabase.DeleteDatabase()", ex);
+                fLogger.WriteError("DeleteDatabase()", ex);
             }
         }
 

@@ -121,7 +121,7 @@ namespace GKNet.TCP
                 extSocket.Connect(point);
                 return new TCPConnection(this, extSocket, false);
             } catch (Exception ex) {
-                fLogger.WriteError("TCPDuplexClient.CreateConnection() exception", ex);
+                fLogger.WriteError("CreateConnection()", ex);
                 if (extSocket != null) extSocket.Close();
                 return null;
             }

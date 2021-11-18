@@ -82,9 +82,9 @@ namespace GKNet.TCP
                 // Set up again to get the next chunk of data.
                 fSocket.BeginReceive(fBuffer, 0, fBuffer.Length, SocketFlags.None, OnBytesReceived, this);
             } catch (ObjectDisposedException ex) {
-                fDuplexClient.fLogger.WriteError("TCPConnection.OnBytesReceived()", ex);
+                fDuplexClient.fLogger.WriteError("OnBytesReceived()", ex);
             } catch (SocketException ex) {
-                fDuplexClient.fLogger.WriteError("TCPConnection.OnBytesReceived()", ex);
+                fDuplexClient.fLogger.WriteError("OnBytesReceived()", ex);
             }
         }
 

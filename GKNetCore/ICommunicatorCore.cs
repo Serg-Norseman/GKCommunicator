@@ -26,17 +26,22 @@ using LumiSoft.Net.STUN.Client;
 
 namespace GKNet
 {
+    public enum ConnectionState
+    {
+        Disconnected,
+        Connection,
+        Connected,
+    }
+
     public interface ICommunicatorCore
     {
+        ConnectionState ConnectionState { get; }
         GKNetDatabase Database { get; }
-        bool IsConnected { get; }
         IList<Peer> Peers { get; }
         UserProfile Profile { get; }
         int TCPListenerPort { get; set; }
         DHTClient DHTClient { get; }
         STUN_Result STUNInfo { get; }
-        IPAddress NATExternalIP { get; set; }
-        int NATExternalPort { get; set; }
         IPEndPoint PublicEndPoint { get; set; }
 
         void Connect();

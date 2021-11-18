@@ -10,18 +10,6 @@ namespace GKNet.DHT
     {
         private class DHTPeersHolder : IDHTPeersHolder
         {
-            public IPAddress NATExternalIP
-            {
-                get;
-                set;
-            }
-
-            public int NATExternalPort
-            {
-                get;
-                set;
-            }
-
             public IList<IDHTPeer> GetPeersList()
             {
                 return new List<IDHTPeer>();
@@ -69,13 +57,9 @@ namespace GKNet.DHT
         [Test]
         public void Test_PeersFoundEventArgs()
         {
-            IPEndPoint peerEndPoint = new IPEndPoint(IPAddress.Any, 1111);
-            byte[] nodeId = DHTHelper.GetRandomID();
-            byte[] infoHash = DHTHelper.GetRandomHashID();
             List<IPEndPoint> peers = new List<IPEndPoint>();
-            var evt = new PeersFoundEventArgs(peerEndPoint, nodeId, infoHash, peers, null);
+            var evt = new PeersFoundEventArgs(peers);
             Assert.IsNotNull(evt);
-            Assert.AreEqual(infoHash, evt.InfoHash);
             Assert.AreEqual(peers, evt.Peers);
         }
 

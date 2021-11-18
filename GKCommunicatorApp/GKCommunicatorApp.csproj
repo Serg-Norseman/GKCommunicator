@@ -24,6 +24,12 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="ICEExperimentForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ICEExperimentForm.Designer.cs">
+      <DependentUpon>ICEExperimentForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="ProfileDlg.cs">
       <SubType>Form</SubType>

@@ -3,12 +3,8 @@
     partial class ProfileDlg
     {
         private System.ComponentModel.IContainer components = null;
-        private System.Windows.Forms.ListView lvSysInfo;
-        private System.Windows.Forms.ColumnHeader columnHeader1;
-        private System.Windows.Forms.ColumnHeader columnHeader2;
         private System.Windows.Forms.TabControl tabControl;
         private System.Windows.Forms.TabPage tabProfile;
-        private System.Windows.Forms.TabPage tabSysInfo;
         private System.Windows.Forms.Label lblLanguages;
         private System.Windows.Forms.Label lblTimeZone;
         private System.Windows.Forms.Label lblCountry;
@@ -21,6 +17,8 @@
         private System.Windows.Forms.CheckBox chkTimeZoneVisible;
         private System.Windows.Forms.CheckBox chkCountryVisible;
         private System.Windows.Forms.Button btnSave;
+        private System.Windows.Forms.TextBox txtEndPoint;
+        private System.Windows.Forms.Label lblEndPoint;
 
         protected override void Dispose(bool disposing)
         {
@@ -34,6 +32,9 @@
         {
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabProfile = new System.Windows.Forms.TabPage();
+            this.txtEndPoint = new System.Windows.Forms.TextBox();
+            this.lblEndPoint = new System.Windows.Forms.Label();
+            this.btnSave = new System.Windows.Forms.Button();
             this.chkLanguagesVisible = new System.Windows.Forms.CheckBox();
             this.chkTimeZoneVisible = new System.Windows.Forms.CheckBox();
             this.chkCountryVisible = new System.Windows.Forms.CheckBox();
@@ -45,20 +46,13 @@
             this.lblTimeZone = new System.Windows.Forms.Label();
             this.lblCountry = new System.Windows.Forms.Label();
             this.lblUserName = new System.Windows.Forms.Label();
-            this.tabSysInfo = new System.Windows.Forms.TabPage();
-            this.lvSysInfo = new System.Windows.Forms.ListView();
-            this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
-            this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
-            this.btnSave = new System.Windows.Forms.Button();
             this.tabControl.SuspendLayout();
             this.tabProfile.SuspendLayout();
-            this.tabSysInfo.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl
             // 
             this.tabControl.Controls.Add(this.tabProfile);
-            this.tabControl.Controls.Add(this.tabSysInfo);
             this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl.Location = new System.Drawing.Point(0, 0);
             this.tabControl.Margin = new System.Windows.Forms.Padding(4);
@@ -69,6 +63,8 @@
             // 
             // tabProfile
             // 
+            this.tabProfile.Controls.Add(this.txtEndPoint);
+            this.tabProfile.Controls.Add(this.lblEndPoint);
             this.tabProfile.Controls.Add(this.btnSave);
             this.tabProfile.Controls.Add(this.chkLanguagesVisible);
             this.tabProfile.Controls.Add(this.chkTimeZoneVisible);
@@ -90,11 +86,40 @@
             this.tabProfile.Text = "Profile";
             this.tabProfile.UseVisualStyleBackColor = true;
             // 
+            // txtEndPoint
+            // 
+            this.txtEndPoint.Location = new System.Drawing.Point(16, 37);
+            this.txtEndPoint.Margin = new System.Windows.Forms.Padding(0, 0, 0, 8);
+            this.txtEndPoint.Name = "txtEndPoint";
+            this.txtEndPoint.ReadOnly = true;
+            this.txtEndPoint.Size = new System.Drawing.Size(429, 28);
+            this.txtEndPoint.TabIndex = 11;
+            // 
+            // lblEndPoint
+            // 
+            this.lblEndPoint.AutoSize = true;
+            this.lblEndPoint.Location = new System.Drawing.Point(12, 12);
+            this.lblEndPoint.Margin = new System.Windows.Forms.Padding(4);
+            this.lblEndPoint.Name = "lblEndPoint";
+            this.lblEndPoint.Size = new System.Drawing.Size(73, 21);
+            this.lblEndPoint.TabIndex = 10;
+            this.lblEndPoint.Text = "EndPoint";
+            // 
+            // btnSave
+            // 
+            this.btnSave.Location = new System.Drawing.Point(340, 353);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(105, 37);
+            this.btnSave.TabIndex = 9;
+            this.btnSave.Text = "Save";
+            this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+            // 
             // chkLanguagesVisible
             // 
             this.chkLanguagesVisible.AutoSize = true;
             this.chkLanguagesVisible.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.chkLanguagesVisible.Location = new System.Drawing.Point(367, 206);
+            this.chkLanguagesVisible.Location = new System.Drawing.Point(367, 271);
             this.chkLanguagesVisible.Margin = new System.Windows.Forms.Padding(4);
             this.chkLanguagesVisible.Name = "chkLanguagesVisible";
             this.chkLanguagesVisible.Size = new System.Drawing.Size(78, 25);
@@ -106,7 +131,7 @@
             // 
             this.chkTimeZoneVisible.AutoSize = true;
             this.chkTimeZoneVisible.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.chkTimeZoneVisible.Location = new System.Drawing.Point(367, 141);
+            this.chkTimeZoneVisible.Location = new System.Drawing.Point(367, 206);
             this.chkTimeZoneVisible.Margin = new System.Windows.Forms.Padding(4);
             this.chkTimeZoneVisible.Name = "chkTimeZoneVisible";
             this.chkTimeZoneVisible.Size = new System.Drawing.Size(78, 25);
@@ -118,7 +143,7 @@
             // 
             this.chkCountryVisible.AutoSize = true;
             this.chkCountryVisible.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.chkCountryVisible.Location = new System.Drawing.Point(367, 76);
+            this.chkCountryVisible.Location = new System.Drawing.Point(367, 141);
             this.chkCountryVisible.Margin = new System.Windows.Forms.Padding(4);
             this.chkCountryVisible.Name = "chkCountryVisible";
             this.chkCountryVisible.Size = new System.Drawing.Size(78, 25);
@@ -128,7 +153,7 @@
             // 
             // txtLanguages
             // 
-            this.txtLanguages.Location = new System.Drawing.Point(16, 232);
+            this.txtLanguages.Location = new System.Drawing.Point(16, 297);
             this.txtLanguages.Margin = new System.Windows.Forms.Padding(0, 0, 0, 8);
             this.txtLanguages.Name = "txtLanguages";
             this.txtLanguages.Size = new System.Drawing.Size(429, 28);
@@ -136,7 +161,7 @@
             // 
             // txtTimeZone
             // 
-            this.txtTimeZone.Location = new System.Drawing.Point(16, 167);
+            this.txtTimeZone.Location = new System.Drawing.Point(16, 232);
             this.txtTimeZone.Margin = new System.Windows.Forms.Padding(0, 0, 0, 8);
             this.txtTimeZone.Name = "txtTimeZone";
             this.txtTimeZone.Size = new System.Drawing.Size(429, 28);
@@ -144,7 +169,7 @@
             // 
             // txtCountry
             // 
-            this.txtCountry.Location = new System.Drawing.Point(16, 102);
+            this.txtCountry.Location = new System.Drawing.Point(16, 167);
             this.txtCountry.Margin = new System.Windows.Forms.Padding(0, 0, 0, 8);
             this.txtCountry.Name = "txtCountry";
             this.txtCountry.Size = new System.Drawing.Size(429, 28);
@@ -152,7 +177,7 @@
             // 
             // txtUserName
             // 
-            this.txtUserName.Location = new System.Drawing.Point(16, 37);
+            this.txtUserName.Location = new System.Drawing.Point(16, 102);
             this.txtUserName.Margin = new System.Windows.Forms.Padding(0, 0, 0, 8);
             this.txtUserName.Name = "txtUserName";
             this.txtUserName.Size = new System.Drawing.Size(429, 28);
@@ -161,7 +186,7 @@
             // lblLanguages
             // 
             this.lblLanguages.AutoSize = true;
-            this.lblLanguages.Location = new System.Drawing.Point(12, 207);
+            this.lblLanguages.Location = new System.Drawing.Point(12, 272);
             this.lblLanguages.Margin = new System.Windows.Forms.Padding(4);
             this.lblLanguages.Name = "lblLanguages";
             this.lblLanguages.Size = new System.Drawing.Size(82, 21);
@@ -171,7 +196,7 @@
             // lblTimeZone
             // 
             this.lblTimeZone.AutoSize = true;
-            this.lblTimeZone.Location = new System.Drawing.Point(12, 142);
+            this.lblTimeZone.Location = new System.Drawing.Point(12, 207);
             this.lblTimeZone.Margin = new System.Windows.Forms.Padding(4);
             this.lblTimeZone.Name = "lblTimeZone";
             this.lblTimeZone.Size = new System.Drawing.Size(78, 21);
@@ -181,7 +206,7 @@
             // lblCountry
             // 
             this.lblCountry.AutoSize = true;
-            this.lblCountry.Location = new System.Drawing.Point(12, 77);
+            this.lblCountry.Location = new System.Drawing.Point(12, 142);
             this.lblCountry.Margin = new System.Windows.Forms.Padding(4);
             this.lblCountry.Name = "lblCountry";
             this.lblCountry.Size = new System.Drawing.Size(66, 21);
@@ -191,61 +216,12 @@
             // lblUserName
             // 
             this.lblUserName.AutoSize = true;
-            this.lblUserName.Location = new System.Drawing.Point(12, 12);
+            this.lblUserName.Location = new System.Drawing.Point(12, 77);
             this.lblUserName.Margin = new System.Windows.Forms.Padding(4);
             this.lblUserName.Name = "lblUserName";
             this.lblUserName.Size = new System.Drawing.Size(83, 21);
             this.lblUserName.TabIndex = 0;
             this.lblUserName.Text = "UserName";
-            // 
-            // tabSysInfo
-            // 
-            this.tabSysInfo.Controls.Add(this.lvSysInfo);
-            this.tabSysInfo.Location = new System.Drawing.Point(4, 30);
-            this.tabSysInfo.Margin = new System.Windows.Forms.Padding(4);
-            this.tabSysInfo.Name = "tabSysInfo";
-            this.tabSysInfo.Padding = new System.Windows.Forms.Padding(4);
-            this.tabSysInfo.Size = new System.Drawing.Size(466, 401);
-            this.tabSysInfo.TabIndex = 1;
-            this.tabSysInfo.Text = "SysInfo";
-            this.tabSysInfo.UseVisualStyleBackColor = true;
-            // 
-            // lvSysInfo
-            // 
-            this.lvSysInfo.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader1,
-            this.columnHeader2});
-            this.lvSysInfo.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lvSysInfo.FullRowSelect = true;
-            this.lvSysInfo.LabelEdit = true;
-            this.lvSysInfo.Location = new System.Drawing.Point(4, 4);
-            this.lvSysInfo.Margin = new System.Windows.Forms.Padding(4);
-            this.lvSysInfo.MultiSelect = false;
-            this.lvSysInfo.Name = "lvSysInfo";
-            this.lvSysInfo.Size = new System.Drawing.Size(458, 393);
-            this.lvSysInfo.TabIndex = 0;
-            this.lvSysInfo.UseCompatibleStateImageBehavior = false;
-            this.lvSysInfo.View = System.Windows.Forms.View.Details;
-            // 
-            // columnHeader1
-            // 
-            this.columnHeader1.Text = "Property";
-            this.columnHeader1.Width = 200;
-            // 
-            // columnHeader2
-            // 
-            this.columnHeader2.Text = "Value";
-            this.columnHeader2.Width = 200;
-            // 
-            // btnSave
-            // 
-            this.btnSave.Location = new System.Drawing.Point(340, 353);
-            this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(105, 37);
-            this.btnSave.TabIndex = 9;
-            this.btnSave.Text = "Save";
-            this.btnSave.UseVisualStyleBackColor = true;
-            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
             // ProfileDlg
             // 
@@ -265,7 +241,6 @@
             this.tabControl.ResumeLayout(false);
             this.tabProfile.ResumeLayout(false);
             this.tabProfile.PerformLayout();
-            this.tabSysInfo.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

@@ -26,14 +26,12 @@ namespace GKNet
     public static class ProtocolHelper
     {
         public const string NETWORK_SIGN = "GEDKEEPER NETWORK";
-        public const string CLIENT_VER = "GKC";
+        public const string CLIENT_VER = "GC01";
 
         public const string LOG_FILE = "GKCommunicator.log";
         public const string LOG_LEVEL = "DEBUG"; // "DEBUG";
 
         public const int PublicTCPPort = 11000; // DHTClient.PublicDHTPort;
-
-        public const string STUNServer = "stun.ekiga.net";
 
 
         public static byte[] CreateSignInfoKey()

@@ -18,14 +18,24 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace GKNet
 {
     public static class NetHelper
     {
+        private static readonly Regex ValidIpAddressRegex = new Regex(@"^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]):[0-9]+$");
+
+        public static bool IsValidIpAddress(string address)
+        {
+            return ValidIpAddressRegex.IsMatch(address);
+        }
+
         public static string GetAppPath()
         {
             Module[] mods = Assembly.GetExecutingAssembly().GetModules();
@@ -40,6 +50,18 @@ namespace GKNet
             } else {
                 Process.Start(fileName);
             }
+        }
+
+        public static string Base64Encode(string plainText)
+        {
+            var plainTextBytes = Encoding.UTF8.GetBytes(plainText);
+            return Convert.ToBase64String(plainTextBytes);
+        }
+
+        public static string Base64Decode(string base64EncodedData)
+        {
+            var base64EncodedBytes = Convert.FromBase64String(base64EncodedData);
+            return Encoding.UTF8.GetString(base64EncodedBytes);
         }
     }
 }

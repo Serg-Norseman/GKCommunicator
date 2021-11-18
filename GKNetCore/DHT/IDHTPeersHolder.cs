@@ -19,15 +19,11 @@
  */
 
 using System.Collections.Generic;
-using System.Net;
 
 namespace GKNet.DHT
 {
     public interface IDHTPeersHolder
     {
         IList<IDHTPeer> GetPeersList();
-
-        IPAddress NATExternalIP { get; set; }
-        int NATExternalPort { get; set; }
     }
 }

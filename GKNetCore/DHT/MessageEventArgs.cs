@@ -18,11 +18,24 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System;
 using System.Net;
 using BencodeNET;
 
 namespace GKNet.DHT
 {
+    public class DataEventArgs : EventArgs
+    {
+        public IPEndPoint EndPoint { get; private set; }
+        public byte[] Data { get; private set; }
+
+        public DataEventArgs(IPEndPoint endPoint, byte[] data) : base()
+        {
+            EndPoint = endPoint;
+            Data = data;
+        }
+    }
+
     public class MessageEventArgs : PeerEventArgs
     {
         public BDictionary Data { get; private set; }

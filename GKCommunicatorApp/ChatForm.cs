@@ -22,6 +22,7 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
+using System.Threading;
 using System.Windows.Forms;
 using GKNet;
 using GKNet.Logging;
@@ -31,10 +32,13 @@ namespace GKCommunicatorApp
 {
     public partial class ChatForm : Form, IChatForm
     {
-        private readonly ICommunicatorCore fCore;
+        private const string TICK_SYMS = @"|/-\";
+
+        private readonly CommunicatorCore fCore;
         private readonly ILogger fLogger;
 
         private bool fInitialized;
+        private int fTick;
 
 
         public ICommunicatorCore Core
@@ -55,6 +59,7 @@ namespace GKCommunicatorApp
                 File.Delete(ProtocolHelper.LOG_FILE);
             }
 
+            fTick = -1;
             fInitialized = false;
             lblConnectionStatus.Text = "Network initialization...";
 
@@ -68,11 +73,14 @@ namespace GKCommunicatorApp
 
         private void Connect()
         {
-            lblConnectionStatus.Text = "Attemping to connect. Please standby.";
+            lblConnectionStatus.Text = "Searching for members. Please wait";
 
             // join the P2P network from a worker thread
-            var executor = new MethodInvoker(fCore.Connect);
-            executor.BeginInvoke(null, null);
+            //var executor = new MethodInvoker(fCore.Connect);
+            //executor.BeginInvoke(null, null);
+            fCore.Connect();
+
+            StartConnectionTicks();
         }
 
         private void Disconnect()
@@ -84,14 +92,18 @@ namespace GKCommunicatorApp
 
         private void UpdateStatus()
         {
-            miConnect.Enabled = fInitialized && !fCore.IsConnected;
-            miDisconnect.Enabled = fInitialized && fCore.IsConnected;
+            bool disconnected = (fCore.ConnectionState == ConnectionState.Disconnected);
 
-            tbConnect.Enabled = fInitialized && !fCore.IsConnected;
-            tbDisconnect.Enabled = fInitialized && fCore.IsConnected;
+            miConnect.Enabled = fInitialized && disconnected;
+            tbConnect.Enabled = fInitialized && disconnected;
 
-            btnSend.Enabled = fInitialized && fCore.IsConnected;
-            btnSendToAll.Enabled = fInitialized && fCore.IsConnected;
+            miDisconnect.Enabled = fInitialized && !disconnected;
+            tbDisconnect.Enabled = fInitialized && !disconnected;
+
+            bool connected = (fCore.ConnectionState == ConnectionState.Connected);
+
+            btnSend.Enabled = fInitialized && connected;
+            btnSendToAll.Enabled = fInitialized && connected;
         }
 
         private void AddTextChunk(string text, Color color)
@@ -131,9 +143,43 @@ namespace GKCommunicatorApp
             return (lstMembers.SelectedItems[0].Tag as Peer);
         }
 
+        private void StartConnectionTicks()
+        {
+            new Thread(() => {
+                while (fCore.ConnectionState != ConnectionState.Disconnected) {
+                    InvokeX(() => {
+                        if (fCore.ConnectionState == ConnectionState.Connection) {
+                            fTick = (fTick >= 3) ? 0 : fTick + 1;
+                            lblTicks.Text = "" + TICK_SYMS[fTick];
+                        } else {
+                            lblTicks.Text = "*";
+                        }
+
+                        UpdateStatus();
+                    });
+
+                    Thread.Sleep(1000);
+                }
+            }).Start();
+        }
+
+        private void InvokeX(MethodInvoker invoker)
+        {
+            if (InvokeRequired) {
+                Invoke(invoker);
+            } else {
+                invoker();
+            }
+        }
+
         #endregion
 
         #region Event handlers
+
+        private void ChatForm_Load(object sender, EventArgs e)
+        {
+            ((IChatForm)this).OnInitialized();
+        }
 
         private void ChatForm_Closing(object sender, CancelEventArgs e)
         {
@@ -200,13 +246,22 @@ namespace GKCommunicatorApp
             }
         }
 
+        private void miICEExperiment_Click(object sender, EventArgs e)
+        {
+            using (var dlg = new ICEExperimentForm()) {
+                dlg.ShowDialog();
+            }
+        }
+
         #endregion
 
         #region IChatForm members
 
         void IChatForm.OnInitialized()
         {
-            Invoke((MethodInvoker)delegate {
+            MethodInvoker invoker = delegate () {
+                ((IChatForm)this).OnPeersListChanged();
+
                 if (fCore.STUNInfo.NetType == STUN_NetType.UdpBlocked) {
                     MessageBox.Show("STUN status: UDP blocked", "GKCommunicator", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 } else {
@@ -214,7 +269,13 @@ namespace GKCommunicatorApp
                     lblConnectionStatus.Text = "Network initialized. You can start the connection.";
                     UpdateStatus();
                 }
-            });
+            };
+
+            if (InvokeRequired) {
+                Invoke(invoker);
+            } else {
+                invoker();
+            }
         }
 
         void IChatForm.OnPeersListChanged()
