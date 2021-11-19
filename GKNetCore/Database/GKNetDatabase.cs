@@ -19,7 +19,9 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using GKNet.DHT;
 using GKNet.Logging;
 using SQLite;
@@ -201,6 +203,39 @@ namespace GKNet.Database
             SetParameterBool("user_timezone_visible", profile.IsTimeZoneVisible);
             SetParameterBool("user_languages_visible", profile.IsLanguagesVisible);
             SetParameterBool("user_email_visible", profile.IsEmailVisible);
+        }
+
+        #endregion
+
+        #region DHT nodes
+
+        public IEnumerable<DHTNode> LoadNodes()
+        {
+            var result = new List<DHTNode>();
+
+            string query = string.Format("select * from DHTNodes");
+            var dbNodes = fConnection.Query<DBNode>(query);
+            if (dbNodes != null) {
+                foreach (var dbn in dbNodes) {
+                    var nodeId = DHTHelper.FromHex(dbn.node_id);
+                    var endPoint = DHTHelper.ParseIPEndPoint(dbn.endpoint);
+                    result.Add(new DHTNode(nodeId, endPoint));
+                }
+            }
+
+            return result;
+        }
+
+        public void SaveNode(DHTNode node)
+        {
+            if (!IsConnected)
+                throw new DatabaseException("Database disconnected");
+
+            var record = new DBNode() {
+                node_id = node.ID.ToHexString(),
+                endpoint = node.EndPoint.ToString()
+            };
+            fConnection.InsertOrReplace(record);
         }
 
         #endregion

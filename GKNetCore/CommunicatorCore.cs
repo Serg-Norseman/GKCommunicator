@@ -236,6 +236,9 @@ namespace GKNet
 
         public void Connect()
         {
+            var dhtNodes = fDatabase.LoadNodes();
+            fDHTClient.RoutingTable.UpdateNodes(dhtNodes);
+
             fDHTClient.Start(GKNInfoHash);
 
             fTCPClient.Connect(fTCPListenerPort);
@@ -254,6 +257,12 @@ namespace GKNet
             fConnectionState = ConnectionState.Disconnected;
             fTCPClient.Disconnect();
             fDHTClient.Stop();
+        }
+
+        // TODO: implement periodic clearing of the cache of nodes from outdated information
+        public void SaveNode(DHTNode node)
+        {
+            fDatabase.SaveNode(node);
         }
 
         /// <summary>

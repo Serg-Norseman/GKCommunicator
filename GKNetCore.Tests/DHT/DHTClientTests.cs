@@ -18,6 +18,10 @@ namespace GKNet.DHT
             {
                 return new List<IDHTPeer>();
             }
+
+            public void SaveNode(DHTNode node)
+            {
+            }
         }
 
         [Test]

@@ -22,7 +22,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -162,7 +161,6 @@ namespace GKNet.DHT
                 "dht.aelitis.com",
                 "dht.transmissionbt.com",
                 "router.bittorrent.com",
-                "router.magnets.im",
                 "router.utorrent.com",
             };
 
@@ -345,12 +343,18 @@ namespace GKNet.DHT
         {
             fRoutingTable.UpdateNode(node);
             fLastNodesUpdateTime = DateTime.Now.Ticks;
+
+            fPeersHolder.SaveNode(node);
         }
 
         private void UpdateRoutingTable(IEnumerable<DHTNode> nodes)
         {
             fRoutingTable.UpdateNodes(nodes);
             fLastNodesUpdateTime = DateTime.Now.Ticks;
+
+            foreach (var node in nodes) {
+                fPeersHolder.SaveNode(node);
+            }
         }
 
         private void OnRecvResponseX(IPEndPoint ipinfo, DHTResponseMessage msg)

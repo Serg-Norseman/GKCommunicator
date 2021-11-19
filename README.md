@@ -15,9 +15,10 @@ Roadmap
 - [x] PGP
 - [x] UDP hole-punching
 - [x] Working DHT peer search, connection and simple chat
+- [x] Storage of DHT nodes and user profile
 
 
-- [ ] Simple storage of peers and profiles
+- [ ] Simple storage of peer profiles
 - [ ] Stabilize the chat and discovery of peers
 - [ ] TCP
 - [ ] Mutual identity and signing of user profiles (trusted and unchecked network members)
