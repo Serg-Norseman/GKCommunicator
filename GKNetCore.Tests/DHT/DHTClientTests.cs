@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Net;
-using BencodeNET;
 using NUnit.Framework;
 
 namespace GKNet.DHT
@@ -10,6 +9,11 @@ namespace GKNet.DHT
     {
         private class DHTPeersHolder : IDHTPeersHolder
         {
+            public byte[] ClientNodeId
+            {
+                get { return DHTHelper.GetRandomID(); }
+            }
+
             public IList<IDHTPeer> GetPeersList()
             {
                 return new List<IDHTPeer>();
@@ -52,39 +56,6 @@ namespace GKNet.DHT
 
         private void OnResponseReceive(object sender, MessageEventArgs e)
         {
-        }
-
-        [Test]
-        public void Test_PeersFoundEventArgs()
-        {
-            List<IPEndPoint> peers = new List<IPEndPoint>();
-            var evt = new PeersFoundEventArgs(peers);
-            Assert.IsNotNull(evt);
-            Assert.AreEqual(peers, evt.Peers);
-        }
-
-        [Test]
-        public void Test_PeerPingedEventArgs()
-        {
-            IPEndPoint peerEndPoint = new IPEndPoint(IPAddress.Any, 1111);
-            byte[] nodeId = DHTHelper.GetRandomID();
-            var evt = new PeerPingedEventArgs(peerEndPoint, nodeId);
-            Assert.IsNotNull(evt);
-            Assert.AreEqual(peerEndPoint, evt.EndPoint);
-            Assert.AreEqual(nodeId, evt.NodeId);
-        }
-
-        [Test]
-        public void Test_MessageEventArgs()
-        {
-            IPEndPoint peerEndPoint = new IPEndPoint(IPAddress.Any, 1111);
-            byte[] nodeId = DHTHelper.GetRandomID();
-            BDictionary data = new BDictionary();
-            var evt = new MessageEventArgs(peerEndPoint, nodeId, data);
-            Assert.IsNotNull(evt);
-            Assert.AreEqual(peerEndPoint, evt.EndPoint);
-            Assert.AreEqual(nodeId, evt.NodeId);
-            Assert.AreEqual(data, evt.Data);
         }
     }
 }

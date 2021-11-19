@@ -20,6 +20,7 @@
 
 using System;
 using System.IO;
+using GKNet.DHT;
 using GKNet.Logging;
 using SQLite;
 
@@ -93,28 +94,6 @@ namespace GKNet.Database
             fConnection = null;
         }
 
-        public string GetParameterValue(string paramName)
-        {
-            if (!IsConnected)
-                throw new DatabaseException("Database disconnected");
-
-            string query = string.Format("select value from Settings where parameter = '{0}'", paramName);
-            var list = fConnection.Query<QString>(query);
-            return (list != null && list.Count != 0) ? list[0].value : string.Empty;
-        }
-
-        public void SetParameterValue(string paramName, string paramValue)
-        {
-            if (!IsConnected)
-                throw new DatabaseException("Database disconnected");
-
-            var param = new Parameter() {
-                parameter = paramName,
-                value = paramValue
-            };
-            fConnection.InsertOrReplace(param);
-        }
-
         public void DeleteDatabase()
         {
             if (IsConnected) Disconnect();
@@ -134,34 +113,35 @@ namespace GKNet.Database
             string baseName = GetBaseName();
 
             using (var connection = new SQLiteConnection(baseName)) {
-                // TODO: self_id, ctry_visible, tz_visible, langs_visible
-                connection.CreateTable<Parameter>();
-
-                /*var command = @"create table [Messages] (
-                    [id] integer primary key autoincrement not null,
-                    [sender] char(20) not null,
-                    [receiver] char(20) not null,
-                    [timestamp] int not null,
-                    [flags] int not null,
-                    [msg_text] text not null);";
-                connection.Execute(command);
-
-                command = @"create table [DHTNodes] (
-                    [node_id] char(20) not null,
-                    [address] char(40) not null,
-                    [port] int not null);";
-                connection.Execute(command);
-
-                command = @"create table [Peers] (
-                    [node_id] char(20) not null,
-                    [address] char(40) not null,
-                    [port] int not null,
-                    [user_name] nvarchar(40) not null,
-                    [country] nvarchar(200),
-                    [timezone] nvarchar(200),
-                    [langs] nvarchar(200));";
-                connection.Execute(command);*/
+                connection.CreateTable<DBParameter>();
+                connection.CreateTable<DBNode>();
+                connection.CreateTable<DBPeer>();
+                connection.CreateTable<DBMessage>();
             }
+        }
+
+        #region Parameters
+
+        public string GetParameterValue(string paramName)
+        {
+            if (!IsConnected)
+                throw new DatabaseException("Database disconnected");
+
+            string query = string.Format("select value from Settings where parameter = '{0}'", paramName);
+            var list = fConnection.Query<QString>(query);
+            return (list != null && list.Count != 0) ? list[0].value : string.Empty;
+        }
+
+        public void SetParameterValue(string paramName, string paramValue)
+        {
+            if (!IsConnected)
+                throw new DatabaseException("Database disconnected");
+
+            var param = new DBParameter() {
+                parameter = paramName,
+                value = paramValue
+            };
+            fConnection.InsertOrReplace(param);
         }
 
         public bool GetParameterBool(string paramName)
@@ -179,16 +159,26 @@ namespace GKNet.Database
             SetParameterValue(paramName, paramValue.ToString());
         }
 
+        #endregion
+
+        #region User profile
+
         public void LoadProfile(UserProfile profile)
         {
             bool initialized = GetParameterBool("profile_initialized");
             if (initialized) {
+                profile.NodeId = DHTHelper.FromHex(GetParameterValue("user_node_id"));
+
                 profile.UserName = GetParameterValue("user_name");
                 profile.Country = GetParameterValue("user_country");
                 profile.TimeZone = GetParameterValue("user_timezone");
                 profile.Languages = GetParameterValue("user_languages");
+
+                profile.IsCountryVisible = GetParameterBool("user_country_visible");
+                profile.IsTimeZoneVisible = GetParameterBool("user_timezone_visible");
+                profile.IsLanguagesVisible = GetParameterBool("user_languages_visible");
             } else {
-                profile.ResetSystem();
+                profile.Reset();
                 SaveProfile(profile);
             }
         }
@@ -196,11 +186,20 @@ namespace GKNet.Database
         public void SaveProfile(UserProfile profile)
         {
             SetParameterBool("profile_initialized", true);
+
+            SetParameterValue("user_node_id", profile.NodeId.ToHexString());
+
             SetParameterValue("user_name", profile.UserName);
             SetParameterValue("user_country", profile.Country);
             SetParameterValue("user_timezone", profile.TimeZone);
             SetParameterValue("user_languages", profile.Languages);
+
+            SetParameterBool("user_country_visible", profile.IsCountryVisible);
+            SetParameterBool("user_timezone_visible", profile.IsTimeZoneVisible);
+            SetParameterBool("user_languages_visible", profile.IsLanguagesVisible);
         }
+
+        #endregion
 
         #region Tuples for aggregate queries
 

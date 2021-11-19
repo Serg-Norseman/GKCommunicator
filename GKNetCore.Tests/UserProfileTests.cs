@@ -12,7 +12,7 @@ namespace GKNet
         {
             UserProfile profile = new UserProfile();
 
-            profile.ResetSystem();
+            profile.Reset();
 
             Assert.IsFalse(profile.IsCountryVisible);
             profile.IsCountryVisible = true;

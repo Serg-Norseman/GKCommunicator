@@ -58,7 +58,11 @@
     <Compile Include="BencodeNET\IBObject.cs" />
     <Compile Include="BencodeNET\InvalidBencodeException.cs" />
     <Compile Include="BencodeNET\UnsupportedBencodeException.cs" />
-    <Compile Include="Database\Parameter.cs" />
+    <Compile Include="Database\DBMessage.cs" />
+    <Compile Include="Database\DBNode.cs" />
+    <Compile Include="Database\DBParameter.cs" />
+    <Compile Include="Database\DBPeer.cs" />
+    <Compile Include="DHT\DataEventArgs.cs" />
     <Compile Include="PGPUtilities.cs" />
     <Compile Include="CommunicatorCore.cs" />
     <Compile Include="ConnectivitySettings.cs" />

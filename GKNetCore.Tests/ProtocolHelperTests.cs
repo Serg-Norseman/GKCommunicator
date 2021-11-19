@@ -11,7 +11,7 @@ namespace GKNet.DHT
             var infoKey = ProtocolHelper.CreateSignInfoKey();
             Assert.IsNotNull(infoKey);
 
-            var hexStr = DHTHelper.BytesToHexString(infoKey);
+            var hexStr = infoKey.ToHexString();
             Assert.AreEqual("3E42E4C836FD3779FF6D16DA5FA65F17DB756EB9", hexStr);
         }
 
@@ -58,8 +58,8 @@ namespace GKNet.DHT
         [Test]
         public void Test_CreateGetPeerInfoResponse()
         {
-            var peerInfo = new PeerProfile();
-            peerInfo.ResetSystem();
+            var peerInfo = new UserProfile();
+            peerInfo.Reset();
 
             var tid = DHTHelper.GetTransactionId();
             var nodeId = DHTHelper.GetRandomID();

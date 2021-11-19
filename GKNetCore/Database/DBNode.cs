@@ -18,18 +18,22 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System.Net;
-using BencodeNET;
+using SQLite;
 
-namespace GKNet.DHT
+namespace GKNet.Database
 {
-    public class MessageEventArgs : PeerEventArgs
+    [Table("DHTNodes")]
+    internal class DBNode
     {
-        public BDictionary Data { get; private set; }
+        [MaxLength(40), PrimaryKey]
+        public string node_id { get; set; }
 
-        public MessageEventArgs(IPEndPoint peerEndPoint, byte[] nodeId, BDictionary data) : base(peerEndPoint, nodeId)
-        {
-            Data = data;
-        }
+        /// <summary>
+        /// Port is a 16-bit unsigned number, max length for 65535 = 5.
+        /// For IPv4, max length (255.255.255.255:65535) = 21.
+        /// For IPv6, max length (2001:0db8:85a3:0000:0000:8a2e:0370:7334:65535) = 45.
+        /// </summary>
+        [MaxLength(46), NotNull]
+        public string endpoint { get; set; }
     }
 }

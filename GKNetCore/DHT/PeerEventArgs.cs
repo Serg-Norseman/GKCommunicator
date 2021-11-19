@@ -23,14 +23,14 @@ using System.Net;
 
 namespace GKNet.DHT
 {
-    public class PeerEventArgs : EventArgs
+    public abstract class PeerEventArgs : EventArgs
     {
         public IPEndPoint EndPoint { get; private set; }
         public byte[] NodeId { get; private set; }
 
-        public PeerEventArgs(IPEndPoint peerEndPoint, byte[] nodeId)
+        protected PeerEventArgs(IPEndPoint endPoint, byte[] nodeId)
         {
-            EndPoint = peerEndPoint;
+            EndPoint = endPoint;
             NodeId = nodeId;
         }
     }

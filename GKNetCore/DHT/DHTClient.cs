@@ -97,9 +97,10 @@ namespace GKNet.DHT
 
         public DHTClient(IPAddress addr, int port, IDHTPeersHolder peersHolder, string clientVer)
         {
+            fLocalID = peersHolder.ClientNodeId;
+
             fBuffer = new byte[65535];
             fClientVer = clientVer;
-            fLocalID = DHTHelper.GetRandomID();
             fLocalIP = new IPEndPoint(addr, port);
             fLogger = LogManager.GetLogger(ProtocolHelper.LOG_FILE, ProtocolHelper.LOG_LEVEL, "DHTClient");
             fPeersHolder = peersHolder;
@@ -386,9 +387,7 @@ namespace GKNet.DHT
 #if DEBUG_DHT_INTERNALS
             fLogger.WriteDebug("Peer pinged: {0}", ipinfo);
 #endif
-            if (PeerPinged != null) {
-                PeerPinged(this, new PeerPingedEventArgs(ipinfo, nodeId));
-            }
+            DoPeerPingedEvent(ipinfo, nodeId);
         }
 
         private void OnRecvFindNodeResponse(IPEndPoint ipinfo, byte[] nodeId, BString nodesStr)
@@ -442,22 +441,15 @@ namespace GKNet.DHT
 
         private void ProcessNodesStr(IPEndPoint ipinfo, BString nodesStr)
         {
-            if (nodesStr != null && nodesStr.Length != 0) {
-                List<DHTNode> nodesList = null;
-                if (nodesStr.Value.Length % DHTHelper.CompactNodeRecordLengthIP4 == 0) {
-                    nodesList = DHTHelper.ParseNodesListIP4(nodesStr.Value);
-                } else if (nodesStr.Value.Length % DHTHelper.CompactNodeRecordLengthIP6 == 0) {
-                    nodesList = DHTHelper.ParseNodesListIP6(nodesStr.Value);
-                }
+            var nodesList = DHTHelper.ParseNodesList(nodesStr);
 
-                if (nodesList != null && nodesList.Count > 0) {
+            if (nodesList != null && nodesList.Count > 0) {
 #if DEBUG_DHT_INTERNALS
-                    fLogger.WriteDebug("Receive {0} nodes from {1}", nodesList.Count, ipinfo.ToString());
+                fLogger.WriteDebug("Receive {0} nodes from {1}", nodesList.Count, ipinfo.ToString());
 #endif
 
-                    fRoutingTable.UpdateNodes(nodesList);
-                    fLastNodesUpdateTime = DateTime.Now.Ticks;
-                }
+                fRoutingTable.UpdateNodes(nodesList);
+                fLastNodesUpdateTime = DateTime.Now.Ticks;
             }
         }
 
@@ -547,11 +539,9 @@ namespace GKNet.DHT
 
         public void SetTransaction(BString transactionId, DHTMessage message)
         {
-            try {
-                int tid = BitConverter.ToInt16(transactionId.Value, 0);
+            if (transactionId != null && transactionId.Length == 2) {
+                int tid = BitConverter.ToUInt16(transactionId.Value, 0);
                 fTransactions[tid] = message;
-            } catch (Exception ex) {
-                fLogger.WriteError("SetTransaction()", ex);
             }
         }
 
@@ -560,9 +550,9 @@ namespace GKNet.DHT
             QueryType result = QueryType.None;
 
             if (transactionId != null && transactionId.Length == 2) {
-                DHTMessage message;
-                int tid = BitConverter.ToInt16(transactionId.Value, 0);
+                int tid = BitConverter.ToUInt16(transactionId.Value, 0);
 
+                DHTMessage message;
                 if (fTransactions.TryGetValue(tid, out message)) {
                     result = message.QueryType;
                     fTransactions.Remove(tid);
@@ -684,6 +674,13 @@ namespace GKNet.DHT
         {
             if (PeersFound != null) {
                 PeersFound(this, new PeersFoundEventArgs(values));
+            }
+        }
+
+        private void DoPeerPingedEvent(IPEndPoint ipinfo, byte[] nodeId)
+        {
+            if (PeerPinged != null) {
+                PeerPinged(this, new PeerPingedEventArgs(ipinfo, nodeId));
             }
         }
 

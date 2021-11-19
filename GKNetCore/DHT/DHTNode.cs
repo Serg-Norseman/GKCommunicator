@@ -24,9 +24,8 @@ namespace GKNet.DHT
 {
     public enum NodeType
     {
-        Bootstrap,  // startup node
-        Simple,     // normal dht peer
-        Subnet      // peer was checked by SubnetKey's infohash and handshake
+        Node,       // normal dht peer
+        Peer        // peer was checked by SubnetKey's infohash and handshake
     }
 
     public class DHTNode
@@ -45,12 +44,6 @@ namespace GKNet.DHT
 
         public NodeType Type { get; set; }
 
-
-        public DHTNode(IPEndPoint endPoint)
-        {
-            ID = null;
-            EndPoint = endPoint;
-        }
 
         public DHTNode(byte[] id, IPEndPoint endPoint)
         {

@@ -1,6 +1,6 @@
 ﻿/*
  *  "GEDKeeper", the personal genealogical database editor.
- *  Copyright (C) 2009-2020 by Sergey V. Zhdanovskih.
+ *  Copyright (C) 2009-2021 by Sergey V. Zhdanovskih.
  *
  *  This file is part of "GEDKeeper".
  *
@@ -28,7 +28,7 @@ using GKCore.Plugins;
 [assembly: AssemblyTitle("GKCommunicatorPlugin")]
 [assembly: AssemblyDescription("GEDKeeper Communicator plugin")]
 [assembly: AssemblyProduct("GEDKeeper")]
-[assembly: AssemblyCopyright("Copyright © 2018 by Sergey V. Zhdanovskih")]
+[assembly: AssemblyCopyright("Copyright © 2018-2021 by Sergey V. Zhdanovskih")]
 [assembly: AssemblyVersion("0.1.0.0")]
 [assembly: AssemblyCulture("")]
 

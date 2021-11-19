@@ -22,13 +22,30 @@ using SQLite;
 
 namespace GKNet.Database
 {
-    [Table("Settings")]
-    public class Parameter
+    [Table("Peers")]
+    internal class DBPeer
     {
-        [MaxLength(200), PrimaryKey]
-        public string parameter { get; set; }
+        [MaxLength(40), PrimaryKey]
+        public string node_id { get; set; }
 
-        [MaxLength(200), NotNull]
-        public string value { get; set; }
+        /// <summary>
+        /// Port is a 16-bit unsigned number, max length for 65535 = 5.
+        /// For IPv4, max length (255.255.255.255:65535) = 21.
+        /// For IPv6, max length (2001:0db8:85a3:0000:0000:8a2e:0370:7334:65535) = 45.
+        /// </summary>
+        [MaxLength(46), NotNull]
+        public string last_endpoint { get; set; }
+
+        [MaxLength(40), NotNull]
+        public string user_name { get; set; }
+
+        [MaxLength(200)]
+        public string country { get; set; }
+
+        [MaxLength(200)]
+        public string timezone { get; set; }
+
+        [MaxLength(200)]
+        public string langs { get; set; }
     }
 }

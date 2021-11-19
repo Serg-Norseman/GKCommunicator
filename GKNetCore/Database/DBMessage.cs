@@ -19,37 +19,26 @@
  */
 
 using System;
-using BencodeNET;
+using SQLite;
 
-namespace GKNet
+namespace GKNet.Database
 {
-    public class PeerProfile
+    [Table("Messages")]
+    internal class DBMessage
     {
-        public byte[] NodeId { get; set; }
+        [AutoIncrement, PrimaryKey]
+        public int id { get; set; }
 
-        public string UserName { get; set; }
-        public string Country { get; set; }
-        public string Languages { get; set; }
-        public string TimeZone { get; set; }
+        [MaxLength(40), NotNull]
+        public string sender { get; set; }
 
-        public PeerProfile()
-        {
-        }
+        [MaxLength(40), NotNull]
+        public string receiver { get; set; }
 
-        public void Load(BDictionary data)
-        {
-            if (data == null)
-                throw new ArgumentNullException("data");
+        public DateTime timestamp { get; set; }
 
-            UserName = data.Get<BString>("uname").ToString();
-            Country = data.Get<BString>("uctry").ToString();
-            TimeZone = data.Get<BString>("utz").ToString();
-            Languages = data.Get<BString>("ulangs").ToString();
-        }
+        public int flags { get; set; }
 
-        public virtual void Save(BDictionary data)
-        {
-            throw new NotImplementedException();
-        }
+        public string msg_text { get; set; }
     }
 }

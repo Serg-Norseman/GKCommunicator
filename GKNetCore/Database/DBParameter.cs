@@ -18,18 +18,17 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System.Net;
-using BencodeNET;
+using SQLite;
 
-namespace GKNet.DHT
+namespace GKNet.Database
 {
-    public class MessageEventArgs : PeerEventArgs
+    [Table("Settings")]
+    internal class DBParameter
     {
-        public BDictionary Data { get; private set; }
+        [MaxLength(200), PrimaryKey]
+        public string parameter { get; set; }
 
-        public MessageEventArgs(IPEndPoint peerEndPoint, byte[] nodeId, BDictionary data) : base(peerEndPoint, nodeId)
-        {
-            Data = data;
-        }
+        [MaxLength(200), NotNull]
+        public string value { get; set; }
     }
 }

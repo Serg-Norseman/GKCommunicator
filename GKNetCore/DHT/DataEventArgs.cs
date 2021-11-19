@@ -19,37 +19,19 @@
  */
 
 using System;
-using BencodeNET;
+using System.Net;
 
-namespace GKNet
+namespace GKNet.DHT
 {
-    public class PeerProfile
+    public class DataEventArgs : EventArgs
     {
-        public byte[] NodeId { get; set; }
+        public IPEndPoint EndPoint { get; private set; }
+        public byte[] Data { get; private set; }
 
-        public string UserName { get; set; }
-        public string Country { get; set; }
-        public string Languages { get; set; }
-        public string TimeZone { get; set; }
-
-        public PeerProfile()
+        public DataEventArgs(IPEndPoint endPoint, byte[] data) : base()
         {
-        }
-
-        public void Load(BDictionary data)
-        {
-            if (data == null)
-                throw new ArgumentNullException("data");
-
-            UserName = data.Get<BString>("uname").ToString();
-            Country = data.Get<BString>("uctry").ToString();
-            TimeZone = data.Get<BString>("utz").ToString();
-            Languages = data.Get<BString>("ulangs").ToString();
-        }
-
-        public virtual void Save(BDictionary data)
-        {
-            throw new NotImplementedException();
+            EndPoint = endPoint;
+            Data = data;
         }
     }
 }

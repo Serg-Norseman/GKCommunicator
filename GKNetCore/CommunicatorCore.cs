@@ -55,6 +55,11 @@ namespace GKNet
         private Semaphore fUPnPSem = new Semaphore(0, 1);
 
 
+        public byte[] ClientNodeId
+        {
+            get { return fProfile.NodeId; }
+        }
+
         public ConnectionState ConnectionState
         {
             get { return fConnectionState; }

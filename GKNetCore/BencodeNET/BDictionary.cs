@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace BencodeNET
 {
@@ -29,15 +28,6 @@ namespace BencodeNET
         public BDictionary()
         {
             fValue = new SortedDictionary<BString, IBObject>();
-        }
-
-        /// <summary>
-        /// Creates a dictionary from key-value pairs.
-        /// </summary>
-        /// <param name="keyValuePairs"></param>
-        public BDictionary(IEnumerable<KeyValuePair<BString, IBObject>> keyValuePairs)
-        {
-            fValue = new SortedDictionary<BString, IBObject>(keyValuePairs.ToDictionary(x => x.Key, x => x.Value));
         }
 
         /// <summary>
@@ -80,58 +70,6 @@ namespace BencodeNET
         public T Get<T>(BString key) where T : class, IBObject
         {
             return this[key] as T;
-        }
-
-        /// <summary>
-        /// Merges this instance with another <see cref="BDictionary"/>.
-        /// </summary>
-        /// <remarks>
-        /// By default existing keys are either overwritten (<see cref="BString"/> and <see cref="BNumber"/>) or merged if possible (<see cref="BList"/> and <see cref="BDictionary"/>).
-        /// This behavior can be changed with the <paramref name="existingKeyAction"/> parameter.
-        /// </remarks>
-        /// <param name="dictionary">The dictionary to merge into this instance.</param>
-        /// <param name="existingKeyAction">Decides how to handle the values of existing keys.</param>
-        public void MergeWith(BDictionary dictionary, ExistingKeyAction existingKeyAction = ExistingKeyAction.Merge)
-        {
-            foreach (var field in dictionary) {
-                // Add non-existing key
-                if (!ContainsKey(field.Key)) {
-                    Add(field);
-                    continue;
-                }
-
-                if (existingKeyAction == ExistingKeyAction.Skip)
-                    continue;
-
-                // Replace strings and numbers
-                if (field.Value is BString || field.Value is BNumber) {
-                    this[field.Key] = field.Value;
-                    continue;
-                }
-
-                // Append list to existing list or replace other types
-                var newList = field.Value as BList;
-                if (newList != null) {
-                    var existingList = Get<BList>(field.Key);
-                    if (existingList == null || existingKeyAction == ExistingKeyAction.Replace) {
-                        this[field.Key] = field.Value;
-                        continue;
-                    }
-                    existingList.AddRange(newList);
-                    continue;
-                }
-
-                // Merge dictionary with existing or replace other types
-                var newDictionary = field.Value as BDictionary;
-                if (newDictionary != null) {
-                    var existingDictionary = Get<BDictionary>(field.Key);
-                    if (existingDictionary == null || existingKeyAction == ExistingKeyAction.Replace) {
-                        this[field.Key] = field.Value;
-                        continue;
-                    }
-                    existingDictionary.MergeWith(newDictionary);
-                }
-            }
         }
 
         protected override void EncodeObject(BencodeStream stream)
@@ -236,27 +174,5 @@ namespace BencodeNET
         }
 
         #endregion
-    }
-
-    /// <summary>
-    /// Specifices the action to take when encountering an already existing key when merging two <see cref="BDictionary"/>.
-    /// </summary>
-    public enum ExistingKeyAction
-    {
-        /// <summary>
-        /// Merges the values of existing keys for <see cref="BList"/> and <see cref="BDictionary"/>.
-        /// Overwrites existing keys for <see cref="BString"/> and <see cref="BNumber"/>.
-        /// </summary>
-        Merge,
-
-        /// <summary>
-        /// Replaces the values of all existing keys.
-        /// </summary>
-        Replace,
-
-        /// <summary>
-        /// Leaves all existing keys as they were.
-        /// </summary>
-        Skip
     }
 }

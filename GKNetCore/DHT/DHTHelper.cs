@@ -20,12 +20,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using BencodeNET;
 
 namespace GKNet.DHT
@@ -44,35 +46,38 @@ namespace GKNet.DHT
         private static Random r = new Random();
         private static SHA1 sha1 = new SHA1CryptoServiceProvider();
 
-        private static byte[] fCurrentTransactionId = new byte[2];
+        private static int fCurrentTransactionId;
 
+        /// <summary>
+        /// https://www.bittorrent.org/beps/bep_0005.html
+        /// 
+        /// The transaction ID should be encoded as a short string of binary numbers,
+        /// typically 2 characters are enough as they cover 2^16 outstanding queries.
+        /// </summary>
         public static BString GetTransactionId()
         {
-            lock (fCurrentTransactionId) {
-                BString result = new BString((byte[])fCurrentTransactionId.Clone());
-                if (fCurrentTransactionId[0] == 255) {
-                    fCurrentTransactionId[0] = 0;
-                    fCurrentTransactionId[1] += 1;
-                } else {
-                    fCurrentTransactionId[0] += 1;
-                }
-                return result;
-            }
+            int value = Interlocked.Increment(ref fCurrentTransactionId);
+            byte[] data = new[] { (byte)(value >> 8), (byte)value };
+            return new BString(data);
         }
 
         public static byte[] GetRandomID()
         {
             byte[] result = new byte[20];
-            r.NextBytes(result);
+
+            lock (r) {
+                r.NextBytes(result);
+            }
+
             return result;
         }
 
         public static byte[] GetRandomHashID()
         {
             var result = GetRandomID();
+
             lock (sha1) {
-                result = sha1.ComputeHash(result);
-                return result;
+                return sha1.ComputeHash(result);
             }
         }
 
@@ -109,7 +114,24 @@ namespace GKNet.DHT
             return result;
         }
 
-        public static List<DHTNode> ParseNodesListIP4(byte[] data)
+        public static List<DHTNode> ParseNodesList(BString nodesStr)
+        {
+            List<DHTNode> result = null;
+
+            if (nodesStr != null && nodesStr.Length != 0) {
+                byte[] data = nodesStr.Value;
+
+                if (data.Length % CompactNodeRecordLengthIP4 == 0) {
+                    result = ParseNodesListIP4(data);
+                } else if (data.Length % CompactNodeRecordLengthIP6 == 0) {
+                    result = ParseNodesListIP6(data);
+                }
+            }
+
+            return result;
+        }
+
+        private static List<DHTNode> ParseNodesListIP4(byte[] data)
         {
             var result = new List<DHTNode>();
             for (int i = 0; i < data.Length; i += 26) {
@@ -127,7 +149,7 @@ namespace GKNet.DHT
             return result;
         }
 
-        public static List<DHTNode> ParseNodesListIP6(byte[] data)
+        private static List<DHTNode> ParseNodesListIP6(byte[] data)
         {
             var result = new List<DHTNode>();
             for (int i = 0; i < data.Length; i += 38) {
@@ -145,17 +167,32 @@ namespace GKNet.DHT
             return result;
         }
 
+        /// <summary>
+        /// Converts the byte array to a hexadecimal string representation.
+        /// </summary>
         public static string ToHexString(this byte[] data)
         {
             StringBuilder sb = new StringBuilder();
-            foreach (var b in data) {
+            foreach (byte b in data) {
                 var t = b / 16;
-                sb.Append((char)(t + (t <= 9 ? '0' : 'W')));
+                sb.Append((char)(t + (t <= 9 ? '0' : '7')));
                 var f = b % 16;
-                sb.Append((char)(f + (f <= 9 ? '0' : 'W')));
+                sb.Append((char)(f + (f <= 9 ? '0' : '7')));
             }
 
             return sb.ToString();
+        }
+
+        public static byte[] FromHex(string data)
+        {
+            if (data == null || data.Length % 2 != 0)
+                throw new ArgumentException("The string must contain an even number of characters");
+
+            byte[] hash = new byte[data.Length / 2];
+            for (int i = 0; i < hash.Length; i++)
+                hash[i] = byte.Parse(data.Substring(i * 2, 2), NumberStyles.HexNumber);
+
+            return hash;
         }
 
         public static byte[] GetNeighbor(byte[] target, byte[] nid)
@@ -260,16 +297,7 @@ namespace GKNet.DHT
         public static string CalculateInfoHash(BDictionary info)
         {
             var hashBytes = CalculateInfoHashBytes(info);
-            return BytesToHexString(hashBytes);
-        }
-
-        /// <summary>
-        /// Converts the byte array to a hexadecimal string representation without hyphens.
-        /// </summary>
-        /// <param name="bytes"></param>
-        public static string BytesToHexString(byte[] bytes)
-        {
-            return BitConverter.ToString(bytes).Replace("-", "");
+            return hashBytes.ToHexString();
         }
 
         public static void SetIPProtectionLevelUnrestricted(this Socket socket)
