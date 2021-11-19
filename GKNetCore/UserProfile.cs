@@ -28,13 +28,26 @@ namespace GKNet
 {
     public class UserProfile : PeerProfile
     {
+        private string fPublicKey;
+        private string fPrivateKey;
+
+
         public bool IsCountryVisible { get; set; }
         public bool IsLanguagesVisible { get; set; }
         public bool IsTimeZoneVisible { get; set; }
         public bool IsEmailVisible { get; set; }
 
-        public string PublicKey { get; private set; }
-        public string PrivateKey { get; private set; }
+        public string PublicKey
+        {
+            get { return fPublicKey; }
+            set { fPublicKey = value; }
+        }
+
+        public string PrivateKey
+        {
+            get { return fPrivateKey; }
+            set { fPrivateKey = value; }
+        }
 
 
         public void Reset()
@@ -75,18 +88,9 @@ namespace GKNet
             data.Add("uemail", (IsEmailVisible) ? Email : INVISIBLE_PROFILE_VALUE);
         }
 
-        public void GenerateKey(string username = null, string password = null)
+        public void GenerateKey(string username, string password)
         {
-            using (var publicKeyStream = new MemoryStream())
-            using (var privateKeyStream = new MemoryStream()) {
-                PGPUtilities.GenerateKey(publicKeyStream, privateKeyStream, username, password);
-
-                publicKeyStream.Seek(0, SeekOrigin.Begin);
-                privateKeyStream.Seek(0, SeekOrigin.Begin);
-
-                PublicKey = publicKeyStream.Stringify();
-                PrivateKey = privateKeyStream.Stringify();
-            }
+            PGPUtilities.GenerateKey(username, password, out fPublicKey, out fPrivateKey);
         }
     }
 }

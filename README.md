@@ -27,5 +27,6 @@ This is a sub-project of GEDKeeper (application and plugin). The distributed, de
 - [ ] Authentication and traffic encryption
 - [ ] Mutual identity and signing of user profiles (trusted and unchecked network members)
 - [ ] "Web of Trust" elements with PGP certificates (https://en.wikipedia.org/wiki/Web_of_trust)
+- [ ] "Friend-to-friend" network elements (https://en.wikipedia.org/wiki/Friend-to-friend)
 - [ ] Proxy (?)
 - [ ] A simple bulletin board of investigations and search of kins (only in the implementation of the plugin)
