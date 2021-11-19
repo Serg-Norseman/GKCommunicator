@@ -19,6 +19,9 @@
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.TextBox txtEndPoint;
         private System.Windows.Forms.Label lblEndPoint;
+        private System.Windows.Forms.CheckBox chkEmailVisible;
+        private System.Windows.Forms.TextBox txtEmail;
+        private System.Windows.Forms.Label lblEmail;
 
         protected override void Dispose(bool disposing)
         {
@@ -46,6 +49,9 @@
             this.lblTimeZone = new System.Windows.Forms.Label();
             this.lblCountry = new System.Windows.Forms.Label();
             this.lblUserName = new System.Windows.Forms.Label();
+            this.lblEmail = new System.Windows.Forms.Label();
+            this.txtEmail = new System.Windows.Forms.TextBox();
+            this.chkEmailVisible = new System.Windows.Forms.CheckBox();
             this.tabControl.SuspendLayout();
             this.tabProfile.SuspendLayout();
             this.SuspendLayout();
@@ -58,7 +64,7 @@
             this.tabControl.Margin = new System.Windows.Forms.Padding(4);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(474, 435);
+            this.tabControl.Size = new System.Drawing.Size(474, 503);
             this.tabControl.TabIndex = 0;
             // 
             // tabProfile
@@ -66,12 +72,15 @@
             this.tabProfile.Controls.Add(this.txtEndPoint);
             this.tabProfile.Controls.Add(this.lblEndPoint);
             this.tabProfile.Controls.Add(this.btnSave);
+            this.tabProfile.Controls.Add(this.chkEmailVisible);
             this.tabProfile.Controls.Add(this.chkLanguagesVisible);
             this.tabProfile.Controls.Add(this.chkTimeZoneVisible);
             this.tabProfile.Controls.Add(this.chkCountryVisible);
+            this.tabProfile.Controls.Add(this.txtEmail);
             this.tabProfile.Controls.Add(this.txtLanguages);
             this.tabProfile.Controls.Add(this.txtTimeZone);
             this.tabProfile.Controls.Add(this.txtCountry);
+            this.tabProfile.Controls.Add(this.lblEmail);
             this.tabProfile.Controls.Add(this.txtUserName);
             this.tabProfile.Controls.Add(this.lblLanguages);
             this.tabProfile.Controls.Add(this.lblTimeZone);
@@ -81,7 +90,7 @@
             this.tabProfile.Margin = new System.Windows.Forms.Padding(4);
             this.tabProfile.Name = "tabProfile";
             this.tabProfile.Padding = new System.Windows.Forms.Padding(8);
-            this.tabProfile.Size = new System.Drawing.Size(466, 401);
+            this.tabProfile.Size = new System.Drawing.Size(466, 469);
             this.tabProfile.TabIndex = 0;
             this.tabProfile.Text = "Profile";
             this.tabProfile.UseVisualStyleBackColor = true;
@@ -107,7 +116,7 @@
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(340, 353);
+            this.btnSave.Location = new System.Drawing.Point(340, 421);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(105, 37);
             this.btnSave.TabIndex = 9;
@@ -223,11 +232,41 @@
             this.lblUserName.TabIndex = 0;
             this.lblUserName.Text = "UserName";
             // 
+            // lblEmail
+            // 
+            this.lblEmail.AutoSize = true;
+            this.lblEmail.Location = new System.Drawing.Point(12, 337);
+            this.lblEmail.Margin = new System.Windows.Forms.Padding(4);
+            this.lblEmail.Name = "lblEmail";
+            this.lblEmail.Size = new System.Drawing.Size(48, 21);
+            this.lblEmail.TabIndex = 3;
+            this.lblEmail.Text = "Email";
+            // 
+            // txtEmail
+            // 
+            this.txtEmail.Location = new System.Drawing.Point(16, 362);
+            this.txtEmail.Margin = new System.Windows.Forms.Padding(0, 0, 0, 8);
+            this.txtEmail.Name = "txtEmail";
+            this.txtEmail.Size = new System.Drawing.Size(429, 28);
+            this.txtEmail.TabIndex = 7;
+            // 
+            // chkEmailVisible
+            // 
+            this.chkEmailVisible.AutoSize = true;
+            this.chkEmailVisible.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.chkEmailVisible.Location = new System.Drawing.Point(367, 336);
+            this.chkEmailVisible.Margin = new System.Windows.Forms.Padding(4);
+            this.chkEmailVisible.Name = "chkEmailVisible";
+            this.chkEmailVisible.Size = new System.Drawing.Size(78, 25);
+            this.chkEmailVisible.TabIndex = 8;
+            this.chkEmailVisible.Text = "Visible";
+            this.chkEmailVisible.UseVisualStyleBackColor = true;
+            // 
             // ProfileDlg
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(120F, 120F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.ClientSize = new System.Drawing.Size(474, 435);
+            this.ClientSize = new System.Drawing.Size(474, 503);
             this.Controls.Add(this.tabControl);
             this.Font = new System.Drawing.Font("Calibri", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;

@@ -46,6 +46,7 @@ namespace GKCommunicatorApp
             txtCountry.Text = fProfile.Country;
             txtTimeZone.Text = fProfile.TimeZone;
             txtLanguages.Text = fProfile.Languages;
+            txtEmail.Text = fProfile.Email;
 
             var userProfile = fProfile as UserProfile;
             bool isUser = (userProfile != null);
@@ -55,18 +56,21 @@ namespace GKCommunicatorApp
                 chkCountryVisible.Checked = userProfile.IsCountryVisible;
                 chkTimeZoneVisible.Checked = userProfile.IsTimeZoneVisible;
                 chkLanguagesVisible.Checked = userProfile.IsLanguagesVisible;
+                chkEmailVisible.Checked = userProfile.IsEmailVisible;
             } else {
                 txtEndPoint.Text = string.Empty;
 
                 chkCountryVisible.Visible = false;
                 chkTimeZoneVisible.Visible = false;
                 chkLanguagesVisible.Visible = false;
+                chkEmailVisible.Visible = false;
             }
 
             txtUserName.ReadOnly = !isUser;
             txtCountry.ReadOnly = !isUser;
             txtTimeZone.ReadOnly = !isUser;
             txtLanguages.ReadOnly = !isUser;
+            txtEmail.ReadOnly = !isUser;
 
             btnSave.Visible = isUser;
             btnSave.Enabled = isUser;
@@ -80,10 +84,12 @@ namespace GKCommunicatorApp
             userProfile.Country = txtCountry.Text;
             userProfile.TimeZone = txtTimeZone.Text;
             userProfile.Languages = txtLanguages.Text;
+            userProfile.Email = txtEmail.Text;
 
             userProfile.IsCountryVisible = chkCountryVisible.Checked;
             userProfile.IsTimeZoneVisible = chkTimeZoneVisible.Checked;
             userProfile.IsLanguagesVisible = chkLanguagesVisible.Checked;
+            userProfile.IsEmailVisible = chkEmailVisible.Checked;
 
             fCore.Database.SaveProfile(userProfile);
 

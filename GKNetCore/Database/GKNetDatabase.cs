@@ -173,10 +173,12 @@ namespace GKNet.Database
                 profile.Country = GetParameterValue("user_country");
                 profile.TimeZone = GetParameterValue("user_timezone");
                 profile.Languages = GetParameterValue("user_languages");
+                profile.Email = GetParameterValue("user_email");
 
                 profile.IsCountryVisible = GetParameterBool("user_country_visible");
                 profile.IsTimeZoneVisible = GetParameterBool("user_timezone_visible");
                 profile.IsLanguagesVisible = GetParameterBool("user_languages_visible");
+                profile.IsEmailVisible = GetParameterBool("user_email_visible");
             } else {
                 profile.Reset();
                 SaveProfile(profile);
@@ -193,10 +195,12 @@ namespace GKNet.Database
             SetParameterValue("user_country", profile.Country);
             SetParameterValue("user_timezone", profile.TimeZone);
             SetParameterValue("user_languages", profile.Languages);
+            SetParameterValue("user_email", profile.Email);
 
             SetParameterBool("user_country_visible", profile.IsCountryVisible);
             SetParameterBool("user_timezone_visible", profile.IsTimeZoneVisible);
             SetParameterBool("user_languages_visible", profile.IsLanguagesVisible);
+            SetParameterBool("user_email_visible", profile.IsEmailVisible);
         }
 
         #endregion

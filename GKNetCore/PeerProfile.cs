@@ -25,12 +25,15 @@ namespace GKNet
 {
     public class PeerProfile
     {
+        public const string INVISIBLE_PROFILE_VALUE = "-";
+
         public byte[] NodeId { get; set; }
 
         public string UserName { get; set; }
         public string Country { get; set; }
         public string Languages { get; set; }
         public string TimeZone { get; set; }
+        public string Email { get; set; }
 
         public PeerProfile()
         {
@@ -45,6 +48,7 @@ namespace GKNet
             Country = data.Get<BString>("uctry").ToString();
             TimeZone = data.Get<BString>("utz").ToString();
             Languages = data.Get<BString>("ulangs").ToString();
+            Email = data.Get<BString>("uemail").ToString();
         }
 
         public virtual void Save(BDictionary data)

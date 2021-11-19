@@ -83,6 +83,11 @@ namespace GKNet.DHT
             set { fPublicEndPoint = value; }
         }
 
+        public DHTRoutingTable RoutingTable
+        {
+            get { return fRoutingTable; }
+        }
+
         public Socket Socket
         {
             get { return fSocket; }
@@ -154,14 +159,26 @@ namespace GKNet.DHT
         private void Bootstrap()
         {
             var routers = new List<string>() {
-                "router.bittorrent.com",
+                "dht.aelitis.com",
                 "dht.transmissionbt.com",
-                "router.utorrent.com"
-            }.Select(x => Dns.GetHostEntry(x).AddressList[0]).ToList();
+                "router.bittorrent.com",
+                "router.magnets.im",
+                "router.utorrent.com",
+            };
 
             fRouters = new List<IPAddress>();
             foreach (var r in routers) {
-                fRouters.Add(DHTHelper.PrepareAddress(r));
+                IPAddress addr;
+                try {
+                    addr = Dns.GetHostEntry(r).AddressList[0];
+                } catch (Exception ex) {
+                    fLogger.WriteError("Bootstrap(" + r + ")", ex);
+                    addr = null;
+                }
+
+                if (addr != null) {
+                    fRouters.Add(DHTHelper.PrepareAddress(addr));
+                }
             }
         }
 
@@ -324,6 +341,18 @@ namespace GKNet.DHT
             }
         }
 
+        private void UpdateRoutingTable(DHTNode node)
+        {
+            fRoutingTable.UpdateNode(node);
+            fLastNodesUpdateTime = DateTime.Now.Ticks;
+        }
+
+        private void UpdateRoutingTable(IEnumerable<DHTNode> nodes)
+        {
+            fRoutingTable.UpdateNodes(nodes);
+            fLastNodesUpdateTime = DateTime.Now.Ticks;
+        }
+
         private void OnRecvResponseX(IPEndPoint ipinfo, DHTResponseMessage msg)
         {
             if (msg == null) return;
@@ -350,7 +379,7 @@ namespace GKNet.DHT
                 return;
             }
 
-            fRoutingTable.UpdateNode(new DHTNode(id.Value, ipinfo));
+            UpdateRoutingTable(new DHTNode(id.Value, ipinfo));
 
             // define type of response by transactionId of query/response
             QueryType queryType = CheckTransaction(tid);
@@ -448,8 +477,7 @@ namespace GKNet.DHT
                 fLogger.WriteDebug("Receive {0} nodes from {1}", nodesList.Count, ipinfo.ToString());
 #endif
 
-                fRoutingTable.UpdateNodes(nodesList);
-                fLastNodesUpdateTime = DateTime.Now.Ticks;
+                UpdateRoutingTable(nodesList);
             }
         }
 
@@ -467,7 +495,7 @@ namespace GKNet.DHT
             fLogger.WriteDebug("Receive `announce_peer` query from {0} [{1}] for {2}", ipinfo.ToString(), id.Value.ToHexString(), infoHash.Value.ToHexString());
 #endif
 
-            fRoutingTable.UpdateNode(new DHTNode(id.Value, ipinfo));
+            UpdateRoutingTable(new DHTNode(id.Value, ipinfo));
 
             if (!Algorithms.ArraysEqual(infoHash.Value, fSearchInfoHash)) {
                 // skip response for another infohash query
@@ -490,7 +518,7 @@ namespace GKNet.DHT
             fLogger.WriteDebug("Receive `ping` query from {0} [{1}]", ipinfo.ToString(), id.Value.ToHexString());
 #endif
 
-            fRoutingTable.UpdateNode(new DHTNode(id.Value, ipinfo));
+            UpdateRoutingTable(new DHTNode(id.Value, ipinfo));
 
             Send(ipinfo, DHTMessage.CreatePingResponse(t, fLocalID));
         }
@@ -507,7 +535,7 @@ namespace GKNet.DHT
             fLogger.WriteDebug("Receive `find_node` query from {0} [{1}]", ipinfo.ToString(), id.Value.ToHexString());
 #endif
 
-            fRoutingTable.UpdateNode(new DHTNode(id.Value, ipinfo));
+            UpdateRoutingTable(new DHTNode(id.Value, ipinfo));
 
             var nodesList = fRoutingTable.FindNodes(target.Value);
             Send(ipinfo, DHTMessage.CreateFindNodeResponse(t, fLocalID, nodesList));
@@ -525,7 +553,7 @@ namespace GKNet.DHT
             fLogger.WriteDebug("Receive `get_peers` query from {0} [{1}] for {2}", ipinfo.ToString(), id.Value.ToHexString(), infoHash.Value.ToHexString());
 #endif
 
-            fRoutingTable.UpdateNode(new DHTNode(id.Value, ipinfo));
+            UpdateRoutingTable(new DHTNode(id.Value, ipinfo));
 
             var neighbor = DHTHelper.GetNeighbor(infoHash.Value, fLocalID);
             var peersList = (Algorithms.ArraysEqual(infoHash.Value, fSearchInfoHash)) ? fPeersHolder.GetPeersList() : null;

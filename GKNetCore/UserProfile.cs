@@ -31,6 +31,7 @@ namespace GKNet
         public bool IsCountryVisible { get; set; }
         public bool IsLanguagesVisible { get; set; }
         public bool IsTimeZoneVisible { get; set; }
+        public bool IsEmailVisible { get; set; }
 
         public string PublicKey { get; private set; }
         public string PrivateKey { get; private set; }
@@ -52,12 +53,14 @@ namespace GKNet
             var offsetStr = (offset.TotalMilliseconds < 0) ? offset.ToString() : "+" + offset.ToString();
             TimeZone = string.Format("{0} (UTC{1})", result, offsetStr); // (s[0]);
 
-            string langs = "-";
+            string langs = INVISIBLE_PROFILE_VALUE;
             /*foreach (InputLanguage c in InputLanguage.InstalledInputLanguages) {
                 langs += (langs.Length != 0) ? ", " : "";
                 langs += (c.Culture.ThreeLetterISOLanguageName);
             }*/
             Languages = langs;
+
+            Email = INVISIBLE_PROFILE_VALUE;
         }
 
         public override void Save(BDictionary data)
@@ -66,15 +69,10 @@ namespace GKNet
                 throw new ArgumentNullException("data");
 
             data.Add("uname", UserName);
-
-            if (IsCountryVisible)
-                data.Add("uctry", Country);
-
-            if (IsTimeZoneVisible)
-                data.Add("utz", TimeZone);
-
-            if (IsLanguagesVisible)
-                data.Add("ulangs", Languages);
+            data.Add("uctry", (IsCountryVisible) ? Country : INVISIBLE_PROFILE_VALUE);
+            data.Add("utz", (IsTimeZoneVisible) ? TimeZone : INVISIBLE_PROFILE_VALUE);
+            data.Add("ulangs", (IsLanguagesVisible) ? Languages : INVISIBLE_PROFILE_VALUE);
+            data.Add("uemail", (IsEmailVisible) ? Email : INVISIBLE_PROFILE_VALUE);
         }
 
         public void GenerateKey(string username = null, string password = null)
