@@ -44,7 +44,6 @@
     <Compile Include="DHT\DHTRoutingTableTests.cs" />
     <Compile Include="MessageTests.cs" />
     <Compile Include="PeerTests.cs" />
-    <Compile Include="PGPUtilitiesTests.cs" />
     <Compile Include="ProtocolHelperTests.cs" />
     <Compile Include="STUNTests.cs" />
     <Compile Include="UserProfileTests.cs" />
@@ -54,17 +53,6 @@
       <Project>{fee68cf6-1d60-4e90-aef3-6afa4a8c977d}</Project>
       <Name>GKNetCore</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Keys\newPublicKey.asc">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Keys\privateKey.asc">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Keys\publicKey.asc">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

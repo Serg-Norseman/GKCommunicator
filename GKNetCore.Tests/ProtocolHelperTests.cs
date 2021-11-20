@@ -1,6 +1,8 @@
-﻿using NUnit.Framework;
+﻿using BSLib;
+using GKNet.DHT;
+using NUnit.Framework;
 
-namespace GKNet.DHT
+namespace GKNet
 {
     [TestFixture]
     public class ProtocolHelperTests
@@ -66,6 +68,22 @@ namespace GKNet.DHT
             var msg = ProtocolHelper.CreateGetPeerInfoResponse(tid, nodeId, peerInfo);
             Assert.IsNotNull(msg);
             // TODO: test contents
+        }
+
+        [Test]
+        public void Test_PGPMessagesProtection()
+        {
+            string password = "password";
+
+            string publicKey, privateKey;
+            PGPUtilities.GenerateKey("John Doe", password, out publicKey, out privateKey);
+
+            string inputText = "this is my test phrase!";
+
+            string cryptoString = PGPUtilities.PgpEncrypt(inputText, publicKey);
+
+            string outputString = PGPUtilities.PgpDecrypt(cryptoString, privateKey, password);
+            Assert.AreEqual(inputText, outputString);
         }
     }
 }

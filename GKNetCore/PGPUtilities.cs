@@ -16,23 +16,6 @@ namespace GKNet
 {
     public static class PGPUtilities
     {
-        public static PgpPublicKey ImportPublicKey(this Stream publicIn, bool forEncryption = true)
-        {
-            return new PgpPublicKeyRingBundle(PgpUtilities.GetDecoderStream(publicIn)).
-                GetKeyRings().OfType<PgpPublicKeyRing>().SelectMany(x => x.GetPublicKeys().OfType<PgpPublicKey>()).
-                Where(key => !forEncryption || key.IsEncryptionKey).FirstOrDefault();
-        }
-
-        public static PgpSecretKey ImportSecretKey(this Stream secretIn)
-        {
-            return
-            new PgpSecretKeyRingBundle(PgpUtilities.GetDecoderStream(secretIn))
-            .GetKeyRings()
-            .OfType<PgpSecretKeyRing>()
-            .SelectMany(x => x.GetSecretKeys().OfType<PgpSecretKey>())
-            .FirstOrDefault();
-        }
-
         public static Stream PgpEncrypt(this Stream toEncrypt, PgpPublicKey encryptionKey, bool armor = true, bool verify = false)
         {
             var outStream = new MemoryStream();
@@ -104,30 +87,21 @@ namespace GKNet
             while (!(dataObject is PgpLiteralData) && dataObject != null) {
                 try {
                     var compressedData = dataObject as PgpCompressedData;
-
                     var listedData = dataObject as PgpEncryptedDataList;
 
                     //strip away the compression stream
                     if (compressedData != null) {
                         stream = compressedData.GetDataStream();
-
                         layeredStreams.Add(stream);
-
                         dataObjectFactory = new PgpObjectFactory(stream);
                     }
 
                     //strip the PgpEncryptedDataList
                     if (listedData != null) {
-                        var encryptedDataList =
-                            listedData.GetEncryptedDataObjects().OfType<PgpPublicKeyEncryptedData>().First();
-
-                        var decryptionKey =
-                            secretKeys[encryptedDataList.KeyId].ExtractPrivateKey(privateKeyPassword.ToCharArray());
-
+                        var encryptedDataList = listedData.GetEncryptedDataObjects().OfType<PgpPublicKeyEncryptedData>().First();
+                        var decryptionKey = secretKeys[encryptedDataList.KeyId].ExtractPrivateKey(privateKeyPassword.ToCharArray());
                         stream = encryptedDataList.GetDataStream(decryptionKey);
-
                         layeredStreams.Add(stream);
-
                         dataObjectFactory = new PgpObjectFactory(stream);
                     }
 
@@ -164,41 +138,14 @@ namespace GKNet
             }
         }
 
-        /// <summary>
-        ///     Reads and returns the PGP secret key from the specified input stream.
-        /// </summary>
-        /// <param name="input">The input stream containing the PGP secret key to be read.</param>
-        /// <returns>The retrieved PGP secret key.</returns>
-        private static PgpSecretKey ReadSecretKey(Stream input)
-        {
-            try {
-                PgpSecretKeyRingBundle pgpSec = new PgpSecretKeyRingBundle(PgpUtilities.GetDecoderStream(input));
-                PgpSecretKeyRing pgpKeyRing = pgpSec.GetKeyRings().OfType<PgpSecretKeyRing>().FirstOrDefault();
-                PgpSecretKey pgpSecretKey = pgpKeyRing.GetSecretKeys().OfType<PgpSecretKey>().FirstOrDefault();
-
-                if (pgpSecretKey.IsSigningKey) {
-                    return pgpSecretKey;
-                } else {
-                    throw new Exception();
-                }
-            } catch (Exception) {
-                throw new PgpKeyValidationException("Can't find a valid signing key in the specified key ring.");
-            }
-        }
-
-        /// <summary>
-        ///     Reads and returns the PGP secret key from the specified key string.
-        /// </summary>
-        /// <param name="key">The key string from which the PGP secret key is to be read.</param>
-        /// <returns>The retrieved PGP secret key.</returns>
-        private static PgpSecretKey ReadSecretKeyFromString(string key)
-        {
-            return ReadSecretKey(new MemoryStream(Encoding.UTF8.GetBytes(key ?? string.Empty)));
-        }
-
         public static void GenerateKey(Stream publicKeyStream, Stream privateKeyStream, string username = null,
                                        string password = null, int strength = 1024, int certainty = 8, bool armor = true)
         {
+            if (privateKeyStream == null)
+                throw new ArgumentException("secretOut");
+            if (publicKeyStream == null)
+                throw new ArgumentException("publicOut");
+
             username = username == null ? string.Empty : username;
             password = password == null ? string.Empty : password;
 
@@ -206,14 +153,35 @@ namespace GKNet
             kpg.Init(new RsaKeyGenerationParameters(BigInteger.ValueOf(0x13), new SecureRandom(), strength, certainty));
             AsymmetricCipherKeyPair kp = kpg.GenerateKeyPair();
 
-            ExportKeyPair(privateKeyStream, publicKeyStream, kp.Public, kp.Private, username, password.ToCharArray(), armor);
+            if (armor) {
+                privateKeyStream = new ArmoredOutputStream(privateKeyStream);
+            }
+
+            PgpSecretKey secretKey = new PgpSecretKey(
+                                         PgpSignature.DefaultCertification, PublicKeyAlgorithmTag.RsaGeneral,
+                                         kp.Public, kp.Private, DateTime.Now, username,
+                                         SymmetricKeyAlgorithmTag.TripleDes, password.ToCharArray(), null, null, new SecureRandom());
+
+            secretKey.Encode(privateKeyStream);
+
+            privateKeyStream.Dispose();
+
+            if (armor) {
+                publicKeyStream = new ArmoredOutputStream(publicKeyStream);
+            }
+
+            PgpPublicKey key = secretKey.PublicKey;
+
+            key.Encode(publicKeyStream);
+
+            publicKeyStream.Dispose();
         }
 
         public static void GenerateKey(string username, string password, out string publicKey, out string privateKey)
         {
             using (var publicKeyStream = new MemoryStream())
             using (var privateKeyStream = new MemoryStream()) {
-                PGPUtilities.GenerateKey(publicKeyStream, privateKeyStream, username, password);
+                GenerateKey(publicKeyStream, privateKeyStream, username, password);
 
                 publicKeyStream.Seek(0, SeekOrigin.Begin);
                 privateKeyStream.Seek(0, SeekOrigin.Begin);
@@ -223,37 +191,29 @@ namespace GKNet
             }
         }
 
-        private static void ExportKeyPair(Stream secretOut, Stream publicOut,
-            AsymmetricKeyParameter publicKey, AsymmetricKeyParameter privateKey,
-            string identity, char[] passPhrase, bool armor)
+        public static string PgpEncrypt(string inputText, string publicKey)
         {
-            if (secretOut == null)
-                throw new ArgumentException("secretOut");
-            if (publicOut == null)
-                throw new ArgumentException("publicOut");
+            using (var streamPublKey = publicKey.Streamify()) {
+                // Import public key
+                var publKey = new PgpPublicKeyRingBundle(PgpUtilities.GetDecoderStream(streamPublKey)).
+                    GetKeyRings().OfType<PgpPublicKeyRing>().SelectMany(x => x.GetPublicKeys().OfType<PgpPublicKey>()).
+                    Where(key => key.IsEncryptionKey).FirstOrDefault();
 
-            if (armor) {
-                secretOut = new ArmoredOutputStream(secretOut);
+                using (var inputStream = inputText.Streamify())
+                using (var cryptoStream = inputStream.PgpEncrypt(publKey)) {
+                    string cryptoString = cryptoStream.Stringify();
+                    return cryptoString;
+                }
             }
+        }
 
-            PgpSecretKey secretKey = new PgpSecretKey(
-                                         PgpSignature.DefaultCertification, PublicKeyAlgorithmTag.RsaGeneral,
-                                         publicKey, privateKey, DateTime.Now, identity,
-                                         SymmetricKeyAlgorithmTag.TripleDes, passPhrase, null, null, new SecureRandom());
-
-            secretKey.Encode(secretOut);
-
-            secretOut.Dispose();
-
-            if (armor) {
-                publicOut = new ArmoredOutputStream(publicOut);
+        public static string PgpDecrypt(string cryptoString, string privateKey, string password)
+        {
+            using (var cryptoStream = cryptoString.Streamify())
+            using (var outputStream = cryptoStream.PgpDecrypt(privateKey, password)) {
+                string outputString = outputStream.Stringify();
+                return outputString;
             }
-
-            PgpPublicKey key = secretKey.PublicKey;
-
-            key.Encode(publicOut);
-
-            publicOut.Dispose();
         }
     }
 }
