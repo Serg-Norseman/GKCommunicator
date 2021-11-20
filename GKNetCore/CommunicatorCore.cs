@@ -474,22 +474,24 @@ namespace GKNet
         {
             fLogger.WriteDebug("Response received: {0} :: {1}", e.EndPoint, e.Data.EncodeAsString());
 
-            var pr = FindPeer(e.EndPoint);
+            var peer = FindPeer(e.EndPoint);
 
             var resp = e.Data.Get<BDictionary>("r");
             var qt = resp.Get<BString>("q");
             string queryType = (qt != null) ? qt.ToString() : "";
             switch (queryType) {
                 case "handshake":
-                    if (pr != null) {
-                        pr.State = PeerState.Checked;
+                    if (peer != null) {
+                        peer.State = PeerState.Checked;
                         SendData(e.EndPoint, ProtocolHelper.CreateGetPeerInfoQuery(DHTHelper.GetTransactionId(), fDHTClient.LocalID));
                     }
                     break;
 
                 case "get_peer_info":
-                    if (pr != null) {
-                        pr.Profile.Load(resp);
+                    if (peer != null) {
+                        peer.Profile.Load(resp);
+                        peer.Profile.NodeId = e.NodeId;
+                        fDatabase.SavePeer(peer.Profile, e.EndPoint);
                     }
                     break;
             }

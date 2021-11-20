@@ -16,7 +16,7 @@ namespace GKNet
 {
     public static class PGPUtilities
     {
-        public static Stream PgpEncrypt(this Stream toEncrypt, PgpPublicKey encryptionKey, bool armor = true, bool verify = false)
+        private static Stream PgpEncrypt(this Stream toEncrypt, PgpPublicKey encryptionKey, bool armor = true, bool verify = false)
         {
             var outStream = new MemoryStream();
 
@@ -65,7 +65,7 @@ namespace GKNet
             return outStream;
         }
 
-        public static Stream PgpDecrypt(this Stream encryptedData, string armoredPrivateKey, string privateKeyPassword, Encoding armorEncoding = null)
+        private static Stream PgpDecrypt(this Stream encryptedData, string armoredPrivateKey, string privateKeyPassword, Encoding armorEncoding = null)
         {
             var stream = PgpUtilities.GetDecoderStream(encryptedData);
             var layeredStreams = new List<Stream> { stream }; // this is to clean up/ dispose of any layered streams.
@@ -138,50 +138,29 @@ namespace GKNet
             }
         }
 
-        public static void GenerateKey(Stream publicKeyStream, Stream privateKeyStream, string username = null,
-                                       string password = null, int strength = 1024, int certainty = 8, bool armor = true)
+        public static void GenerateKey(string username, string password, out string publicKey, out string privateKey)
         {
-            if (privateKeyStream == null)
-                throw new ArgumentException("secretOut");
-            if (publicKeyStream == null)
-                throw new ArgumentException("publicOut");
-
             username = username == null ? string.Empty : username;
             password = password == null ? string.Empty : password;
 
-            IAsymmetricCipherKeyPairGenerator kpg = new RsaKeyPairGenerator();
-            kpg.Init(new RsaKeyGenerationParameters(BigInteger.ValueOf(0x13), new SecureRandom(), strength, certainty));
-            AsymmetricCipherKeyPair kp = kpg.GenerateKeyPair();
-
-            if (armor) {
-                privateKeyStream = new ArmoredOutputStream(privateKeyStream);
-            }
-
-            PgpSecretKey secretKey = new PgpSecretKey(
-                                         PgpSignature.DefaultCertification, PublicKeyAlgorithmTag.RsaGeneral,
-                                         kp.Public, kp.Private, DateTime.Now, username,
-                                         SymmetricKeyAlgorithmTag.TripleDes, password.ToCharArray(), null, null, new SecureRandom());
-
-            secretKey.Encode(privateKeyStream);
-
-            privateKeyStream.Dispose();
-
-            if (armor) {
-                publicKeyStream = new ArmoredOutputStream(publicKeyStream);
-            }
-
-            PgpPublicKey key = secretKey.PublicKey;
-
-            key.Encode(publicKeyStream);
-
-            publicKeyStream.Dispose();
-        }
-
-        public static void GenerateKey(string username, string password, out string publicKey, out string privateKey)
-        {
             using (var publicKeyStream = new MemoryStream())
             using (var privateKeyStream = new MemoryStream()) {
-                GenerateKey(publicKeyStream, privateKeyStream, username, password);
+                IAsymmetricCipherKeyPairGenerator kpg = new RsaKeyPairGenerator();
+                kpg.Init(new RsaKeyGenerationParameters(BigInteger.ValueOf(0x13), new SecureRandom(), 1024, 8));
+                AsymmetricCipherKeyPair kp = kpg.GenerateKeyPair();
+
+                PgpSecretKey secretKey = new PgpSecretKey(
+                                             PgpSignature.DefaultCertification, PublicKeyAlgorithmTag.RsaGeneral,
+                                             kp.Public, kp.Private, DateTime.Now, username,
+                                             SymmetricKeyAlgorithmTag.TripleDes, password.ToCharArray(), null, null, new SecureRandom());
+
+                using (var armoredPrivKeyStream = new ArmoredOutputStream(privateKeyStream)) {
+                    secretKey.Encode(armoredPrivKeyStream);
+                }
+
+                using (var armoredPublKeyStream = new ArmoredOutputStream(publicKeyStream)) {
+                    secretKey.PublicKey.Encode(armoredPublKeyStream);
+                }
 
                 publicKeyStream.Seek(0, SeekOrigin.Begin);
                 privateKeyStream.Seek(0, SeekOrigin.Begin);

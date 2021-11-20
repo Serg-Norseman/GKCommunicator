@@ -17,11 +17,10 @@ This is a sub-project of GEDKeeper (application and plugin). The distributed, de
 - [x] PGP support (not used yet)
 - [x] UDP hole-punching
 - [x] Working DHT peer search, connection and simple chat
-- [x] Storage of DHT nodes and user profile
+- [x] Storage of DHT nodes, user and peers profiles
 
 ### Planned
 
-- [ ] Simple storage of peer profiles
 - [ ] Stabilize the chat and discovery of peers
 - [ ] TCP
 - [ ] Authentication and traffic encryption

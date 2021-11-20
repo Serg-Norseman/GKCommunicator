@@ -104,7 +104,7 @@ namespace GKNet
             return data;
         }
 
-        public static BDictionary CreateGetPeerInfoResponse(BString transactionID, byte[] nodeId, PeerProfile peerProfile)
+        public static BDictionary CreateGetPeerInfoResponse(BString transactionID, byte[] nodeId, UserProfile peerProfile)
         {
             var data = new BDictionary();
             data.Add("t", transactionID);

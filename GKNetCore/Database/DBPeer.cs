@@ -47,5 +47,8 @@ namespace GKNet.Database
 
         [MaxLength(200)]
         public string langs { get; set; }
+
+        [MaxLength(200)]
+        public string email { get; set; }
     }
 }

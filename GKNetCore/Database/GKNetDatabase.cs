@@ -207,6 +207,28 @@ namespace GKNet.Database
 
         #endregion
 
+        #region Peer profiles
+
+
+        public void SavePeer(PeerProfile peerProfile, IPEndPoint endPoint)
+        {
+            if (!IsConnected)
+                throw new DatabaseException("Database disconnected");
+
+            var record = new DBPeer() {
+                node_id = peerProfile.NodeId.ToHexString(),
+                last_endpoint = endPoint.ToString(),
+                user_name = peerProfile.UserName,
+                country = peerProfile.Country,
+                timezone = peerProfile.TimeZone,
+                langs = peerProfile.Languages,
+                email = peerProfile.Email
+            };
+            fConnection.InsertOrReplace(record);
+        }
+
+        #endregion
+
         #region DHT nodes
 
         public IEnumerable<DHTNode> LoadNodes()

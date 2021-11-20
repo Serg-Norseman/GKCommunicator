@@ -46,7 +46,7 @@ namespace GKNet.DHT
         private static Random r = new Random();
         private static SHA1 sha1 = new SHA1CryptoServiceProvider();
 
-        private static int fCurrentTransactionId;
+        private static long fCurrentTransactionId;
 
         /// <summary>
         /// https://www.bittorrent.org/beps/bep_0005.html
@@ -56,8 +56,8 @@ namespace GKNet.DHT
         /// </summary>
         public static BString GetTransactionId()
         {
-            int value = Interlocked.Increment(ref fCurrentTransactionId);
-            byte[] data = new[] { (byte)(value >> 8), (byte)value };
+            long value = Interlocked.Add(ref fCurrentTransactionId, 1);
+            byte[] data = BitConverter.GetBytes((short)value);
             return new BString(data);
         }
 
