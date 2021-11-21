@@ -91,6 +91,7 @@
     <Compile Include="Peer.cs" />
     <Compile Include="PeerProfile.cs" />
     <Compile Include="ProtocolHelper.cs" />
+    <Compile Include="Utilities.cs" />
     <Compile Include="STUN\Client\STUN_Client.cs" />
     <Compile Include="STUN\Client\STUN_NetType.cs" />
     <Compile Include="STUN\Client\STUN_Result.cs" />

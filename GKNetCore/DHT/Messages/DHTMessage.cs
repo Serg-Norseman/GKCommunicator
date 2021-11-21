@@ -255,9 +255,7 @@ namespace GKNet.DHT
 
             var args = new BDictionary();
             args.Add("id", new BString(nodeId));
-            /*if (implied_port != 0)*/ {
-                args.Add("implied_port", new BNumber(implied_port));
-            }
+            args.Add("implied_port", new BNumber(implied_port));
             args.Add("info_hash", new BString(infoHash));
             args.Add("port", new BNumber(port));
             args.Add("token", token);
