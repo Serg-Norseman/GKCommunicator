@@ -28,7 +28,7 @@ namespace GKNet.Database
         [MaxLength(200), PrimaryKey]
         public string parameter { get; set; }
 
-        [MaxLength(200), NotNull]
+        [NotNull]
         public string value { get; set; }
     }
 }

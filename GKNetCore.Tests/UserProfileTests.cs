@@ -37,6 +37,9 @@ namespace GKNet
             profile.Identify("password");
             Assert.IsNotNullOrEmpty(profile.PublicKey);
             Assert.IsNotNullOrEmpty(profile.PrivateKey);
+
+            var result = Utilities.VerifyPassword("password", profile.PasswordHash);
+            Assert.IsTrue(result);
         }
 
         [Test]

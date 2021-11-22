@@ -139,6 +139,9 @@ namespace GKNet.Database
             if (!IsConnected)
                 throw new DatabaseException("Database disconnected");
 
+            if (string.IsNullOrEmpty(paramValue))
+                return;
+
             var param = new DBParameter() {
                 parameter = paramName,
                 value = paramValue
@@ -181,6 +184,10 @@ namespace GKNet.Database
                 profile.IsTimeZoneVisible = GetParameterBool("user_timezone_visible");
                 profile.IsLanguagesVisible = GetParameterBool("user_languages_visible");
                 profile.IsEmailVisible = GetParameterBool("user_email_visible");
+
+                profile.PasswordHash = GetParameterValue("user_password");
+                profile.PublicKey = GetParameterValue("user_public_key");
+                profile.PrivateKey = GetParameterValue("user_private_key");
             } else {
                 profile.Reset();
                 SaveProfile(profile);
@@ -203,6 +210,10 @@ namespace GKNet.Database
             SetParameterBool("user_timezone_visible", profile.IsTimeZoneVisible);
             SetParameterBool("user_languages_visible", profile.IsLanguagesVisible);
             SetParameterBool("user_email_visible", profile.IsEmailVisible);
+
+            SetParameterValue("user_password", profile.PasswordHash);
+            SetParameterValue("user_public_key", profile.PublicKey);
+            SetParameterValue("user_private_key", profile.PrivateKey);
         }
 
         #endregion

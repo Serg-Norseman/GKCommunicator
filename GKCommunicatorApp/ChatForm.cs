@@ -262,6 +262,13 @@ namespace GKCommunicatorApp
                     lblConnectionStatus.Text = "Network initialized. You can start the connection.";
                     UpdateStatus();
                 }
+
+                string password = string.Empty;
+                if (InputDlg.QueryPassword("GKCommunicator", "Password", ref password)) {
+                    if (!fCore.Profile.Authentication(password)) {
+                        MessageBox.Show("Authentication failed", "GKCommunicator", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
             };
 
             if (InvokeRequired) {

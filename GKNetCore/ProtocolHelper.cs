@@ -33,6 +33,13 @@ namespace GKNet
 
         public const int PublicTCPPort = 11000; // DHTClient.PublicDHTPort;
 
+        // Confident acceptance by any host
+        // (Min IP Packet Size) — (Max IP Header Size) — (UDP Header Size) = 576 — 60 — 8 = 508
+        public const int MAX_UDP_DATA_SIZE_G = 508;
+        // Confident acceptance without fragmentation
+        // MTU — (Max IP Header Size) — (UDP Header Size) = 1500 — 60 — 8 = 1432
+        public const int MAX_UDP_DATA_SIZE_UF = 1432;
+
 
         public static byte[] CreateSignInfoKey()
         {

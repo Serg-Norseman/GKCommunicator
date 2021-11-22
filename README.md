@@ -18,12 +18,13 @@ This is a sub-project of GEDKeeper (application and plugin). The distributed, de
 - [x] Working DHT peer search, connection and simple chat
 - [x] Storage of DHT nodes, user and peers profiles
 - [x] RSA encryption support (not used yet)
+- [x] Keys generation, simple user identification and authentication
 
 ### Planned
 
 - [ ] Stabilize the chat and discovery of peers
 - [ ] TCP
-- [ ] Authentication and traffic encryption
+- [ ] Traffic encryption
 - [ ] Mutual identity and signing of user profiles (trusted and unchecked network members)
 - [ ] "Web of Trust" elements with PGP certificates (https://en.wikipedia.org/wiki/Web_of_trust)
 - [ ] "Friend-to-friend" network elements (https://en.wikipedia.org/wiki/Friend-to-friend)

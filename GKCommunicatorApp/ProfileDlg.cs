@@ -80,6 +80,12 @@ namespace GKCommunicatorApp
         {
             var userProfile = fProfile as UserProfile;
 
+            string password = string.Empty;
+            if (!InputDlg.QueryPassword("GKCommunicator", "Password", ref password)) {
+                return;
+            }
+            userProfile.Identify(password);
+
             userProfile.UserName = txtUserName.Text;
             userProfile.Country = txtCountry.Text;
             userProfile.TimeZone = txtTimeZone.Text;

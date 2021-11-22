@@ -100,5 +100,10 @@ namespace GKNet
             fPasswordHash = Utilities.HashPassword(password);
             Utilities.GenerateKeyPair(password, out fPublicKey, out fPrivateKey);
         }
+
+        public bool Authentication(string password)
+        {
+            return Utilities.VerifyPassword(password, fPasswordHash);
+        }
     }
 }
