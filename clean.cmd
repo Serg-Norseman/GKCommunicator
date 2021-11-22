@@ -1,5 +1,7 @@
 rmdir .\.vs /s /q
 
+del .\TestResult.xml
+
 rmdir .\GKNetCore\bin /s /q
 rmdir .\GKNetCore\obj /s /q
 

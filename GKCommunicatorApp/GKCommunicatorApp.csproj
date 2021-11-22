@@ -24,12 +24,6 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="ICEExperimentForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ICEExperimentForm.Designer.cs">
-      <DependentUpon>ICEExperimentForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="ProfileDlg.cs">
       <SubType>Form</SubType>
@@ -58,10 +52,5 @@
       <Project>{fee68cf6-1d60-4e90-aef3-6afa4a8c977d}</Project>
       <Name>GKNetCore</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="ChatForm.resx">
-      <DependentUpon>ChatForm.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
 </Project>

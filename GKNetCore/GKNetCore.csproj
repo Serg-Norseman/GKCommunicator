@@ -29,9 +29,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="BouncyCastle.OpenPgp">
-      <HintPath>..\libs\BouncyCastle.OpenPgp.dll</HintPath>
-    </Reference>
     <Reference Include="BSLib">
       <HintPath>..\libs\BSLib.dll</HintPath>
     </Reference>
@@ -63,7 +60,6 @@
     <Compile Include="Database\DBParameter.cs" />
     <Compile Include="Database\DBPeer.cs" />
     <Compile Include="DHT\DataEventArgs.cs" />
-    <Compile Include="PGPUtilities.cs" />
     <Compile Include="CommunicatorCore.cs" />
     <Compile Include="ConnectivitySettings.cs" />
     <Compile Include="Database\GKNetDatabase.cs" />
@@ -87,7 +83,6 @@
     <Compile Include="Logging\Log4NetHelper.cs" />
     <Compile Include="Logging\LogManager.cs" />
     <Compile Include="Message.cs" />
-    <Compile Include="NetHelper.cs" />
     <Compile Include="Peer.cs" />
     <Compile Include="PeerProfile.cs" />
     <Compile Include="ProtocolHelper.cs" />

@@ -215,7 +215,7 @@ namespace GKCommunicatorApp
 
         private void miDHTLog_Click(object sender, EventArgs e)
         {
-            NetHelper.LoadExtFile(Path.Combine(NetHelper.GetAppPath(), ProtocolHelper.LOG_FILE));
+            Utilities.LoadExtFile(Path.Combine(Utilities.GetAppPath(), ProtocolHelper.LOG_FILE));
         }
 
         private void miExit_Click(object sender, EventArgs e)
@@ -243,13 +243,6 @@ namespace GKCommunicatorApp
             var peer = GetSelectedPeer();
             if (peer != null) {
                 ShowProfile(peer.Profile);
-            }
-        }
-
-        private void miICEExperiment_Click(object sender, EventArgs e)
-        {
-            using (var dlg = new ICEExperimentForm()) {
-                dlg.ShowDialog();
             }
         }
 

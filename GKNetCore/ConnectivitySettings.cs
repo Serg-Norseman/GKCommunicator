@@ -18,9 +18,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-using System.Net;
-
 namespace GKNet
 {
     public enum ProxyType
@@ -32,12 +29,11 @@ namespace GKNet
 
     public class ConnectivitySettings
     {
-        private string fProxyHost = String.Empty;
+        private string fProxyHost = string.Empty;
         private int fProxyPort;
-        private string fProxyUsername = String.Empty;
-        private string fProxyPassword = String.Empty;
+        private string fProxyUsername = string.Empty;
+        private string fProxyPassword = string.Empty;
         private ProxyType fProxyType = ProxyType.None;
-        private WebProxy fWebProxy;
 
         public string ProxyHost
         {
@@ -69,25 +65,9 @@ namespace GKNet
             set { fProxyType = value; }
         }
 
-        public WebProxy WebProxy
-        {
-            get { return fWebProxy; }
-            set { fWebProxy = value; }
-        }
-
 
         public ConnectivitySettings()
         {
-        }
-
-        public ConnectivitySettings(ConnectivitySettings x)
-        {
-            fProxyType = x.fProxyType;
-            fProxyHost = x.fProxyHost;
-            fProxyPort = x.fProxyPort;
-            fProxyUsername = x.fProxyUsername;
-            fProxyPassword = x.fProxyPassword;
-            fWebProxy = x.fWebProxy;
         }
 
         public ConnectivitySettings(string proxyHost, int proxyPort, string proxyUsername, string proxyPassword, ProxyType proxyType)
@@ -99,19 +79,9 @@ namespace GKNet
             fProxyType = proxyType;
         }
 
-        public ConnectivitySettings(string proxyHost, int proxyPort, string proxyUsername, string proxyPassword, ProxyType proxyType, WebProxy webProxy)
-        {
-            fProxyHost = proxyHost;
-            fProxyPort = proxyPort;
-            fProxyUsername = proxyUsername;
-            fProxyPassword = proxyPassword;
-            fProxyType = proxyType;
-            fWebProxy = webProxy;
-        }
-
         public override string ToString()
         {
-            return "{ProxyHost=" + ProxyHost + ", ProxyPort=" + ProxyPort + "}";
+            return "{ProxyHost=" + fProxyHost + ", ProxyPort=" + fProxyPort + "}";
         }
     }
 }

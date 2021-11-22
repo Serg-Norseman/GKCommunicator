@@ -28,6 +28,7 @@ namespace GKNet
 {
     public class UserProfile : PeerProfile
     {
+        private string fPasswordHash;
         private string fPublicKey;
         private string fPrivateKey;
 
@@ -36,6 +37,12 @@ namespace GKNet
         public bool IsLanguagesVisible { get; set; }
         public bool IsTimeZoneVisible { get; set; }
         public bool IsEmailVisible { get; set; }
+
+        public string PasswordHash
+        {
+            get { return fPasswordHash; }
+            set { fPasswordHash = value; }
+        }
 
         public string PublicKey
         {
@@ -88,9 +95,10 @@ namespace GKNet
             data.Add("uemail", (IsEmailVisible) ? Email : INVISIBLE_PROFILE_VALUE);
         }
 
-        public void GenerateKey(string username, string password)
+        public void Identify(string password)
         {
-            PGPUtilities.GenerateKey(username, password, out fPublicKey, out fPrivateKey);
+            fPasswordHash = Utilities.HashPassword(password);
+            Utilities.GenerateKeyPair(password, out fPublicKey, out fPrivateKey);
         }
     }
 }

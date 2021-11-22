@@ -317,6 +317,10 @@ namespace GKNet
             return result;
         }
 
+        /// <summary>
+        /// Many thanks to Konstantinos Gkinis <aka raidenfreeman> for project https://github.com/raidenfreeman/ICE-Experiment,
+        /// who explained in a simple way how to implement UDP Hole punching.
+        /// </summary>
         private void SendPing(Peer peer, bool holePunch)
         {
             DateTime dtNow = DateTime.Now;

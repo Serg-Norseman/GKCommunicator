@@ -70,7 +70,7 @@ namespace GKNet.Database
 
         private string GetBaseName()
         {
-            return NetHelper.GetAppPath() + "gkcommunicator.db";
+            return Utilities.GetAppPath() + "gkcommunicator.db";
         }
 
         public void Connect()

@@ -32,7 +32,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripButton tbProfile;
         private System.Windows.Forms.ToolStripMenuItem miPeerProfile;
-        private System.Windows.Forms.ToolStripMenuItem miICEExperiment;
         private System.Windows.Forms.ToolStripStatusLabel lblTicks;
 
         protected override void Dispose(bool disposing)
@@ -57,7 +56,6 @@
             this.miView = new System.Windows.Forms.ToolStripMenuItem();
             this.miService = new System.Windows.Forms.ToolStripMenuItem();
             this.miDHTLog = new System.Windows.Forms.ToolStripMenuItem();
-            this.miICEExperiment = new System.Windows.Forms.ToolStripMenuItem();
             this.miHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.tbConnect = new System.Windows.Forms.ToolStripButton();
@@ -102,7 +100,7 @@
             this.miHelp});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1143, 38);
+            this.menuStrip1.Size = new System.Drawing.Size(914, 28);
             this.menuStrip1.TabIndex = 9;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -116,7 +114,7 @@
             this.toolStripMenuItem2,
             this.miExit});
             this.miConnection.Name = "miConnection";
-            this.miConnection.Size = new System.Drawing.Size(98, 34);
+            this.miConnection.Size = new System.Drawing.Size(98, 24);
             this.miConnection.Text = "Connection";
             // 
             // miConnect
@@ -160,36 +158,28 @@
             // miView
             // 
             this.miView.Name = "miView";
-            this.miView.Size = new System.Drawing.Size(55, 34);
+            this.miView.Size = new System.Drawing.Size(55, 24);
             this.miView.Text = "View";
             // 
             // miService
             // 
             this.miService.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.miDHTLog,
-            this.miICEExperiment});
+            this.miDHTLog});
             this.miService.Name = "miService";
-            this.miService.Size = new System.Drawing.Size(70, 34);
+            this.miService.Size = new System.Drawing.Size(70, 24);
             this.miService.Text = "Service";
             // 
             // miDHTLog
             // 
             this.miDHTLog.Name = "miDHTLog";
-            this.miDHTLog.Size = new System.Drawing.Size(192, 26);
+            this.miDHTLog.Size = new System.Drawing.Size(224, 26);
             this.miDHTLog.Text = "DHT Log";
             this.miDHTLog.Click += new System.EventHandler(this.miDHTLog_Click);
-            // 
-            // miICEExperiment
-            // 
-            this.miICEExperiment.Name = "miICEExperiment";
-            this.miICEExperiment.Size = new System.Drawing.Size(192, 26);
-            this.miICEExperiment.Text = "ICE Experiment";
-            this.miICEExperiment.Click += new System.EventHandler(this.miICEExperiment_Click);
             // 
             // miHelp
             // 
             this.miHelp.Name = "miHelp";
-            this.miHelp.Size = new System.Drawing.Size(55, 34);
+            this.miHelp.Size = new System.Drawing.Size(55, 24);
             this.miHelp.Text = "Help";
             // 
             // toolStrip1
@@ -200,9 +190,9 @@
             this.tbDisconnect,
             this.toolStripSeparator1,
             this.tbProfile});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 48);
+            this.toolStrip1.Location = new System.Drawing.Point(0, 28);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(1143, 39);
+            this.toolStrip1.Size = new System.Drawing.Size(914, 27);
             this.toolStrip1.TabIndex = 13;
             // 
             // tbConnect
@@ -210,7 +200,7 @@
             this.tbConnect.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.tbConnect.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbConnect.Name = "tbConnect";
-            this.tbConnect.Size = new System.Drawing.Size(67, 36);
+            this.tbConnect.Size = new System.Drawing.Size(67, 24);
             this.tbConnect.Text = "Connect";
             this.tbConnect.Click += new System.EventHandler(this.miConnect_Click);
             // 
@@ -219,21 +209,21 @@
             this.tbDisconnect.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.tbDisconnect.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbDisconnect.Name = "tbDisconnect";
-            this.tbDisconnect.Size = new System.Drawing.Size(86, 36);
+            this.tbDisconnect.Size = new System.Drawing.Size(86, 24);
             this.tbDisconnect.Text = "Disconnect";
             this.tbDisconnect.Click += new System.EventHandler(this.miDisconnect_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 39);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 27);
             // 
             // tbProfile
             // 
             this.tbProfile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.tbProfile.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbProfile.Name = "tbProfile";
-            this.tbProfile.Size = new System.Drawing.Size(56, 36);
+            this.tbProfile.Size = new System.Drawing.Size(56, 24);
             this.tbProfile.Text = "Profile";
             this.tbProfile.Click += new System.EventHandler(this.miProfile_Click);
             // 
@@ -266,7 +256,7 @@
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 96);
+            this.splitContainer1.Location = new System.Drawing.Point(0, 55);
             this.splitContainer1.Margin = new System.Windows.Forms.Padding(2, 4, 2, 4);
             this.splitContainer1.Name = "splitContainer1";
             // 
@@ -277,8 +267,8 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(1143, 561);
-            this.splitContainer1.SplitterDistance = 368;
+            this.splitContainer1.Size = new System.Drawing.Size(914, 471);
+            this.splitContainer1.SplitterDistance = 294;
             this.splitContainer1.TabIndex = 12;
             // 
             // lstMembers
@@ -289,7 +279,7 @@
             this.lstMembers.Location = new System.Drawing.Point(0, 0);
             this.lstMembers.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.lstMembers.Name = "lstMembers";
-            this.lstMembers.Size = new System.Drawing.Size(368, 561);
+            this.lstMembers.Size = new System.Drawing.Size(294, 471);
             this.lstMembers.TabIndex = 4;
             this.lstMembers.UseCompatibleStateImageBehavior = false;
             this.lstMembers.View = System.Windows.Forms.View.Details;
@@ -325,8 +315,8 @@
             // 
             this.splitContainer2.Panel2.Controls.Add(this.txtChatMsg);
             this.splitContainer2.Panel2.Controls.Add(this.flowLayoutPanel1);
-            this.splitContainer2.Size = new System.Drawing.Size(771, 561);
-            this.splitContainer2.SplitterDistance = 314;
+            this.splitContainer2.Size = new System.Drawing.Size(616, 471);
+            this.splitContainer2.SplitterDistance = 263;
             this.splitContainer2.SplitterWidth = 5;
             this.splitContainer2.TabIndex = 0;
             // 
@@ -337,7 +327,7 @@
             this.lstChatMsgs.Margin = new System.Windows.Forms.Padding(2, 4, 2, 4);
             this.lstChatMsgs.Name = "lstChatMsgs";
             this.lstChatMsgs.ReadOnly = true;
-            this.lstChatMsgs.Size = new System.Drawing.Size(771, 314);
+            this.lstChatMsgs.Size = new System.Drawing.Size(616, 263);
             this.lstChatMsgs.TabIndex = 0;
             this.lstChatMsgs.Text = "";
             // 
@@ -348,7 +338,7 @@
             this.txtChatMsg.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtChatMsg.Multiline = true;
             this.txtChatMsg.Name = "txtChatMsg";
-            this.txtChatMsg.Size = new System.Drawing.Size(771, 190);
+            this.txtChatMsg.Size = new System.Drawing.Size(616, 151);
             this.txtChatMsg.TabIndex = 6;
             this.txtChatMsg.Text = "test";
             // 
@@ -358,15 +348,15 @@
             this.flowLayoutPanel1.Controls.Add(this.btnSend);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 190);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 151);
             this.flowLayoutPanel1.Margin = new System.Windows.Forms.Padding(2, 4, 2, 4);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(771, 52);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(616, 52);
             this.flowLayoutPanel1.TabIndex = 0;
             // 
             // btnSendToAll
             // 
-            this.btnSendToAll.Location = new System.Drawing.Point(655, 5);
+            this.btnSendToAll.Location = new System.Drawing.Point(500, 5);
             this.btnSendToAll.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnSendToAll.Name = "btnSendToAll";
             this.btnSendToAll.Size = new System.Drawing.Size(112, 42);
@@ -377,7 +367,7 @@
             // 
             // btnSend
             // 
-            this.btnSend.Location = new System.Drawing.Point(535, 5);
+            this.btnSend.Location = new System.Drawing.Point(380, 5);
             this.btnSend.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnSend.Name = "btnSend";
             this.btnSend.Size = new System.Drawing.Size(112, 42);

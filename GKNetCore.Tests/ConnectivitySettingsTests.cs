@@ -13,13 +13,6 @@ namespace GKNet
         }
 
         [Test]
-        public void Test_ctor2()
-        {
-            var conSet = new ConnectivitySettings(new ConnectivitySettings());
-            Assert.IsNotNull(conSet);
-        }
-
-        [Test]
         public void Test_ctor3()
         {
             var conSet = new ConnectivitySettings("host", 1111, "login", "password", ProxyType.Socks4);
@@ -29,7 +22,7 @@ namespace GKNet
         [Test]
         public void Test_ctor4()
         {
-            var conSet = new ConnectivitySettings("host", 1111, "login", "password", ProxyType.Socks4, null);
+            var conSet = new ConnectivitySettings("host", 1111, "login", "password", ProxyType.Socks4);
             Assert.IsNotNull(conSet);
 
             Assert.AreEqual("host", conSet.ProxyHost);
@@ -37,7 +30,6 @@ namespace GKNet
             Assert.AreEqual("login", conSet.ProxyUsername);
             Assert.AreEqual("password", conSet.ProxyPassword);
             Assert.AreEqual(ProxyType.Socks4, conSet.ProxyType);
-            Assert.AreEqual(null, conSet.WebProxy);
 
             Assert.AreEqual("{ProxyHost=host, ProxyPort=1111}", conSet.ToString());
 
@@ -51,8 +43,6 @@ namespace GKNet
             Assert.AreEqual("testpass", conSet.ProxyPassword);
             conSet.ProxyType = ProxyType.Socks5;
             Assert.AreEqual(ProxyType.Socks5, conSet.ProxyType);
-            conSet.WebProxy = null;
-            Assert.AreEqual(null, conSet.WebProxy);
         }
     }
 }
