@@ -8,7 +8,7 @@ namespace GKNet.DHT
         [Test]
         public void Test_GetTransactionId()
         {
-            var tid = DHTHelper.GetTransactionId();
+            var tid = DHTTransactions.GetNextId();
             Assert.IsNotNull(tid);
             Assert.AreEqual(2, tid.Length);
         }

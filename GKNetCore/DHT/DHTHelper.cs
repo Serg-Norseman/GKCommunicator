@@ -20,14 +20,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Sockets;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading;
 using BencodeNET;
 
 namespace GKNet.DHT
@@ -45,21 +41,6 @@ namespace GKNet.DHT
 
         private static Random r = new Random();
         private static SHA1 sha1 = new SHA1CryptoServiceProvider();
-
-        private static long fCurrentTransactionId;
-
-        /// <summary>
-        /// https://www.bittorrent.org/beps/bep_0005.html
-        /// 
-        /// The transaction ID should be encoded as a short string of binary numbers,
-        /// typically 2 characters are enough as they cover 2^16 outstanding queries.
-        /// </summary>
-        public static BString GetTransactionId()
-        {
-            long value = Interlocked.Add(ref fCurrentTransactionId, 1);
-            byte[] data = BitConverter.GetBytes((short)value);
-            return new BString(data);
-        }
 
         public static byte[] GetRandomID()
         {
@@ -81,15 +62,6 @@ namespace GKNet.DHT
             }
         }
 
-        public static IPAddress PrepareAddress(IPAddress address)
-        {
-            #if !IP6
-            return address;
-            #else
-            return BSLib.NetHelper.MapIPv4ToIPv6(address);
-            #endif
-        }
-
         public static List<IPEndPoint> ParseValuesList(BList data)
         {
             var result = new List<IPEndPoint>();
@@ -101,12 +73,12 @@ namespace GKNet.DHT
                 if (itemBytes.Length == 6) {
                     var ip = new IPAddress(itemBytes.Take(4).ToArray());
                     var port = BitConverter.ToUInt16(itemBytes, 4);
-                    var xnode = new IPEndPoint(PrepareAddress(ip), port);
+                    var xnode = new IPEndPoint(Utilities.PrepareAddress(ip), port);
                     result.Add(xnode);
                 } else if (itemBytes.Length == 18) {
                     var ip = new IPAddress(itemBytes.Take(16).ToArray());
                     var port = BitConverter.ToUInt16(itemBytes, 16);
-                    var xnode = new IPEndPoint(PrepareAddress(ip), port);
+                    var xnode = new IPEndPoint(Utilities.PrepareAddress(ip), port);
                     result.Add(xnode);
                 }
             }
@@ -143,7 +115,7 @@ namespace GKNet.DHT
                 var id = dd.Take(20).ToArray();
                 var ip = new IPAddress(dd.Skip(20).Take(4).ToArray());
                 var port = BitConverter.ToUInt16(dd, 24);
-                var tt = new DHTNode(id, new IPEndPoint(PrepareAddress(ip), port));
+                var tt = new DHTNode(id, new IPEndPoint(Utilities.PrepareAddress(ip), port));
                 result.Add(tt);
             }
             return result;
@@ -161,38 +133,10 @@ namespace GKNet.DHT
                 var id = dd.Take(20).ToArray();
                 var ip = new IPAddress(dd.Skip(20).Take(16).ToArray());
                 var port = BitConverter.ToUInt16(dd, 36);
-                var tt = new DHTNode(id, new IPEndPoint(PrepareAddress(ip), port));
+                var tt = new DHTNode(id, new IPEndPoint(Utilities.PrepareAddress(ip), port));
                 result.Add(tt);
             }
             return result;
-        }
-
-        /// <summary>
-        /// Converts the byte array to a hexadecimal string representation.
-        /// </summary>
-        public static string ToHexString(this byte[] data)
-        {
-            StringBuilder sb = new StringBuilder();
-            foreach (byte b in data) {
-                var t = b / 16;
-                sb.Append((char)(t + (t <= 9 ? '0' : '7')));
-                var f = b % 16;
-                sb.Append((char)(f + (f <= 9 ? '0' : '7')));
-            }
-
-            return sb.ToString();
-        }
-
-        public static byte[] FromHex(string data)
-        {
-            if (data == null || data.Length % 2 != 0)
-                throw new ArgumentException("The string must contain an even number of characters");
-
-            byte[] hash = new byte[data.Length / 2];
-            for (int i = 0; i < hash.Length; i++)
-                hash[i] = byte.Parse(data.Substring(i * 2, 2), NumberStyles.HexNumber);
-
-            return hash;
         }
 
         public static byte[] GetNeighbor(byte[] target, byte[] nid)
@@ -298,48 +242,6 @@ namespace GKNet.DHT
         {
             var hashBytes = CalculateInfoHashBytes(info);
             return hashBytes.ToHexString();
-        }
-
-        public static void SetIPProtectionLevelUnrestricted(this Socket socket)
-        {
-            #if !MONO
-            socket.SetIPProtectionLevel(IPProtectionLevel.Unrestricted);
-            #else
-            const int IPProtectionLevel = 23;
-            const int Unrestricted = 10;
-
-            if (socket.AddressFamily == AddressFamily.InterNetworkV6) {
-                socket.SetSocketOption(SocketOptionLevel.IPv6, (SocketOptionName)IPProtectionLevel, Unrestricted);
-                return;
-            }
-            if (socket.AddressFamily == AddressFamily.InterNetwork) {
-                socket.SetSocketOption(SocketOptionLevel.IP, (SocketOptionName)IPProtectionLevel, Unrestricted);
-                return;
-            }
-            #endif
-        }
-
-        // Handles IPv4 and IPv6 notation.
-        public static IPEndPoint ParseIPEndPoint(string endPoint)
-        {
-            string[] ep = endPoint.Split(':');
-            if (ep.Length < 2)
-                throw new FormatException("Invalid endpoint format");
-            IPAddress ip;
-            if (ep.Length > 2) {
-                if (!IPAddress.TryParse(string.Join(":", ep, 0, ep.Length - 1), out ip)) {
-                    throw new FormatException("Invalid ip-adress");
-                }
-            } else {
-                if (!IPAddress.TryParse(ep[0], out ip)) {
-                    throw new FormatException("Invalid ip-adress");
-                }
-            }
-            int port;
-            if (!int.TryParse(ep[ep.Length - 1], NumberStyles.None, NumberFormatInfo.CurrentInfo, out port)) {
-                throw new FormatException("Invalid port");
-            }
-            return new IPEndPoint(ip, port);
         }
     }
 }

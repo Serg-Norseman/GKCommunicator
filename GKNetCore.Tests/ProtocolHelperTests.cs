@@ -19,7 +19,7 @@ namespace GKNet
         [Test]
         public void Test_CreateHandshakeQuery()
         {
-            var tid = DHTHelper.GetTransactionId();
+            var tid = DHTTransactions.GetNextId();
             var nodeId = DHTHelper.GetRandomID();
             var msg = ProtocolHelper.CreateHandshakeQuery(tid, nodeId);
             Assert.IsNotNull(msg);
@@ -29,7 +29,7 @@ namespace GKNet
         [Test]
         public void Test_CreateHandshakeResponse()
         {
-            var tid = DHTHelper.GetTransactionId();
+            var tid = DHTTransactions.GetNextId();
             var nodeId = DHTHelper.GetRandomID();
             var msg = ProtocolHelper.CreateHandshakeResponse(tid, nodeId);
             Assert.IsNotNull(msg);
@@ -39,7 +39,7 @@ namespace GKNet
         [Test]
         public void Test_CreateChatMessage()
         {
-            var tid = DHTHelper.GetTransactionId();
+            var tid = DHTTransactions.GetNextId();
             var nodeId = DHTHelper.GetRandomID();
             var msg = ProtocolHelper.CreateChatMessage(tid, nodeId, "test", false);
             Assert.IsNotNull(msg);
@@ -49,7 +49,7 @@ namespace GKNet
         [Test]
         public void Test_CreateGetPeerInfoQuery()
         {
-            var tid = DHTHelper.GetTransactionId();
+            var tid = DHTTransactions.GetNextId();
             var nodeId = DHTHelper.GetRandomID();
             var msg = ProtocolHelper.CreateGetPeerInfoQuery(tid, nodeId);
             Assert.IsNotNull(msg);
@@ -62,7 +62,7 @@ namespace GKNet
             var peerInfo = new UserProfile();
             peerInfo.Reset();
 
-            var tid = DHTHelper.GetTransactionId();
+            var tid = DHTTransactions.GetNextId();
             var nodeId = DHTHelper.GetRandomID();
             var msg = ProtocolHelper.CreateGetPeerInfoResponse(tid, nodeId, peerInfo);
             Assert.IsNotNull(msg);

@@ -25,7 +25,6 @@ using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 using GKNet;
-using GKNet.DHT;
 using GKNet.Logging;
 using LumiSoft.Net.STUN.Client;
 
@@ -251,7 +250,7 @@ namespace GKCommunicatorApp
         {
             string endpoint = string.Empty;
             if (InputDlg.QueryText(this, "GKCommunicator", "Peer endpoint", ref endpoint)) {
-                var peerEndPoint = DHTHelper.ParseIPEndPoint(endpoint);
+                var peerEndPoint = Utilities.ParseIPEndPoint(endpoint);
                 fCore.UpdatePeer(peerEndPoint);
                 ((IChatForm)this).OnPeersListChanged();
             }

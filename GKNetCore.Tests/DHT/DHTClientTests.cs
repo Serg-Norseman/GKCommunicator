@@ -29,7 +29,7 @@ namespace GKNet.DHT
         {
             var peersHolder = new DHTPeersHolder();
 
-            var dhtClient = new DHTClient(DHTClient.IPAnyAddress, DHTClient.PublicDHTPort, peersHolder, "x1");
+            var dhtClient = new DHTClient(new IPEndPoint(DHTClient.IPAnyAddress, DHTClient.PublicDHTPort), peersHolder, "x1");
             Assert.IsNotNull(dhtClient);
             Assert.IsNotNull(dhtClient.LocalID);
             Assert.IsNotNull(dhtClient.Socket);
@@ -39,11 +39,6 @@ namespace GKNet.DHT
             dhtClient.PeerPinged += OnPeerPinged;
             dhtClient.QueryReceived += OnQueryReceive;
             dhtClient.ResponseReceived += OnResponseReceive;
-
-            var tid = DHTHelper.GetTransactionId();
-            var msg = new DHTMessage(MessageType.Query, QueryType.Ping, null);
-            dhtClient.SetTransaction(tid, msg);
-            Assert.AreEqual(QueryType.Ping, dhtClient.CheckTransaction(tid));
         }
 
         private void OnPeersFound(object sender, PeersFoundEventArgs e)
@@ -60,6 +55,18 @@ namespace GKNet.DHT
 
         private void OnResponseReceive(object sender, MessageEventArgs e)
         {
+        }
+
+        [Test]
+        public void Test_DHTTransactions_class()
+        {
+            var instance = new DHTTransactions();
+            Assert.IsNotNull(instance);
+
+            var tid = DHTTransactions.GetNextId();
+            var msg = new DHTMessage(MessageType.Query, QueryType.Ping, null);
+            instance.SetQuery(tid, msg);
+            Assert.AreEqual(QueryType.Ping, instance.CheckQuery(tid));
         }
     }
 }

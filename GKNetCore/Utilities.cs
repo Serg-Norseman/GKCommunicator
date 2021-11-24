@@ -20,8 +20,11 @@
 
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
+using System.Net;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
@@ -36,6 +39,85 @@ namespace GKNet
         public static bool IsValidIpAddress(string address)
         {
             return ValidIpAddressRegex.IsMatch(address);
+        }
+
+        public static IPAddress PrepareAddress(IPAddress address)
+        {
+#if !IP6
+            return address;
+#else
+            return BSLib.NetHelper.MapIPv4ToIPv6(address);
+#endif
+        }
+
+        public static void SetIPProtectionLevelUnrestricted(this Socket socket)
+        {
+#if !MONO
+            socket.SetIPProtectionLevel(IPProtectionLevel.Unrestricted);
+#else
+            const int IPProtectionLevel = 23;
+            const int Unrestricted = 10;
+
+            if (socket.AddressFamily == AddressFamily.InterNetworkV6) {
+                socket.SetSocketOption(SocketOptionLevel.IPv6, (SocketOptionName)IPProtectionLevel, Unrestricted);
+                return;
+            }
+            if (socket.AddressFamily == AddressFamily.InterNetwork) {
+                socket.SetSocketOption(SocketOptionLevel.IP, (SocketOptionName)IPProtectionLevel, Unrestricted);
+                return;
+            }
+#endif
+        }
+
+        // Handles IPv4 and IPv6 notation.
+        public static IPEndPoint ParseIPEndPoint(string endPoint)
+        {
+            string[] ep = endPoint.Split(':');
+            if (ep.Length < 2)
+                throw new FormatException("Invalid endpoint format");
+            IPAddress ip;
+            if (ep.Length > 2) {
+                if (!IPAddress.TryParse(string.Join(":", ep, 0, ep.Length - 1), out ip)) {
+                    throw new FormatException("Invalid ip-adress");
+                }
+            } else {
+                if (!IPAddress.TryParse(ep[0], out ip)) {
+                    throw new FormatException("Invalid ip-adress");
+                }
+            }
+            int port;
+            if (!int.TryParse(ep[ep.Length - 1], NumberStyles.None, NumberFormatInfo.CurrentInfo, out port)) {
+                throw new FormatException("Invalid port");
+            }
+            return new IPEndPoint(ip, port);
+        }
+
+        /// <summary>
+        /// Converts the byte array to a hexadecimal string representation.
+        /// </summary>
+        public static string ToHexString(this byte[] data)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (byte b in data) {
+                var t = b / 16;
+                sb.Append((char)(t + (t <= 9 ? '0' : '7')));
+                var f = b % 16;
+                sb.Append((char)(f + (f <= 9 ? '0' : '7')));
+            }
+
+            return sb.ToString();
+        }
+
+        public static byte[] FromHex(string data)
+        {
+            if (data == null || data.Length % 2 != 0)
+                throw new ArgumentException("The string must contain an even number of characters");
+
+            byte[] hash = new byte[data.Length / 2];
+            for (int i = 0; i < hash.Length; i++)
+                hash[i] = byte.Parse(data.Substring(i * 2, 2), NumberStyles.HexNumber);
+
+            return hash;
         }
 
         public static string GetAppPath()

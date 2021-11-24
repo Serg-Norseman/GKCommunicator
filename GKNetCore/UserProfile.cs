@@ -19,9 +19,7 @@
  */
 
 using System;
-using System.IO;
 using BencodeNET;
-using BSLib;
 using GKNet.DHT;
 
 namespace GKNet

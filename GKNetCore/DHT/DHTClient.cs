@@ -23,7 +23,6 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Net.Sockets;
 using System.Threading;
 using BencodeNET;
 using BSLib;
@@ -31,65 +30,34 @@ using GKNet.Logging;
 
 namespace GKNet.DHT
 {
-    public sealed class DHTClient
+    public sealed class DHTClient : UDPSocket
     {
         private static readonly TimeSpan NodesUpdateRange = TimeSpan.FromMinutes(1);
         private static readonly TimeSpan GetPeersRange = TimeSpan.FromMinutes(1);
         private static readonly TimeSpan AnnounceLife = TimeSpan.FromMinutes(10); // in question, from articles
 
-        #if !IP6
-        public static readonly IPAddress IPLoopbackAddress = IPAddress.Loopback;
-        public static readonly IPAddress IPAnyAddress = IPAddress.Any;
-        public static readonly AddressFamily IPAddressFamily = AddressFamily.InterNetwork;
-        #else
-        public static readonly IPAddress IPLoopbackAddress = IPAddress.IPv6Loopback;
-        public static readonly IPAddress IPAnyAddress = IPAddress.IPv6Any;
-        public static readonly AddressFamily IPAddressFamily = AddressFamily.InterNetworkV6;
-        #endif
-
         public const int PublicDHTPort = 6881;
         public const int KTableSize = 2048;
 
-        private byte[] fBuffer;
         private long fLastNodesUpdateTime;
         private byte[] fLocalID;
-        private IPEndPoint fPublicEndPoint;
         private IList<IPAddress> fRouters;
         private byte[] fSearchInfoHash;
-        private bool fSearchRunned;
 
         private readonly string fClientVer;
-        private readonly IPEndPoint fLocalIP;
         private readonly ILogger fLogger;
         private readonly IDHTPeersHolder fPeersHolder;
         private readonly DHTRoutingTable fRoutingTable;
-        private readonly Socket fSocket;
-        private readonly Dictionary<int, DHTMessage> fTransactions;
+        private readonly DHTTransactions fTransactions;
 
         public byte[] LocalID
         {
             get { return fLocalID; }
         }
 
-        public IPEndPoint LocalEndPoint
-        {
-            get { return fLocalIP; }
-        }
-
-        public IPEndPoint PublicEndPoint
-        {
-            get { return fPublicEndPoint; }
-            set { fPublicEndPoint = value; }
-        }
-
         public DHTRoutingTable RoutingTable
         {
             get { return fRoutingTable; }
-        }
-
-        public Socket Socket
-        {
-            get { return fSocket; }
         }
 
         public event EventHandler<PeersFoundEventArgs> PeersFound;
@@ -99,60 +67,35 @@ namespace GKNet.DHT
         public event EventHandler<MessageEventArgs> QueryReceived;
         public event EventHandler<MessageEventArgs> ResponseReceived;
 
-        public DHTClient(IPAddress addr, int port, IDHTPeersHolder peersHolder, string clientVer)
+        public DHTClient(IPEndPoint localEndPoint, IDHTPeersHolder peersHolder, string clientVer) : base(localEndPoint)
         {
             fLocalID = peersHolder.ClientNodeId;
-
-            fBuffer = new byte[65535];
             fClientVer = clientVer;
-            fLocalIP = new IPEndPoint(addr, port);
             fLogger = LogManager.GetLogger(ProtocolHelper.LOG_FILE, ProtocolHelper.LOG_LEVEL, "DHTClient");
             fPeersHolder = peersHolder;
             fRoutingTable = new DHTRoutingTable(KTableSize);
-            fSearchRunned = false;
-            fTransactions = new Dictionary<int, DHTMessage>();
+            fTransactions = new DHTTransactions();
+        }
 
-            fSocket = new Socket(IPAddressFamily, SocketType.Dgram, ProtocolType.Udp);
-            fSocket.SetIPProtectionLevelUnrestricted();
-
-            /*
-            // FIXME: unsupported?
-            #if !MONO
-            #if !IP6
-            const long IOC_IN = 0x80000000;
-            const long IOC_VENDOR = 0x18000000;
-            const long SIO_UDP_CONNRESET = IOC_IN | IOC_VENDOR | 12;
-            byte[] optionInValue = { Convert.ToByte(false) };
-            byte[] optionOutValue = new byte[4];
-            fSocket.IOControl((IOControlCode)SIO_UDP_CONNRESET, optionInValue, optionOutValue);
-            #else
-            #endif
-            #endif
-            */
-
-            #if !IP6
-            fSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ExclusiveAddressUse, false);
-            fSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-            fSocket.Ttl = 255;
-            #else
-            fSocket.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.IPv6Only, false);
-            #endif
-
-            fSocket.Bind(fLocalIP);
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing) {
+                Stop();
+            }
+            base.Dispose(disposing);
         }
 
         public void Start(byte[] searchInfoHash)
         {
-            fSearchRunned = true;
-            BeginRecv();
+            Open();
             Bootstrap();
             SearchNodes(searchInfoHash);
         }
 
         public void Stop()
         {
-            fSearchRunned = false;
-            fSocket.Close();
+            Close();
+            fTransactions.Clear();
         }
 
         private void Bootstrap()
@@ -175,7 +118,7 @@ namespace GKNet.DHT
                 }
 
                 if (addr != null) {
-                    fRouters.Add(DHTHelper.PrepareAddress(addr));
+                    fRouters.Add(Utilities.PrepareAddress(addr));
                 }
             }
         }
@@ -187,7 +130,7 @@ namespace GKNet.DHT
             fSearchInfoHash = searchInfoHash;
 
             new Thread(() => {
-                while (fSearchRunned) {
+                while (Connected) {
                     long nowTicks = DateTime.Now.Ticks;
 
                     int count = 0;
@@ -225,45 +168,7 @@ namespace GKNet.DHT
 
         #region Receive messages and data
 
-        private void BeginRecv()
-        {
-            if (!fSearchRunned)
-                return;
-
-            EndPoint remoteAddress = new IPEndPoint(IPAnyAddress, 0);
-            fSocket.BeginReceiveFrom(fBuffer, 0, fBuffer.Length, SocketFlags.None, ref remoteAddress, EndRecv, null);
-        }
-
-        private void EndRecv(IAsyncResult result)
-        {
-            if (!fSearchRunned)
-                return;
-
-            try {
-                EndPoint remoteAddress = new IPEndPoint(IPAnyAddress, 0);
-                int count = fSocket.EndReceiveFrom(result, ref remoteAddress);
-                if (count > 0) {
-                    byte[] buffer = new byte[count];
-                    Buffer.BlockCopy(fBuffer, 0, buffer, 0, count);
-                    OnRecvMessage((IPEndPoint)remoteAddress, buffer);
-                }
-            } catch (Exception ex) {
-                fLogger.WriteError("EndRecv.1()", ex);
-            }
-
-            bool notsuccess;
-            do {
-                try {
-                    BeginRecv();
-                    notsuccess = false;
-                } catch (Exception ex) {
-                    fLogger.WriteError("EndRecv.2()", ex);
-                    notsuccess = true;
-                }
-            } while (notsuccess);
-        }
-
-        private void OnRecvMessage(IPEndPoint ipinfo, byte[] data)
+        protected override void OnRecvMessage(IPEndPoint ipinfo, byte[] data)
         {
             try {
                 if (DataReceived != null) {
@@ -386,7 +291,7 @@ namespace GKNet.DHT
             UpdateRoutingTable(new DHTNode(id.Value, ipinfo));
 
             // define type of response by transactionId of query/response
-            QueryType queryType = CheckTransaction(tid);
+            QueryType queryType = fTransactions.CheckQuery(tid);
 
             switch (queryType) {
                 case QueryType.Ping:
@@ -435,7 +340,7 @@ namespace GKNet.DHT
             ProcessNodesStr(ipinfo, nodesStr);
 
             if (!ProcessValuesStr(ipinfo, nodeId, valuesList, token)) {
-                SendAnnouncePeerQuery(ipinfo, fSearchInfoHash, 0, fPublicEndPoint.Port, token);
+                SendAnnouncePeerQuery(ipinfo, fSearchInfoHash, 0, PublicEndPoint.Port, token);
             }
         }
 
@@ -461,7 +366,7 @@ namespace GKNet.DHT
                     foreach (var peer in values) {
                         fLogger.WriteDebug("Receive peer {0} from {1}", peer, ipinfo);
 
-                        if (peer.Address.Equals(fPublicEndPoint.Address)) {
+                        if (peer.Address.Equals(PublicEndPoint.Address)) {
                             result = true;
                         }
                     }
@@ -567,35 +472,6 @@ namespace GKNet.DHT
 
         #endregion
 
-        #region Transactions
-
-        public void SetTransaction(BString transactionId, DHTMessage message)
-        {
-            if (transactionId != null && transactionId.Length == 2) {
-                int tid = BitConverter.ToUInt16(transactionId.Value, 0);
-                fTransactions[tid] = message;
-            }
-        }
-
-        public QueryType CheckTransaction(BString transactionId)
-        {
-            QueryType result = QueryType.None;
-
-            if (transactionId != null && transactionId.Length == 2) {
-                int tid = BitConverter.ToUInt16(transactionId.Value, 0);
-
-                DHTMessage message;
-                if (fTransactions.TryGetValue(tid, out message)) {
-                    result = message.QueryType;
-                    fTransactions.Remove(tid);
-                }
-            }
-
-            return result;
-        }
-
-        #endregion
-
         #region Queries and responses
 
         internal void SendPingQuery(IPEndPoint address, bool async = true)
@@ -604,19 +480,19 @@ namespace GKNet.DHT
             fLogger.WriteDebug("Send peer ping {0}", address);
 #endif
 
-            var transactionID = DHTHelper.GetTransactionId();
+            var transactionID = DHTTransactions.GetNextId();
             var msg = DHTMessage.CreatePingQuery(transactionID, fLocalID);
-            SetTransaction(transactionID, msg);
+            fTransactions.SetQuery(transactionID, msg);
             Send(address, msg, async);
         }
 
         internal void SendFindNodeQuery(IPEndPoint address, byte[] data)
         {
-            var transactionID = DHTHelper.GetTransactionId();
+            var transactionID = DHTTransactions.GetNextId();
             byte[] nid = (data == null) ? fLocalID : DHTHelper.GetNeighbor(data, fLocalID);
 
             var msg = DHTMessage.CreateFindNodeQuery(transactionID, nid);
-            SetTransaction(transactionID, msg);
+            fTransactions.SetQuery(transactionID, msg);
             Send(address, msg);
         }
 
@@ -643,9 +519,9 @@ namespace GKNet.DHT
             // If implied_port (0/1) is present and non-zero, the port argument should be ignored
             // and the source port of the UDP packet should be used as the peer's port instead.
 
-            var transactionID = DHTHelper.GetTransactionId();
+            var transactionID = DHTTransactions.GetNextId();
             var msg = DHTMessage.CreateAnnouncePeerQuery(transactionID, fLocalID, infoHash, implied_port, port, token);
-            SetTransaction(transactionID, msg);
+            fTransactions.SetQuery(transactionID, msg);
             Send(address, msg);
         }
 
@@ -655,9 +531,9 @@ namespace GKNet.DHT
             fLogger.WriteDebug("Send get peers query {0}", address);
 #endif
 
-            var transactionID = DHTHelper.GetTransactionId();
+            var transactionID = DHTTransactions.GetNextId();
             var msg = DHTMessage.CreateGetPeersQuery(transactionID, fLocalID, infoHash);
-            SetTransaction(transactionID, msg);
+            fTransactions.SetQuery(transactionID, msg);
             Send(address, msg);
         }
 
@@ -674,25 +550,6 @@ namespace GKNet.DHT
 
                 byte[] dataArray = data.EncodeAsBytes();
                 Send(address, dataArray, async);
-            } catch (Exception ex) {
-                fLogger.WriteError("Send()", ex);
-            }
-        }
-
-        public void Send(IPEndPoint address, byte[] data, bool async = true)
-        {
-            try {
-                if (async) {
-                    fSocket.BeginSendTo(data, 0, data.Length, SocketFlags.None, address, (ar) => {
-                        try {
-                            fSocket.EndSendTo(ar);
-                        } catch (Exception ex) {
-                            fLogger.WriteError("Send.1(" + address + ")", ex);
-                        }
-                    }, null);
-                } else {
-                    fSocket.SendTo(data, 0, data.Length, SocketFlags.None, address);
-                }
             } catch (Exception ex) {
                 fLogger.WriteError("Send()", ex);
             }

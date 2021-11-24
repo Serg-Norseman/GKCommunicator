@@ -23,7 +23,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using GKNet.DHT;
 using GKNet.Logging;
 
 namespace GKNet.TCP

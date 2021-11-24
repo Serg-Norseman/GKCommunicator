@@ -130,7 +130,7 @@ namespace GKNet
                 publicEndPoint = null;
             }
 
-            fDHTClient = new DHTClient(DHTClient.IPAnyAddress, DHTClient.PublicDHTPort, this, ProtocolHelper.CLIENT_VER);
+            fDHTClient = new DHTClient(new IPEndPoint(DHTClient.IPAnyAddress, DHTClient.PublicDHTPort), this, ProtocolHelper.CLIENT_VER);
             fDHTClient.PeersFound += OnPeersFound;
             fDHTClient.PeerPinged += OnPeerPinged;
             fDHTClient.QueryReceived += OnQueryReceive;
@@ -293,7 +293,7 @@ namespace GKNet
 
             if (peer.State != PeerState.Checked && !peer.IsLocal) {
                 peer.State = PeerState.Checked;
-                SendData(peer.EndPoint, ProtocolHelper.CreateGetPeerInfoQuery(DHTHelper.GetTransactionId(), fDHTClient.LocalID));
+                SendData(peer.EndPoint, ProtocolHelper.CreateGetPeerInfoQuery(DHTTransactions.GetNextId(), fDHTClient.LocalID));
                 result = true;
             }
 
@@ -350,7 +350,7 @@ namespace GKNet
 
         public bool CheckLocalAddress(IPAddress peerAddress)
         {
-            return ((PublicEndPoint != null) && (DHTHelper.PrepareAddress(PublicEndPoint.Address).Equals(peerAddress)));
+            return ((PublicEndPoint != null) && (Utilities.PrepareAddress(PublicEndPoint.Address).Equals(peerAddress)));
         }
 
         public Peer AddPeer(IPEndPoint peerEndPoint)
@@ -392,7 +392,7 @@ namespace GKNet
                 encrypted = true;
             }
 
-            SendData(peer.EndPoint, ProtocolHelper.CreateChatMessage(DHTHelper.GetTransactionId(), fDHTClient.LocalID, message, encrypted));
+            SendData(peer.EndPoint, ProtocolHelper.CreateChatMessage(DHTTransactions.GetNextId(), fDHTClient.LocalID, message, encrypted));
         }
 
         #endregion
@@ -476,11 +476,11 @@ namespace GKNet
             var args = e.Data.Get<BDictionary>("a");
             switch (queryType) {
                 case "handshake":
-                    SendData(e.EndPoint, ProtocolHelper.CreateHandshakeResponse(DHTHelper.GetTransactionId(), fDHTClient.LocalID));
+                    SendData(e.EndPoint, ProtocolHelper.CreateHandshakeResponse(DHTTransactions.GetNextId(), fDHTClient.LocalID));
                     break;
 
                 case "get_peer_info":
-                    SendData(e.EndPoint, ProtocolHelper.CreateGetPeerInfoResponse(DHTHelper.GetTransactionId(), fDHTClient.LocalID, fProfile));
+                    SendData(e.EndPoint, ProtocolHelper.CreateGetPeerInfoResponse(DHTTransactions.GetNextId(), fDHTClient.LocalID, fProfile));
                     break;
 
                 case "chat":
@@ -508,7 +508,7 @@ namespace GKNet
                 case "handshake":
                     if (peer != null) {
                         peer.State = PeerState.Checked;
-                        SendData(e.EndPoint, ProtocolHelper.CreateGetPeerInfoQuery(DHTHelper.GetTransactionId(), fDHTClient.LocalID));
+                        SendData(e.EndPoint, ProtocolHelper.CreateGetPeerInfoQuery(DHTTransactions.GetNextId(), fDHTClient.LocalID));
                     }
                     break;
 

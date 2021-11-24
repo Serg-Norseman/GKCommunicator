@@ -172,7 +172,7 @@ namespace GKNet.Database
         {
             bool initialized = GetParameterBool("profile_initialized");
             if (initialized) {
-                profile.NodeId = DHTHelper.FromHex(GetParameterValue("user_node_id"));
+                profile.NodeId = Utilities.FromHex(GetParameterValue("user_node_id"));
 
                 profile.UserName = GetParameterValue("user_name");
                 profile.Country = GetParameterValue("user_country");
@@ -251,8 +251,8 @@ namespace GKNet.Database
             var dbNodes = fConnection.Query<DBNode>(query);
             if (dbNodes != null) {
                 foreach (var dbn in dbNodes) {
-                    var nodeId = DHTHelper.FromHex(dbn.node_id);
-                    var endPoint = DHTHelper.ParseIPEndPoint(dbn.endpoint);
+                    var nodeId = Utilities.FromHex(dbn.node_id);
+                    var endPoint = Utilities.ParseIPEndPoint(dbn.endpoint);
                     result.Add(new DHTNode(nodeId, endPoint));
                 }
             }

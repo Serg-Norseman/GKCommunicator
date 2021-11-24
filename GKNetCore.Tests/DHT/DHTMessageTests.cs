@@ -161,7 +161,7 @@ namespace GKNet.DHT
         [Test]
         public void Test_CreatePingQuery()
         {
-            var tid = DHTHelper.GetTransactionId();
+            var tid = DHTTransactions.GetNextId();
             var nodeId = DHTHelper.GetRandomID();
             DHTMessage msg = DHTMessage.CreatePingQuery(tid, nodeId);
             Assert.IsNotNull(msg);
@@ -173,7 +173,7 @@ namespace GKNet.DHT
         [Test]
         public void Test_CreatePingResponse()
         {
-            var tid = DHTHelper.GetTransactionId();
+            var tid = DHTTransactions.GetNextId();
             var nodeId = DHTHelper.GetRandomID();
             DHTMessage msg = DHTMessage.CreatePingResponse(tid, nodeId);
             Assert.IsNotNull(msg);
@@ -185,7 +185,7 @@ namespace GKNet.DHT
         [Test]
         public void Test_CreateFindNodeQuery()
         {
-            var tid = DHTHelper.GetTransactionId();
+            var tid = DHTTransactions.GetNextId();
             var nodeId = DHTHelper.GetRandomID();
             DHTMessage msg = DHTMessage.CreateFindNodeQuery(tid, nodeId);
             Assert.IsNotNull(msg);
@@ -197,7 +197,7 @@ namespace GKNet.DHT
         [Test]
         public void Test_CreateFindNodeResponse()
         {
-            var tid = DHTHelper.GetTransactionId();
+            var tid = DHTTransactions.GetNextId();
             var nodeId = DHTHelper.GetRandomID();
             DHTMessage msg = DHTMessage.CreateFindNodeResponse(tid, nodeId, new List<DHTNode>());
             Assert.IsNotNull(msg);
@@ -209,7 +209,7 @@ namespace GKNet.DHT
         [Test]
         public void Test_CreateAnnouncePeerQuery()
         {
-            var tid = DHTHelper.GetTransactionId();
+            var tid = DHTTransactions.GetNextId();
             var nodeId = DHTHelper.GetRandomID();
             var infoHash = DHTHelper.GetRandomHashID();
             DHTMessage msg = DHTMessage.CreateAnnouncePeerQuery(tid, nodeId, infoHash, 1, 1, new BString("XX"));
@@ -222,7 +222,7 @@ namespace GKNet.DHT
         [Test]
         public void Test_CreateAnnouncePeerResponse()
         {
-            var tid = DHTHelper.GetTransactionId();
+            var tid = DHTTransactions.GetNextId();
             var nodeId = DHTHelper.GetRandomID();
             DHTMessage msg = DHTMessage.CreateAnnouncePeerResponse(tid, nodeId, new List<DHTNode>());
             Assert.IsNotNull(msg);
@@ -234,7 +234,7 @@ namespace GKNet.DHT
         [Test]
         public void Test_CreateGetPeersQuery()
         {
-            var tid = DHTHelper.GetTransactionId();
+            var tid = DHTTransactions.GetNextId();
             var nodeId = DHTHelper.GetRandomID();
             var infoHash = DHTHelper.GetRandomHashID();
             DHTMessage msg = DHTMessage.CreateGetPeersQuery(tid, nodeId, infoHash);
@@ -247,7 +247,7 @@ namespace GKNet.DHT
         [Test]
         public void Test_CreateGetPeersResponse()
         {
-            var tid = DHTHelper.GetTransactionId();
+            var tid = DHTTransactions.GetNextId();
             var nodeId = DHTHelper.GetRandomID();
             var infoHash = DHTHelper.GetRandomHashID();
             var peers = new List<IDHTPeer>();
