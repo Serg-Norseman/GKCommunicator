@@ -33,6 +33,7 @@
         private System.Windows.Forms.ToolStripButton tbProfile;
         private System.Windows.Forms.ToolStripMenuItem miPeerProfile;
         private System.Windows.Forms.ToolStripStatusLabel lblTicks;
+        private System.Windows.Forms.ToolStripMenuItem miAddPeer;
 
         protected override void Dispose(bool disposing)
         {
@@ -75,6 +76,7 @@
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.btnSendToAll = new System.Windows.Forms.Button();
             this.btnSend = new System.Windows.Forms.Button();
+            this.miAddPeer = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -172,7 +174,7 @@
             // miDHTLog
             // 
             this.miDHTLog.Name = "miDHTLog";
-            this.miDHTLog.Size = new System.Drawing.Size(224, 26);
+            this.miDHTLog.Size = new System.Drawing.Size(151, 26);
             this.miDHTLog.Text = "DHT Log";
             this.miDHTLog.Click += new System.EventHandler(this.miDHTLog_Click);
             // 
@@ -288,14 +290,15 @@
             // 
             this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.miPeerProfile});
+            this.miPeerProfile,
+            this.miAddPeer});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(122, 28);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(211, 80);
             // 
             // miPeerProfile
             // 
             this.miPeerProfile.Name = "miPeerProfile";
-            this.miPeerProfile.Size = new System.Drawing.Size(121, 24);
+            this.miPeerProfile.Size = new System.Drawing.Size(210, 24);
             this.miPeerProfile.Text = "Profile";
             this.miPeerProfile.Click += new System.EventHandler(this.miPeerProfile_Click);
             // 
@@ -375,6 +378,13 @@
             this.btnSend.Text = "Send";
             this.btnSend.UseVisualStyleBackColor = true;
             this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
+            // 
+            // miAddPeer
+            // 
+            this.miAddPeer.Name = "miAddPeer";
+            this.miAddPeer.Size = new System.Drawing.Size(210, 24);
+            this.miAddPeer.Text = "Add peer";
+            this.miAddPeer.Click += new System.EventHandler(this.miAddPeer_Click);
             // 
             // ChatForm
             // 

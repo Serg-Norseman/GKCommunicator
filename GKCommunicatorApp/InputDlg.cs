@@ -77,12 +77,12 @@ namespace GKCommunicatorApp
         }
 
 
-        public static bool QueryText(string caption, string prompt, ref string value)
+        public static bool QueryText(object owner, string caption, string prompt, ref string value)
         {
             bool result = false;
 
             using (var inputBox = new InputDlg(caption, prompt, value)) {
-                if (inputBox.ShowDialog() == DialogResult.OK) {
+                if (inputBox.ShowDialog((IWin32Window)owner) == DialogResult.OK) {
                     value = inputBox.Value.Trim();
                     result = true;
                 }
@@ -91,12 +91,12 @@ namespace GKCommunicatorApp
             return result;
         }
 
-        public static bool QueryPassword(string caption, string prompt, ref string value)
+        public static bool QueryPassword(object owner, string caption, string prompt, ref string value)
         {
             bool result = false;
 
             using (var inputBox = new InputDlg(caption, prompt, value, true)) {
-                if (inputBox.ShowDialog() == DialogResult.OK) {
+                if (inputBox.ShowDialog((IWin32Window)owner) == DialogResult.OK) {
                     value = inputBox.Value.Trim();
                     result = true;
                 }

@@ -18,6 +18,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System;
 using BencodeNET;
 using GKNet.DHT;
 
@@ -80,7 +81,7 @@ namespace GKNet
             return data;
         }
 
-        public static BDictionary CreateChatMessage(BString transactionID, byte[] nodeId, string message)
+        public static BDictionary CreateChatMessage(BString transactionID, byte[] nodeId, string message, bool encrypted)
         {
             var data = new BDictionary();
             data.Add("t", transactionID);
@@ -90,6 +91,7 @@ namespace GKNet
             var args = new BDictionary();
             args.Add("id", new BString(nodeId));
             args.Add("msg", message);
+            args.Add("enc", Convert.ToInt32(encrypted));
             data.Add("a", args);
 
             data.Add("handshake", "gkn"); // ???

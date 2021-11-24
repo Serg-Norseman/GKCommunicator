@@ -81,7 +81,7 @@ namespace GKCommunicatorApp
             var userProfile = fProfile as UserProfile;
 
             string password = string.Empty;
-            if (!InputDlg.QueryPassword("GKCommunicator", "Password", ref password)) {
+            if (!InputDlg.QueryPassword(this, "GKCommunicator", "Password", ref password)) {
                 return;
             }
             userProfile.Identify(password);

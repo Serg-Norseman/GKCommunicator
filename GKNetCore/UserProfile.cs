@@ -29,7 +29,6 @@ namespace GKNet
     public class UserProfile : PeerProfile
     {
         private string fPasswordHash;
-        private string fPublicKey;
         private string fPrivateKey;
 
 
@@ -42,12 +41,6 @@ namespace GKNet
         {
             get { return fPasswordHash; }
             set { fPasswordHash = value; }
-        }
-
-        public string PublicKey
-        {
-            get { return fPublicKey; }
-            set { fPublicKey = value; }
         }
 
         public string PrivateKey
@@ -81,6 +74,8 @@ namespace GKNet
             Languages = langs;
 
             Email = INVISIBLE_PROFILE_VALUE;
+
+            PublicKey = string.Empty;
         }
 
         public override void Save(BDictionary data)
@@ -93,6 +88,7 @@ namespace GKNet
             data.Add("utz", (IsTimeZoneVisible) ? TimeZone : INVISIBLE_PROFILE_VALUE);
             data.Add("ulangs", (IsLanguagesVisible) ? Languages : INVISIBLE_PROFILE_VALUE);
             data.Add("uemail", (IsEmailVisible) ? Email : INVISIBLE_PROFILE_VALUE);
+            data.Add("upublkey", PublicKey);
         }
 
         public void Identify(string password)

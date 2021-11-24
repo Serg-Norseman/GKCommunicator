@@ -25,6 +25,7 @@ using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 using GKNet;
+using GKNet.DHT;
 using GKNet.Logging;
 using LumiSoft.Net.STUN.Client;
 
@@ -246,6 +247,16 @@ namespace GKCommunicatorApp
             }
         }
 
+        private void miAddPeer_Click(object sender, EventArgs e)
+        {
+            string endpoint = string.Empty;
+            if (InputDlg.QueryText(this, "GKCommunicator", "Peer endpoint", ref endpoint)) {
+                var peerEndPoint = DHTHelper.ParseIPEndPoint(endpoint);
+                fCore.UpdatePeer(peerEndPoint);
+                ((IChatForm)this).OnPeersListChanged();
+            }
+        }
+
         #endregion
 
         #region IChatForm members
@@ -264,9 +275,10 @@ namespace GKCommunicatorApp
                 }
 
                 string password = string.Empty;
-                if (InputDlg.QueryPassword("GKCommunicator", "Password", ref password)) {
-                    if (!fCore.Profile.Authentication(password)) {
+                if (InputDlg.QueryPassword(this, "GKCommunicator", "Password", ref password)) {
+                    if (!fCore.Authentication(password)) {
                         MessageBox.Show("Authentication failed", "GKCommunicator", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        Close();
                     }
                 }
             };

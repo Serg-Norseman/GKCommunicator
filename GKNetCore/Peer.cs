@@ -42,6 +42,7 @@ namespace GKNet
         public PeerProfile Profile { get; private set; }
         public PeerState State { get; set; }
         public DateTime LastPingTime { get; set; }
+        public int PingTries { get; set; }
         public DateTime LastUpdateTime { get; set; }
 
         public Peer(IPEndPoint peerEndPoint)

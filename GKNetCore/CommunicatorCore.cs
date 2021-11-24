@@ -47,6 +47,7 @@ namespace GKNet
         private readonly DHTClient fDHTClient;
         private readonly IChatForm fForm;
         private readonly ILogger fLogger;
+        private string fPassword; // TODO: remove this field, combine password hashing methods to store passwordHash here
         private readonly IList<Peer> fPeers;
         private readonly UserProfile fProfile;
         private STUN_Result fSTUNInfo;
@@ -259,6 +260,13 @@ namespace GKNet
             fDHTClient.Stop();
         }
 
+        public bool Authentication(string password)
+        {
+            bool result = Utilities.VerifyPassword(password, fProfile.PasswordHash);
+            fPassword = result ? password : string.Empty;
+            return result;
+        }
+
         // TODO: implement periodic clearing of the cache of nodes from outdated information
         public void SaveNode(DHTNode node)
         {
@@ -280,6 +288,8 @@ namespace GKNet
                 peer = AddPeer(peerEndPoint);
                 result = true;
             }
+
+            peer.PingTries = 0;
 
             if (peer.State != PeerState.Checked && !peer.IsLocal) {
                 peer.State = PeerState.Checked;
@@ -333,6 +343,7 @@ namespace GKNet
                     }
                 }
 
+                peer.PingTries += 1;
                 peer.LastPingTime = dtNow;
             }
         }
@@ -375,7 +386,13 @@ namespace GKNet
         {
             fLogger.WriteDebug("SendMessage: {0}, `{1}`", peer.EndPoint, message);
 
-            SendData(peer.EndPoint, ProtocolHelper.CreateChatMessage(DHTHelper.GetTransactionId(), fDHTClient.LocalID, message));
+            bool encrypted = false;
+            if (peer.Profile != null && !string.IsNullOrEmpty(peer.Profile.PublicKey)) {
+                message = Utilities.Encrypt(message, peer.Profile.PublicKey);
+                encrypted = true;
+            }
+
+            SendData(peer.EndPoint, ProtocolHelper.CreateChatMessage(DHTHelper.GetTransactionId(), fDHTClient.LocalID, message, encrypted));
         }
 
         #endregion
@@ -394,7 +411,7 @@ namespace GKNet
 
                 SendPing(peer, !isChecked);
 
-                if (!isChecked && dtNow - peer.LastUpdateTime > TimeSpan.FromMinutes(10)) {
+                if (!isChecked && (peer.PingTries >= 10 || dtNow - peer.LastUpdateTime > TimeSpan.FromMinutes(10))) {
                     fPeers.Remove(peer);
                     changed = true;
                 }
@@ -467,8 +484,12 @@ namespace GKNet
                     break;
 
                 case "chat":
+                    var enc = Convert.ToBoolean(args.Get<BNumber>("enc").Value);
                     var msgdata = args.Get<BString>("msg").Value;
                     string msg = Encoding.UTF8.GetString(msgdata);
+                    if (enc && !string.IsNullOrEmpty(fProfile.PrivateKey) && !string.IsNullOrEmpty(fPassword)) {
+                        msg = Utilities.Decrypt(msg, fProfile.PrivateKey, fPassword) + " [decrypted]"; // FIXME: temporary debug sign
+                    }
                     fForm.OnMessageReceived(pr, msg);
                     break;
             }

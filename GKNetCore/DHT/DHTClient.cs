@@ -275,7 +275,7 @@ namespace GKNet.DHT
 
                 if (msg.IsSimilarTo(fClientVer)) {
                     // Received a message from a similar client
-                    DoPeersFoundEvent(new List<IPEndPoint>() { ipinfo });
+                    // many false positives, client version is not unique
                 }
 
                 switch (msg.Type) {

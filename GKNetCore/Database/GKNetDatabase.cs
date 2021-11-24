@@ -233,7 +233,8 @@ namespace GKNet.Database
                 country = peerProfile.Country,
                 timezone = peerProfile.TimeZone,
                 langs = peerProfile.Languages,
-                email = peerProfile.Email
+                email = peerProfile.Email,
+                public_key = peerProfile.PublicKey
             };
             fConnection.InsertOrReplace(record);
         }

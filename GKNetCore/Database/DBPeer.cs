@@ -50,5 +50,7 @@ namespace GKNet.Database
 
         [MaxLength(200)]
         public string email { get; set; }
+
+        public string public_key { get; set; }
     }
 }

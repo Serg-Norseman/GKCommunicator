@@ -41,7 +41,7 @@ namespace GKNet
         {
             var tid = DHTHelper.GetTransactionId();
             var nodeId = DHTHelper.GetRandomID();
-            var msg = ProtocolHelper.CreateChatMessage(tid, nodeId, "test");
+            var msg = ProtocolHelper.CreateChatMessage(tid, nodeId, "test", false);
             Assert.IsNotNull(msg);
             // TODO: test contents
         }

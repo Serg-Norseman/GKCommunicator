@@ -27,6 +27,8 @@ namespace GKNet
     {
         public const string INVISIBLE_PROFILE_VALUE = "-";
 
+        protected string fPublicKey;
+
         public byte[] NodeId { get; set; }
 
         public string UserName { get; set; }
@@ -34,6 +36,13 @@ namespace GKNet
         public string Languages { get; set; }
         public string TimeZone { get; set; }
         public string Email { get; set; }
+
+        public string PublicKey
+        {
+            get { return fPublicKey; }
+            set { fPublicKey = value; }
+        }
+
 
         public PeerProfile()
         {
@@ -49,6 +58,7 @@ namespace GKNet
             TimeZone = data.Get<BString>("utz").ToString();
             Languages = data.Get<BString>("ulangs").ToString();
             Email = data.Get<BString>("uemail").ToString();
+            PublicKey = data.Get<BString>("upublkey").ToString();
         }
 
         public virtual void Save(BDictionary data)
