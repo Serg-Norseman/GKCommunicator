@@ -23,37 +23,17 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="InputDlg.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Program.cs" />
-    <Compile Include="ProfileDlg.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ProfileDlg.Designer.cs">
-      <DependentUpon>ProfileDlg.cs</DependentUpon>
-    </Compile>
-    <Reference Include="BSLib">
-      <HintPath>..\libs\BSLib.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
-    <Compile Include="ChatForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChatForm.Designer.cs">
-      <DependentUpon>ChatForm.cs</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\GKNetCore\GKNetCore.csproj">
-      <Project>{fee68cf6-1d60-4e90-aef3-6afa4a8c977d}</Project>
-      <Name>GKNetCore</Name>
+    <ProjectReference Include="..\GKNetUI\GKNetUI.csproj">
+      <Project>{1d2c209a-6e19-4fcf-ba08-11b8096fca99}</Project>
+      <Name>GKNetUI</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

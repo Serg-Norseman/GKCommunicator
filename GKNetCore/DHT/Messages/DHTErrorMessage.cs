@@ -34,6 +34,7 @@ namespace GKNet.DHT
         protected override void Parse()
         {
             base.Parse();
+
             var errData = fData.Get<BList>("e");
             if (errData != null && errData.Count != 0) {
                 ErrCode = errData.Get<BNumber>(0);

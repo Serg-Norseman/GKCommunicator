@@ -18,20 +18,19 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-using System.Net;
+using System.Drawing;
+using System.IO;
+using GKNet;
 
-namespace GKNet.DHT
+namespace GKNetUI
 {
-    public class DataEventArgs : EventArgs
+    public class UIHelper
     {
-        public IPEndPoint EndPoint { get; private set; }
-        public byte[] Data { get; private set; }
-
-        public DataEventArgs(IPEndPoint endPoint, byte[] data) : base()
+        public static Bitmap LoadResourceImage(string name)
         {
-            EndPoint = endPoint;
-            Data = data;
+            string resName = "GKNet.Resources.Images." + name + ".png";
+            Stream resStream = Utilities.LoadResourceStream(resName);
+            return new Bitmap(resStream);
         }
     }
 }

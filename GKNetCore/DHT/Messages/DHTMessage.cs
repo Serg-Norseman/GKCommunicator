@@ -90,12 +90,6 @@ namespace GKNet.DHT
             fClientVer = (clientVer == null) ? string.Empty : clientVer.ToString();
         }
 
-        public static DHTMessage ParseBuffer(string bencodedString)
-        {
-            var buffer = Encoding.UTF8.GetBytes(bencodedString);
-            return ParseBuffer(buffer);
-        }
-
         public static DHTMessage ParseBuffer(byte[] buffer)
         {
             if (buffer == null || buffer.Length == 0 || buffer[0] != 'd') {

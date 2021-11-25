@@ -22,12 +22,12 @@ using System;
 using System.Windows.Forms;
 using GKNet;
 
-namespace GKCommunicatorApp
+namespace GKNetUI
 {
     public partial class ProfileDlg : Form
     {
-        private ICommunicatorCore fCore;
-        private PeerProfile fProfile;
+        private readonly ICommunicatorCore fCore;
+        private readonly PeerProfile fProfile;
 
         public ProfileDlg() : this(null, null)
         {

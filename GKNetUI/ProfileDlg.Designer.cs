@@ -1,4 +1,4 @@
-﻿namespace GKCommunicatorApp
+﻿namespace GKNetUI
 {
     partial class ProfileDlg
     {

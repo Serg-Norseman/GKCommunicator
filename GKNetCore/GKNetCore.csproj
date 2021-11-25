@@ -39,8 +39,7 @@
       <HintPath>..\libs\Mono.Nat.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -59,7 +58,6 @@
     <Compile Include="Database\DBNode.cs" />
     <Compile Include="Database\DBParameter.cs" />
     <Compile Include="Database\DBPeer.cs" />
-    <Compile Include="DHT\Events\DataEventArgs.cs" />
     <Compile Include="CommunicatorCore.cs" />
     <Compile Include="ConnectivitySettings.cs" />
     <Compile Include="Database\GKNetDatabase.cs" />
@@ -101,6 +99,12 @@
     <Compile Include="TCP\TCPConnection.cs" />
     <Compile Include="TCP\TCPDuplexClient.cs" />
     <Compile Include="UserProfile.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Images\btn_available.png" />
+    <EmbeddedResource Include="Resources\Images\btn_away.png" />
+    <EmbeddedResource Include="Resources\Images\btn_busy.png" />
+    <EmbeddedResource Include="Resources\Images\btn_offline.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -137,7 +137,9 @@ namespace GKNet
             fDHTClient.ResponseReceived += OnResponseReceive;
 
             PublicEndPoint = publicEndPoint;
-            AddPeer(PublicEndPoint);
+            var localPeer = AddPeer(PublicEndPoint, fProfile);
+            localPeer.State = PeerState.Identified;
+            localPeer.Presence = PresenceStatus.Online;
 
             fTCPClient = new TCPDuplexClient();
             fTCPClient.DataReceive += OnDataReceive;
@@ -260,9 +262,9 @@ namespace GKNet
             fDHTClient.Stop();
         }
 
-        public bool Authentication(string password)
+        public bool Authenticate(string password)
         {
-            bool result = Utilities.VerifyPassword(password, fProfile.PasswordHash);
+            bool result = fProfile.Authenticate(password);
             fPassword = result ? password : string.Empty;
             return result;
         }
@@ -353,10 +355,10 @@ namespace GKNet
             return ((PublicEndPoint != null) && (Utilities.PrepareAddress(PublicEndPoint.Address).Equals(peerAddress)));
         }
 
-        public Peer AddPeer(IPEndPoint peerEndPoint)
+        public Peer AddPeer(IPEndPoint peerEndPoint, PeerProfile profile = null)
         {
             lock (fPeers) {
-                Peer peer = new Peer(peerEndPoint);
+                Peer peer = new Peer(peerEndPoint, profile);
                 peer.IsLocal = CheckLocalAddress(peerEndPoint.Address);
 
                 if (!peer.IsLocal) {
@@ -516,6 +518,8 @@ namespace GKNet
                     if (peer != null) {
                         peer.Profile.Load(resp);
                         peer.Profile.NodeId = e.NodeId;
+                        peer.State = PeerState.Identified;
+                        peer.Presence = PresenceStatus.Online;
                         fDatabase.SavePeer(peer.Profile, e.EndPoint);
                     }
                     break;

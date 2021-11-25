@@ -228,20 +228,5 @@ namespace GKNet.DHT
                 }
             }
         }
-
-        /// <summary>
-        /// Calculates the hash of the 'info'-dictionary.
-        /// The info hash is a 20-byte SHA1 hash of the 'info'-dictionary of the torrent
-        /// used to uniquely identify it and it's contents.
-        ///
-        /// <para>Example: 6D60711ECF005C1147D8973A67F31A11454AB3F5</para>
-        /// </summary>
-        /// <param name="info">The 'info'-dictionary of a torrent.</param>
-        /// <returns>A string representation of the 20-byte SHA1 hash without dashes.</returns>
-        public static string CalculateInfoHash(BDictionary info)
-        {
-            var hashBytes = CalculateInfoHashBytes(info);
-            return hashBytes.ToHexString();
-        }
     }
 }

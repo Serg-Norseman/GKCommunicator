@@ -9,14 +9,14 @@ namespace GKNet
         [Test]
         public void Test_ctor()
         {
-            var peer = new Peer(new IPEndPoint(IPAddress.Any, 1111));
+            var peer = new Peer(new IPEndPoint(IPAddress.Any, 1111), null);
             Assert.IsNotNull(peer);
             Assert.AreEqual(PeerState.Unknown, peer.State);
             Assert.IsNotNull(peer.Profile);
             string str = peer.ToString();
 
-            peer.Presence = PresenceStatus.Hidden;
-            Assert.AreEqual(PresenceStatus.Hidden, peer.Presence);
+            peer.Presence = PresenceStatus.Invisible;
+            Assert.AreEqual(PresenceStatus.Invisible, peer.Presence);
         }
     }
 }

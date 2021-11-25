@@ -26,12 +26,12 @@ namespace GKNet
 {
     public enum PeerState
     {
-        Unknown, Unchecked, Checked
+        Unknown, Unchecked, Checked, Identified
     }
 
     public enum PresenceStatus
     {
-        Unknown, Offline, Hidden /*Invisible?*/, Online, Away, Busy, Idle
+        Unknown, Offline, Online, Away, Busy, Invisible
     }
 
     public class Peer : IDHTPeer
@@ -45,17 +45,19 @@ namespace GKNet
         public int PingTries { get; set; }
         public DateTime LastUpdateTime { get; set; }
 
-        public Peer(IPEndPoint peerEndPoint)
+        public Peer(IPEndPoint peerEndPoint, PeerProfile profile)
         {
             EndPoint = peerEndPoint;
             State = PeerState.Unknown;
-            Profile = new PeerProfile();
+            Profile = (profile == null) ? new PeerProfile() : profile;
         }
 
         public override string ToString()
         {
             string location = (IsLocal) ? "local" : "external";
-            return string.Format("{0} ({1}, {2})", EndPoint, State, location);
+            string connInfo = string.Format("{0} ({1}, {2})", EndPoint, State, location);
+            string result = (State == PeerState.Identified) ? string.Format("{0}\r\n{1}", Profile.UserName, connInfo) : connInfo;
+            return result;
         }
     }
 }

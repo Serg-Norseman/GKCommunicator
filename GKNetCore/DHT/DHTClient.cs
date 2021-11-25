@@ -63,7 +63,6 @@ namespace GKNet.DHT
         public event EventHandler<PeersFoundEventArgs> PeersFound;
         public event EventHandler<PeerPingedEventArgs> PeerPinged;
 
-        public event EventHandler<DataEventArgs> DataReceived;
         public event EventHandler<MessageEventArgs> QueryReceived;
         public event EventHandler<MessageEventArgs> ResponseReceived;
 
@@ -171,10 +170,6 @@ namespace GKNet.DHT
         protected override void OnRecvMessage(IPEndPoint ipinfo, byte[] data)
         {
             try {
-                if (DataReceived != null) {
-                    DataReceived(this, new DataEventArgs(ipinfo, data));
-                }
-
                 DHTMessage msg = DHTMessage.ParseBuffer(data);
                 if (msg == null) return;
 
@@ -232,14 +227,7 @@ namespace GKNet.DHT
                     break;
 
                 default:
-                    var args = data.Get<BDictionary>("a");
-                    if (args != null) {
-                        var id = args.Get<BString>("id");
-                        byte[] idVal = (id != null) ? id.Value : null;
-                        if (QueryReceived != null) {
-                            QueryReceived(this, new MessageEventArgs(ipinfo, idVal, data));
-                        }
-                    }
+                    OnRecvCustomQuery(ipinfo, data);
                     break;
             }
         }
@@ -269,24 +257,17 @@ namespace GKNet.DHT
             BDictionary data = msg.Data;
 
             var tid = data.Get<BString>("t");
+
             var returnValues = data.Get<BDictionary>("r");
-
-            BString id = null;
-            BString tokStr = null;
-            BList valuesList = null;
-            BString nodesStr = null;
-
-            if (returnValues != null) {
-                id = returnValues.Get<BString>("id");
-                tokStr = returnValues.Get<BString>("token");
-                valuesList = returnValues.Get<BList>("values");
-                nodesStr = returnValues.Get<BString>("nodes");
-            }
-
-            if (id == null || id.Length == 0) {
+            if (returnValues == null) {
                 // response is invalid
                 return;
             }
+
+            BString id = returnValues.Get<BString>("id");
+            BString tokStr = returnValues.Get<BString>("token");
+            BList valuesList = returnValues.Get<BList>("values");
+            BString nodesStr = returnValues.Get<BString>("nodes");
 
             UpdateRoutingTable(new DHTNode(id.Value, ipinfo));
 
@@ -312,9 +293,7 @@ namespace GKNet.DHT
 
                 case QueryType.None:
                     // TransactionId bad or unknown
-                    if (ResponseReceived != null) {
-                        ResponseReceived(this, new MessageEventArgs(ipinfo, id.Value, data));
-                    }
+                    OnRecvCustomResponse(ipinfo, id.Value, data);
                     break;
             }
         }
@@ -325,7 +304,10 @@ namespace GKNet.DHT
 #if DEBUG_DHT_INTERNALS
             fLogger.WriteDebug("Peer pinged: {0}", ipinfo);
 #endif
-            DoPeerPingedEvent(ipinfo, nodeId);
+
+            if (PeerPinged != null) {
+                PeerPinged(this, new PeerPingedEventArgs(ipinfo, nodeId));
+            }
         }
 
         private void OnRecvFindNodeResponse(IPEndPoint ipinfo, byte[] nodeId, BString nodesStr)
@@ -352,6 +334,13 @@ namespace GKNet.DHT
 #endif
         }
 
+        private void OnRecvCustomResponse(IPEndPoint ipinfo, byte[] nodeId, BDictionary data)
+        {
+            if (ResponseReceived != null) {
+                ResponseReceived(this, new MessageEventArgs(ipinfo, nodeId, data));
+            }
+        }
+
         private bool ProcessValuesStr(IPEndPoint ipinfo, byte[] nodeId, BList valuesList, BString token)
         {
             bool result = false;
@@ -371,7 +360,9 @@ namespace GKNet.DHT
                         }
                     }
 
-                    DoPeersFoundEvent(values);
+                    if (PeersFound != null) {
+                        PeersFound(this, new PeersFoundEventArgs(values));
+                    }
                 }
             }
             return result;
@@ -387,6 +378,19 @@ namespace GKNet.DHT
 #endif
 
                 UpdateRoutingTable(nodesList);
+            }
+        }
+
+        private void OnRecvCustomQuery(IPEndPoint ipinfo, BDictionary data)
+        {
+            var args = data.Get<BDictionary>("a");
+            if (args == null) return;
+
+            var id = args.Get<BString>("id");
+            byte[] nodeId = (id != null) ? id.Value : null;
+
+            if (QueryReceived != null) {
+                QueryReceived(this, new MessageEventArgs(ipinfo, nodeId, data));
             }
         }
 
@@ -552,24 +556,6 @@ namespace GKNet.DHT
                 Send(address, dataArray, async);
             } catch (Exception ex) {
                 fLogger.WriteError("Send()", ex);
-            }
-        }
-
-        #endregion
-
-        #region Events
-
-        private void DoPeersFoundEvent(List<IPEndPoint> values)
-        {
-            if (PeersFound != null) {
-                PeersFound(this, new PeersFoundEventArgs(values));
-            }
-        }
-
-        private void DoPeerPingedEvent(IPEndPoint ipinfo, byte[] nodeId)
-        {
-            if (PeerPinged != null) {
-                PeerPinged(this, new PeerPingedEventArgs(ipinfo, nodeId));
             }
         }
 

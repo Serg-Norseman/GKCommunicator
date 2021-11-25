@@ -28,7 +28,7 @@ using GKNet;
 using GKNet.Logging;
 using LumiSoft.Net.STUN.Client;
 
-namespace GKCommunicatorApp
+namespace GKNetUI
 {
     public partial class ChatForm : Form, IChatForm
     {
@@ -50,8 +50,6 @@ namespace GKCommunicatorApp
         public ChatForm()
         {
             InitializeComponent();
-
-            lstMembers.Columns.Add("Peer", 400);
 
             Closing += ChatForm_Closing;
 
@@ -140,7 +138,7 @@ namespace GKCommunicatorApp
             if (lstMembers.SelectedItems.Count == 0)
                 return null;
 
-            return (lstMembers.SelectedItems[0].Tag as Peer);
+            return (lstMembers.SelectedItems[0] as Peer);
         }
 
         private void StartConnectionTicks()
@@ -169,6 +167,19 @@ namespace GKCommunicatorApp
                 Invoke(invoker);
             } else {
                 invoker();
+            }
+        }
+
+        private void Authenticate()
+        {
+            if (!string.IsNullOrEmpty(fCore.Profile.PasswordHash)) {
+                string password = string.Empty;
+                if (InputDlg.QueryPassword(this, "GKCommunicator", "Password", ref password)) {
+                    if (!fCore.Authenticate(password)) {
+                        MessageBox.Show("Authentication failed", "GKCommunicator", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        Close();
+                    }
+                }
             }
         }
 
@@ -273,13 +284,7 @@ namespace GKCommunicatorApp
                     UpdateStatus();
                 }
 
-                string password = string.Empty;
-                if (InputDlg.QueryPassword(this, "GKCommunicator", "Password", ref password)) {
-                    if (!fCore.Authentication(password)) {
-                        MessageBox.Show("Authentication failed", "GKCommunicator", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        Close();
-                    }
-                }
+                Authenticate();
             };
 
             if (InvokeRequired) {
@@ -300,8 +305,7 @@ namespace GKCommunicatorApp
                     if (!peer.IsLocal) {
                         membersNum += 1;
                     }
-                    var listItem = lstMembers.Items.Add(peer.ToString());
-                    listItem.Tag = peer;
+                    lstMembers.Items.Add(peer);
                 }
                 lstMembers.EndUpdate();
 

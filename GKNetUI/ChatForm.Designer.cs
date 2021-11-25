@@ -1,4 +1,4 @@
-﻿namespace GKCommunicatorApp
+﻿namespace GKNetUI
 {
     partial class ChatForm
     {
@@ -13,7 +13,7 @@
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel lblConnectionStatus;
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.ListView lstMembers;
+        private GKNetUI.PeersList lstMembers;
         private System.Windows.Forms.SplitContainer splitContainer2;
         private System.Windows.Forms.TextBox txtChatMsg;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
@@ -34,6 +34,11 @@
         private System.Windows.Forms.ToolStripMenuItem miPeerProfile;
         private System.Windows.Forms.ToolStripStatusLabel lblTicks;
         private System.Windows.Forms.ToolStripMenuItem miAddPeer;
+        private System.Windows.Forms.ToolStripMenuItem miPeersList;
+        private System.Windows.Forms.ToolStripMenuItem miAllPeers;
+        private System.Windows.Forms.ToolStripMenuItem miOnlyFriends;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem3;
+        private System.Windows.Forms.ToolStripMenuItem miConnectionInfo;
 
         protected override void Dispose(bool disposing)
         {
@@ -67,16 +72,21 @@
             this.lblConnectionStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblTicks = new System.Windows.Forms.ToolStripStatusLabel();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.lstMembers = new System.Windows.Forms.ListView();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.miPeerProfile = new System.Windows.Forms.ToolStripMenuItem();
+            this.miAddPeer = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.lstChatMsgs = new System.Windows.Forms.RichTextBox();
             this.txtChatMsg = new System.Windows.Forms.TextBox();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.btnSendToAll = new System.Windows.Forms.Button();
             this.btnSend = new System.Windows.Forms.Button();
-            this.miAddPeer = new System.Windows.Forms.ToolStripMenuItem();
+            this.miPeersList = new System.Windows.Forms.ToolStripMenuItem();
+            this.miAllPeers = new System.Windows.Forms.ToolStripMenuItem();
+            this.miOnlyFriends = new System.Windows.Forms.ToolStripMenuItem();
+            this.lstMembers = new GKNetUI.PeersList();
+            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
+            this.miConnectionInfo = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -102,7 +112,7 @@
             this.miHelp});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(914, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(914, 30);
             this.menuStrip1.TabIndex = 9;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -116,7 +126,7 @@
             this.toolStripMenuItem2,
             this.miExit});
             this.miConnection.Name = "miConnection";
-            this.miConnection.Size = new System.Drawing.Size(98, 24);
+            this.miConnection.Size = new System.Drawing.Size(98, 26);
             this.miConnection.Text = "Connection";
             // 
             // miConnect
@@ -159,8 +169,10 @@
             // 
             // miView
             // 
+            this.miView.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.miPeersList});
             this.miView.Name = "miView";
-            this.miView.Size = new System.Drawing.Size(55, 24);
+            this.miView.Size = new System.Drawing.Size(55, 26);
             this.miView.Text = "View";
             // 
             // miService
@@ -168,7 +180,7 @@
             this.miService.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.miDHTLog});
             this.miService.Name = "miService";
-            this.miService.Size = new System.Drawing.Size(70, 24);
+            this.miService.Size = new System.Drawing.Size(70, 26);
             this.miService.Text = "Service";
             // 
             // miDHTLog
@@ -181,7 +193,7 @@
             // miHelp
             // 
             this.miHelp.Name = "miHelp";
-            this.miHelp.Size = new System.Drawing.Size(55, 24);
+            this.miHelp.Size = new System.Drawing.Size(55, 26);
             this.miHelp.Text = "Help";
             // 
             // toolStrip1
@@ -192,9 +204,9 @@
             this.tbDisconnect,
             this.toolStripSeparator1,
             this.tbProfile});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 28);
+            this.toolStrip1.Location = new System.Drawing.Point(0, 30);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(914, 27);
+            this.toolStrip1.Size = new System.Drawing.Size(914, 31);
             this.toolStrip1.TabIndex = 13;
             // 
             // tbConnect
@@ -202,7 +214,7 @@
             this.tbConnect.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.tbConnect.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbConnect.Name = "tbConnect";
-            this.tbConnect.Size = new System.Drawing.Size(67, 24);
+            this.tbConnect.Size = new System.Drawing.Size(67, 28);
             this.tbConnect.Text = "Connect";
             this.tbConnect.Click += new System.EventHandler(this.miConnect_Click);
             // 
@@ -211,21 +223,21 @@
             this.tbDisconnect.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.tbDisconnect.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbDisconnect.Name = "tbDisconnect";
-            this.tbDisconnect.Size = new System.Drawing.Size(86, 24);
+            this.tbDisconnect.Size = new System.Drawing.Size(86, 28);
             this.tbDisconnect.Text = "Disconnect";
             this.tbDisconnect.Click += new System.EventHandler(this.miDisconnect_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 27);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 31);
             // 
             // tbProfile
             // 
             this.tbProfile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.tbProfile.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbProfile.Name = "tbProfile";
-            this.tbProfile.Size = new System.Drawing.Size(56, 24);
+            this.tbProfile.Size = new System.Drawing.Size(56, 28);
             this.tbProfile.Text = "Profile";
             this.tbProfile.Click += new System.EventHandler(this.miProfile_Click);
             // 
@@ -258,7 +270,7 @@
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 55);
+            this.splitContainer1.Location = new System.Drawing.Point(0, 61);
             this.splitContainer1.Margin = new System.Windows.Forms.Padding(2, 4, 2, 4);
             this.splitContainer1.Name = "splitContainer1";
             // 
@@ -269,22 +281,9 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(914, 471);
+            this.splitContainer1.Size = new System.Drawing.Size(914, 465);
             this.splitContainer1.SplitterDistance = 294;
             this.splitContainer1.TabIndex = 12;
-            // 
-            // lstMembers
-            // 
-            this.lstMembers.ContextMenuStrip = this.contextMenuStrip1;
-            this.lstMembers.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lstMembers.HideSelection = false;
-            this.lstMembers.Location = new System.Drawing.Point(0, 0);
-            this.lstMembers.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.lstMembers.Name = "lstMembers";
-            this.lstMembers.Size = new System.Drawing.Size(294, 471);
-            this.lstMembers.TabIndex = 4;
-            this.lstMembers.UseCompatibleStateImageBehavior = false;
-            this.lstMembers.View = System.Windows.Forms.View.Details;
             // 
             // contextMenuStrip1
             // 
@@ -293,14 +292,21 @@
             this.miPeerProfile,
             this.miAddPeer});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(211, 80);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(141, 52);
             // 
             // miPeerProfile
             // 
             this.miPeerProfile.Name = "miPeerProfile";
-            this.miPeerProfile.Size = new System.Drawing.Size(210, 24);
+            this.miPeerProfile.Size = new System.Drawing.Size(140, 24);
             this.miPeerProfile.Text = "Profile";
             this.miPeerProfile.Click += new System.EventHandler(this.miPeerProfile_Click);
+            // 
+            // miAddPeer
+            // 
+            this.miAddPeer.Name = "miAddPeer";
+            this.miAddPeer.Size = new System.Drawing.Size(140, 24);
+            this.miAddPeer.Text = "Add peer";
+            this.miAddPeer.Click += new System.EventHandler(this.miAddPeer_Click);
             // 
             // splitContainer2
             // 
@@ -318,8 +324,8 @@
             // 
             this.splitContainer2.Panel2.Controls.Add(this.txtChatMsg);
             this.splitContainer2.Panel2.Controls.Add(this.flowLayoutPanel1);
-            this.splitContainer2.Size = new System.Drawing.Size(616, 471);
-            this.splitContainer2.SplitterDistance = 263;
+            this.splitContainer2.Size = new System.Drawing.Size(616, 465);
+            this.splitContainer2.SplitterDistance = 259;
             this.splitContainer2.SplitterWidth = 5;
             this.splitContainer2.TabIndex = 0;
             // 
@@ -330,7 +336,7 @@
             this.lstChatMsgs.Margin = new System.Windows.Forms.Padding(2, 4, 2, 4);
             this.lstChatMsgs.Name = "lstChatMsgs";
             this.lstChatMsgs.ReadOnly = true;
-            this.lstChatMsgs.Size = new System.Drawing.Size(616, 263);
+            this.lstChatMsgs.Size = new System.Drawing.Size(616, 259);
             this.lstChatMsgs.TabIndex = 0;
             this.lstChatMsgs.Text = "";
             // 
@@ -341,7 +347,7 @@
             this.txtChatMsg.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtChatMsg.Multiline = true;
             this.txtChatMsg.Name = "txtChatMsg";
-            this.txtChatMsg.Size = new System.Drawing.Size(616, 151);
+            this.txtChatMsg.Size = new System.Drawing.Size(616, 149);
             this.txtChatMsg.TabIndex = 6;
             this.txtChatMsg.Text = "test";
             // 
@@ -351,7 +357,7 @@
             this.flowLayoutPanel1.Controls.Add(this.btnSend);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 151);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 149);
             this.flowLayoutPanel1.Margin = new System.Windows.Forms.Padding(2, 4, 2, 4);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Size = new System.Drawing.Size(616, 52);
@@ -379,12 +385,56 @@
             this.btnSend.UseVisualStyleBackColor = true;
             this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
             // 
-            // miAddPeer
+            // miPeersList
             // 
-            this.miAddPeer.Name = "miAddPeer";
-            this.miAddPeer.Size = new System.Drawing.Size(210, 24);
-            this.miAddPeer.Text = "Add peer";
-            this.miAddPeer.Click += new System.EventHandler(this.miAddPeer_Click);
+            this.miPeersList.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.miAllPeers,
+            this.miOnlyFriends,
+            this.toolStripMenuItem3,
+            this.miConnectionInfo});
+            this.miPeersList.Name = "miPeersList";
+            this.miPeersList.Size = new System.Drawing.Size(224, 26);
+            this.miPeersList.Text = "Peers list";
+            // 
+            // miAllPeers
+            // 
+            this.miAllPeers.Checked = true;
+            this.miAllPeers.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.miAllPeers.Name = "miAllPeers";
+            this.miAllPeers.Size = new System.Drawing.Size(224, 26);
+            this.miAllPeers.Text = "All peers";
+            // 
+            // miOnlyFriends
+            // 
+            this.miOnlyFriends.Enabled = false;
+            this.miOnlyFriends.Name = "miOnlyFriends";
+            this.miOnlyFriends.Size = new System.Drawing.Size(224, 26);
+            this.miOnlyFriends.Text = "Only friends";
+            // 
+            // lstMembers
+            // 
+            this.lstMembers.ContextMenuStrip = this.contextMenuStrip1;
+            this.lstMembers.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lstMembers.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
+            this.lstMembers.Location = new System.Drawing.Point(0, 0);
+            this.lstMembers.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.lstMembers.Name = "lstMembers";
+            this.lstMembers.Size = new System.Drawing.Size(294, 465);
+            this.lstMembers.TabIndex = 4;
+            // 
+            // toolStripMenuItem3
+            // 
+            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(221, 6);
+            // 
+            // miConnectionInfo
+            // 
+            this.miConnectionInfo.Checked = true;
+            this.miConnectionInfo.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.miConnectionInfo.Enabled = false;
+            this.miConnectionInfo.Name = "miConnectionInfo";
+            this.miConnectionInfo.Size = new System.Drawing.Size(224, 26);
+            this.miConnectionInfo.Text = "Connection Info";
             // 
             // ChatForm
             // 
@@ -421,7 +471,6 @@
             this.flowLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
     }
 }

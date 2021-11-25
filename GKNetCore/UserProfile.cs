@@ -95,7 +95,7 @@ namespace GKNet
             Utilities.GenerateKeyPair(password, out fPublicKey, out fPrivateKey);
         }
 
-        public bool Authentication(string password)
+        public bool Authenticate(string password)
         {
             return Utilities.VerifyPassword(password, fPasswordHash);
         }

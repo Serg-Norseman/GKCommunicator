@@ -51,7 +51,7 @@ namespace GKNet
         void Send(Peer target, string message);
         void SendToAll(string message);
 
-        Peer AddPeer(IPEndPoint peerEndPoint);
+        Peer AddPeer(IPEndPoint peerEndPoint, PeerProfile profile = null);
         Peer FindPeer(IPEndPoint peerEndPoint);
     }
 }

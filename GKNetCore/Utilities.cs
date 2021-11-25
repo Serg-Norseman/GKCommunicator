@@ -136,6 +136,13 @@ namespace GKNet
             }
         }
 
+        public static Stream LoadResourceStream(string resName)
+        {
+            Assembly assembly = typeof(Utilities).Assembly;
+            Stream resStream = assembly.GetManifestResourceStream(resName);
+            return resStream;
+        }
+
         public static string Base64Encode(string plainText)
         {
             var plainTextBytes = Encoding.UTF8.GetBytes(plainText);
