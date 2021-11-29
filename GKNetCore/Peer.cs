@@ -26,7 +26,10 @@ namespace GKNet
 {
     public enum PeerState
     {
-        Unknown, Unchecked, Checked, Identified
+        Unknown,
+        Unchecked,  /* remote/local peer found */
+        Checked,    /* remote peer responded to ping or local peer found with its own port */
+        Identified  /* peer returned profile */
     }
 
     public enum PresenceStatus
@@ -37,6 +40,7 @@ namespace GKNet
     public class Peer : IDHTPeer
     {
         public IPEndPoint EndPoint { get; private set; }
+        public byte[] ID { get { return Profile.NodeId; } }
         public bool IsLocal { get; set; }
         public PresenceStatus Presence { get; set; }
         public PeerProfile Profile { get; private set; }
@@ -44,6 +48,13 @@ namespace GKNet
         public DateTime LastPingTime { get; set; }
         public int PingTries { get; set; }
         public DateTime LastUpdateTime { get; set; }
+
+        public bool IsUnknown
+        {
+            get {
+                return string.IsNullOrEmpty(Profile.UserName);
+            }
+        }
 
         public Peer(IPEndPoint peerEndPoint, PeerProfile profile)
         {
@@ -56,7 +67,8 @@ namespace GKNet
         {
             string location = (IsLocal) ? "local" : "external";
             string connInfo = string.Format("{0} ({1}, {2})", EndPoint, State, location);
-            string result = (State == PeerState.Identified) ? string.Format("{0}\r\n{1}", Profile.UserName, connInfo) : connInfo;
+            string peerName = (IsLocal || State == PeerState.Identified) ? Profile.UserName : "???";
+            string result = string.Format("{0}\r\n{1}", peerName, connInfo);
             return result;
         }
     }

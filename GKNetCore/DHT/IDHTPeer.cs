@@ -25,5 +25,7 @@ namespace GKNet.DHT
     public interface IDHTPeer
     {
         IPEndPoint EndPoint { get; }
+
+        byte[] ID { get; }
     }
 }

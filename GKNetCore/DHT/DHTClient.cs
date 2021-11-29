@@ -95,6 +95,7 @@ namespace GKNet.DHT
         {
             Close();
             fTransactions.Clear();
+            fRoutingTable.Clear();
         }
 
         private void Bootstrap()
@@ -163,6 +164,14 @@ namespace GKNet.DHT
                     Thread.Sleep(1000);
                 }
             }).Start();
+        }
+
+        public void FindUnkPeer(IDHTPeer peer)
+        {
+            var nodes = fRoutingTable.FindNodes(fSearchInfoHash);
+            foreach (var node in nodes) {
+                SendFindNodeQuery(node.EndPoint, peer.ID, false);
+            }
         }
 
         #region Receive messages and data
@@ -238,16 +247,6 @@ namespace GKNet.DHT
             fLastNodesUpdateTime = DateTime.Now.Ticks;
 
             fPeersHolder.SaveNode(node);
-        }
-
-        private void UpdateRoutingTable(IEnumerable<DHTNode> nodes)
-        {
-            fRoutingTable.UpdateNodes(nodes);
-            fLastNodesUpdateTime = DateTime.Now.Ticks;
-
-            foreach (var node in nodes) {
-                fPeersHolder.SaveNode(node);
-            }
         }
 
         private void OnRecvResponseX(IPEndPoint ipinfo, DHTResponseMessage msg)
@@ -377,7 +376,9 @@ namespace GKNet.DHT
                 fLogger.WriteDebug("Receive {0} nodes from {1}", nodesList.Count, ipinfo.ToString());
 #endif
 
-                UpdateRoutingTable(nodesList);
+                foreach (var node in nodesList) {
+                    UpdateRoutingTable(node);
+                }
             }
         }
 
@@ -490,10 +491,10 @@ namespace GKNet.DHT
             Send(address, msg, async);
         }
 
-        internal void SendFindNodeQuery(IPEndPoint address, byte[] data)
+        internal void SendFindNodeQuery(IPEndPoint address, byte[] data, bool neighbor = true)
         {
             var transactionID = DHTTransactions.GetNextId();
-            byte[] nid = (data == null) ? fLocalID : DHTHelper.GetNeighbor(data, fLocalID);
+            byte[] nid = (data == null) ? fLocalID : ((neighbor) ? DHTHelper.GetNeighbor(data, fLocalID) : data);
 
             var msg = DHTMessage.CreateFindNodeQuery(transactionID, nid);
             fTransactions.SetQuery(transactionID, msg);

@@ -13,7 +13,6 @@ namespace GKNet.DHT
             Assert.IsNotNull(table);
 
             Assert.AreEqual(0, table.Count);
-            Assert.AreEqual(false, table.IsFull);
 
             table.Clear();
 

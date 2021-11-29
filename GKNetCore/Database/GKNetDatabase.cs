@@ -220,6 +220,12 @@ namespace GKNet.Database
 
         #region Peer profiles
 
+        public IEnumerable<DBPeer> LoadPeers()
+        {
+            string query = string.Format("select * from Peers");
+            var records = fConnection.Query<DBPeer>(query);
+            return records;
+        }
 
         public void SavePeer(PeerProfile peerProfile, IPEndPoint endPoint)
         {

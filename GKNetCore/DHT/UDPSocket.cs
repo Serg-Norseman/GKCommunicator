@@ -75,8 +75,6 @@ namespace GKNet.DHT
             fSocket = new Socket(IPAddressFamily, SocketType.Dgram, ProtocolType.Udp);
             fSocket.SetIPProtectionLevelUnrestricted();
 
-            /*
-            // FIXME: unsupported?
             #if !MONO
             #if !IP6
             const long IOC_IN = 0x80000000;
@@ -88,7 +86,6 @@ namespace GKNet.DHT
             #else
             #endif
             #endif
-            */
 
 #if !IP6
             fSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ExclusiveAddressUse, false);
@@ -106,7 +103,11 @@ namespace GKNet.DHT
         protected override void Dispose(bool disposing)
         {
             if (disposing) {
-                fSocket.Close();
+                try {
+                    fSocket.Shutdown(SocketShutdown.Both);
+                } finally {
+                    fSocket.Close();
+                }
                 fSocket.Dispose();
             }
             base.Dispose(disposing);

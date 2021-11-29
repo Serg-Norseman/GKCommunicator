@@ -149,15 +149,6 @@ namespace GKNet.DHT
             return result;
         }
 
-        public static byte[] ComputeRouteDistance(byte[] sourceId, byte[] targetId)
-        {
-            var result = new byte[Math.Min(sourceId.Length, targetId.Length)];
-            for (var i = 0; i < result.Length; i++) {
-                result[i] = (byte)(sourceId[i] ^ targetId[i]);
-            }
-            return result;
-        }
-
         // TODO: ATTENTION, the quantity is not more than according to specification!
         public static BList CompactPeers(IList<IDHTPeer> peersList)
         {

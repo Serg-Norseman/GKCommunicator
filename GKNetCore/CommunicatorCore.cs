@@ -46,6 +46,7 @@ namespace GKNet
         private readonly GKNetDatabase fDatabase;
         private readonly DHTClient fDHTClient;
         private readonly IChatForm fForm;
+        private Peer fLocalPeer;
         private readonly ILogger fLogger;
         private string fPassword; // TODO: remove this field, combine password hashing methods to store passwordHash here
         private readonly IList<Peer> fPeers;
@@ -76,9 +77,19 @@ namespace GKNet
             get { return fDHTClient; }
         }
 
+        public Peer LocalPeer
+        {
+            get { return fLocalPeer; }
+        }
+
         public IList<Peer> Peers
         {
             get { return fPeers; }
+        }
+
+        public int Port
+        {
+            get; set;
         }
 
         public UserProfile Profile
@@ -121,25 +132,27 @@ namespace GKNet
             fDatabase.Connect();
             fDatabase.LoadProfile(fProfile);
 
+            Port = DHTClient.PublicDHTPort;
+            fLogger.WriteInfo("Port: {0}", Port);
+
             IPEndPoint publicEndPoint;
             try {
-                fSTUNInfo = STUNUtility.Detect(DHTClient.PublicDHTPort);
+                fSTUNInfo = STUNUtility.Detect(Port);
                 publicEndPoint = (fSTUNInfo.NetType != STUN_NetType.UdpBlocked) ? fSTUNInfo.PublicEndPoint : null;
             } catch (Exception ex) {
                 fLogger.WriteError("DetectSTUN() error", ex);
                 publicEndPoint = null;
             }
 
-            fDHTClient = new DHTClient(new IPEndPoint(DHTClient.IPAnyAddress, DHTClient.PublicDHTPort), this, ProtocolHelper.CLIENT_VER);
+            fDHTClient = new DHTClient(new IPEndPoint(DHTClient.IPAnyAddress, Port), this, ProtocolHelper.CLIENT_VER);
             fDHTClient.PeersFound += OnPeersFound;
             fDHTClient.PeerPinged += OnPeerPinged;
             fDHTClient.QueryReceived += OnQueryReceive;
             fDHTClient.ResponseReceived += OnResponseReceive;
 
             PublicEndPoint = publicEndPoint;
-            var localPeer = AddPeer(PublicEndPoint, fProfile);
-            localPeer.State = PeerState.Identified;
-            localPeer.Presence = PresenceStatus.Online;
+
+            InitializePeers();
 
             fTCPClient = new TCPDuplexClient();
             fTCPClient.DataReceive += OnDataReceive;
@@ -269,6 +282,30 @@ namespace GKNet
             return result;
         }
 
+        private void InitializePeers()
+        {
+            fLocalPeer = AddPeer(PublicEndPoint, fProfile);
+            fLocalPeer.State = PeerState.Unknown;
+            fLocalPeer.Presence = PresenceStatus.Online;
+
+            var dbPeers = fDatabase.LoadPeers();
+            foreach (var rp in dbPeers) {
+                var remoteProfile = new PeerProfile();
+                remoteProfile.NodeId = Utilities.FromHex(rp.node_id);
+                remoteProfile.UserName = rp.user_name;
+                remoteProfile.Country = rp.country;
+                remoteProfile.Languages = rp.langs;
+                remoteProfile.TimeZone = rp.timezone;
+                remoteProfile.Email = rp.email;
+                remoteProfile.PublicKey = rp.public_key;
+
+                var remotePeer = AddPeer(Utilities.ParseIPEndPoint(rp.last_endpoint), remoteProfile);
+                remotePeer.IsLocal = false;
+                remotePeer.State = PeerState.Unknown;
+                remotePeer.Presence = PresenceStatus.Offline;
+            }
+        }
+
         // TODO: implement periodic clearing of the cache of nodes from outdated information
         public void SaveNode(DHTNode node)
         {
@@ -312,19 +349,29 @@ namespace GKNet
             bool result = false;
             if (peerEndPoint == null) return false;
 
+            Peer peer;
             if (CheckLocalAddress(peerEndPoint.Address)) {
-                return false;
-            }
-
-            Peer peer = FindPeer(peerEndPoint);
-            if (peer == null) {
-                peer = AddPeer(peerEndPoint);
-                result = true;
+                peer = fLocalPeer;
+                if (peer.State < PeerState.Unchecked && peer.EndPoint.Port != peerEndPoint.Port) {
+                    peer.State = PeerState.Unchecked;
+                    result = true;
+                } else if (peer.State < PeerState.Checked && peer.EndPoint.Port == peerEndPoint.Port) {
+                    peer.State = PeerState.Checked;
+                    result = true;
+                }
+            } else {
+                peer = FindPeer(peerEndPoint);
+                if (peer == null) {
+                    peer = AddPeer(peerEndPoint);
+                    result = true;
+                }
             }
 
             peer.LastUpdateTime = DateTime.Now;
 
-            SendPing(peer, true);
+            if (!peer.IsLocal) {
+                SendPing(peer, true);
+            }
 
             return result;
         }
@@ -409,17 +456,21 @@ namespace GKNet
                 var peer = fPeers[i];
                 if (peer.IsLocal) continue;
 
-                bool isChecked = (peer.State == PeerState.Checked);
-
-                SendPing(peer, !isChecked);
-
-                if (!isChecked && (peer.PingTries >= 10 || dtNow - peer.LastUpdateTime > TimeSpan.FromMinutes(10))) {
+                if (peer.IsUnknown && (peer.PingTries >= 10 || dtNow - peer.LastUpdateTime > TimeSpan.FromMinutes(10))) {
                     fPeers.Remove(peer);
                     changed = true;
+                    continue;
                 }
 
-                if (isChecked) {
+                // always send ping
+                SendPing(peer, (peer.State < PeerState.Checked));
+
+                if (peer.State == PeerState.Checked) {
                     hasCheckedPeers = true;
+                }
+
+                if (peer.State == PeerState.Unknown) {
+                    fDHTClient.FindUnkPeer(peer);
                 }
 
                 /*{

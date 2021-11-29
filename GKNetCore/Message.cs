@@ -22,15 +22,30 @@ using System;
 
 namespace GKNet
 {
+    public enum MessageStatus : byte
+    {
+        Undelivered = 0,
+        Delivered = 1
+    }
+
     public class Message
     {
         public DateTime Timestamp { get; private set; }
         public string Text { get; private set; }
+        public MessageStatus Status { get; private set; }
+
 
         public Message(DateTime timestamp, string text)
         {
             Timestamp = timestamp;
             Text = text;
+            Status = MessageStatus.Undelivered;
+        }
+
+        public void SetDelivered()
+        {
+            Status = MessageStatus.Delivered;
+            Timestamp = DateTime.UtcNow;
         }
     }
 }

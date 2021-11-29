@@ -37,6 +37,7 @@ namespace GKNet
     {
         ConnectionState ConnectionState { get; }
         GKNetDatabase Database { get; }
+        Peer LocalPeer { get; }
         IList<Peer> Peers { get; }
         UserProfile Profile { get; }
         int TCPListenerPort { get; set; }

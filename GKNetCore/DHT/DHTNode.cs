@@ -22,12 +22,6 @@ using System.Net;
 
 namespace GKNet.DHT
 {
-    public enum NodeType
-    {
-        Node,       // normal dht peer
-        Peer        // peer was checked by SubnetKey's infohash and handshake
-    }
-
     public class DHTNode
     {
         public byte[] ID { get; private set; }
@@ -36,13 +30,6 @@ namespace GKNet.DHT
         public long LastAnnouncementTime { get; set; }
         public long LastGetPeersTime { get; set; }
         public long LastUpdateTime { get; set; }
-
-        public string RouteId
-        {
-            get { return EndPoint == null ? string.Empty : EndPoint.ToString(); }
-        }
-
-        public NodeType Type { get; set; }
 
 
         public DHTNode(byte[] id, IPEndPoint endPoint)

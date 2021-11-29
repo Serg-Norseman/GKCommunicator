@@ -23,7 +23,7 @@ using SQLite;
 namespace GKNet.Database
 {
     [Table("Peers")]
-    internal class DBPeer
+    public class DBPeer
     {
         [MaxLength(40), PrimaryKey]
         public string node_id { get; set; }

@@ -53,7 +53,7 @@ namespace GKNet.DHT
         private static readonly TimeSpan fRouteLife = TimeSpan.FromMinutes(15);
 
         private readonly int fMaxNodeSize;
-        private readonly Dictionary<string, DHTNode> fKTable;
+        private readonly Dictionary<EndPoint, DHTNode> fKTable;
         private readonly object fLock;
 
         private long fMinLastTime = DateTime.Now.Ticks;
@@ -63,14 +63,9 @@ namespace GKNet.DHT
             get { return fKTable.Count; }
         }
 
-        public bool IsFull
-        {
-            get { return fKTable.Count >= fMaxNodeSize && fMinLastTime + fRouteLife.Ticks > DateTime.Now.Ticks; }
-        }
-
         public DHTRoutingTable(int nodeSize)
         {
-            fKTable = new Dictionary<string, DHTNode>();
+            fKTable = new Dictionary<EndPoint, DHTNode>();
             fMaxNodeSize = nodeSize;
             fLock = new object();
         }
@@ -89,8 +84,7 @@ namespace GKNet.DHT
 
             if (fKTable.Count >= fMaxNodeSize && fMinLastTime + fRouteLife.Ticks < DateTime.Now.Ticks) {
                 lock (fLock) {
-                    if (fMinLastTime + fRouteLife.Ticks < DateTime.Now.Ticks)
-                        ClearExpireNode();
+                    ClearExpireNode();
                 }
             }
 
@@ -99,15 +93,15 @@ namespace GKNet.DHT
             }
 
             DHTNode existNode;
-            if (fKTable.TryGetValue(node.RouteId, out existNode)) {
+            if (fKTable.TryGetValue(node.EndPoint, out existNode)) {
                 if (Algorithms.ArraysEqual(node.ID, existNode.ID)) {
                     node = existNode;
                 } else {
                     // replace to new
-                    fKTable[node.RouteId] = node;
+                    fKTable[node.EndPoint] = node;
                 }
             } else {
-                fKTable.Add(node.RouteId, node);
+                fKTable.Add(node.EndPoint, node);
             }
 
             node.LastUpdateTime = DateTime.Now.Ticks;
@@ -118,7 +112,7 @@ namespace GKNet.DHT
             var minTime = DateTime.Now.Ticks;
             foreach (var item in fKTable.Values) {
                 if (DateTime.Now.Ticks - item.LastUpdateTime > fRouteLife.Ticks) {
-                    fKTable.Remove(item.RouteId);
+                    fKTable.Remove(item.EndPoint);
                     continue;
                 }
                 minTime = Math.Min(fMinLastTime, item.LastUpdateTime);
@@ -146,10 +140,10 @@ namespace GKNet.DHT
             var tableFull = fKTable.Count >= fMaxNodeSize;
             foreach (var item in values) {
                 if (tableFull && DateTime.Now.Ticks - item.LastUpdateTime > fRouteLife.Ticks) {
-                    fKTable.Remove(item.RouteId);
+                    fKTable.Remove(item.EndPoint);
                     continue;
                 }
-                var distance = DHTHelper.ComputeRouteDistance(item.ID, id);
+                var distance = ComputeRouteDistance(item.ID, id);
                 if (list.Count >= 8) {
                     if (RouteComparer.Instance.Compare(list.Keys[0], distance) >= 0) {
                         continue;
@@ -166,11 +160,7 @@ namespace GKNet.DHT
         public DHTNode FindNode(IPEndPoint endPoint)
         {
             DHTNode node;
-            if (endPoint != null && fKTable.TryGetValue(endPoint.ToString(), out node)) {
-                return node;
-            } else {
-                return null;
-            }
+            return (endPoint != null && fKTable.TryGetValue(endPoint, out node)) ? node : null;
         }
 
         #region IEnumerable
@@ -181,7 +171,7 @@ namespace GKNet.DHT
             var tableFull = fKTable.Count >= fMaxNodeSize;
             foreach (var item in fKTable.Values) {
                 if (tableFull && DateTime.Now.Ticks - item.LastUpdateTime > fRouteLife.Ticks) {
-                    fKTable.Remove(item.RouteId);
+                    fKTable.Remove(item.EndPoint);
                     continue;
                 }
                 minTime = Math.Min(fMinLastTime, item.LastUpdateTime);
@@ -196,5 +186,14 @@ namespace GKNet.DHT
         }
 
         #endregion
+
+        private static byte[] ComputeRouteDistance(byte[] sourceId, byte[] targetId)
+        {
+            var result = new byte[Math.Min(sourceId.Length, targetId.Length)];
+            for (var i = 0; i < result.Length; i++) {
+                result[i] = (byte)(sourceId[i] ^ targetId[i]);
+            }
+            return result;
+        }
     }
 }
