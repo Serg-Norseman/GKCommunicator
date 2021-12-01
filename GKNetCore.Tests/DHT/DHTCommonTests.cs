@@ -18,7 +18,7 @@ namespace GKNet.DHT
             var randId = DHTHelper.GetRandomID();
             var node = new DHTNode(randId, endPoint);
             Assert.IsNotNull(node);
-            Assert.AreEqual(randId, node.ID);
+            Assert.AreEqual(randId, node.Id.Data);
             Assert.AreEqual(endPoint, node.EndPoint);
             Assert.IsNotNullOrEmpty(node.ToString());
 

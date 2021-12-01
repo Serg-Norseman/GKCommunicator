@@ -172,14 +172,16 @@ namespace GKNetUI
 
         private void Authenticate()
         {
-            if (!string.IsNullOrEmpty(fCore.Profile.PasswordHash)) {
+            if (fCore.Profile.IsIdentified) {
                 string password = string.Empty;
-                if (InputDlg.QueryPassword(this, "GKCommunicator", "Password", ref password)) {
+                if (InputDlg.QueryPassword(this, CommunicatorCore.APP_NAME, "Password", ref password)) {
                     if (!fCore.Authenticate(password)) {
-                        MessageBox.Show("Authentication failed", "GKCommunicator", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("Authentication failed", CommunicatorCore.APP_NAME, MessageBoxButtons.OK, MessageBoxIcon.Error);
                         Close();
                     }
                 }
+            } else {
+                ShowProfile(fCore.Profile);
             }
         }
 
@@ -260,7 +262,7 @@ namespace GKNetUI
         private void miAddPeer_Click(object sender, EventArgs e)
         {
             string endpoint = string.Empty;
-            if (InputDlg.QueryText(this, "GKCommunicator", "Peer endpoint", ref endpoint)) {
+            if (InputDlg.QueryText(this, CommunicatorCore.APP_NAME, "Peer endpoint", ref endpoint)) {
                 var peerEndPoint = Utilities.ParseIPEndPoint(endpoint);
                 fCore.UpdatePeer(peerEndPoint);
                 ((IChatForm)this).OnPeersListChanged();
@@ -277,7 +279,7 @@ namespace GKNetUI
                 ((IChatForm)this).OnPeersListChanged();
 
                 if (fCore.STUNInfo.NetType == STUN_NetType.UdpBlocked) {
-                    MessageBox.Show("STUN status: UDP blocked", "GKCommunicator", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("STUN status: UDP blocked", CommunicatorCore.APP_NAME, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 } else {
                     fInitialized = true;
                     lblConnectionStatus.Text = "Network initialized. You can start the connection.";
@@ -319,24 +321,6 @@ namespace GKNetUI
         {
             Invoke((MethodInvoker)delegate {
                 AddChatText(sender, message, Color.Red, Color.Black);
-
-                UpdateStatus();
-            });
-        }
-
-        void IChatForm.OnJoin(Peer member)
-        {
-            Invoke((MethodInvoker)delegate {
-                AddChatText(member, member + " joined the chat.", Color.Maroon, Color.DarkMagenta);
-
-                UpdateStatus();
-            });
-        }
-
-        void IChatForm.OnLeave(Peer member)
-        {
-            Invoke((MethodInvoker)delegate {
-                AddChatText(member, member + " left the chat.", Color.Maroon, Color.DarkMagenta);
 
                 UpdateStatus();
             });

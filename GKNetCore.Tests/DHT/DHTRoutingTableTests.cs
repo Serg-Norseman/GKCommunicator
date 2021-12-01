@@ -17,7 +17,7 @@ namespace GKNet.DHT
             table.Clear();
 
             var randId = DHTHelper.GetRandomID();
-            var nodes = table.FindNodes(randId);
+            var nodes = table.GetClosest(randId);
         }
 
         [Test]
@@ -44,13 +44,13 @@ namespace GKNet.DHT
             var table = new DHTRoutingTable(10);
 
             var randId = DHTHelper.GetRandomID();
-            var nodes = table.FindNodes(randId);
+            var nodes = table.GetClosest(randId);
             Assert.IsNotNull(nodes);
             Assert.AreEqual(0, nodes.Count);
 
             var node = new DHTNode(randId, new IPEndPoint(IPAddress.Any, 0));
             table.UpdateNode(node);
-            nodes = table.FindNodes(randId);
+            nodes = table.GetClosest(randId);
             Assert.IsNotNull(nodes);
             Assert.AreEqual(1, nodes.Count);
         }

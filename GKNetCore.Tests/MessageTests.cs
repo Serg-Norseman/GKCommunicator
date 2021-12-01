@@ -9,7 +9,7 @@ namespace GKNet
         [Test]
         public void Test_ctor()
         {
-            var now = DateTime.Now;
+            var now = DateTime.UtcNow;
             var msg = new Message(now, "test");
             Assert.IsNotNull(msg);
             Assert.AreEqual(now, msg.Timestamp);

@@ -38,6 +38,11 @@ namespace GKNet
 {
     public sealed class CommunicatorCore : BaseObject, ICommunicatorCore, IDHTPeersHolder
     {
+        public const string APP_NAME = "GKCommunicator";
+        public const string APP_DESC = "Distributed, decentralized, serverless, peer-to-peer communication plugin for GEDKeeper.";
+        public const string APP_COPYRIGHT = "Copyright © 2018-2021 by Sergey V. Zhdanovskih";
+        public const string APP_VERSION = "0.10.0.0";
+
         private static readonly byte[] GKNInfoHash = ProtocolHelper.CreateSignInfoKey();
 
         private static readonly TimeSpan PingInterval = TimeSpan.FromMinutes(1);
@@ -324,8 +329,9 @@ namespace GKNet
 
             Peer peer = FindPeer(peerEndPoint);
             if (peer == null) {
-                peer = AddPeer(peerEndPoint);
-                result = true;
+                // ping can come from various sources,
+                // if a node with such an endpoint is not found - then the source is not a peer
+                return false;
             }
 
             peer.PingTries = 0;
@@ -367,7 +373,7 @@ namespace GKNet
                 }
             }
 
-            peer.LastUpdateTime = DateTime.Now;
+            peer.LastUpdateTime = DateTime.UtcNow;
 
             if (!peer.IsLocal) {
                 SendPing(peer, true);
@@ -382,7 +388,7 @@ namespace GKNet
         /// </summary>
         private void SendPing(Peer peer, bool holePunch)
         {
-            DateTime dtNow = DateTime.Now;
+            DateTime dtNow = DateTime.UtcNow;
             if (dtNow - peer.LastPingTime > PingInterval) {
                 if (!holePunch) {
                     fDHTClient.SendPingQuery(peer.EndPoint, true);
@@ -448,7 +454,7 @@ namespace GKNet
 
         private void CheckPeers()
         {
-            DateTime dtNow = DateTime.Now;
+            DateTime dtNow = DateTime.UtcNow;
             bool changed = false;
             bool hasCheckedPeers = false;
 

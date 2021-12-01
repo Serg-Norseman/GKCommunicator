@@ -31,6 +31,10 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GKNetCore\GKNetCore.csproj">
+      <Project>{FEE68CF6-1D60-4E90-AEF3-6AFA4A8C977D}</Project>
+      <Name>GKNetCore</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GKNetUI\GKNetUI.csproj">
       <Project>{1d2c209a-6e19-4fcf-ba08-11b8096fca99}</Project>
       <Name>GKNetUI</Name>

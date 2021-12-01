@@ -47,6 +47,13 @@ namespace GKNet
             set { fPrivateKey = value; }
         }
 
+        public bool IsIdentified
+        {
+            get {
+                return !string.IsNullOrEmpty(fPasswordHash) && !string.IsNullOrEmpty(fPrivateKey) && !string.IsNullOrEmpty(fPublicKey);
+            }
+        }
+
 
         public void Reset()
         {

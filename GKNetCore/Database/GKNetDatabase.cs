@@ -272,7 +272,7 @@ namespace GKNet.Database
                 throw new DatabaseException("Database disconnected");
 
             var record = new DBNode() {
-                node_id = node.ID.ToHexString(),
+                node_id = node.Id.ToHex(),
                 endpoint = node.EndPoint.ToString()
             };
             fConnection.InsertOrReplace(record);

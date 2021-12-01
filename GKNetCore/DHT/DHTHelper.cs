@@ -180,7 +180,7 @@ namespace GKNet.DHT
             ushort port = (ushort)node.EndPoint.Port;
 
             var info = new byte[26];
-            Buffer.BlockCopy(node.ID, 0, info, 0, 20);
+            Buffer.BlockCopy(node.Id.Data, 0, info, 0, 20);
             Buffer.BlockCopy(address.GetAddressBytes(), 0, info, 20, 4);
             info[24] = (byte)((port >> 8) & 0xFF);
             info[25] = (byte)(port & 0xFF);

@@ -19,6 +19,7 @@
  */
 
 using System;
+using GKNet.Database;
 
 namespace GKNet
 {
@@ -46,6 +47,24 @@ namespace GKNet
         {
             Status = MessageStatus.Delivered;
             Timestamp = DateTime.UtcNow;
+        }
+
+        internal DBMessage ToDBRecord()
+        {
+            var result = new DBMessage();
+
+            result.timestamp = Timestamp;
+            result.msg_text = Text;
+            result.flags = (int)Status;
+
+            return result;
+        }
+
+        internal void FromDBRecord(DBMessage dbMsg)
+        {
+            Timestamp = dbMsg.timestamp;
+            Text = dbMsg.msg_text;
+            Status = (MessageStatus)dbMsg.flags;
         }
     }
 }

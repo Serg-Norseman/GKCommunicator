@@ -18,29 +18,68 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System;
 using System.Net;
 
 namespace GKNet.DHT
 {
+    public enum NodeState
+    {
+        Unknown,
+        Good,
+        Questionable,
+        Bad
+    }
+
     public class DHTNode
     {
-        public byte[] ID { get; private set; }
+        public static readonly long NODE_EXPIRY_TIME = TimeSpan.FromMinutes(15).Ticks;
+        public static readonly long NODE_LIFE_TIME = TimeSpan.FromMinutes(3).Ticks;
+
+
+        public DHTNodeId Id { get; private set; }
         public IPEndPoint EndPoint { get; private set; }
 
         public long LastAnnouncementTime { get; set; }
         public long LastGetPeersTime { get; set; }
-        public long LastUpdateTime { get; set; }
+        public long LastUpdateTime { get; private set; }
+
+        public NodeState State
+        {
+            get {
+                if (LastUpdateTime == 0)
+                    return NodeState.Unknown;
+
+                long dtNowTicks = DateTime.UtcNow.Ticks;
+                if (dtNowTicks - LastUpdateTime < NODE_LIFE_TIME) {
+                    return NodeState.Good;
+                } else {
+                    return (dtNowTicks - LastUpdateTime < NODE_EXPIRY_TIME) ? NodeState.Questionable : NodeState.Bad;
+                }
+            }
+        }
 
 
         public DHTNode(byte[] id, IPEndPoint endPoint)
         {
-            ID = id;
+            Id = new DHTNodeId(id);
+            EndPoint = endPoint;
+        }
+
+        public DHTNode(DHTNodeId id, IPEndPoint endPoint)
+        {
+            Id = id;
             EndPoint = endPoint;
         }
 
         public override string ToString()
         {
-            return string.Format("{0} ({1})", EndPoint.ToString(), ID.ToHexString());
+            return string.Format("{0} ({1})", EndPoint.ToString(), Id.ToHex());
+        }
+
+        internal void Update()
+        {
+            LastUpdateTime = DateTime.UtcNow.Ticks;
         }
     }
 }
