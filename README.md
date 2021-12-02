@@ -18,10 +18,11 @@ This is a sub-project of GEDKeeper (application and plugin). The distributed, de
 - [x] Storage of DHT nodes, user and peers profiles
 - [x] Keys generation, simple user identification and authentication
 - [x] RSA traffic encryption
+- [x] Stable peer discovery
 
 ### Planned
 
-- [ ] Stabilize the chat and discovery of peers
+- [ ] Chat with presence statuses and message history
 - [ ] A simple bulletin board of investigations and search of kins (only in the implementation of the plugin)
 
 ### Distant future

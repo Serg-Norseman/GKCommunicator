@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using GKNet;
 
 [assembly: AssemblyTitle("GKNetCore")]
@@ -8,3 +9,4 @@ using GKNet;
 [assembly: AssemblyVersion(CommunicatorCore.APP_VERSION)]
 [assembly: AssemblyCulture("")]
 [assembly: AssemblyConfiguration("")]
+[assembly: InternalsVisibleTo("GKNetCore.Tests")]

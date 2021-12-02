@@ -278,6 +278,8 @@ namespace GKNet
             fConnectionState = ConnectionState.Disconnected;
             fTCPClient.Disconnect();
             fDHTClient.Stop();
+
+            Thread.Sleep(2000);
         }
 
         public bool Authenticate(string password)

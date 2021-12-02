@@ -32,14 +32,16 @@ namespace GKNet.DHT
 {
     public sealed class DHTClient : UDPSocket
     {
-        private static readonly TimeSpan NodesUpdateRange = TimeSpan.FromMinutes(1);
+        private static readonly long NODES_UPDATE_TIME = TimeSpan.FromMinutes(1).Ticks;
         private static readonly TimeSpan GetPeersRange = TimeSpan.FromMinutes(1);
         private static readonly TimeSpan AnnounceLife = TimeSpan.FromMinutes(10); // in question, from articles
+        private static readonly long KTABLE_REFRESH_TIME = TimeSpan.FromMinutes(1).Ticks;
 
         public const int PublicDHTPort = 6881;
         public const int KTableSize = 2048;
 
         private long fLastNodesUpdateTime;
+        private long fLastRefreshTime;
         private byte[] fLocalID;
         private IList<IPAddress> fRouters;
         private byte[] fSearchInfoHash;
@@ -137,7 +139,7 @@ namespace GKNet.DHT
                     lock (fRoutingTable) {
                         // if the routing table has not been updated for more
                         // than a minute - reset routing table
-                        if (nowTicks - fLastNodesUpdateTime > NodesUpdateRange.Ticks) {
+                        if (nowTicks - fLastNodesUpdateTime > NODES_UPDATE_TIME) {
                             fRoutingTable.Clear();
                             fLogger.WriteDebug("DHT reset routing table");
                         }
@@ -153,6 +155,12 @@ namespace GKNet.DHT
                     } else {
                         // search
                         var nodes = fRoutingTable.GetClosest(fSearchInfoHash);
+
+#if DEBUG_DHT_INTERNALS
+                        fLogger.WriteDebug("RoutingTable size: {0}", fRoutingTable.Count);
+                        fLogger.WriteDebug("Closest list size: {0}", nodes.Count);
+#endif
+
                         foreach (var node in nodes) {
                             if (nowTicks - node.LastGetPeersTime > GetPeersRange.Ticks) {
                                 SendGetPeersQuery(node.EndPoint, fSearchInfoHash);
@@ -178,12 +186,19 @@ namespace GKNet.DHT
 
         private void RefreshRoutingTable()
         {
+            long nowTicks = DateTime.UtcNow.Ticks;
+            if (nowTicks - fLastRefreshTime < KTABLE_REFRESH_TIME) {
+                return;
+            }
+
             var routingNodes = fRoutingTable.GetNodes();
             foreach (DHTNode node in routingNodes) {
                 if (node.State != NodeState.Good) {
                     SendPingQuery(node.EndPoint);
                 }
             }
+
+            fLastRefreshTime = nowTicks;
         }
 
         #region Receive messages and data

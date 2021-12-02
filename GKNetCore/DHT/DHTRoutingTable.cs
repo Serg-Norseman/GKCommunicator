@@ -19,32 +19,31 @@
  */
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using BSLib;
 
 namespace GKNet.DHT
 {
     public class DHTRoutingTable
     {
-        private class RouteComparer : IComparer<byte[]>
+        internal class RouteComparer : IComparer<byte[]>
         {
             private RouteComparer() { }
 
             public int Compare(byte[] x, byte[] y)
             {
                 if (x.Length != y.Length) {
-                    return x.Length > y.Length ? -1 : 1;
+                    throw new ArgumentException("Length of the arguments must be equal");
                 }
-                var length = Math.Min(x.Length, y.Length);
-                for (var i = 0; i < length; i++) {
-                    if (x[i] == y[i])
-                        continue;
-                    return x[i] > y[i] ? -1 : 1;
+
+                for (int i = 0; i < x.Length; i++) {
+                    if (x[i] != y[i]) {
+                        return (x[i] > y[i]) ? +1 : -1;
+                    }
                 }
-                return 1;
+
+                return 0;
             }
 
             public static readonly IComparer<byte[]> Instance = new RouteComparer();
@@ -54,11 +53,16 @@ namespace GKNet.DHT
         private readonly Dictionary<EndPoint, DHTNode> fKTable;
         private readonly object fLock;
 
-        private long fMinLastTime = DateTime.UtcNow.Ticks;
-
         public int Count
         {
             get { return fKTable.Count; }
+        }
+
+        public bool IsFull
+        {
+            get {
+                return (fKTable.Count >= fMaxNodeSize);
+            }
         }
 
         public DHTRoutingTable(int nodeSize)
@@ -80,13 +84,11 @@ namespace GKNet.DHT
             if (node == null || node.Id == null)
                 return;
 
-            if (fKTable.Count >= fMaxNodeSize && fMinLastTime + DHTNode.NODE_EXPIRY_TIME < DateTime.UtcNow.Ticks) {
-                lock (fLock) {
-                    ClearExpireNode();
-                }
+            if (IsFull) {
+                ClearExpireNode();
             }
 
-            if (fKTable.Count >= fMaxNodeSize) {
+            if (IsFull) {
                 return;
             }
 
@@ -107,15 +109,14 @@ namespace GKNet.DHT
 
         private void ClearExpireNode()
         {
-            var minTime = DateTime.UtcNow.Ticks;
-            foreach (var node in fKTable.Values) {
-                if (node.State == NodeState.Bad) {
-                    fKTable.Remove(node.EndPoint);
-                    continue;
+            lock (fLock) {
+                foreach (var node in fKTable.Values) {
+                    if (node.State == NodeState.Bad) {
+                        fKTable.Remove(node.EndPoint);
+                        continue;
+                    }
                 }
-                minTime = Math.Min(fMinLastTime, node.LastUpdateTime);
             }
-            fMinLastTime = Math.Max(minTime, fMinLastTime);
         }
 
         public void Clear()
@@ -134,25 +135,32 @@ namespace GKNet.DHT
                 return values;
 
             var list = new SortedList<byte[], DHTNode>(8, RouteComparer.Instance);
-            var minTime = DateTime.MaxValue.Ticks;
-            var tableFull = fKTable.Count >= fMaxNodeSize;
+
             foreach (var node in values) {
-                if (tableFull && node.State == NodeState.Bad) {
+                if (node.State == NodeState.Bad) {
                     fKTable.Remove(node.EndPoint);
                     continue;
                 }
 
                 var distance = ComputeRouteDistance(node.Id.Data, target);
+                if (list.ContainsKey(distance)) {
+                    // why can there be duplicates in the list?
+                    // because the table is a dictionary by EndPoint, not NodeId?
+                    continue;
+                }
+
                 if (list.Count >= 8) {
-                    if (RouteComparer.Instance.Compare(list.Keys[0], distance) >= 0) {
+                    // if distance is greater than or equal to maxdistance from list then continue
+                    int lastIndex = list.Count - 1;
+                    if (RouteComparer.Instance.Compare(distance, list.Keys[lastIndex]) >= 0) {
                         continue;
                     }
-                    list.RemoveAt(0);
+                    list.RemoveAt(lastIndex);
                 }
+
                 list.Add(distance, node);
-                minTime = Math.Min(fMinLastTime, node.LastUpdateTime);
             }
-            fMinLastTime = Math.Max(minTime, fMinLastTime);
+
             return list.Values;
         }
 
@@ -169,7 +177,7 @@ namespace GKNet.DHT
             }
         }
 
-        private static byte[] ComputeRouteDistance(byte[] sourceId, byte[] targetId)
+        internal static byte[] ComputeRouteDistance(byte[] sourceId, byte[] targetId)
         {
             var result = new byte[Math.Min(sourceId.Length, targetId.Length)];
             for (var i = 0; i < result.Length; i++) {
