@@ -107,6 +107,7 @@
     <EmbeddedResource Include="Resources\Images\btn_away.png" />
     <EmbeddedResource Include="Resources\Images\btn_busy.png" />
     <EmbeddedResource Include="Resources\Images\btn_offline.png" />
+    <EmbeddedResource Include="Resources\Images\btn_invisible.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

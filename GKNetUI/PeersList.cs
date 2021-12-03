@@ -19,7 +19,6 @@
  */
 
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using GKNet;
@@ -28,8 +27,6 @@ namespace GKNetUI
 {
     public class PeersList : ListBox
     {
-        private Dictionary<PresenceStatus, Bitmap> fStatusIcons;
-
         public PeersList()
         {
             DrawMode = DrawMode.OwnerDrawVariable;
@@ -37,14 +34,6 @@ namespace GKNetUI
             SetStyle(ControlStyles.AllPaintingInWmPaint, true);
             SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
             UpdateStyles();
-
-            fStatusIcons = new Dictionary<PresenceStatus, Bitmap>();
-            fStatusIcons[PresenceStatus.Unknown] = null;
-            fStatusIcons[PresenceStatus.Offline] = UIHelper.LoadResourceImage("btn_offline");
-            fStatusIcons[PresenceStatus.Online] = UIHelper.LoadResourceImage("btn_available");
-            fStatusIcons[PresenceStatus.Away] = UIHelper.LoadResourceImage("btn_away");
-            fStatusIcons[PresenceStatus.Busy] = UIHelper.LoadResourceImage("btn_busy");
-            fStatusIcons[PresenceStatus.Invisible] = null;
         }
 
         protected override void OnMeasureItem(MeasureItemEventArgs e)
@@ -87,7 +76,7 @@ namespace GKNetUI
 
             if (peer.State == PeerState.Identified) {
                 var status = peer.Presence;
-                var icon = fStatusIcons[status];
+                var icon = UIHelper.GetPresenceStatusImage(status);
                 if (icon != null) {
                     e.Graphics.DrawImage(icon, rt.Right - icon.Width - 2, rt.Top + 2);
                     //fnt = new Font(fnt, FontStyle.Bold);

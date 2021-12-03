@@ -51,7 +51,14 @@ namespace GKNetUI
         {
             InitializeComponent();
 
+            UIHelper.InitResources();
+
             Closing += ChatForm_Closing;
+
+            for (var ps = PresenceStatus.Offline; ps <= PresenceStatus.Invisible; ps++) {
+                var menuItem = UIHelper.AddToolStripItem(menuPresenceStatuses, ps.ToString(), ps, miPresenceStatus_Click);
+                menuItem.Image = UIHelper.GetPresenceStatusImage(ps);
+            }
 
             if (File.Exists(ProtocolHelper.LOG_FILE)) {
                 File.Delete(ProtocolHelper.LOG_FILE);
@@ -64,7 +71,21 @@ namespace GKNetUI
             fLogger = LogManager.GetLogger(ProtocolHelper.LOG_FILE, ProtocolHelper.LOG_LEVEL, "ChatForm");
             fCore = new CommunicatorCore(this);
 
+            UIHelper.SetMenuItemTag(menuPresenceStatuses, fCore.LocalPeer.Presence);
+
             UpdateStatus();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing) {
+                UIHelper.DoneResources();
+
+                if (components != null) {
+                    components.Dispose();
+                }
+            }
+            base.Dispose(disposing);
         }
 
         #region Private methods
@@ -267,6 +288,14 @@ namespace GKNetUI
                 fCore.UpdatePeer(peerEndPoint);
                 ((IChatForm)this).OnPeersListChanged();
             }
+        }
+
+        private void miPresenceStatus_Click(object sender, EventArgs e)
+        {
+            var ps = UIHelper.GetMenuItemTag<PresenceStatus>(menuPresenceStatuses, sender);
+            tbPresenceStatus.Image = UIHelper.GetPresenceStatusImage(ps);
+            tbPresenceStatus.Text = ps.ToString();
+            fCore.LocalPeer.Presence = ps;
         }
 
         #endregion
