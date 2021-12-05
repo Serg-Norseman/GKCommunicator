@@ -27,7 +27,7 @@ namespace GKNet.DHT
     {
         public BDictionary Data { get; private set; }
 
-        public MessageEventArgs(IPEndPoint peerEndPoint, byte[] nodeId, BDictionary data) : base(peerEndPoint, nodeId)
+        public MessageEventArgs(IPEndPoint peerEndPoint, DHTId nodeId, BDictionary data) : base(peerEndPoint, nodeId)
         {
             Data = data;
         }

@@ -27,28 +27,6 @@ namespace GKNet.DHT
 {
     public class DHTRoutingTable
     {
-        internal class RouteComparer : IComparer<byte[]>
-        {
-            private RouteComparer() { }
-
-            public int Compare(byte[] x, byte[] y)
-            {
-                if (x.Length != y.Length) {
-                    throw new ArgumentException("Length of the arguments must be equal");
-                }
-
-                for (int i = 0; i < x.Length; i++) {
-                    if (x[i] != y[i]) {
-                        return (x[i] > y[i]) ? +1 : -1;
-                    }
-                }
-
-                return 0;
-            }
-
-            public static readonly IComparer<byte[]> Instance = new RouteComparer();
-        }
-
         private readonly int fMaxNodeSize;
         private readonly Dictionary<EndPoint, DHTNode> fKTable;
         private readonly object fLock;
@@ -135,7 +113,7 @@ namespace GKNet.DHT
             if (values.Length <= 8)
                 return values;
 
-            var list = new SortedList<byte[], DHTNode>(bucketSize, RouteComparer.Instance);
+            var list = new SortedList<DHTId, DHTNode>(bucketSize);
 
             foreach (var node in values) {
                 if (node.State == NodeState.Bad) {
@@ -153,7 +131,7 @@ namespace GKNet.DHT
                 if (list.Count >= bucketSize) {
                     // if distance is greater than or equal to maxdistance from list then continue
                     int lastIndex = list.Count - 1;
-                    if (RouteComparer.Instance.Compare(distance, list.Keys[lastIndex]) >= 0) {
+                    if (distance.CompareTo(list.Keys[lastIndex]) >= 0) {
                         continue;
                     }
                     list.RemoveAt(lastIndex);
@@ -178,13 +156,13 @@ namespace GKNet.DHT
             }
         }
 
-        internal static byte[] ComputeRouteDistance(byte[] sourceId, byte[] targetId)
+        internal static DHTId ComputeRouteDistance(byte[] sourceId, byte[] targetId)
         {
             var result = new byte[Math.Min(sourceId.Length, targetId.Length)];
             for (var i = 0; i < result.Length; i++) {
                 result[i] = (byte)(sourceId[i] ^ targetId[i]);
             }
-            return result;
+            return new DHTId(result);
         }
     }
 }

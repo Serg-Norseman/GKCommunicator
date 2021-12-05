@@ -61,7 +61,6 @@
     <Compile Include="CommunicatorCore.cs" />
     <Compile Include="ConnectivitySettings.cs" />
     <Compile Include="Database\GKNetDatabase.cs" />
-    <Compile Include="DHT\DHTInfoHash.cs" />
     <Compile Include="DHT\DHTTransactions.cs" />
     <Compile Include="DHT\IDHTPeer.cs" />
     <Compile Include="DHT\IDHTPeersHolder.cs" />
@@ -72,11 +71,10 @@
     <Compile Include="DHT\Messages\DHTResponseMessage.cs" />
     <Compile Include="DHT\Events\PeerEventArgs.cs" />
     <Compile Include="DHT\Events\PeerPingedEventArgs.cs" />
-    <Compile Include="DHT\DHTNodeId.cs" />
+    <Compile Include="DHT\DHTId.cs" />
     <Compile Include="DHT\UDPSocket.cs" />
     <Compile Include="IChatForm.cs" />
     <Compile Include="DHT\DHTClient.cs" />
-    <Compile Include="DHT\DHTHelper.cs" />
     <Compile Include="DHT\DHTNode.cs" />
     <Compile Include="DHT\DHTRoutingTable.cs" />
     <Compile Include="DHT\Events\PeersFoundEventArgs.cs" />

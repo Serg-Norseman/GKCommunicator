@@ -173,7 +173,7 @@ namespace GKNet.DHT
         }
 
 
-        public static DHTMessage CreatePingQuery(BString transactionID, byte[] nodeId)
+        public static DHTMessage CreatePingQuery(BString transactionID, DHTId nodeId)
         {
             BDictionary sendData = new BDictionary();
 
@@ -182,13 +182,13 @@ namespace GKNet.DHT
             sendData.Add("q", "ping");
 
             var args = new BDictionary();
-            args.Add("id", new BString(nodeId));
+            args.Add("id", nodeId.ToBencodedString());
             sendData.Add("a", args);
 
             return new DHTMessage(MessageType.Query, QueryType.Ping, sendData);
         }
 
-        public static DHTMessage CreatePingResponse(BString transactionID, byte[] nodeId)
+        public static DHTMessage CreatePingResponse(BString transactionID, DHTId nodeId)
         {
             BDictionary sendData = new BDictionary();
 
@@ -196,13 +196,13 @@ namespace GKNet.DHT
             sendData.Add("t", transactionID);
 
             var r = new BDictionary();
-            r.Add("id", new BString(nodeId));
+            r.Add("id", nodeId.ToBencodedString());
             sendData.Add("r", r);
 
             return new DHTMessage(MessageType.Response, QueryType.None, sendData);
         }
 
-        public static DHTMessage CreateFindNodeQuery(BString transactionID, byte[] nodeId)
+        public static DHTMessage CreateFindNodeQuery(BString transactionID, DHTId nodeId, DHTId targetNodeId)
         {
             BDictionary sendData = new BDictionary();
 
@@ -217,17 +217,16 @@ namespace GKNet.DHT
             #endif
 
             var args = new BDictionary();
-            args.Add("id", new BString(nodeId));
-            args.Add("target", new BString(DHTHelper.GetRandomHashID()));
+            args.Add("id", nodeId.ToBencodedString());
+            args.Add("target", targetNodeId.ToBencodedString());
             sendData.Add("a", args);
 
             return new DHTMessage(MessageType.Query, QueryType.FindNode, sendData);
         }
 
-        public static DHTMessage CreateFindNodeResponse(BString transactionID,
-            byte[] nodeId, IList<DHTNode> nodesList)
+        public static DHTMessage CreateFindNodeResponse(BString transactionID, DHTId nodeId, IList<DHTNode> nodesList)
         {
-            var nodes = new BString(DHTHelper.CompactNodes(nodesList));
+            var nodes = new BString(DHTNode.CompactNodes(nodesList));
 
             BDictionary sendData = new BDictionary();
 
@@ -235,14 +234,14 @@ namespace GKNet.DHT
             sendData.Add("t", transactionID);
 
             var r = new BDictionary();
-            r.Add("id", new BString(nodeId));
+            r.Add("id", nodeId.ToBencodedString());
             r.Add("nodes", nodes);
             sendData.Add("r", r);
 
             return new DHTMessage(MessageType.Response, QueryType.None, sendData);
         }
 
-        public static DHTMessage CreateAnnouncePeerQuery(BString transactionID, byte[] nodeId, byte[] infoHash,
+        public static DHTMessage CreateAnnouncePeerQuery(BString transactionID, DHTId nodeId, DHTId infoHash,
             byte implied_port, int port, BString token)
         {
             BDictionary sendData = new BDictionary();
@@ -252,9 +251,9 @@ namespace GKNet.DHT
             sendData.Add("q", "announce_peer");
 
             var args = new BDictionary();
-            args.Add("id", new BString(nodeId));
+            args.Add("id", nodeId.ToBencodedString());
             args.Add("implied_port", new BNumber(implied_port));
-            args.Add("info_hash", new BString(infoHash));
+            args.Add("info_hash", infoHash.ToBencodedString());
             args.Add("port", new BNumber(port));
             args.Add("token", token);
             sendData.Add("a", args);
@@ -262,10 +261,9 @@ namespace GKNet.DHT
             return new DHTMessage(MessageType.Query, QueryType.AnnouncePeer, sendData);
         }
 
-        public static DHTMessage CreateAnnouncePeerResponse(BString transactionID, byte[] nodeId,
-            IList<DHTNode> nodesList)
+        public static DHTMessage CreateAnnouncePeerResponse(BString transactionID, DHTId nodeId, IList<DHTNode> nodesList)
         {
-            var nodes = new BString(DHTHelper.CompactNodes(nodesList));
+            var nodes = new BString(DHTNode.CompactNodes(nodesList));
 
             BDictionary sendData = new BDictionary();
 
@@ -273,14 +271,14 @@ namespace GKNet.DHT
             sendData.Add("t", transactionID);
 
             var r = new BDictionary();
-            r.Add("id", new BString(nodeId));
+            r.Add("id", nodeId.ToBencodedString());
             r.Add("nodes", nodes);
             sendData.Add("r", r);
 
             return new DHTMessage(MessageType.Response, QueryType.None, sendData);
         }
 
-        public static DHTMessage CreateGetPeersQuery(BString transactionID, byte[] nodeId, byte[] infoHash)
+        public static DHTMessage CreateGetPeersQuery(BString transactionID, DHTId nodeId, DHTId infoHash)
         {
             BDictionary sendData = new BDictionary();
 
@@ -295,19 +293,19 @@ namespace GKNet.DHT
             #endif
 
             var args = new BDictionary();
-            args.Add("id", new BString(nodeId));
-            args.Add("info_hash", new BString(infoHash));
+            args.Add("id", nodeId.ToBencodedString());
+            args.Add("info_hash", infoHash.ToBencodedString());
             sendData.Add("a", args);
 
             return new DHTMessage(MessageType.Query, QueryType.GetPeers, sendData);
         }
 
         public static DHTMessage CreateGetPeersResponse(
-            BString transactionID, byte[] nodeId, byte[] infoHash,
+            BString transactionID, DHTId nodeId, DHTId infoHash,
             IList<IDHTPeer> peersList, IList<DHTNode> nodesList)
         {
-            BList values = DHTHelper.CompactPeers(peersList);
-            var nodes = new BString(DHTHelper.CompactNodes(nodesList));
+            BList values = DHTNode.CompactPeers(peersList);
+            var nodes = new BString(DHTNode.CompactNodes(nodesList));
 
             BDictionary sendData = new BDictionary();
 
@@ -315,8 +313,8 @@ namespace GKNet.DHT
             sendData.Add("y", "r");
 
             var r = new BDictionary();
-            r.Add("id", new BString(nodeId));
-            r.Add("token", new BString(infoHash.Take(2)));
+            r.Add("id", nodeId.ToBencodedString());
+            r.Add("token", new BString(infoHash.Data.SubArray(0, 2)));
             if (values != null) {
                 r.Add("values", values);
             }

@@ -41,7 +41,7 @@ namespace GKNet
     {
         public IPEndPoint EndPoint { get; private set; }
 
-        public byte[] ID
+        public DHTId ID
         {
             get { return Profile.NodeId; }
             set { Profile.NodeId = value; }

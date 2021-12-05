@@ -20,6 +20,7 @@
 
 using System;
 using BencodeNET;
+using GKNet.DHT;
 
 namespace GKNet
 {
@@ -29,7 +30,7 @@ namespace GKNet
 
         protected string fPublicKey;
 
-        public byte[] NodeId { get; set; }
+        public DHTId NodeId { get; set; }
 
         public string UserName { get; set; }
         public string Country { get; set; }

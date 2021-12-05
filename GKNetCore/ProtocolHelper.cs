@@ -19,6 +19,7 @@
  */
 
 using System;
+using System.Security.Cryptography;
 using BencodeNET;
 using GKNet.DHT;
 
@@ -41,15 +42,20 @@ namespace GKNet
         // MTU — (Max IP Header Size) — (UDP Header Size) = 1500 — 60 — 8 = 1432
         public const int MAX_UDP_DATA_SIZE_UF = 1432;
 
+        private static SHA1 sha1 = new SHA1CryptoServiceProvider();
 
-        public static byte[] CreateSignInfoKey()
+
+        public static DHTId CreateSignInfoKey()
         {
             BDictionary subnetKey = new BDictionary();
             subnetKey.Add("info", ProtocolHelper.NETWORK_SIGN);
-            return DHTHelper.CalculateInfoHashBytes(subnetKey);
+
+            lock (sha1) {
+                return new DHTId(sha1.ComputeHash(subnetKey.EncodeAsBytes()));
+            }
         }
 
-        public static BDictionary CreateHandshakeQuery(BString transactionID, byte[] nodeId)
+        public static BDictionary CreateHandshakeQuery(BString transactionID, DHTId nodeId)
         {
             var data = new BDictionary();
             data.Add("t", transactionID);
@@ -57,7 +63,7 @@ namespace GKNet
             data.Add("q", "handshake");
 
             var args = new BDictionary();
-            args.Add("id", new BString(nodeId));
+            args.Add("id", nodeId.ToBencodedString());
             args.Add("app", "GEDKeeper Communicator");
             args.Add("ver", "2.14.0");
             data.Add("a", args);
@@ -65,7 +71,7 @@ namespace GKNet
             return data;
         }
 
-        public static BDictionary CreateHandshakeResponse(BString transactionID, byte[] nodeId)
+        public static BDictionary CreateHandshakeResponse(BString transactionID, DHTId nodeId)
         {
             var data = new BDictionary();
             data.Add("t", transactionID);
@@ -73,7 +79,7 @@ namespace GKNet
 
             var r = new BDictionary();
             r.Add("q", "handshake");
-            r.Add("id", new BString(nodeId));
+            r.Add("id", nodeId.ToBencodedString());
             r.Add("app", "GEDKeeper Communicator");
             r.Add("ver", "2.14.0");
             data.Add("r", r);
@@ -81,7 +87,7 @@ namespace GKNet
             return data;
         }
 
-        public static BDictionary CreateChatMessage(BString transactionID, byte[] nodeId, string message, bool encrypted)
+        public static BDictionary CreateChatMessage(BString transactionID, DHTId nodeId, string message, bool encrypted)
         {
             var data = new BDictionary();
             data.Add("t", transactionID);
@@ -89,7 +95,7 @@ namespace GKNet
             data.Add("q", "chat");
 
             var args = new BDictionary();
-            args.Add("id", new BString(nodeId));
+            args.Add("id", nodeId.ToBencodedString());
             args.Add("msg", message);
             args.Add("enc", Convert.ToInt32(encrypted));
             data.Add("a", args);
@@ -99,7 +105,7 @@ namespace GKNet
             return data;
         }
 
-        public static BDictionary CreateGetPeerInfoQuery(BString transactionID, byte[] nodeId)
+        public static BDictionary CreateGetPeerInfoQuery(BString transactionID, DHTId nodeId)
         {
             var data = new BDictionary();
             data.Add("t", transactionID);
@@ -107,13 +113,13 @@ namespace GKNet
             data.Add("q", "get_peer_info");
 
             var args = new BDictionary();
-            args.Add("id", new BString(nodeId));
+            args.Add("id", nodeId.ToBencodedString());
             data.Add("a", args);
 
             return data;
         }
 
-        public static BDictionary CreateGetPeerInfoResponse(BString transactionID, byte[] nodeId, UserProfile peerProfile)
+        public static BDictionary CreateGetPeerInfoResponse(BString transactionID, DHTId nodeId, UserProfile peerProfile)
         {
             var data = new BDictionary();
             data.Add("t", transactionID);
@@ -121,7 +127,7 @@ namespace GKNet
 
             var r = new BDictionary();
             r.Add("q", "get_peer_info");
-            r.Add("id", new BString(nodeId));
+            r.Add("id", nodeId.ToBencodedString());
             peerProfile.Save(r);
             data.Add("r", r);
 

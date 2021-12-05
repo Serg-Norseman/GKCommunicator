@@ -9,9 +9,9 @@ namespace GKNet.DHT
     {
         private class DHTPeersHolder : IDHTPeersHolder
         {
-            public byte[] ClientNodeId
+            public DHTId ClientNodeId
             {
-                get { return DHTHelper.GetRandomID(); }
+                get { return DHTId.CreateRandom(); }
             }
 
             public IList<IDHTPeer> GetPeersList()

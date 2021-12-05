@@ -15,10 +15,10 @@ namespace GKNet.DHT
         public void Test_DHTNode()
         {
             var endPoint = new IPEndPoint(IPAddress.Any, 0);
-            var randId = DHTHelper.GetRandomID();
+            var randId = DHTId.CreateRandom();
             var node = new DHTNode(randId, endPoint);
             Assert.IsNotNull(node);
-            Assert.AreEqual(randId, node.Id.Data);
+            Assert.AreEqual(randId.Data, node.Id.Data);
             Assert.AreEqual(endPoint, node.EndPoint);
             Assert.IsNotNullOrEmpty(node.ToString());
 
@@ -30,7 +30,7 @@ namespace GKNet.DHT
         public void Test_MessageEventArgs()
         {
             IPEndPoint peerEndPoint = new IPEndPoint(IPAddress.Any, 1111);
-            byte[] nodeId = DHTHelper.GetRandomID();
+            var nodeId = DHTId.CreateRandom();
             BDictionary data = new BDictionary();
             var evt = new MessageEventArgs(peerEndPoint, nodeId, data);
             Assert.IsNotNull(evt);
@@ -43,7 +43,7 @@ namespace GKNet.DHT
         public void Test_PeerPingedEventArgs()
         {
             IPEndPoint peerEndPoint = new IPEndPoint(IPAddress.Any, 1111);
-            byte[] nodeId = DHTHelper.GetRandomID();
+            var nodeId = DHTId.CreateRandom();
             var evt = new PeerPingedEventArgs(peerEndPoint, nodeId);
             Assert.IsNotNull(evt);
             Assert.AreEqual(peerEndPoint, evt.EndPoint);

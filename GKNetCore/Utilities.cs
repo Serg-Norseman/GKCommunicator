@@ -108,16 +108,11 @@ namespace GKNet
             return sb.ToString();
         }
 
-        public static byte[] FromHex(string data)
+        public static T[] SubArray<T>(this T[] data, int index, int length)
         {
-            if (data == null || data.Length % 2 != 0)
-                throw new ArgumentException("The string must contain an even number of characters");
-
-            byte[] hash = new byte[data.Length / 2];
-            for (int i = 0; i < hash.Length; i++)
-                hash[i] = byte.Parse(data.Substring(i * 2, 2), NumberStyles.HexNumber);
-
-            return hash;
+            T[] result = new T[length];
+            Buffer.BlockCopy(data, index, result, 0, length);
+            return result;
         }
 
         public static string GetAppPath()

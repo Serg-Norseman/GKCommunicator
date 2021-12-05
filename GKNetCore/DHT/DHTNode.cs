@@ -19,7 +19,9 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Net;
+using BencodeNET;
 
 namespace GKNet.DHT
 {
@@ -37,7 +39,7 @@ namespace GKNet.DHT
         public static readonly long NODE_LIFE_TIME = TimeSpan.FromMinutes(3).Ticks;
 
 
-        public DHTNodeId Id { get; private set; }
+        public DHTId Id { get; private set; }
         public IPEndPoint EndPoint { get; private set; }
 
         public long LastAnnouncementTime { get; set; }
@@ -62,11 +64,11 @@ namespace GKNet.DHT
 
         public DHTNode(byte[] id, IPEndPoint endPoint)
         {
-            Id = new DHTNodeId(id);
+            Id = new DHTId(id);
             EndPoint = endPoint;
         }
 
-        public DHTNode(DHTNodeId id, IPEndPoint endPoint)
+        public DHTNode(DHTId id, IPEndPoint endPoint)
         {
             Id = id;
             EndPoint = endPoint;
@@ -81,5 +83,166 @@ namespace GKNet.DHT
         {
             LastUpdateTime = DateTime.UtcNow.Ticks;
         }
+
+
+        #region Compact and parse functions
+
+        private const int CompactNodeRecordLengthIP4 = 26; // 20 + 6
+        private const int CompactNodeRecordLengthIP6 = 38; // 20 + 18
+
+#if !IP6
+        private const int CompactNodeRecordLength = CompactNodeRecordLengthIP4;
+#else
+        private const int CompactNodeRecordLength = CompactNodeRecordLengthIP6;
+#endif
+
+        public static List<IPEndPoint> ParseValuesList(BList data)
+        {
+            var result = new List<IPEndPoint>();
+
+            foreach (var item in data) {
+                var str = item as BString;
+                var itemBytes = str.Value;
+
+                if (itemBytes.Length == 6) {
+                    var ip = new IPAddress(itemBytes.SubArray(0, 4));
+
+                    var b = itemBytes[4];
+                    itemBytes[4] = itemBytes[5];
+                    itemBytes[5] = b;
+
+                    var port = BitConverter.ToUInt16(itemBytes, 4);
+                    var xnode = new IPEndPoint(Utilities.PrepareAddress(ip), port);
+                    result.Add(xnode);
+                } else if (itemBytes.Length == 18) {
+                    var ip = new IPAddress(itemBytes.SubArray(0, 16));
+
+                    var b = itemBytes[16];
+                    itemBytes[16] = itemBytes[17];
+                    itemBytes[17] = b;
+
+                    var port = BitConverter.ToUInt16(itemBytes, 16);
+                    var xnode = new IPEndPoint(Utilities.PrepareAddress(ip), port);
+                    result.Add(xnode);
+                }
+            }
+
+            return result;
+        }
+
+        public static List<DHTNode> ParseNodesList(BString nodesStr)
+        {
+            List<DHTNode> result = null;
+
+            if (nodesStr != null && nodesStr.Length != 0) {
+                byte[] data = nodesStr.Value;
+
+                if (data.Length % CompactNodeRecordLengthIP4 == 0) {
+                    result = ParseNodesListIP4(data);
+                } else if (data.Length % CompactNodeRecordLengthIP6 == 0) {
+                    result = ParseNodesListIP6(data);
+                }
+            }
+
+            return result;
+        }
+
+        private static List<DHTNode> ParseNodesListIP4(byte[] data)
+        {
+            var result = new List<DHTNode>();
+            for (int i = 0; i < data.Length; i += 26) {
+                var dd = data.SubArray(i, 26);
+
+                var b = dd[24];
+                dd[24] = dd[25];
+                dd[25] = b;
+                var id = dd.SubArray(0, 20);
+                var ip = new IPAddress(dd.SubArray(20, 4));
+                var port = BitConverter.ToUInt16(dd, 24);
+                var tt = new DHTNode(id, new IPEndPoint(Utilities.PrepareAddress(ip), port));
+                result.Add(tt);
+            }
+            return result;
+        }
+
+        private static List<DHTNode> ParseNodesListIP6(byte[] data)
+        {
+            var result = new List<DHTNode>();
+            for (int i = 0; i < data.Length; i += 38) {
+                var dd = data.SubArray(i, 38);
+
+                var b = dd[36];
+                dd[36] = dd[37];
+                dd[37] = b;
+                var id = dd.SubArray(0, 20);
+                var ip = new IPAddress(dd.SubArray(20, 16));
+                var port = BitConverter.ToUInt16(dd, 36);
+                var tt = new DHTNode(id, new IPEndPoint(Utilities.PrepareAddress(ip), port));
+                result.Add(tt);
+            }
+            return result;
+        }
+
+        public static DHTId GetNeighbor(byte[] target, byte[] nid)
+        {
+            var result = new byte[20];
+            for (int i = 0; i < 10; i++)
+                result[i] = target[i];
+            for (int i = 10; i < 20; i++)
+                result[i] = nid[i];
+            return new DHTId(result);
+        }
+
+        // TODO: ATTENTION, the quantity is not more than according to specification!
+        public static BList CompactPeers(IList<IDHTPeer> peersList)
+        {
+            BList values = null;
+            if (peersList != null && peersList.Count > 0) {
+                values = new BList();
+                foreach (var peer in peersList) {
+                    values.Add(new BString(CompactEndPoint(peer.EndPoint)));
+                }
+            }
+            return values;
+        }
+
+        public static byte[] CompactNodes(IList<DHTNode> nodesList)
+        {
+            int nodesCount = nodesList.Count;
+            byte[] nodesArray = new byte[nodesCount * 26];
+            for (int i = 0; i < nodesCount; i++) {
+                var node = nodesList[i];
+                var compact = CompactNode(node);
+                Buffer.BlockCopy(compact, 0, nodesArray, i * 26, 26);
+            }
+            return nodesArray;
+        }
+
+        public static byte[] CompactNode(DHTNode node)
+        {
+            IPAddress address = node.EndPoint.Address;
+            ushort port = (ushort)node.EndPoint.Port;
+
+            var info = new byte[26];
+            Buffer.BlockCopy(node.Id.Data, 0, info, 0, 20);
+            Buffer.BlockCopy(address.GetAddressBytes(), 0, info, 20, 4);
+            info[24] = (byte)((port >> 8) & 0xFF);
+            info[25] = (byte)(port & 0xFF);
+            return info;
+        }
+
+        public static byte[] CompactEndPoint(IPEndPoint endPoint)
+        {
+            IPAddress address = endPoint.Address;
+            ushort port = (ushort)endPoint.Port;
+
+            var info = new byte[6];
+            Buffer.BlockCopy(address.GetAddressBytes(), 0, info, 0, 4);
+            info[4] = (byte)((port >> 8) & 0xFF);
+            info[5] = (byte)(port & 0xFF);
+            return info;
+        }
+
+        #endregion
     }
 }

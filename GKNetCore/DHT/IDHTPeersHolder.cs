@@ -24,7 +24,7 @@ namespace GKNet.DHT
 {
     public interface IDHTPeersHolder
     {
-        byte[] ClientNodeId { get; }
+        DHTId ClientNodeId { get; }
 
         IList<IDHTPeer> GetPeersList();
 

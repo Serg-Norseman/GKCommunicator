@@ -42,9 +42,9 @@ namespace GKNet.DHT
 
         private long fLastNodesUpdateTime;
         private long fLastRefreshTime;
-        private byte[] fLocalID;
+        private DHTId fLocalID;
         private IList<IPAddress> fRouters;
-        private byte[] fSearchInfoHash;
+        private DHTId fSearchInfoHash;
 
         private readonly string fClientVer;
         private readonly ILogger fLogger;
@@ -52,7 +52,7 @@ namespace GKNet.DHT
         private readonly DHTRoutingTable fRoutingTable;
         private readonly DHTTransactions fTransactions;
 
-        public byte[] LocalID
+        public DHTId LocalID
         {
             get { return fLocalID; }
         }
@@ -86,7 +86,7 @@ namespace GKNet.DHT
             base.Dispose(disposing);
         }
 
-        public void Start(byte[] searchInfoHash)
+        public void Start(DHTId searchInfoHash)
         {
             Open();
             Bootstrap();
@@ -125,9 +125,9 @@ namespace GKNet.DHT
             }
         }
 
-        private void SearchNodes(byte[] searchInfoHash)
+        private void SearchNodes(DHTId searchInfoHash)
         {
-            fLogger.WriteDebug("Search for: {0}", searchInfoHash.ToHexString());
+            fLogger.WriteDebug("Search for: {0}", searchInfoHash.ToHex());
 
             fSearchInfoHash = searchInfoHash;
 
@@ -155,7 +155,7 @@ namespace GKNet.DHT
                     } else {
                         // search
                         // bucket = 32 - significantly increases the speed and reliability of peers discovery
-                        var nodes = fRoutingTable.GetClosest(fSearchInfoHash, 32);
+                        var nodes = fRoutingTable.GetClosest(fSearchInfoHash.Data, 32);
 
 #if DEBUG_DHT_INTERNALS
                         fLogger.WriteDebug("RoutingTable size: {0}", fRoutingTable.Count);
@@ -179,16 +179,12 @@ namespace GKNet.DHT
 
         public void FindUnkPeer(IDHTPeer peer)
         {
-            if (peer == null)
+            if (peer == null || peer.ID == null)
                 return;
 
-            var nodeId = peer.ID;
-            if (nodeId == null || nodeId.Length == 0)
-                return;
-
-            var nodes = fRoutingTable.GetClosest(fSearchInfoHash);
+            var nodes = fRoutingTable.GetClosest(fSearchInfoHash.Data);
             foreach (var node in nodes) {
-                SendFindNodeQuery(node.EndPoint, nodeId, false);
+                SendFindNodeQuery(node.EndPoint, peer.ID, false);
             }
         }
 
@@ -341,7 +337,7 @@ namespace GKNet.DHT
 #endif
 
             if (PeerPinged != null) {
-                PeerPinged(this, new PeerPingedEventArgs(remoteNode.EndPoint, remoteNode.Id.Data));
+                PeerPinged(this, new PeerPingedEventArgs(remoteNode.EndPoint, remoteNode.Id));
             }
         }
 
@@ -372,7 +368,7 @@ namespace GKNet.DHT
         private void OnRecvCustomResponse(DHTNode remoteNode, BDictionary data)
         {
             if (ResponseReceived != null) {
-                ResponseReceived(this, new MessageEventArgs(remoteNode.EndPoint, remoteNode.Id.Data, data));
+                ResponseReceived(this, new MessageEventArgs(remoteNode.EndPoint, remoteNode.Id, data));
             }
         }
 
@@ -380,7 +376,7 @@ namespace GKNet.DHT
         {
             bool result = false;
             if (valuesList != null && valuesList.Count != 0) {
-                var values = DHTHelper.ParseValuesList(valuesList);
+                var values = DHTNode.ParseValuesList(valuesList);
 
                 if (values.Count > 0) {
 #if DEBUG_DHT_INTERNALS
@@ -405,7 +401,7 @@ namespace GKNet.DHT
 
         private void ProcessNodesStr(DHTNode remoteNode, BString nodesStr)
         {
-            var nodesList = DHTHelper.ParseNodesList(nodesStr);
+            var nodesList = DHTNode.ParseNodesList(nodesStr);
 
             if (nodesList != null && nodesList.Count > 0) {
 #if DEBUG_DHT_INTERNALS
@@ -424,7 +420,7 @@ namespace GKNet.DHT
             if (args == null) return;
 
             var id = args.Get<BString>("id");
-            byte[] nodeId = (id != null) ? id.Value : null;
+            DHTId nodeId = (id != null) ? new DHTId(id) : null;
 
             if (QueryReceived != null) {
                 QueryReceived(this, new MessageEventArgs(ipinfo, nodeId, data));
@@ -447,7 +443,7 @@ namespace GKNet.DHT
 
             UpdateRoutingTable(new DHTNode(id.Value, ipinfo));
 
-            if (!Algorithms.ArraysEqual(infoHash.Value, fSearchInfoHash)) {
+            if (!Algorithms.ArraysEqual(infoHash.Value, fSearchInfoHash.Data)) {
                 // skip response for another infohash query
                 return;
             }
@@ -505,10 +501,10 @@ namespace GKNet.DHT
 
             UpdateRoutingTable(new DHTNode(id.Value, ipinfo));
 
-            var neighbor = DHTHelper.GetNeighbor(infoHash.Value, fLocalID);
-            var peersList = (Algorithms.ArraysEqual(infoHash.Value, fSearchInfoHash)) ? fPeersHolder.GetPeersList() : null;
+            var neighbor = DHTNode.GetNeighbor(infoHash.Value, fLocalID.Data);
+            var peersList = (Algorithms.ArraysEqual(infoHash.Value, fSearchInfoHash.Data)) ? fPeersHolder.GetPeersList() : null;
             var nodesList = fRoutingTable.GetClosest(infoHash.Value);
-            Send(ipinfo, DHTMessage.CreateGetPeersResponse(t, neighbor, infoHash.Value, peersList, nodesList));
+            Send(ipinfo, DHTMessage.CreateGetPeersResponse(t, neighbor, new DHTId(infoHash), peersList, nodesList));
         }
 
         #endregion
@@ -527,17 +523,17 @@ namespace GKNet.DHT
             Send(address, msg, async);
         }
 
-        internal void SendFindNodeQuery(IPEndPoint address, byte[] data, bool neighbor = true)
+        internal void SendFindNodeQuery(IPEndPoint address, DHTId target, bool neighbor = true)
         {
             var transactionID = DHTTransactions.GetNextId();
-            byte[] nid = (data == null) ? fLocalID : ((neighbor) ? DHTHelper.GetNeighbor(data, fLocalID) : data);
+            DHTId targetId = (target == null) ? fLocalID : ((neighbor) ? DHTNode.GetNeighbor(target.Data, fLocalID.Data) : target);
 
-            var msg = DHTMessage.CreateFindNodeQuery(transactionID, nid);
+            var msg = DHTMessage.CreateFindNodeQuery(transactionID, fLocalID, targetId);
             fTransactions.SetQuery(transactionID, msg);
             Send(address, msg);
         }
 
-        internal void SendAnnouncePeerQuery(DHTNode remoteNode, byte[] infoHash, byte implied_port, int port, BString token)
+        internal void SendAnnouncePeerQuery(DHTNode remoteNode, DHTId infoHash, byte implied_port, int port, BString token)
         {
             if (remoteNode == null || token == null || token.Length == 0) {
                 return;
@@ -563,7 +559,7 @@ namespace GKNet.DHT
             Send(remoteNode.EndPoint, msg);
         }
 
-        internal void SendGetPeersQuery(IPEndPoint address, byte[] infoHash)
+        internal void SendGetPeersQuery(IPEndPoint address, DHTId infoHash)
         {
 #if DEBUG_DHT_INTERNALS
             fLogger.WriteDebug("Send get peers query {0}", address);

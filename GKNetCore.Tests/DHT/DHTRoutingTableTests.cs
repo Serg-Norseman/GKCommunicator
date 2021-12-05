@@ -16,8 +16,8 @@ namespace GKNet.DHT
 
             table.Clear();
 
-            var randId = DHTHelper.GetRandomID();
-            var nodes = table.GetClosest(randId);
+            var randId = DHTId.CreateRandom();
+            var nodes = table.GetClosest(randId.Data);
         }
 
         [Test]
@@ -25,7 +25,7 @@ namespace GKNet.DHT
         {
             var table = new DHTRoutingTable(10);
 
-            var randId = DHTHelper.GetRandomID();
+            var randId = DHTId.CreateRandom();
             var nodeEndPoint = new IPEndPoint(IPAddress.Any, 0);
             var node = new DHTNode(randId, nodeEndPoint);
 
@@ -43,14 +43,14 @@ namespace GKNet.DHT
         {
             var table = new DHTRoutingTable(10);
 
-            var randId = DHTHelper.GetRandomID();
-            var nodes = table.GetClosest(randId);
+            var randId = DHTId.CreateRandom();
+            var nodes = table.GetClosest(randId.Data);
             Assert.IsNotNull(nodes);
             Assert.AreEqual(0, nodes.Count);
 
             var node = new DHTNode(randId, new IPEndPoint(IPAddress.Any, 0));
             table.UpdateNode(node);
-            nodes = table.GetClosest(randId);
+            nodes = table.GetClosest(randId.Data);
             Assert.IsNotNull(nodes);
             Assert.AreEqual(1, nodes.Count);
         }
@@ -62,7 +62,7 @@ namespace GKNet.DHT
 
             table.UpdateNode(null);
 
-            var node = new DHTNode(DHTHelper.GetRandomID(), new IPEndPoint(IPAddress.Any, 0));
+            var node = new DHTNode(DHTId.CreateRandom(), new IPEndPoint(IPAddress.Any, 0));
             table.UpdateNode(node);
         }
     }

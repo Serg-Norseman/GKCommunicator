@@ -12,7 +12,7 @@ namespace GKNet
             var infoKey = ProtocolHelper.CreateSignInfoKey();
             Assert.IsNotNull(infoKey);
 
-            var hexStr = infoKey.ToHexString();
+            var hexStr = infoKey.ToHex();
             Assert.AreEqual("3E42E4C836FD3779FF6D16DA5FA65F17DB756EB9", hexStr);
         }
 
@@ -20,7 +20,7 @@ namespace GKNet
         public void Test_CreateHandshakeQuery()
         {
             var tid = DHTTransactions.GetNextId();
-            var nodeId = DHTHelper.GetRandomID();
+            var nodeId = DHTId.CreateRandom();
             var msg = ProtocolHelper.CreateHandshakeQuery(tid, nodeId);
             Assert.IsNotNull(msg);
             // TODO: test contents
@@ -30,7 +30,7 @@ namespace GKNet
         public void Test_CreateHandshakeResponse()
         {
             var tid = DHTTransactions.GetNextId();
-            var nodeId = DHTHelper.GetRandomID();
+            var nodeId = DHTId.CreateRandom();
             var msg = ProtocolHelper.CreateHandshakeResponse(tid, nodeId);
             Assert.IsNotNull(msg);
             // TODO: test contents
@@ -40,7 +40,7 @@ namespace GKNet
         public void Test_CreateChatMessage()
         {
             var tid = DHTTransactions.GetNextId();
-            var nodeId = DHTHelper.GetRandomID();
+            var nodeId = DHTId.CreateRandom();
             var msg = ProtocolHelper.CreateChatMessage(tid, nodeId, "test", false);
             Assert.IsNotNull(msg);
             // TODO: test contents
@@ -50,7 +50,7 @@ namespace GKNet
         public void Test_CreateGetPeerInfoQuery()
         {
             var tid = DHTTransactions.GetNextId();
-            var nodeId = DHTHelper.GetRandomID();
+            var nodeId = DHTId.CreateRandom();
             var msg = ProtocolHelper.CreateGetPeerInfoQuery(tid, nodeId);
             Assert.IsNotNull(msg);
             // TODO: test contents
@@ -63,7 +63,7 @@ namespace GKNet
             peerInfo.Reset();
 
             var tid = DHTTransactions.GetNextId();
-            var nodeId = DHTHelper.GetRandomID();
+            var nodeId = DHTId.CreateRandom();
             var msg = ProtocolHelper.CreateGetPeerInfoResponse(tid, nodeId, peerInfo);
             Assert.IsNotNull(msg);
             // TODO: test contents

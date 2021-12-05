@@ -57,7 +57,7 @@ namespace GKNet
 
         public void Reset()
         {
-            NodeId = DHTHelper.GetRandomID();
+            NodeId = DHTId.CreateRandom();
 
             UserName = Environment.UserName;
 

@@ -24,7 +24,7 @@ namespace GKNet.DHT
 {
     public class PeerPingedEventArgs : PeerEventArgs
     {
-        public PeerPingedEventArgs(IPEndPoint peerEndPoint, byte[] nodeId) : base(peerEndPoint, nodeId)
+        public PeerPingedEventArgs(IPEndPoint peerEndPoint, DHTId nodeId) : base(peerEndPoint, nodeId)
         {
         }
     }

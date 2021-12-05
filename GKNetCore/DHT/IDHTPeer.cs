@@ -26,6 +26,6 @@ namespace GKNet.DHT
     {
         IPEndPoint EndPoint { get; }
 
-        byte[] ID { get; set; }
+        DHTId ID { get; set; }
     }
 }

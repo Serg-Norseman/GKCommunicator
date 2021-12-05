@@ -19,13 +19,14 @@
  */
 
 using System;
+using System.Globalization;
 using System.Text;
 using BencodeNET;
 using BSLib;
 
 namespace GKNet.DHT
 {
-    public class DHTNodeId : IEquatable<DHTNodeId>, IComparable<DHTNodeId>, IComparable
+    public sealed class DHTId : IEquatable<DHTId>, IComparable<DHTId>, IComparable
     {
         private static readonly Random random = new Random();
 
@@ -36,32 +37,25 @@ namespace GKNet.DHT
             get { return fData; }
         }
 
-        public DHTNodeId(byte[] data)
+        public DHTId(byte[] data)
         {
             if (data == null || data.Length != 20)
-                throw new ArgumentException("NodeId must be exactly 20 bytes long");
+                throw new ArgumentException("Id must be exactly 20 bytes long");
 
-            byte[] newData = new byte[20];
-            Buffer.BlockCopy(data, 0, newData, 0, data.Length);
-            fData = newData;
+            fData = data;
         }
 
-        public DHTNodeId(DHTInfoHash infoHash)
-            : this(infoHash.ToArray())
-        {
-        }
-
-        public DHTNodeId(BString value)
+        public DHTId(BString value)
             : this(value.Value)
         {
         }
 
-        public static DHTNodeId Create()
+        public static DHTId CreateRandom()
         {
             byte[] b = new byte[20];
             lock (random)
                 random.NextBytes(b);
-            return new DHTNodeId(b);
+            return new DHTId(b);
         }
 
         public override int GetHashCode()
@@ -71,10 +65,15 @@ namespace GKNet.DHT
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as DHTNodeId);
+            return Equals(obj as DHTId);
         }
 
-        public bool Equals(DHTNodeId other)
+        public bool Equals(byte[] other)
+        {
+            return (other == null || other.Length != 20) ? false : Algorithms.ArraysEqual(fData, other);
+        }
+
+        public bool Equals(DHTId other)
         {
             if ((object)other == null)
                 return false;
@@ -84,10 +83,10 @@ namespace GKNet.DHT
 
         public int CompareTo(object obj)
         {
-            return CompareTo(obj as DHTNodeId);
+            return CompareTo(obj as DHTId);
         }
 
-        public int CompareTo(DHTNodeId other)
+        public int CompareTo(DHTId other)
         {
             if ((object)other == null)
                 return 1;
@@ -96,29 +95,37 @@ namespace GKNet.DHT
             byte[] y = other.fData;
 
             if (x.Length != y.Length) {
-                return x.Length > y.Length ? -1 : 1;
+                return x.Length > y.Length ? +1 : -1;
             }
+
             var length = Math.Min(x.Length, y.Length);
+
             for (var i = 0; i < length; i++) {
-                if (x[i] == y[i])
-                    continue;
-                return x[i] > y[i] ? -1 : 1;
+                if (x[i] != y[i]) {
+                    return (x[i] > y[i]) ? +1 : -1;
+                }
             }
-            return 1;
+
+            return 0;
         }
 
-        public static bool operator ==(DHTNodeId first, DHTNodeId second)
+        public static bool operator ==(DHTId left, DHTId right)
         {
-            if ((object)first == null)
-                return (object)second == null;
-            if ((object)second == null)
+            if ((object)left == null)
+                return (object)right == null;
+            if ((object)right == null)
                 return false;
-            return Algorithms.ArraysEqual(first.fData, second.fData);
+            return Algorithms.ArraysEqual(left.Data, right.Data);
         }
 
-        public static bool operator !=(DHTNodeId first, DHTNodeId second)
+        public static bool operator !=(DHTId left, DHTId right)
         {
-            return !(first == second);
+            return !(left == right);
+        }
+
+        public byte[] ToArray()
+        {
+            return (byte[])fData.Clone();
         }
 
         public override string ToString()
@@ -141,6 +148,18 @@ namespace GKNet.DHT
                 sb.Append(hex);
             }
             return sb.ToString();
+        }
+
+        public static DHTId FromHex(string hex)
+        {
+            if (hex == null || hex.Length != 40)
+                throw new ArgumentException("Id must be 40 characters long");
+
+            byte[] data = new byte[20];
+            for (int i = 0; i < data.Length; i++)
+                data[i] = byte.Parse(hex.Substring(i * 2, 2), NumberStyles.HexNumber);
+
+            return new DHTId(data);
         }
     }
 }

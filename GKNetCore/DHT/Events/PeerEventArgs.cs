@@ -26,9 +26,9 @@ namespace GKNet.DHT
     public abstract class PeerEventArgs : EventArgs
     {
         public IPEndPoint EndPoint { get; private set; }
-        public byte[] NodeId { get; private set; }
+        public DHTId NodeId { get; private set; }
 
-        protected PeerEventArgs(IPEndPoint endPoint, byte[] nodeId)
+        protected PeerEventArgs(IPEndPoint endPoint, DHTId nodeId)
         {
             EndPoint = endPoint;
             NodeId = nodeId;

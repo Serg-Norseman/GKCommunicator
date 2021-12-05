@@ -43,7 +43,7 @@ namespace GKNet
         public const string APP_COPYRIGHT = "Copyright © 2018-2021 by Sergey V. Zhdanovskih";
         public const string APP_VERSION = "0.10.0.0";
 
-        private static readonly byte[] GKNInfoHash = ProtocolHelper.CreateSignInfoKey();
+        private static readonly DHTId GKNInfoHash = ProtocolHelper.CreateSignInfoKey();
 
         private static readonly TimeSpan PingInterval = TimeSpan.FromMinutes(1);
 
@@ -63,7 +63,7 @@ namespace GKNet
         private Semaphore fUPnPSem = new Semaphore(0, 1);
 
 
-        public byte[] ClientNodeId
+        public DHTId ClientNodeId
         {
             get { return fProfile.NodeId; }
         }
@@ -297,7 +297,7 @@ namespace GKNet
             var dbPeers = fDatabase.LoadPeers();
             foreach (var rp in dbPeers) {
                 var remoteProfile = new PeerProfile();
-                remoteProfile.NodeId = Utilities.FromHex(rp.node_id);
+                remoteProfile.NodeId = DHTId.FromHex(rp.node_id);
                 remoteProfile.UserName = rp.user_name;
                 remoteProfile.Country = rp.country;
                 remoteProfile.Languages = rp.langs;
