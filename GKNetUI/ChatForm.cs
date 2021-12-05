@@ -184,10 +184,14 @@ namespace GKNetUI
 
         private void InvokeX(MethodInvoker invoker)
         {
-            if (InvokeRequired) {
-                Invoke(invoker);
-            } else {
-                invoker();
+            try {
+                if (InvokeRequired) {
+                    Invoke(invoker);
+                } else {
+                    invoker();
+                }
+            } catch {
+                // FIXME: too many problems with threads, timers and locks
             }
         }
 

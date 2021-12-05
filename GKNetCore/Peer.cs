@@ -40,7 +40,13 @@ namespace GKNet
     public class Peer : IDHTPeer
     {
         public IPEndPoint EndPoint { get; private set; }
-        public byte[] ID { get { return Profile.NodeId; } }
+
+        public byte[] ID
+        {
+            get { return Profile.NodeId; }
+            set { Profile.NodeId = value; }
+        }
+
         public bool IsLocal { get; set; }
         public PresenceStatus Presence { get; set; }
         public PeerProfile Profile { get; private set; }

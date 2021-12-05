@@ -47,8 +47,6 @@ namespace GKNet
 
         void Connect();
         void Disconnect();
-        void Join(string member);
-        void Leave(string member);
         void Send(Peer target, string message);
         void SendToAll(string message);
 

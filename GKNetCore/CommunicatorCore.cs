@@ -56,6 +56,7 @@ namespace GKNet
         private string fPassword; // TODO: remove this field, combine password hashing methods to store passwordHash here
         private readonly IList<Peer> fPeers;
         private readonly UserProfile fProfile;
+        private IPEndPoint fPublicEndPoint;
         private STUN_Result fSTUNInfo;
         private readonly TCPDuplexClient fTCPClient;
         private int fTCPListenerPort;
@@ -109,8 +110,8 @@ namespace GKNet
 
         public IPEndPoint PublicEndPoint
         {
-            get { return fDHTClient.PublicEndPoint; }
-            set { fDHTClient.PublicEndPoint = value; }
+            get { return fPublicEndPoint; }
+            set { fPublicEndPoint = value; }
         }
 
         public int TCPListenerPort
@@ -140,22 +141,20 @@ namespace GKNet
             Port = DHTClient.PublicDHTPort;
             fLogger.WriteInfo("Port: {0}", Port);
 
-            IPEndPoint publicEndPoint;
             try {
                 fSTUNInfo = STUNUtility.Detect(Port);
-                publicEndPoint = (fSTUNInfo.NetType != STUN_NetType.UdpBlocked) ? fSTUNInfo.PublicEndPoint : null;
+                fPublicEndPoint = (fSTUNInfo.NetType != STUN_NetType.UdpBlocked) ? fSTUNInfo.PublicEndPoint : null;
             } catch (Exception ex) {
                 fLogger.WriteError("DetectSTUN() error", ex);
-                publicEndPoint = null;
+                fPublicEndPoint = null;
             }
 
             fDHTClient = new DHTClient(new IPEndPoint(DHTClient.IPAnyAddress, Port), this, ProtocolHelper.CLIENT_VER);
+            fDHTClient.PublicEndPoint = fPublicEndPoint;
             fDHTClient.PeersFound += OnPeersFound;
             fDHTClient.PeerPinged += OnPeerPinged;
             fDHTClient.QueryReceived += OnQueryReceive;
             fDHTClient.ResponseReceived += OnResponseReceive;
-
-            PublicEndPoint = publicEndPoint;
 
             InitializePeers();
 
@@ -291,7 +290,7 @@ namespace GKNet
 
         private void InitializePeers()
         {
-            fLocalPeer = AddPeer(PublicEndPoint, fProfile);
+            fLocalPeer = AddPeer(fPublicEndPoint, fProfile);
             fLocalPeer.State = PeerState.Unknown;
             fLocalPeer.Presence = PresenceStatus.Online;
 
@@ -407,7 +406,7 @@ namespace GKNet
 
         public bool CheckLocalAddress(IPAddress peerAddress)
         {
-            return ((PublicEndPoint != null) && (Utilities.PrepareAddress(PublicEndPoint.Address).Equals(peerAddress)));
+            return ((fPublicEndPoint != null) && (Utilities.PrepareAddress(fPublicEndPoint.Address).Equals(peerAddress)));
         }
 
         public Peer AddPeer(IPEndPoint peerEndPoint, PeerProfile profile = null)
@@ -576,7 +575,7 @@ namespace GKNet
                 case "get_peer_info":
                     if (peer != null) {
                         peer.Profile.Load(resp);
-                        peer.Profile.NodeId = e.NodeId;
+                        peer.ID = e.NodeId;
                         peer.State = PeerState.Identified;
                         peer.Presence = PresenceStatus.Online;
                         fDatabase.SavePeer(peer.Profile, e.EndPoint);
@@ -626,14 +625,6 @@ namespace GKNet
                     }
                     break;
             }*/
-        }
-
-        public void Join(string member)
-        {
-        }
-
-        public void Leave(string member)
-        {
         }
 
         public void Send(Peer target, string message)

@@ -70,10 +70,10 @@ namespace GKNet.DHT
 
         public DHTClient(IPEndPoint localEndPoint, IDHTPeersHolder peersHolder, string clientVer) : base(localEndPoint)
         {
+            fPeersHolder = peersHolder;
             fLocalID = peersHolder.ClientNodeId;
             fClientVer = clientVer;
             fLogger = LogManager.GetLogger(ProtocolHelper.LOG_FILE, ProtocolHelper.LOG_LEVEL, "DHTClient");
-            fPeersHolder = peersHolder;
             fRoutingTable = new DHTRoutingTable(KTableSize);
             fTransactions = new DHTTransactions();
         }
@@ -154,7 +154,8 @@ namespace GKNet.DHT
                         }
                     } else {
                         // search
-                        var nodes = fRoutingTable.GetClosest(fSearchInfoHash);
+                        // bucket = 32 - significantly increases the speed and reliability of peers discovery
+                        var nodes = fRoutingTable.GetClosest(fSearchInfoHash, 32);
 
 #if DEBUG_DHT_INTERNALS
                         fLogger.WriteDebug("RoutingTable size: {0}", fRoutingTable.Count);
@@ -178,9 +179,16 @@ namespace GKNet.DHT
 
         public void FindUnkPeer(IDHTPeer peer)
         {
+            if (peer == null)
+                return;
+
+            var nodeId = peer.ID;
+            if (nodeId == null || nodeId.Length == 0)
+                return;
+
             var nodes = fRoutingTable.GetClosest(fSearchInfoHash);
             foreach (var node in nodes) {
-                SendFindNodeQuery(node.EndPoint, peer.ID, false);
+                SendFindNodeQuery(node.EndPoint, nodeId, false);
             }
         }
 

@@ -22,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using BencodeNET;
+using GKNet.Logging;
 
 namespace GKNet.DHT
 {
@@ -29,10 +30,12 @@ namespace GKNet.DHT
     {
         private static long fCurrentTransactionId;
 
+        private readonly ILogger fLogger;
         private readonly Dictionary<int, DHTMessage> fTransactions;
 
         public DHTTransactions()
         {
+            fLogger = LogManager.GetLogger(ProtocolHelper.LOG_FILE, ProtocolHelper.LOG_LEVEL, "DHTTransactions");
             fTransactions = new Dictionary<int, DHTMessage>();
         }
 
@@ -56,9 +59,13 @@ namespace GKNet.DHT
 
         public void SetQuery(BString transactionId, DHTMessage message)
         {
-            if (transactionId != null && transactionId.Length == 2) {
-                int tid = BitConverter.ToUInt16(transactionId.Value, 0);
-                fTransactions[tid] = message;
+            try {
+                if (transactionId != null && transactionId.Length == 2) {
+                    int tid = BitConverter.ToUInt16(transactionId.Value, 0);
+                    fTransactions[tid] = message;
+                }
+            } catch (Exception ex) {
+                fLogger.WriteError("SetQuery()", ex);
             }
         }
 

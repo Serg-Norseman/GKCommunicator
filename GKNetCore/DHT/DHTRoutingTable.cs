@@ -113,7 +113,6 @@ namespace GKNet.DHT
                 foreach (var node in fKTable.Values) {
                     if (node.State == NodeState.Bad) {
                         fKTable.Remove(node.EndPoint);
-                        continue;
                     }
                 }
             }
@@ -121,10 +120,12 @@ namespace GKNet.DHT
 
         public void Clear()
         {
-            fKTable.Clear();
+            lock (fLock) {
+                fKTable.Clear();
+            }
         }
 
-        public IList<DHTNode> GetClosest(byte[] target)
+        public IList<DHTNode> GetClosest(byte[] target, int bucketSize = 8)
         {
             DHTNode[] values;
             lock (fLock) {
@@ -134,7 +135,7 @@ namespace GKNet.DHT
             if (values.Length <= 8)
                 return values;
 
-            var list = new SortedList<byte[], DHTNode>(8, RouteComparer.Instance);
+            var list = new SortedList<byte[], DHTNode>(bucketSize, RouteComparer.Instance);
 
             foreach (var node in values) {
                 if (node.State == NodeState.Bad) {
@@ -149,7 +150,7 @@ namespace GKNet.DHT
                     continue;
                 }
 
-                if (list.Count >= 8) {
+                if (list.Count >= bucketSize) {
                     // if distance is greater than or equal to maxdistance from list then continue
                     int lastIndex = list.Count - 1;
                     if (RouteComparer.Instance.Compare(distance, list.Keys[lastIndex]) >= 0) {

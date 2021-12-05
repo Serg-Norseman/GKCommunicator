@@ -27,6 +27,7 @@ namespace GKNet.DHT
         byte[] ClientNodeId { get; }
 
         IList<IDHTPeer> GetPeersList();
+
         void SaveNode(DHTNode node);
     }
 }

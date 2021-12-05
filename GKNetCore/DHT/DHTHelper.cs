@@ -21,7 +21,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 using BencodeNET;
@@ -62,6 +61,13 @@ namespace GKNet.DHT
             }
         }
 
+        public static T[] SubArray<T>(this T[] data, int index, int length)
+        {
+            T[] result = new T[length];
+            Buffer.BlockCopy(data, index, result, 0, length);
+            return result;
+        }
+
         public static List<IPEndPoint> ParseValuesList(BList data)
         {
             var result = new List<IPEndPoint>();
@@ -71,12 +77,22 @@ namespace GKNet.DHT
                 var itemBytes = str.Value;
 
                 if (itemBytes.Length == 6) {
-                    var ip = new IPAddress(itemBytes.Take(4).ToArray());
+                    var ip = new IPAddress(itemBytes.SubArray(0, 4));
+
+                    var b = itemBytes[4];
+                    itemBytes[4] = itemBytes[5];
+                    itemBytes[5] = b;
+
                     var port = BitConverter.ToUInt16(itemBytes, 4);
                     var xnode = new IPEndPoint(Utilities.PrepareAddress(ip), port);
                     result.Add(xnode);
                 } else if (itemBytes.Length == 18) {
-                    var ip = new IPAddress(itemBytes.Take(16).ToArray());
+                    var ip = new IPAddress(itemBytes.SubArray(0, 16));
+
+                    var b = itemBytes[16];
+                    itemBytes[16] = itemBytes[17];
+                    itemBytes[17] = b;
+
                     var port = BitConverter.ToUInt16(itemBytes, 16);
                     var xnode = new IPEndPoint(Utilities.PrepareAddress(ip), port);
                     result.Add(xnode);
@@ -107,13 +123,13 @@ namespace GKNet.DHT
         {
             var result = new List<DHTNode>();
             for (int i = 0; i < data.Length; i += 26) {
-                var dd = data.Skip(i).Take(26).ToArray();
+                var dd = data.SubArray(i, 26);
 
                 var b = dd[24];
                 dd[24] = dd[25];
                 dd[25] = b;
-                var id = dd.Take(20).ToArray();
-                var ip = new IPAddress(dd.Skip(20).Take(4).ToArray());
+                var id = dd.SubArray(0, 20);
+                var ip = new IPAddress(dd.SubArray(20, 4));
                 var port = BitConverter.ToUInt16(dd, 24);
                 var tt = new DHTNode(id, new IPEndPoint(Utilities.PrepareAddress(ip), port));
                 result.Add(tt);
@@ -125,13 +141,13 @@ namespace GKNet.DHT
         {
             var result = new List<DHTNode>();
             for (int i = 0; i < data.Length; i += 38) {
-                var dd = data.Skip(i).Take(38).ToArray();
+                var dd = data.SubArray(i, 38);
 
                 var b = dd[36];
                 dd[36] = dd[37];
                 dd[37] = b;
-                var id = dd.Take(20).ToArray();
-                var ip = new IPAddress(dd.Skip(20).Take(16).ToArray());
+                var id = dd.SubArray(0, 20);
+                var ip = new IPAddress(dd.SubArray(20, 16));
                 var port = BitConverter.ToUInt16(dd, 36);
                 var tt = new DHTNode(id, new IPEndPoint(Utilities.PrepareAddress(ip), port));
                 result.Add(tt);
