@@ -330,7 +330,7 @@ namespace GKNetUI
             }
 
             var messages = fCore.LoadMessages(peer);
-            var localId = fCore.LocalPeer.ID.ToHex();
+            var localId = fCore.LocalPeer.ID.ToString();
 
             foreach (var msg in messages) {
                 if (msg.Sender == localId) {

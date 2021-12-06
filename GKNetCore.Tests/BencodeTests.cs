@@ -92,9 +92,6 @@ namespace BencodeNET
             obj = bdict.Get<BNumber>("number");
             Assert.AreEqual(1234, ((BNumber)obj).Value);
 
-            var bdictCopy = new BDictionary(bdict.Value);
-            Assert.AreEqual("d6:numberi1234e3:str4:teste", bdict.EncodeAsString());
-
             Assert.AreEqual(2, bdict.Count);
             bdict.Clear();
             Assert.AreEqual(0, bdict.Count);

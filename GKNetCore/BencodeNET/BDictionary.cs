@@ -31,15 +31,6 @@ namespace BencodeNET
         }
 
         /// <summary>
-        /// Creates a dictionary with an initial value of the supplied dictionary.
-        /// </summary>
-        /// <param name="dictionary"></param>
-        public BDictionary(IDictionary<BString, IBObject> dictionary)
-        {
-            fValue = dictionary;
-        }
-
-        /// <summary>
         /// Adds the specified key and value to the dictionary as <see cref="BString"/>.
         /// </summary>
         /// <param name="key"></param>

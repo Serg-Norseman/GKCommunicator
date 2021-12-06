@@ -76,7 +76,7 @@ namespace GKNet.DHT
 
         public override string ToString()
         {
-            return string.Format("{0} ({1})", EndPoint.ToString(), Id.ToHex());
+            return string.Format("{0} [{1}]", EndPoint.ToString(), Id.ToString());
         }
 
         internal void Update()

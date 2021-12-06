@@ -184,7 +184,7 @@ namespace GKNet.Database
         {
             bool initialized = GetParameterBool("profile_initialized");
             if (initialized) {
-                profile.NodeId = DHTId.FromHex(GetParameterValue("user_node_id"));
+                profile.NodeId = DHTId.Parse(GetParameterValue("user_node_id"));
 
                 profile.UserName = GetParameterValue("user_name");
                 profile.Country = GetParameterValue("user_country");
@@ -210,7 +210,7 @@ namespace GKNet.Database
         {
             SetParameterBool("profile_initialized", true);
 
-            SetParameterValue("user_node_id", profile.NodeId.ToHex());
+            SetParameterValue("user_node_id", profile.NodeId.ToString());
 
             SetParameterValue("user_name", profile.UserName);
             SetParameterValue("user_country", profile.Country);
@@ -245,7 +245,7 @@ namespace GKNet.Database
                 throw new DatabaseException("Database disconnected");
 
             var record = new DBPeer() {
-                node_id = peerProfile.NodeId.ToHex(),
+                node_id = peerProfile.NodeId.ToString(),
                 last_endpoint = endPoint.ToString(),
                 user_name = peerProfile.UserName,
                 country = peerProfile.Country,
@@ -269,7 +269,7 @@ namespace GKNet.Database
             var dbNodes = fConnection.Query<DBNode>(query);
             if (dbNodes != null) {
                 foreach (var dbn in dbNodes) {
-                    var nodeId = DHTId.FromHex(dbn.node_id);
+                    var nodeId = DHTId.Parse(dbn.node_id);
                     var endPoint = Utilities.ParseIPEndPoint(dbn.endpoint);
                     result.Add(new DHTNode(nodeId, endPoint));
                 }
@@ -284,7 +284,7 @@ namespace GKNet.Database
                 throw new DatabaseException("Database disconnected");
 
             var record = new DBNode() {
-                node_id = node.Id.ToHex(),
+                node_id = node.Id.ToString(),
                 endpoint = node.EndPoint.ToString()
             };
             fConnection.InsertOrReplace(record);

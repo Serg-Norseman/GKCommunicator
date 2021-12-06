@@ -128,29 +128,24 @@ namespace GKNet.DHT
             return (byte[])fData.Clone();
         }
 
-        public override string ToString()
-        {
-            return ToHex();
-        }
-
         public BString ToBencodedString()
         {
             return new BString(fData);
         }
 
-        public string ToHex()
+        public override string ToString()
         {
             StringBuilder sb = new StringBuilder(40);
-            for (int i = 0; i < fData.Length; i++) {
-                string hex = fData[i].ToString("X");
-                if (hex.Length != 2)
-                    sb.Append("0");
-                sb.Append(hex);
+            foreach (byte b in fData) {
+                var t = b / 16;
+                sb.Append((char)(t + (t <= 9 ? '0' : '7')));
+                var f = b % 16;
+                sb.Append((char)(f + (f <= 9 ? '0' : '7')));
             }
             return sb.ToString();
         }
 
-        public static DHTId FromHex(string hex)
+        public static DHTId Parse(string hex)
         {
             if (hex == null || hex.Length != 40)
                 throw new ArgumentException("Id must be 40 characters long");

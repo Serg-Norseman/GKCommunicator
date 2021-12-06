@@ -282,7 +282,7 @@ namespace GKNet
             var dbPeers = fDatabase.LoadPeers();
             foreach (var rp in dbPeers) {
                 var remoteProfile = new PeerProfile();
-                remoteProfile.NodeId = DHTId.FromHex(rp.node_id);
+                remoteProfile.NodeId = DHTId.Parse(rp.node_id);
                 remoteProfile.UserName = rp.user_name;
                 remoteProfile.Country = rp.country;
                 remoteProfile.Languages = rp.langs;
@@ -427,7 +427,7 @@ namespace GKNet
         {
             fLogger.WriteDebug("SendMessage: {0}, `{1}`", peer.EndPoint, message);
 
-            fDatabase.SaveMessage(new Message(DateTime.UtcNow, message, fLocalPeer.ID.ToHex(), peer.ID.ToHex()));
+            fDatabase.SaveMessage(new Message(DateTime.UtcNow, message, fLocalPeer.ID.ToString(), peer.ID.ToString()));
 
             bool encrypted = false;
             if (peer.Profile != null && !string.IsNullOrEmpty(peer.Profile.PublicKey)) {
@@ -573,7 +573,7 @@ namespace GKNet
             }
             fForm.OnMessageReceived(peer, msg);
 
-            fDatabase.SaveMessage(new Message(DateTime.UtcNow, msg, peer.ID.ToHex(), fLocalPeer.ID.ToHex()));
+            fDatabase.SaveMessage(new Message(DateTime.UtcNow, msg, peer.ID.ToString(), fLocalPeer.ID.ToString()));
         }
 
         private void OnDataReceive(object sender, DataReceiveEventArgs e)
@@ -630,7 +630,7 @@ namespace GKNet
 
         public IEnumerable<Message> LoadMessages(Peer peer)
         {
-            var result = (peer == null) ? new List<Message>() : fDatabase.LoadMessages(peer.ID.ToHex());
+            var result = (peer == null) ? new List<Message>() : fDatabase.LoadMessages(peer.ID.ToString());
             return result;
         }
     }

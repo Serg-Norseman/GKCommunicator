@@ -11,7 +11,6 @@ This is a sub-project of GEDKeeper (application and plugin). The distributed, de
 - [x] UPnP port's mapping (not used yet)
 - [x] IPv4 and IPv6 (untested)
 - [x] SQLite database support
-- [x] Simple chat with formatting of history
 - [x] Simple user’s profile
 - [x] UDP hole-punching
 - [x] Working DHT peer search, connection and simple chat

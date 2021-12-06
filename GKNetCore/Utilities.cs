@@ -92,22 +92,6 @@ namespace GKNet
             return new IPEndPoint(ip, port);
         }
 
-        /// <summary>
-        /// Converts the byte array to a hexadecimal string representation.
-        /// </summary>
-        public static string ToHexString(this byte[] data)
-        {
-            StringBuilder sb = new StringBuilder();
-            foreach (byte b in data) {
-                var t = b / 16;
-                sb.Append((char)(t + (t <= 9 ? '0' : '7')));
-                var f = b % 16;
-                sb.Append((char)(f + (f <= 9 ? '0' : '7')));
-            }
-
-            return sb.ToString();
-        }
-
         public static T[] SubArray<T>(this T[] data, int index, int length)
         {
             T[] result = new T[length];

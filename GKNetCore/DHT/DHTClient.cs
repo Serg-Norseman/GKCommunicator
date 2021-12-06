@@ -127,7 +127,7 @@ namespace GKNet.DHT
 
         private void SearchNodes(DHTId searchInfoHash)
         {
-            fLogger.WriteDebug("Search for: {0}", searchInfoHash.ToHex());
+            fLogger.WriteDebug("Search for: {0}", searchInfoHash.ToString());
 
             fSearchInfoHash = searchInfoHash;
 
@@ -433,24 +433,27 @@ namespace GKNet.DHT
             var args = data.Get<BDictionary>("a");
 
             var id = args.Get<BString>("id");
-            var infoHash = args.Get<BString>("info_hash");
+            var infoHash = new DHTId(args.Get<BString>("info_hash"));
             var impliedPort = args.Get<BNumber>("implied_port");
             int port = (impliedPort != null && impliedPort.Value == 1) ? ipinfo.Port : (int)args.Get<BNumber>("port").Value;
 
+            var remoteNode = new DHTNode(id.Value, ipinfo);
+            UpdateRoutingTable(remoteNode);
+
 #if DEBUG_DHT_INTERNALS
-            fLogger.WriteDebug("Receive `announce_peer` query from {0} [{1}] for {2}", ipinfo.ToString(), id.Value.ToHexString(), infoHash.Value.ToHexString());
+            fLogger.WriteDebug("Receive `announce_peer` query from {0} for {1}", remoteNode.ToString(), infoHash.ToString());
 #endif
 
-            UpdateRoutingTable(new DHTNode(id.Value, ipinfo));
+            // skip response for another infohash query
+            if (infoHash == fSearchInfoHash) {
+                // receive `announce_peer` query for our infohash
+                var nodesList = fRoutingTable.GetClosest(infoHash.Data);
+                Send(ipinfo, DHTMessage.CreateAnnouncePeerResponse(t, fLocalID, nodesList));
 
-            if (!Algorithms.ArraysEqual(infoHash.Value, fSearchInfoHash.Data)) {
-                // skip response for another infohash query
-                return;
+                if (PeersFound != null) {
+                    PeersFound(this, new PeersFoundEventArgs(new List<IPEndPoint>() { ipinfo }));
+                }
             }
-
-            // receive `announce_peer` query for our infohash
-            var nodesList = fRoutingTable.GetClosest(infoHash.Value);
-            Send(ipinfo, DHTMessage.CreateAnnouncePeerResponse(t, fLocalID, nodesList));
         }
 
         private void OnRecvPingQuery(IPEndPoint ipinfo, BDictionary data)
@@ -460,11 +463,12 @@ namespace GKNet.DHT
 
             var id = args.Get<BString>("id");
 
-#if DEBUG_DHT_INTERNALS
-            fLogger.WriteDebug("Receive `ping` query from {0} [{1}]", ipinfo.ToString(), id.Value.ToHexString());
-#endif
+            var remoteNode = new DHTNode(id.Value, ipinfo);
+            UpdateRoutingTable(remoteNode);
 
-            UpdateRoutingTable(new DHTNode(id.Value, ipinfo));
+#if DEBUG_DHT_INTERNALS
+            fLogger.WriteDebug("Receive `ping` query from {0}", remoteNode.ToString());
+#endif
 
             Send(ipinfo, DHTMessage.CreatePingResponse(t, fLocalID));
         }
@@ -477,11 +481,12 @@ namespace GKNet.DHT
             var id = args.Get<BString>("id");
             var target = args.Get<BString>("target");
 
-#if DEBUG_DHT_INTERNALS
-            fLogger.WriteDebug("Receive `find_node` query from {0} [{1}]", ipinfo.ToString(), id.Value.ToHexString());
-#endif
+            var remoteNode = new DHTNode(id.Value, ipinfo);
+            UpdateRoutingTable(remoteNode);
 
-            UpdateRoutingTable(new DHTNode(id.Value, ipinfo));
+#if DEBUG_DHT_INTERNALS
+            fLogger.WriteDebug("Receive `find_node` query from {0}", remoteNode.ToString());
+#endif
 
             var nodesList = fRoutingTable.GetClosest(target.Value);
             Send(ipinfo, DHTMessage.CreateFindNodeResponse(t, fLocalID, nodesList));
@@ -493,18 +498,19 @@ namespace GKNet.DHT
             var args = data.Get<BDictionary>("a");
 
             var id = args.Get<BString>("id");
-            var infoHash = args.Get<BString>("info_hash");
+            var infoHash = new DHTId(args.Get<BString>("info_hash"));
+
+            var remoteNode = new DHTNode(id.Value, ipinfo);
+            UpdateRoutingTable(remoteNode);
 
 #if DEBUG_DHT_INTERNALS
-            fLogger.WriteDebug("Receive `get_peers` query from {0} [{1}] for {2}", ipinfo.ToString(), id.Value.ToHexString(), infoHash.Value.ToHexString());
+            fLogger.WriteDebug("Receive `get_peers` query from {0} for {1}", remoteNode.ToString(), infoHash.ToString());
 #endif
 
-            UpdateRoutingTable(new DHTNode(id.Value, ipinfo));
-
-            var neighbor = DHTNode.GetNeighbor(infoHash.Value, fLocalID.Data);
-            var peersList = (Algorithms.ArraysEqual(infoHash.Value, fSearchInfoHash.Data)) ? fPeersHolder.GetPeersList() : null;
-            var nodesList = fRoutingTable.GetClosest(infoHash.Value);
-            Send(ipinfo, DHTMessage.CreateGetPeersResponse(t, neighbor, new DHTId(infoHash), peersList, nodesList));
+            var neighbor = DHTNode.GetNeighbor(infoHash.Data, fLocalID.Data);
+            var peersList = (infoHash == fSearchInfoHash) ? fPeersHolder.GetPeersList() : null;
+            var nodesList = fRoutingTable.GetClosest(infoHash.Data);
+            Send(ipinfo, DHTMessage.CreateGetPeersResponse(t, neighbor, infoHash, peersList, nodesList));
         }
 
         #endregion

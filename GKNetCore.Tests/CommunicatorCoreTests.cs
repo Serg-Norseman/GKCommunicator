@@ -16,14 +16,6 @@ namespace GKNet
             {
             }
 
-            public void OnJoin(Peer member)
-            {
-            }
-
-            public void OnLeave(Peer member)
-            {
-            }
-
             public void OnMessageReceived(Peer sender, string message)
             {
             }
