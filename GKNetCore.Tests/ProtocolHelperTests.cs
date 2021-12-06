@@ -31,7 +31,7 @@ namespace GKNet
         {
             var tid = DHTTransactions.GetNextId();
             var nodeId = DHTId.CreateRandom();
-            var msg = ProtocolHelper.CreateHandshakeResponse(tid, nodeId);
+            var msg = ProtocolHelper.CreateHandshakeResponse(tid, nodeId, PresenceStatus.Online);
             Assert.IsNotNull(msg);
             // TODO: test contents
         }

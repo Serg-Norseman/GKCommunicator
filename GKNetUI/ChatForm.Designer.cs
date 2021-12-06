@@ -376,6 +376,7 @@
             this.lstMembers.Name = "lstMembers";
             this.lstMembers.Size = new System.Drawing.Size(367, 561);
             this.lstMembers.TabIndex = 4;
+            this.lstMembers.SelectedValueChanged += new System.EventHandler(this.lstMembers_SelectedValueChanged);
             // 
             // contextMenuStrip1
             // 

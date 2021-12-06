@@ -292,7 +292,7 @@ namespace GKNet
         {
             fLocalPeer = AddPeer(fPublicEndPoint, fProfile);
             fLocalPeer.State = PeerState.Unknown;
-            fLocalPeer.Presence = PresenceStatus.Online;
+            fLocalPeer.Presence = fDatabase.LoadPresence();
 
             var dbPeers = fDatabase.LoadPeers();
             foreach (var rp in dbPeers) {
@@ -409,7 +409,7 @@ namespace GKNet
             return ((fPublicEndPoint != null) && (Utilities.PrepareAddress(fPublicEndPoint.Address).Equals(peerAddress)));
         }
 
-        public Peer AddPeer(IPEndPoint peerEndPoint, PeerProfile profile = null)
+        private Peer AddPeer(IPEndPoint peerEndPoint, PeerProfile profile = null)
         {
             lock (fPeers) {
                 Peer peer = new Peer(peerEndPoint, profile);
@@ -480,10 +480,7 @@ namespace GKNet
                     fDHTClient.FindUnkPeer(peer);
                 }
 
-                /*{
-                    peer.State = PeerState.Unchecked;
-                    SendData(peer.EndPoint, ProtocolHelper.CreateHandshakeQuery(DHTHelper.GetTransactionId(), fDHTClient.LocalID));
-                }*/
+                SendData(peer.EndPoint, ProtocolHelper.CreateHandshakeQuery(DHTTransactions.GetNextId(), fDHTClient.LocalID));
             }
 
             if (hasCheckedPeers) {
@@ -536,7 +533,7 @@ namespace GKNet
             var args = e.Data.Get<BDictionary>("a");
             switch (queryType) {
                 case "handshake":
-                    SendData(e.EndPoint, ProtocolHelper.CreateHandshakeResponse(DHTTransactions.GetNextId(), fDHTClient.LocalID));
+                    SendData(e.EndPoint, ProtocolHelper.CreateHandshakeResponse(DHTTransactions.GetNextId(), fDHTClient.LocalID, fLocalPeer.Presence));
                     break;
 
                 case "get_peer_info":
@@ -567,8 +564,9 @@ namespace GKNet
             switch (queryType) {
                 case "handshake":
                     if (peer != null) {
-                        peer.State = PeerState.Checked;
-                        SendData(e.EndPoint, ProtocolHelper.CreateGetPeerInfoQuery(DHTTransactions.GetNextId(), fDHTClient.LocalID));
+                        peer.Presence = (PresenceStatus)resp.Get<BNumber>("presence").Value;
+                        //peer.State = PeerState.Checked;
+                        //SendData(e.EndPoint, ProtocolHelper.CreateGetPeerInfoQuery(DHTTransactions.GetNextId(), fDHTClient.LocalID));
                     }
                     break;
 
@@ -577,7 +575,7 @@ namespace GKNet
                         peer.Profile.Load(resp);
                         peer.ID = e.NodeId;
                         peer.State = PeerState.Identified;
-                        peer.Presence = PresenceStatus.Online;
+                        peer.Presence = PresenceStatus.Unknown;
                         fDatabase.SavePeer(peer.Profile, e.EndPoint);
                     }
                     break;
@@ -625,20 +623,6 @@ namespace GKNet
                     }
                     break;
             }*/
-        }
-
-        public void Send(Peer target, string message)
-        {
-            SendMessage(target, message);
-        }
-
-        public void SendToAll(string message)
-        {
-            foreach (var peer in fPeers) {
-                if (!peer.IsLocal) {
-                    SendMessage(peer, message);
-                }
-            }
         }
 
         public IList<IDHTPeer> GetPeersList()

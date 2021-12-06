@@ -63,16 +63,14 @@ namespace GKNetUI
             if (File.Exists(ProtocolHelper.LOG_FILE)) {
                 File.Delete(ProtocolHelper.LOG_FILE);
             }
+            fLogger = LogManager.GetLogger(ProtocolHelper.LOG_FILE, ProtocolHelper.LOG_LEVEL, "ChatForm");
 
             fTick = -1;
             fInitialized = false;
-            lblConnectionStatus.Text = "Network initialization...";
-
-            fLogger = LogManager.GetLogger(ProtocolHelper.LOG_FILE, ProtocolHelper.LOG_LEVEL, "ChatForm");
             fCore = new CommunicatorCore(this);
 
+            lblConnectionStatus.Text = "Network initialization...";
             UIHelper.SetMenuItemTag(menuPresenceStatuses, fCore.LocalPeer.Presence);
-
             UpdateStatus();
         }
 
@@ -210,6 +208,27 @@ namespace GKNetUI
             }
         }
 
+        private void SendMessage(Peer selectedPeer)
+        {
+            var msgText = txtChatMsg.Text;
+
+            if (!string.IsNullOrEmpty(msgText)) {
+                AddChatText(null, msgText, Color.Navy, Color.Black);
+                txtChatMsg.Clear();
+                txtChatMsg.Focus();
+
+                if (selectedPeer != null && !selectedPeer.IsLocal) {
+                    fCore.SendMessage(selectedPeer, msgText);
+                } else {
+                    foreach (var peer in fCore.Peers) {
+                        if (!peer.IsLocal) {
+                            fCore.SendMessage(peer, msgText);
+                        }
+                    }
+                }
+            }
+        }
+
         #endregion
 
         #region Event handlers
@@ -226,29 +245,12 @@ namespace GKNetUI
 
         private void btnSendToAll_Click(object sender, EventArgs e)
         {
-            var msgText = txtChatMsg.Text;
-
-            if (!string.IsNullOrEmpty(msgText)) {
-                AddChatText(null, msgText, Color.Navy, Color.Black);
-                txtChatMsg.Clear();
-                txtChatMsg.Focus();
-
-                fCore.SendToAll(msgText);
-            }
+            SendMessage(null);
         }
 
         private void btnSend_Click(object sender, EventArgs e)
         {
-            var peerItem = GetSelectedPeer();
-            var msgText = txtChatMsg.Text;
-
-            if ((!string.IsNullOrEmpty(msgText)) && (peerItem != null && !peerItem.IsLocal)) {
-                AddChatText(null, msgText, Color.Green, Color.Black);
-                txtChatMsg.Clear();
-                txtChatMsg.Focus();
-
-                fCore.Send(peerItem, msgText);
-            }
+            SendMessage(GetSelectedPeer());
         }
 
         private void miDHTLog_Click(object sender, EventArgs e)
@@ -288,9 +290,11 @@ namespace GKNetUI
         {
             string endpoint = string.Empty;
             if (InputDlg.QueryText(this, CommunicatorCore.APP_NAME, "Peer endpoint", ref endpoint)) {
-                var peerEndPoint = Utilities.ParseIPEndPoint(endpoint);
-                fCore.UpdatePeer(peerEndPoint);
-                ((IChatForm)this).OnPeersListChanged();
+                if (Utilities.IsValidIpAddress(endpoint)) {
+                    var peerEndPoint = Utilities.ParseIPEndPoint(endpoint);
+                    fCore.UpdatePeer(peerEndPoint);
+                    ((IChatForm)this).OnPeersListChanged();
+                }
             }
         }
 
@@ -300,6 +304,13 @@ namespace GKNetUI
             tbPresenceStatus.Image = UIHelper.GetPresenceStatusImage(ps);
             tbPresenceStatus.Text = ps.ToString();
             fCore.LocalPeer.Presence = ps;
+            fCore.Database.SavePresence(ps);
+        }
+
+        private void lstMembers_SelectedValueChanged(object sender, EventArgs e)
+        {
+            var peer = GetSelectedPeer();
+            // TODO: load messages history
         }
 
         #endregion
@@ -334,6 +345,7 @@ namespace GKNetUI
             Invoke((MethodInvoker)delegate {
                 int membersNum = 0;
 
+                var selItem = lstMembers.SelectedItem as Peer;
                 lstMembers.BeginUpdate();
                 lstMembers.Items.Clear();
                 foreach (var peer in fCore.Peers) {
@@ -343,6 +355,9 @@ namespace GKNetUI
                     lstMembers.Items.Add(peer);
                 }
                 lstMembers.EndUpdate();
+                if (fCore.Peers.Contains(selItem)) {
+                    lstMembers.SelectedItem = selItem;
+                }
 
                 lblConnectionStatus.Text = string.Format("Members online: {0} ({1})", membersNum, fCore.Peers.Count);
 

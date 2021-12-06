@@ -37,20 +37,19 @@ namespace GKNet
     {
         ConnectionState ConnectionState { get; }
         GKNetDatabase Database { get; }
+        DHTClient DHTClient { get; }
         Peer LocalPeer { get; }
         IList<Peer> Peers { get; }
         UserProfile Profile { get; }
-        int TCPListenerPort { get; set; }
-        DHTClient DHTClient { get; }
-        STUN_Result STUNInfo { get; }
         IPEndPoint PublicEndPoint { get; set; }
+        STUN_Result STUNInfo { get; }
+        int TCPListenerPort { get; set; }
 
         void Connect();
         void Disconnect();
-        void Send(Peer target, string message);
-        void SendToAll(string message);
+        void SendMessage(Peer target, string message);
 
-        Peer AddPeer(IPEndPoint peerEndPoint, PeerProfile profile = null);
         Peer FindPeer(IPEndPoint peerEndPoint);
+        bool UpdatePeer(IPEndPoint peerEndPoint);
     }
 }

@@ -168,6 +168,18 @@ namespace GKNet.Database
 
         #region User profile
 
+        public PresenceStatus LoadPresence()
+        {
+            string strVal = GetParameterValue("user_presence");
+            return (string.IsNullOrEmpty(strVal)) ? PresenceStatus.Online : (PresenceStatus)int.Parse(strVal);
+        }
+
+        public void SavePresence(PresenceStatus status)
+        {
+            var intVal = (int)status;
+            SetParameterValue("user_presence", intVal.ToString());
+        }
+
         public void LoadProfile(UserProfile profile)
         {
             bool initialized = GetParameterBool("profile_initialized");

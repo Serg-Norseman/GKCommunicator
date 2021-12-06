@@ -79,7 +79,6 @@ namespace GKNetUI
                 var icon = UIHelper.GetPresenceStatusImage(status);
                 if (icon != null) {
                     e.Graphics.DrawImage(icon, rt.Right - icon.Width - 2, rt.Top + 2);
-                    //fnt = new Font(fnt, FontStyle.Bold);
                 }
             }
 

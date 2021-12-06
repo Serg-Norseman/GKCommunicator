@@ -71,7 +71,7 @@ namespace GKNet
             return data;
         }
 
-        public static BDictionary CreateHandshakeResponse(BString transactionID, DHTId nodeId)
+        public static BDictionary CreateHandshakeResponse(BString transactionID, DHTId nodeId, PresenceStatus presence)
         {
             var data = new BDictionary();
             data.Add("t", transactionID);
@@ -82,6 +82,7 @@ namespace GKNet
             r.Add("id", nodeId.ToBencodedString());
             r.Add("app", "GEDKeeper Communicator");
             r.Add("ver", "2.14.0");
+            r.Add("presence", new BNumber((int)presence));
             data.Add("r", r);
 
             return data;
@@ -101,6 +102,20 @@ namespace GKNet
             data.Add("a", args);
 
             data.Add("handshake", "gkn"); // ???
+
+            return data;
+        }
+
+        public static BDictionary CreateChatResponse(BString transactionID, DHTId nodeId)
+        {
+            var data = new BDictionary();
+            data.Add("t", transactionID);
+            data.Add("y", "r");
+
+            var r = new BDictionary();
+            r.Add("q", "chat");
+            r.Add("id", nodeId.ToBencodedString());
+            data.Add("r", r);
 
             return data;
         }

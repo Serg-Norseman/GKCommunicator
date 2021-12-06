@@ -19,10 +19,11 @@ This is a sub-project of GEDKeeper (application and plugin). The distributed, de
 - [x] Keys generation, simple user identification and authentication
 - [x] RSA traffic encryption
 - [x] Stable peer discovery
+- [x] Presence statuses
 
 ### Planned
 
-- [ ] Chat with presence statuses and message history
+- [ ] Chat with message history
 - [ ] A simple bulletin board of investigations and search of kins (only in the implementation of the plugin)
 
 ### Distant future
