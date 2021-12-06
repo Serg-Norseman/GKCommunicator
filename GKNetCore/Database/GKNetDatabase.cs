@@ -292,6 +292,35 @@ namespace GKNet.Database
 
         #endregion
 
+        #region Messages
+
+        public IEnumerable<Message> LoadMessages(string contactId)
+        {
+            var result = new List<Message>();
+
+            string query = string.Format("select * from Messages where (sender = ? or receiver = ?)", contactId, contactId);
+            var records = fConnection.Query<DBMessage>(query);
+            if (records != null) {
+                foreach (var rec in records) {
+                    var msg = Message.FromDBRecord(rec);
+                    result.Add(msg);
+                }
+            }
+
+            return result;
+        }
+
+        public void SaveMessage(Message message)
+        {
+            if (!IsConnected)
+                throw new DatabaseException("Database disconnected");
+
+            var record = message.ToDBRecord();
+            fConnection.Insert(record);
+        }
+
+        #endregion
+
         #region Tuples for aggregate queries
 
         private class QString

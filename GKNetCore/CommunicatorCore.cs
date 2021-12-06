@@ -162,8 +162,6 @@ namespace GKNet
             fTCPClient.DataReceive += OnDataReceive;
 
             fTCPListenerPort = ProtocolHelper.PublicTCPPort;
-
-            //NATHolePunching();
         }
 
         protected override void Dispose(bool disposing)
@@ -180,28 +178,17 @@ namespace GKNet
             base.Dispose(disposing);
         }
 
-        /*private void NATHolePunching()
-        {
-            new Thread(() => {
-                CreatePortMapping();
-
-                Thread.Sleep(1000);
-
-                fForm.OnInitialized();
-            }).Start();
-        }*/
-
         public void CreatePortMapping()
         {
-            new Thread(() => {
-                NatUtility.DeviceFound += DeviceFound;
-                NatUtility.DeviceLost += DeviceLost;
-                fLogger.WriteInfo("NAT Discovery started");
-                NatUtility.StartDiscovery();
-                fUPnPSem.WaitOne();
-                fLogger.WriteInfo("NAT Discovery stopped");
-                NatUtility.StopDiscovery();
-            }).Start();
+            NatUtility.DeviceFound += DeviceFound;
+
+            fLogger.WriteInfo("NAT Discovery started");
+            NatUtility.StartDiscovery();
+
+            fUPnPSem.WaitOne();
+
+            fLogger.WriteInfo("NAT Discovery stopped");
+            NatUtility.StopDiscovery();
         }
 
         private void DeviceFound(object sender, DeviceEventArgs args)
@@ -230,7 +217,10 @@ namespace GKNet
 
                     m = device.GetSpecificMapping(Protocol.Udp, DHTClient.PublicDHTPort);
                     if (m != null) {
-                        device.DeletePortMap(m);
+                        try {
+                            device.DeletePortMap(m);
+                        } catch {
+                        }
                     }
                     m = new Mapping(Protocol.Udp, DHTClient.PublicDHTPort, DHTClient.PublicDHTPort);
                     device.CreatePortMap(m);
@@ -247,11 +237,6 @@ namespace GKNet
             } catch (Exception ex) {
                 fLogger.WriteError("NATMapper.DeviceFound()", ex);
             }
-        }
-
-        private void DeviceLost(object sender, DeviceEventArgs args)
-        {
-            fLogger.WriteInfo("Device lost, type: {0}", args.Device.GetType().Name);
         }
 
         public void Connect()
@@ -442,6 +427,8 @@ namespace GKNet
         {
             fLogger.WriteDebug("SendMessage: {0}, `{1}`", peer.EndPoint, message);
 
+            fDatabase.SaveMessage(new Message(DateTime.UtcNow, message, fLocalPeer.ID.ToHex(), peer.ID.ToHex()));
+
             bool encrypted = false;
             if (peer.Profile != null && !string.IsNullOrEmpty(peer.Profile.PublicKey)) {
                 message = Utilities.Encrypt(message, peer.Profile.PublicKey);
@@ -544,10 +531,7 @@ namespace GKNet
                     var enc = Convert.ToBoolean(args.Get<BNumber>("enc").Value);
                     var msgdata = args.Get<BString>("msg").Value;
                     string msg = Encoding.UTF8.GetString(msgdata);
-                    if (enc && !string.IsNullOrEmpty(fProfile.PrivateKey) && !string.IsNullOrEmpty(fPassword)) {
-                        msg = Utilities.Decrypt(msg, fProfile.PrivateKey, fPassword) + " [decrypted]"; // FIXME: temporary debug sign
-                    }
-                    fForm.OnMessageReceived(pr, msg);
+                    OnMessageReceive(pr, msg, enc);
                     break;
             }
         }
@@ -580,6 +564,16 @@ namespace GKNet
                     }
                     break;
             }
+        }
+
+        private void OnMessageReceive(Peer peer, string msg, bool encoded)
+        {
+            if (encoded && !string.IsNullOrEmpty(fProfile.PrivateKey) && !string.IsNullOrEmpty(fPassword)) {
+                msg = Utilities.Decrypt(msg, fProfile.PrivateKey, fPassword) + " [decrypted]"; // FIXME: temporary debug sign
+            }
+            fForm.OnMessageReceived(peer, msg);
+
+            fDatabase.SaveMessage(new Message(DateTime.UtcNow, msg, peer.ID.ToHex(), fLocalPeer.ID.ToHex()));
         }
 
         private void OnDataReceive(object sender, DataReceiveEventArgs e)
@@ -631,6 +625,12 @@ namespace GKNet
             foreach (var peer in fPeers) {
                 result.Add(peer);
             }
+            return result;
+        }
+
+        public IEnumerable<Message> LoadMessages(Peer peer)
+        {
+            var result = (peer == null) ? new List<Message>() : fDatabase.LoadMessages(peer.ID.ToHex());
             return result;
         }
     }

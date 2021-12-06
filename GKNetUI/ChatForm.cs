@@ -134,15 +134,28 @@ namespace GKNetUI
             lstChatMsgs.SelectionColor = color;
         }
 
-        private void AddChatText(Peer sender, string text, Color headerColor, Color textColor)
+        private void AddChatText(Peer sender, DateTime timestamp, string text, Color headerColor, Color textColor)
         {
-            string senderText = (sender == null) ? " [local]" : string.Format(" [{0}]", sender.EndPoint);
+            if (sender == null)
+                return;
+
+            string senderText = (sender.IsLocal) ? " [local]" : string.Format(" [{0}]", sender.EndPoint);
             lstChatMsgs.AppendText("\r\n");
-            AddTextChunk(DateTime.Now.ToString() + senderText, headerColor);
+            AddTextChunk(timestamp.ToString() + senderText, headerColor);
             lstChatMsgs.AppendText("\r\n");
             AddTextChunk(text, textColor);
             lstChatMsgs.AppendText("\r\n");
             lstChatMsgs.ScrollToCaret();
+        }
+
+        private void PrintSentText(Peer sender, DateTime timestamp, string text)
+        {
+            AddChatText(sender, timestamp, text, Color.Navy, Color.Black);
+        }
+
+        private void PrintReceivedText(Peer sender, DateTime timestamp, string text)
+        {
+            AddChatText(sender, timestamp, text, Color.Red, Color.Black);
         }
 
         private void ShowProfile(PeerProfile profile)
@@ -213,7 +226,7 @@ namespace GKNetUI
             var msgText = txtChatMsg.Text;
 
             if (!string.IsNullOrEmpty(msgText)) {
-                AddChatText(null, msgText, Color.Navy, Color.Black);
+                PrintSentText(fCore.LocalPeer, DateTime.Now, msgText);
                 txtChatMsg.Clear();
                 txtChatMsg.Focus();
 
@@ -309,8 +322,23 @@ namespace GKNetUI
 
         private void lstMembers_SelectedValueChanged(object sender, EventArgs e)
         {
+            lstChatMsgs.Clear();
+
             var peer = GetSelectedPeer();
-            // TODO: load messages history
+            if (peer.IsLocal) {
+                return;
+            }
+
+            var messages = fCore.LoadMessages(peer);
+            var localId = fCore.LocalPeer.ID.ToHex();
+
+            foreach (var msg in messages) {
+                if (msg.Sender == localId) {
+                    PrintSentText(fCore.LocalPeer, msg.Timestamp, msg.Text);
+                } else {
+                    PrintReceivedText(peer, msg.Timestamp, msg.Text);
+                }
+            }
         }
 
         #endregion
@@ -368,7 +396,7 @@ namespace GKNetUI
         void IChatForm.OnMessageReceived(Peer sender, string message)
         {
             Invoke((MethodInvoker)delegate {
-                AddChatText(sender, message, Color.Red, Color.Black);
+                PrintReceivedText(sender, DateTime.Now, message);
 
                 UpdateStatus();
             });

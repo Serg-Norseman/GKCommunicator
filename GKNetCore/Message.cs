@@ -35,12 +35,21 @@ namespace GKNet
         public string Text { get; private set; }
         public MessageStatus Status { get; private set; }
 
+        public string Sender { get; set; }
+        public string Receiver { get; set; }
 
-        public Message(DateTime timestamp, string text)
+
+        private Message()
+        {
+        }
+
+        public Message(DateTime timestamp, string text, string sender, string receiver)
         {
             Timestamp = timestamp;
             Text = text;
             Status = MessageStatus.Undelivered;
+            Sender = sender;
+            Receiver = receiver;
         }
 
         public void SetDelivered()
@@ -57,14 +66,24 @@ namespace GKNet
             result.msg_text = Text;
             result.flags = (int)Status;
 
+            result.sender = Sender;
+            result.receiver = Receiver;
+
             return result;
         }
 
-        internal void FromDBRecord(DBMessage dbMsg)
+        internal static Message FromDBRecord(DBMessage dbMsg)
         {
-            Timestamp = dbMsg.timestamp;
-            Text = dbMsg.msg_text;
-            Status = (MessageStatus)dbMsg.flags;
+            var result = new Message();
+
+            result.Timestamp = dbMsg.timestamp;
+            result.Text = dbMsg.msg_text;
+            result.Status = (MessageStatus)dbMsg.flags;
+
+            result.Sender = dbMsg.sender;
+            result.Receiver = dbMsg.receiver;
+
+            return result;
         }
     }
 }
