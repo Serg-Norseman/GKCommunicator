@@ -26,7 +26,7 @@ namespace GKNet.DHT
             var table = new DHTRoutingTable(10);
 
             var randId = DHTId.CreateRandom();
-            var nodeEndPoint = new IPEndPoint(IPAddress.Any, 0);
+            var nodeEndPoint = new IPEndPoint(IPAddress.Any, 6881);
             var node = new DHTNode(randId, nodeEndPoint);
 
             table.UpdateNode(node);
@@ -48,7 +48,7 @@ namespace GKNet.DHT
             Assert.IsNotNull(nodes);
             Assert.AreEqual(0, nodes.Count);
 
-            var node = new DHTNode(randId, new IPEndPoint(IPAddress.Any, 0));
+            var node = new DHTNode(randId, new IPEndPoint(IPAddress.Any, 6881));
             table.UpdateNode(node);
             nodes = table.GetClosest(randId.Data);
             Assert.IsNotNull(nodes);
@@ -64,6 +64,17 @@ namespace GKNet.DHT
 
             var node = new DHTNode(DHTId.CreateRandom(), new IPEndPoint(IPAddress.Any, 0));
             table.UpdateNode(node);
+        }
+
+        [Test]
+        public void Test_UpdateNode_DDoS_Protection()
+        {
+            var table = new DHTRoutingTable(10);
+
+            // do not use nodes with ports below 1024
+            var node = new DHTNode(DHTId.CreateRandom(), new IPEndPoint(IPAddress.Any, 111));
+            var result = table.UpdateNode(node);
+            Assert.IsFalse(result);
         }
     }
 }

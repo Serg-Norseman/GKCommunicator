@@ -57,17 +57,21 @@ namespace GKNet.DHT
             }
         }
 
-        public void UpdateNode(DHTNode node)
+        public bool UpdateNode(DHTNode node)
         {
             if (node == null || node.Id == null)
-                return;
+                return false;
+
+            // protection against participation in botnet attacks
+            if (node.EndPoint.Port <= 1024)
+                return false;
 
             if (IsFull) {
                 ClearExpireNode();
             }
 
             if (IsFull) {
-                return;
+                return false;
             }
 
             DHTNode existNode;
@@ -83,6 +87,8 @@ namespace GKNet.DHT
             }
 
             node.Update();
+
+            return true;
         }
 
         private void ClearExpireNode()

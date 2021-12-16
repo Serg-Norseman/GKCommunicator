@@ -41,7 +41,7 @@ namespace GKNet
         public const string APP_NAME = "GKCommunicator";
         public const string APP_DESC = "Distributed, decentralized, serverless, peer-to-peer communication plugin for GEDKeeper.";
         public const string APP_COPYRIGHT = "Copyright © 2018-2021 by Sergey V. Zhdanovskih";
-        public const string APP_VERSION = "0.10.0.0";
+        public const string APP_VERSION = "0.25.0.0";
 
         private static readonly DHTId GKNInfoHash = ProtocolHelper.CreateSignInfoKey();
 

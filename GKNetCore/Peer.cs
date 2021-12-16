@@ -47,6 +47,7 @@ namespace GKNet
             set { Profile.NodeId = value; }
         }
 
+        public bool Ban { get; set; }
         public bool IsLocal { get; set; }
         public PresenceStatus Presence { get; set; }
         public PeerProfile Profile { get; private set; }

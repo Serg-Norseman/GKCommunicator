@@ -33,32 +33,31 @@ namespace GKNet.STUN
         {
             fLogger.WriteInfo("STUN detecting started");
 
-            Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            socket.Bind(new IPEndPoint(IPAddress.Any, portNumber));
+            using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp)) {
+                socket.Bind(new IPEndPoint(IPAddress.Any, portNumber));
 
-            fLogger.WriteInfo("Local Endpoint: " + socket.LocalEndPoint);
+                fLogger.WriteInfo("Local Endpoint: " + socket.LocalEndPoint);
 
-            STUN_Result result = STUN_Client.Query("stun1.l.google.com", 19302, socket);
-            if (result.NetType == STUN_NetType.UdpBlocked) {
-                foreach (var item in STUNProviders) {
-                    var res = STUN_Client.Query(item.Address, item.Port, socket);
-                    if (res.NetType != STUN_NetType.UdpBlocked) {
-                        result = res;
-                        break;
+                STUN_Result result = STUN_Client.Query("stun1.l.google.com", 19302, socket);
+                if (result.NetType == STUN_NetType.UdpBlocked) {
+                    foreach (var item in STUNProviders) {
+                        var res = STUN_Client.Query(item.Address, item.Port, socket);
+                        if (res.NetType != STUN_NetType.UdpBlocked) {
+                            result = res;
+                            break;
+                        }
                     }
                 }
+
+                fLogger.WriteInfo("NAT Type: " + result.NetType.ToString());
+                if (result.NetType != STUN_NetType.UdpBlocked) {
+                    fLogger.WriteInfo("Public Endpoint: " + result.PublicEndPoint.ToString());
+                }
+
+                fLogger.WriteInfo("STUN detecting finished");
+
+                return result;
             }
-
-            fLogger.WriteInfo("NAT Type: " + result.NetType.ToString());
-            if (result.NetType != STUN_NetType.UdpBlocked) {
-                fLogger.WriteInfo("Public Endpoint: " + result.PublicEndPoint.ToString());
-            }
-
-            socket.Close();
-
-            fLogger.WriteInfo("STUN detecting finished");
-
-            return result;
         }
 
         private struct STUNProvider

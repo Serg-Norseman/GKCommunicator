@@ -274,10 +274,11 @@ namespace GKNet.DHT
 
         private void UpdateRoutingTable(DHTNode node)
         {
-            fRoutingTable.UpdateNode(node);
-            fLastNodesUpdateTime = DateTime.UtcNow.Ticks;
+            if (fRoutingTable.UpdateNode(node)) {
+                fLastNodesUpdateTime = DateTime.UtcNow.Ticks;
 
-            fPeersHolder.SaveNode(node);
+                fPeersHolder.SaveNode(node);
+            }
         }
 
         private void OnRecvResponseX(IPEndPoint ipinfo, DHTResponseMessage msg)
