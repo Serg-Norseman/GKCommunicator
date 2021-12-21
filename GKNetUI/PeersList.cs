@@ -27,6 +27,11 @@ namespace GKNetUI
 {
     public class PeersList : ListBox
     {
+        public bool ShowConnectionInfo
+        {
+            get; set;
+        }
+
         public PeersList()
         {
             DrawMode = DrawMode.OwnerDrawVariable;
@@ -78,7 +83,8 @@ namespace GKNetUI
                 var status = peer.Presence;
                 var icon = UIHelper.GetPresenceStatusImage(status);
                 if (icon != null) {
-                    e.Graphics.DrawImage(icon, rt.Right - icon.Width - 2, rt.Top + 2);
+                    int iconY = (!ShowConnectionInfo) ? (rt.Height - icon.Width) / 2 : rt.Top + 2;
+                    e.Graphics.DrawImage(icon, rt.Right - icon.Width - 2, iconY);
                 }
             }
 
@@ -87,7 +93,8 @@ namespace GKNetUI
             StringFormat fmt = new StringFormat();
             fmt.Alignment = StringAlignment.Near;
             fmt.LineAlignment = StringAlignment.Center;
-            e.Graphics.DrawString(peer.ToString(), fnt, Brushes.Black, rt, fmt);
+
+            e.Graphics.DrawString(GetPeerItem(peer), fnt, Brushes.Black, rt, fmt);
 
             base.OnDrawItem(e);
         }
@@ -95,6 +102,15 @@ namespace GKNetUI
         protected override void OnSelectedIndexChanged(EventArgs e)
         {
             base.OnSelectedIndexChanged(e);
+        }
+
+        private string GetPeerItem(Peer peer)
+        {
+            string location = (peer.IsLocal) ? "local" : "external";
+            string connInfo = string.Format("{0} ({1}, {2})", peer.EndPoint, peer.State, location);
+            string peerName = (peer.IsLocal || peer.State == PeerState.Identified) ? peer.Profile.UserName : "???";
+            string result = (!ShowConnectionInfo) ? peerName : string.Format("{0}\r\n{1}", peerName, connInfo);
+            return result;
         }
     }
 }

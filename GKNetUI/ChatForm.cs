@@ -69,6 +69,9 @@ namespace GKNetUI
             fInitialized = false;
             fCore = new CommunicatorCore(this);
 
+            miConnectionInfo.Checked = fCore.ShowConnectionInfo;
+            UpdateShowConnectionInfo();
+
             lblConnectionStatus.Text = "Network initialization...";
             UIHelper.SetMenuItemTag(menuPresenceStatuses, fCore.LocalPeer.Presence);
             UpdateStatus();
@@ -242,6 +245,12 @@ namespace GKNetUI
             }
         }
 
+        private void UpdateShowConnectionInfo()
+        {
+            lstMembers.ShowConnectionInfo = fCore.ShowConnectionInfo;
+            lstMembers.Refresh();
+        }
+
         #endregion
 
         #region Event handlers
@@ -286,7 +295,7 @@ namespace GKNetUI
             Disconnect();
         }
 
-        private void miProfile_Click(object sender, EventArgs e)
+        private void miMyProfile_Click(object sender, EventArgs e)
         {
             ShowProfile(fCore.Profile);
         }
@@ -325,7 +334,7 @@ namespace GKNetUI
             lstChatMsgs.Clear();
 
             var peer = GetSelectedPeer();
-            if (peer.IsLocal) {
+            if (peer.IsLocal || peer.ID == null) {
                 return;
             }
 
@@ -339,6 +348,12 @@ namespace GKNetUI
                     PrintReceivedText(peer, msg.Timestamp, msg.Text);
                 }
             }
+        }
+
+        private void miConnectionInfo_CheckedChanged(object sender, EventArgs e)
+        {
+            fCore.ShowConnectionInfo = miConnectionInfo.Checked;
+            UpdateShowConnectionInfo();
         }
 
         #endregion
@@ -377,17 +392,17 @@ namespace GKNetUI
                 lstMembers.BeginUpdate();
                 lstMembers.Items.Clear();
                 foreach (var peer in fCore.Peers) {
-                    if (!peer.IsLocal) {
+                    if (!peer.IsLocal && peer.State >= PeerState.Unchecked) {
                         membersNum += 1;
+                        lstMembers.Items.Add(peer);
                     }
-                    lstMembers.Items.Add(peer);
                 }
                 lstMembers.EndUpdate();
                 if (fCore.Peers.Contains(selItem)) {
                     lstMembers.SelectedItem = selItem;
                 }
 
-                lblConnectionStatus.Text = string.Format("Members online: {0} ({1})", membersNum, fCore.Peers.Count);
+                lblConnectionStatus.Text = string.Format("Members online: {0} ({1} total)", membersNum, fCore.Peers.Count);
 
                 UpdateStatus();
             });

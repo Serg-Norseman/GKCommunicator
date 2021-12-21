@@ -22,6 +22,7 @@ This is a sub-project of GEDKeeper (application and plugin). The distributed, de
 
 ### Planned
 
+- [ ] Message delivery status
 - [ ] A simple bulletin board of investigations and search of kins (only in the implementation of the plugin)
 
 ### Distant future

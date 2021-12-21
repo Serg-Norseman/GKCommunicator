@@ -57,6 +57,7 @@ namespace GKNet
         private readonly IList<Peer> fPeers;
         private readonly UserProfile fProfile;
         private IPEndPoint fPublicEndPoint;
+        private bool fShowConnectionInfo;
         private STUN_Result fSTUNInfo;
         private readonly TCPDuplexClient fTCPClient;
         private int fTCPListenerPort;
@@ -101,6 +102,15 @@ namespace GKNet
         public UserProfile Profile
         {
             get { return fProfile; }
+        }
+
+        public bool ShowConnectionInfo
+        {
+            get { return fShowConnectionInfo; }
+            set {
+                fShowConnectionInfo = value;
+                fDatabase.SetParameterBool("show_connection_info", value);
+            }
         }
 
         public STUN_Result STUNInfo
@@ -275,6 +285,8 @@ namespace GKNet
 
         private void InitializePeers()
         {
+            fShowConnectionInfo = fDatabase.GetParameterBool("show_connection_info");
+
             fLocalPeer = AddPeer(fPublicEndPoint, fProfile);
             fLocalPeer.State = PeerState.Unknown;
             fLocalPeer.Presence = fDatabase.LoadPresence();
@@ -425,6 +437,9 @@ namespace GKNet
 
         public void SendMessage(Peer peer, string message)
         {
+            if (peer == null || peer.ID == null || string.IsNullOrEmpty(message))
+                return;
+
             fLogger.WriteDebug("SendMessage: {0}, `{1}`", peer.EndPoint, message);
 
             fDatabase.SaveMessage(new Message(DateTime.UtcNow, message, fLocalPeer.ID.ToString(), peer.ID.ToString()));
@@ -459,7 +474,7 @@ namespace GKNet
                 // always send ping
                 SendPing(peer, (peer.State < PeerState.Checked));
 
-                if (peer.State == PeerState.Checked) {
+                if (peer.State >= PeerState.Checked) {
                     hasCheckedPeers = true;
                 }
 
@@ -549,8 +564,6 @@ namespace GKNet
                 case "handshake":
                     if (peer != null) {
                         peer.Presence = (PresenceStatus)resp.Get<BNumber>("presence").Value;
-                        //peer.State = PeerState.Checked;
-                        //SendData(e.EndPoint, ProtocolHelper.CreateGetPeerInfoQuery(DHTTransactions.GetNextId(), fDHTClient.LocalID));
                     }
                     break;
 
@@ -559,7 +572,6 @@ namespace GKNet
                         peer.Profile.Load(resp);
                         peer.ID = e.NodeId;
                         peer.State = PeerState.Identified;
-                        peer.Presence = PresenceStatus.Unknown;
                         fDatabase.SavePeer(peer.Profile, e.EndPoint);
                     }
                     break;

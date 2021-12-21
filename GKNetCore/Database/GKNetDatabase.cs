@@ -298,7 +298,7 @@ namespace GKNet.Database
         {
             var result = new List<Message>();
 
-            string query = string.Format("select * from Messages where (sender = ? or receiver = ?)", contactId, contactId);
+            string query = string.Format("select * from Messages where (sender = '{0}' or receiver = '{1}')", contactId, contactId);
             var records = fConnection.Query<DBMessage>(query);
             if (records != null) {
                 foreach (var rec in records) {
