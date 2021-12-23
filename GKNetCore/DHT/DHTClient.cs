@@ -25,7 +25,6 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using BencodeNET;
-using BSLib;
 using GKNet.Logging;
 
 namespace GKNet.DHT
@@ -42,11 +41,11 @@ namespace GKNet.DHT
 
         private long fLastNodesUpdateTime;
         private long fLastRefreshTime;
-        private DHTId fLocalID;
         private IList<IPAddress> fRouters;
         private DHTId fSearchInfoHash;
 
         private readonly string fClientVer;
+        private readonly DHTId fLocalID;
         private readonly ILogger fLogger;
         private readonly IDHTPeersHolder fPeersHolder;
         private readonly DHTRoutingTable fRoutingTable;

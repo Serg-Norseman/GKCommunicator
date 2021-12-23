@@ -19,14 +19,6 @@ namespace BencodeNET
 
         /// <summary>
         /// Creates a new <see cref="BencodeStream"/> by converting the string
-        /// to bytes using <see cref="Encoding.UTF8"/> and storing them in a <see cref="MemoryStream"/>.
-        /// </summary>
-        /// <param name="str"></param>
-        public BencodeStream(string str) : this(str, Encoding.UTF8)
-        { }
-
-        /// <summary>
-        /// Creates a new <see cref="BencodeStream"/> by converting the string
         /// to bytes using the specified encoding and storing them in a <see cref="MemoryStream"/>.
         /// </summary>
         /// <param name="str"></param>

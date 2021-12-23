@@ -49,9 +49,9 @@ namespace GKNet.STUN
                     }
                 }
 
-                fLogger.WriteInfo("NAT Type: " + result.NetType.ToString());
+                fLogger.WriteInfo("NAT Type: " + result.NetType);
                 if (result.NetType != STUN_NetType.UdpBlocked) {
-                    fLogger.WriteInfo("Public Endpoint: " + result.PublicEndPoint.ToString());
+                    fLogger.WriteInfo("Public Endpoint: " + result.PublicEndPoint);
                 }
 
                 fLogger.WriteInfo("STUN detecting finished");

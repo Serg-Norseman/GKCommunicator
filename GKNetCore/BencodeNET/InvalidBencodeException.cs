@@ -14,15 +14,8 @@ namespace BencodeNET
         /// </summary>
         public long StreamPosition { get; set; }
 
-        public InvalidBencodeException()
-        { }
-
         public InvalidBencodeException(string message)
             : base(message)
-        { }
-
-        public InvalidBencodeException(string message, Exception inner)
-            : base(message, inner)
         { }
 
         public InvalidBencodeException(string message, Exception inner, long streamPosition)

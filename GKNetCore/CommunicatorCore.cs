@@ -130,6 +130,11 @@ namespace GKNet
             set { fTCPListenerPort = value; }
         }
 
+        public bool UPnPEnabled
+        {
+            get; set;
+        }
+
 
         public CommunicatorCore(IChatForm form)
         {
@@ -157,6 +162,10 @@ namespace GKNet
             } catch (Exception ex) {
                 fLogger.WriteError("DetectSTUN() error", ex);
                 fPublicEndPoint = null;
+            }
+
+            if (UPnPEnabled) {
+                CreatePortMapping();
             }
 
             fDHTClient = new DHTClient(new IPEndPoint(DHTClient.IPAnyAddress, Port), this, ProtocolHelper.CLIENT_VER);

@@ -18,7 +18,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
 using System.Drawing;
 using System.Windows.Forms;
 using GKNet;
@@ -97,11 +96,6 @@ namespace GKNetUI
             e.Graphics.DrawString(GetPeerItem(peer), fnt, Brushes.Black, rt, fmt);
 
             base.OnDrawItem(e);
-        }
-
-        protected override void OnSelectedIndexChanged(EventArgs e)
-        {
-            base.OnSelectedIndexChanged(e);
         }
 
         private string GetPeerItem(Peer peer)

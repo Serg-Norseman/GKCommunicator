@@ -17,7 +17,7 @@ namespace BencodeNET
             Assert.AreEqual("i12345e", bnumber.EncodeAsString());
 
             Assert.IsTrue(bnumber.Equals((BNumber)12345));
-            Assert.AreEqual(0, bnumber.CompareTo((BNumber)12345));
+            Assert.AreEqual(0, bnumber.CompareTo(12345));
 
             int intVal = 123;
             bnumber = intVal;

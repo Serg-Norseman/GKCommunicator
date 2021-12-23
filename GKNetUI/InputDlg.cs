@@ -161,10 +161,10 @@ namespace GKNetUI
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
             MinimizeBox = false;
-            Name = "InputBox";
+            Name = "InputDlg";
             ShowInTaskbar = false;
             StartPosition = FormStartPosition.CenterParent;
-            Text = "InputBox";
+            Text = "InputDlg";
             TopMost = true;
             ResumeLayout(false);
             PerformLayout();

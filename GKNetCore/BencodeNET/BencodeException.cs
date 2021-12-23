@@ -36,10 +36,6 @@ namespace BencodeNET
             get { return fRelatedType; }
         }
 
-        public BencodeException()
-        {
-        }
-
         public BencodeException(string message) : base(message)
         {
         }
