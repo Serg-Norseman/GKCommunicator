@@ -84,7 +84,7 @@ namespace GKNetUI
             if (!InputDlg.QueryPassword(this, CommunicatorCore.APP_NAME, "Password", ref password)) {
                 return;
             }
-            userProfile.Identify(password);
+            fCore.Identify(userProfile, password);
 
             userProfile.UserName = txtUserName.Text;
             userProfile.Country = txtCountry.Text;

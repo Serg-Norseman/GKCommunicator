@@ -319,6 +319,14 @@ namespace GKNet.Database
             fConnection.Insert(record);
         }
 
+        public void UpdateMessageDelivered(DHTId receiverId, long timestamp)
+        {
+            if (!IsConnected)
+                throw new DatabaseException("Database disconnected");
+
+            fConnection.Execute(string.Format("update Messages set flags = 1 where (receiver = '{0}' and timestamp = {1})", receiverId, timestamp));
+        }
+
         #endregion
 
         #region Tuples for aggregate queries

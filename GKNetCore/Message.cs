@@ -55,14 +55,13 @@ namespace GKNet
         public void SetDelivered()
         {
             Status = MessageStatus.Delivered;
-            Timestamp = DateTime.UtcNow;
         }
 
         internal DBMessage ToDBRecord()
         {
             var result = new DBMessage();
 
-            result.timestamp = Timestamp;
+            result.timestamp = Timestamp.ToBinary();
             result.msg_text = Text;
             result.flags = (int)Status;
 
@@ -76,7 +75,7 @@ namespace GKNet
         {
             var result = new Message();
 
-            result.Timestamp = dbMsg.timestamp;
+            result.Timestamp = DateTime.FromBinary(dbMsg.timestamp);
             result.Text = dbMsg.msg_text;
             result.Status = (MessageStatus)dbMsg.flags;
 

@@ -16,7 +16,7 @@ namespace GKNet
             {
             }
 
-            public void OnMessageReceived(Peer sender, string message)
+            public void OnMessageReceived(Peer sender, Message message)
             {
             }
 

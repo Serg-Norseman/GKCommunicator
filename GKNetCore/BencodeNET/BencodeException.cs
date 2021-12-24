@@ -7,10 +7,6 @@ namespace BencodeNET
     /// </summary>
     public class BencodeException : Exception
     {
-        public BencodeException()
-        {
-        }
-
         public BencodeException(string message) : base(message)
         {
         }

@@ -285,6 +285,12 @@ namespace GKNet
             Thread.Sleep(2000);
         }
 
+        public void Identify(UserProfile userProfile, string password)
+        {
+            userProfile.Identify(password);
+            fPassword = password;
+        }
+
         public bool Authenticate(string password)
         {
             bool result = fProfile.Authenticate(password);
@@ -444,14 +450,15 @@ namespace GKNet
             //fTCPClient.Send(endPoint, data.EncodeAsBytes());
         }
 
-        public void SendMessage(Peer peer, string message)
+        public Message SendMessage(Peer peer, string message)
         {
             if (peer == null || peer.ID == null || string.IsNullOrEmpty(message))
-                return;
+                return null;
 
             fLogger.WriteDebug("SendMessage: {0}, `{1}`", peer.EndPoint, message);
 
-            fDatabase.SaveMessage(new Message(DateTime.UtcNow, message, fLocalPeer.ID.ToString(), peer.ID.ToString()));
+            var msg = new Message(DateTime.UtcNow, message, fLocalPeer.ID.ToString(), peer.ID.ToString());
+            fDatabase.SaveMessage(msg);
 
             bool encrypted = false;
             if (peer.Profile != null && !string.IsNullOrEmpty(peer.Profile.PublicKey)) {
@@ -459,7 +466,9 @@ namespace GKNet
                 encrypted = true;
             }
 
-            SendData(peer.EndPoint, ProtocolHelper.CreateChatMessage(DHTTransactions.GetNextId(), fDHTClient.LocalID, message, encrypted));
+            SendData(peer.EndPoint, ProtocolHelper.CreateChatMessage(DHTTransactions.GetNextId(), fDHTClient.LocalID, message, encrypted, msg.Timestamp.ToBinary()));
+
+            return msg;
         }
 
         #endregion
@@ -551,11 +560,16 @@ namespace GKNet
                     SendData(e.EndPoint, ProtocolHelper.CreateGetPeerInfoResponse(DHTTransactions.GetNextId(), fDHTClient.LocalID, fProfile));
                     break;
 
-                case "chat":
-                    var enc = Convert.ToBoolean(args.Get<BNumber>("enc").Value);
-                    var msgdata = args.Get<BString>("msg").Value;
-                    string msg = Encoding.UTF8.GetString(msgdata);
-                    OnMessageReceive(pr, msg, enc);
+                case ProtocolHelper.MSG_SIGN_CHAT:
+                    long timestamp = args.Get<BNumber>("ts").Value;
+                    try {
+                        var enc = Convert.ToBoolean(args.Get<BNumber>("enc").Value);
+                        var msgdata = args.Get<BString>("msg").Value;
+                        string msg = Encoding.UTF8.GetString(msgdata);
+                        OnMessageReceive(pr, msg, enc);
+                    } finally {
+                        SendData(e.EndPoint, ProtocolHelper.CreateChatResponse(DHTTransactions.GetNextId(), fDHTClient.LocalID, timestamp));
+                    }
                     break;
             }
         }
@@ -584,23 +598,32 @@ namespace GKNet
                         fDatabase.SavePeer(peer.Profile, e.EndPoint);
                     }
                     break;
+
+                case ProtocolHelper.MSG_SIGN_CHAT:
+                    if (peer != null) {
+                        long timestamp = resp.Get<BNumber>("ts").Value;
+                        fDatabase.UpdateMessageDelivered(e.NodeId, timestamp);
+                    }
+                    break;
             }
         }
 
-        private void OnMessageReceive(Peer peer, string msg, bool encoded)
+        private void OnMessageReceive(Peer peer, string msgText, bool encoded)
         {
             if (encoded && !string.IsNullOrEmpty(fProfile.PrivateKey) && !string.IsNullOrEmpty(fPassword)) {
-                msg = Utilities.Decrypt(msg, fProfile.PrivateKey, fPassword) + " [decrypted]"; // FIXME: temporary debug sign
+                msgText = Utilities.Decrypt(msgText, fProfile.PrivateKey, fPassword) + " [decrypted]"; // FIXME: temporary debug sign
             }
+
+            var msg = new Message(DateTime.UtcNow, msgText, peer.ID.ToString(), fLocalPeer.ID.ToString());
             fForm.OnMessageReceived(peer, msg);
 
-            fDatabase.SaveMessage(new Message(DateTime.UtcNow, msg, peer.ID.ToString(), fLocalPeer.ID.ToString()));
+            fDatabase.SaveMessage(msg);
         }
 
         private void OnDataReceive(object sender, DataReceiveEventArgs e)
         {
             // TODO: TCP channel of data, future?
-            var parser = new BencodeParser();
+            /*var parser = new BencodeParser();
             var dic = parser.Parse<BDictionary>(e.Data);
             fForm.OnMessageReceived(null, "TCP: " + dic.EncodeAsString());
 
@@ -618,7 +641,7 @@ namespace GKNet
                             SendGetPeerInfoResponse(e.Peer);
                             break;
 
-                        case "chat":
+                        case CHAT_MSG_SIGN:
                             var pr = FindPeer(e.Peer.Address);
                             var msgdata = args.Get<BString>("msg").Value;
                             string msg = Encoding.UTF8.GetString(msgdata);

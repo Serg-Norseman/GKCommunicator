@@ -35,6 +35,7 @@ namespace GKNetUI
         private const string TICK_SYMS = @"|/-\";
 
         private readonly CommunicatorCore fCore;
+        private readonly string fLocalId;
         private readonly ILogger fLogger;
 
         private bool fInitialized;
@@ -68,6 +69,7 @@ namespace GKNetUI
             fTick = -1;
             fInitialized = false;
             fCore = new CommunicatorCore(this);
+            fLocalId = fCore.LocalPeer.ID.ToString();
 
             miConnectionInfo.Checked = fCore.ShowConnectionInfo;
             UpdateShowConnectionInfo();
@@ -137,28 +139,31 @@ namespace GKNetUI
             lstChatMsgs.SelectionColor = color;
         }
 
-        private void AddChatText(Peer sender, DateTime timestamp, string text, Color headerColor, Color textColor)
+        private void PrintMessage(Peer collocutor, GKNet.Message msg)
         {
-            if (sender == null)
-                return;
+            string deliver = (msg.Status == MessageStatus.Delivered) ? " <vv>" : " <-->";
 
+            Peer sender;
+            Color headerColor;
+
+            if (msg.Sender == fLocalId) {
+                sender = fCore.LocalPeer;
+                headerColor = Color.Navy;
+            } else {
+                sender = collocutor;
+                headerColor = Color.Red;
+            }
+
+            string text = msg.Text + deliver;
+            Color textColor = Color.Black;
             string senderText = (sender.IsLocal) ? " [local]" : string.Format(" [{0}]", sender.EndPoint);
+
             lstChatMsgs.AppendText("\r\n");
-            AddTextChunk(timestamp.ToString() + senderText, headerColor);
+            AddTextChunk(msg.Timestamp.ToString() + senderText, headerColor);
             lstChatMsgs.AppendText("\r\n");
             AddTextChunk(text, textColor);
             lstChatMsgs.AppendText("\r\n");
             lstChatMsgs.ScrollToCaret();
-        }
-
-        private void PrintSentText(Peer sender, DateTime timestamp, string text)
-        {
-            AddChatText(sender, timestamp, text, Color.Navy, Color.Black);
-        }
-
-        private void PrintReceivedText(Peer sender, DateTime timestamp, string text)
-        {
-            AddChatText(sender, timestamp, text, Color.Red, Color.Black);
         }
 
         private void ShowProfile(PeerProfile profile)
@@ -227,19 +232,21 @@ namespace GKNetUI
         private void SendMessage(Peer selectedPeer)
         {
             var msgText = txtChatMsg.Text;
+            if (string.IsNullOrEmpty(msgText)) return;
 
-            if (!string.IsNullOrEmpty(msgText)) {
-                PrintSentText(fCore.LocalPeer, DateTime.Now, msgText);
-                txtChatMsg.Clear();
-                txtChatMsg.Focus();
+            txtChatMsg.Clear();
+            txtChatMsg.Focus();
 
-                if (selectedPeer != null && !selectedPeer.IsLocal) {
-                    fCore.SendMessage(selectedPeer, msgText);
-                } else {
-                    foreach (var peer in fCore.Peers) {
-                        if (!peer.IsLocal) {
-                            fCore.SendMessage(peer, msgText);
-                        }
+            if (selectedPeer != null && !selectedPeer.IsLocal) {
+                var msg = fCore.SendMessage(selectedPeer, msgText);
+                PrintMessage(selectedPeer, msg);
+            } else {
+                foreach (var peer in fCore.Peers) {
+                    if (peer.IsLocal) continue;
+
+                    var msg = fCore.SendMessage(peer, msgText);
+                    if (peer == selectedPeer) {
+                        PrintMessage(selectedPeer, msg);
                     }
                 }
             }
@@ -333,20 +340,15 @@ namespace GKNetUI
         {
             lstChatMsgs.Clear();
 
-            var peer = GetSelectedPeer();
-            if (peer.IsLocal || peer.ID == null) {
+            var selectedPeer = GetSelectedPeer();
+            if (selectedPeer.IsLocal || selectedPeer.ID == null) {
                 return;
             }
 
-            var messages = fCore.LoadMessages(peer);
-            var localId = fCore.LocalPeer.ID.ToString();
+            var messages = fCore.LoadMessages(selectedPeer);
 
             foreach (var msg in messages) {
-                if (msg.Sender == localId) {
-                    PrintSentText(fCore.LocalPeer, msg.Timestamp, msg.Text);
-                } else {
-                    PrintReceivedText(peer, msg.Timestamp, msg.Text);
-                }
+                PrintMessage(selectedPeer, msg);
             }
         }
 
@@ -408,10 +410,10 @@ namespace GKNetUI
             });
         }
 
-        void IChatForm.OnMessageReceived(Peer sender, string message)
+        void IChatForm.OnMessageReceived(Peer sender, GKNet.Message message)
         {
             Invoke((MethodInvoker)delegate {
-                PrintReceivedText(sender, DateTime.Now, message);
+                PrintMessage(sender, message);
 
                 UpdateStatus();
             });

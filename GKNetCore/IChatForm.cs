@@ -25,7 +25,7 @@ namespace GKNet
         ICommunicatorCore Core { get; }
 
         void OnInitialized();
-        void OnMessageReceived(Peer sender, string message);
+        void OnMessageReceived(Peer sender, Message message);
         void OnPeersListChanged();
     }
 }

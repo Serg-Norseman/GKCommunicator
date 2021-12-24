@@ -45,6 +45,9 @@ namespace GKNet
         private static SHA1 sha1 = new SHA1CryptoServiceProvider();
 
 
+        internal const string MSG_SIGN_CHAT = "chat";
+
+
         public static DHTId CreateSignInfoKey()
         {
             BDictionary subnetKey = new BDictionary();
@@ -88,17 +91,18 @@ namespace GKNet
             return data;
         }
 
-        public static BDictionary CreateChatMessage(BString transactionID, DHTId nodeId, string message, bool encrypted)
+        public static BDictionary CreateChatMessage(BString transactionID, DHTId nodeId, string message, bool encrypted, long timestamp)
         {
             var data = new BDictionary();
             data.Add("t", transactionID);
             data.Add("y", "q");
-            data.Add("q", "chat");
+            data.Add("q", MSG_SIGN_CHAT);
 
             var args = new BDictionary();
             args.Add("id", nodeId.ToBencodedString());
             args.Add("msg", message);
             args.Add("enc", Convert.ToInt32(encrypted));
+            args.Add("ts", timestamp);
             data.Add("a", args);
 
             data.Add("handshake", "gkn"); // ???
@@ -106,15 +110,16 @@ namespace GKNet
             return data;
         }
 
-        public static BDictionary CreateChatResponse(BString transactionID, DHTId nodeId)
+        public static BDictionary CreateChatResponse(BString transactionID, DHTId nodeId, long timestamp)
         {
             var data = new BDictionary();
             data.Add("t", transactionID);
             data.Add("y", "r");
 
             var r = new BDictionary();
-            r.Add("q", "chat");
+            r.Add("q", MSG_SIGN_CHAT);
             r.Add("id", nodeId.ToBencodedString());
+            r.Add("ts", timestamp);
             data.Add("r", r);
 
             return data;

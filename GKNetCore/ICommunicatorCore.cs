@@ -47,7 +47,9 @@ namespace GKNet
 
         void Connect();
         void Disconnect();
-        void SendMessage(Peer target, string message);
+        void Identify(UserProfile userProfile, string password);
+        bool Authenticate(string password);
+        Message SendMessage(Peer target, string message);
 
         Peer FindPeer(IPEndPoint peerEndPoint);
         bool UpdatePeer(IPEndPoint peerEndPoint);

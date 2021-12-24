@@ -10,19 +10,14 @@ This is a sub-project of GEDKeeper (application and plugin). The distributed, de
 - [x] STUN detection of public endpoint and NAT's type
 - [x] UPnP port's mapping (not used yet)
 - [x] IPv4 and IPv6 (untested)
-- [x] SQLite database support
-- [x] Simple user’s profile
 - [x] UDP hole-punching
-- [x] Working DHT peer search, connection and simple chat
-- [x] Storage of DHT nodes, user and peers profiles
-- [x] Keys generation, simple user identification and authentication
-- [x] RSA traffic encryption
-- [x] Stable peer discovery
-- [x] Chat with presence statuses and message history
+- [x] SQLite storage of DHT nodes, peer profiles and messages
+- [x] Keys generation, simple authentication and RSA traffic encryption
+- [x] Stable DHT peer discovery
+- [x] Chat with presence statuses, message history and delivery statuses
 
 ### Planned
 
-- [ ] Message delivery status
 - [ ] A simple bulletin board of investigations and search of kins (only in the implementation of the plugin)
 
 ### Distant future

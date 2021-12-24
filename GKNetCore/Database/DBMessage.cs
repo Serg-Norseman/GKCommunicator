@@ -18,7 +18,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
 using SQLite;
 
 namespace GKNet.Database
@@ -35,7 +34,7 @@ namespace GKNet.Database
         [MaxLength(40), NotNull]
         public string receiver { get; set; }
 
-        public DateTime timestamp { get; set; }
+        public long timestamp { get; set; }
 
         public int flags { get; set; }
 
