@@ -17,10 +17,5 @@ This project is a distributed, decentralized, serverless, peer-to-peer chat clie
 ### Planned
 
 - [ ] A simple bulletin board of investigations and search of kins (only in the implementation of the plugin)
-
-### Distant future
-
+- [ ] Invite peers to join via emails
 - [ ] TCP
-- [ ] Mutual identity and signing of user profiles (trusted and unchecked network members)
-- [ ] "Web of Trust" elements with PGP certificates (https://en.wikipedia.org/wiki/Web_of_trust)
-- [ ] "Friend-to-friend" network elements (https://en.wikipedia.org/wiki/Friend-to-friend)
