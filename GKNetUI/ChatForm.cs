@@ -71,6 +71,9 @@ namespace GKNetUI
             fCore = new CommunicatorCore(this);
             fLocalId = fCore.LocalPeer.ID.ToString();
 
+            lstChatMsgs.Core = fCore;
+            lstChatMsgs.LocalId = fLocalId;
+
             miConnectionInfo.Checked = fCore.ShowConnectionInfo;
             UpdateShowConnectionInfo();
 
@@ -128,42 +131,13 @@ namespace GKNetUI
             btnSendToAll.Enabled = fInitialized && connected;
         }
 
-        private void AddTextChunk(string text, Color color)
+        private void PrintMessage(GKNet.Message msg, bool scrollToBottom)
         {
-            int selStart = lstChatMsgs.Text.Length - 1;
-            lstChatMsgs.AppendText(text);
-            int selEnd = lstChatMsgs.Text.Length - 1;
+            lstChatMsgs.Items.Add(msg);
 
-            lstChatMsgs.SelectionStart = selStart;
-            lstChatMsgs.SelectionLength = selEnd - selStart + 1;
-            lstChatMsgs.SelectionColor = color;
-        }
-
-        private void PrintMessage(Peer collocutor, GKNet.Message msg)
-        {
-            string deliver = (msg.Status == MessageStatus.Delivered) ? " <vv>" : " <-->";
-
-            Peer sender;
-            Color headerColor;
-
-            if (msg.Sender == fLocalId) {
-                sender = fCore.LocalPeer;
-                headerColor = Color.Navy;
-            } else {
-                sender = collocutor;
-                headerColor = Color.Red;
+            if (scrollToBottom) {
+                lstChatMsgs.ScrollToBottom();
             }
-
-            string text = msg.Text + deliver;
-            Color textColor = Color.Black;
-            string senderText = (sender.IsLocal) ? " [local]" : string.Format(" [{0}]", sender.EndPoint);
-
-            lstChatMsgs.AppendText("\r\n");
-            AddTextChunk(msg.Timestamp.ToString() + senderText, headerColor);
-            lstChatMsgs.AppendText("\r\n");
-            AddTextChunk(text, textColor);
-            lstChatMsgs.AppendText("\r\n");
-            lstChatMsgs.ScrollToCaret();
         }
 
         private void ShowProfile(PeerProfile profile)
@@ -223,6 +197,8 @@ namespace GKNetUI
                         MessageBox.Show("Authentication failed", CommunicatorCore.APP_NAME, MessageBoxButtons.OK, MessageBoxIcon.Error);
                         Close();
                     }
+                } else {
+                    Close();
                 }
             } else {
                 ShowProfile(fCore.Profile);
@@ -239,14 +215,14 @@ namespace GKNetUI
 
             if (selectedPeer != null && !selectedPeer.IsLocal) {
                 var msg = fCore.SendMessage(selectedPeer, msgText);
-                PrintMessage(selectedPeer, msg);
+                PrintMessage(msg, true);
             } else {
                 foreach (var peer in fCore.Peers) {
                     if (peer.IsLocal) continue;
 
                     var msg = fCore.SendMessage(peer, msgText);
                     if (peer == selectedPeer) {
-                        PrintMessage(selectedPeer, msg);
+                        PrintMessage(msg, true);
                     }
                 }
             }
@@ -338,7 +314,7 @@ namespace GKNetUI
 
         private void lstMembers_SelectedValueChanged(object sender, EventArgs e)
         {
-            lstChatMsgs.Clear();
+            lstChatMsgs.Items.Clear();
 
             var selectedPeer = GetSelectedPeer();
             if (selectedPeer.IsLocal || selectedPeer.ID == null) {
@@ -348,8 +324,10 @@ namespace GKNetUI
             var messages = fCore.LoadMessages(selectedPeer);
 
             foreach (var msg in messages) {
-                PrintMessage(selectedPeer, msg);
+                PrintMessage(msg, false);
             }
+
+            lstChatMsgs.ScrollToBottom();
         }
 
         private void miConnectionInfo_CheckedChanged(object sender, EventArgs e)
@@ -394,7 +372,7 @@ namespace GKNetUI
                 lstMembers.BeginUpdate();
                 lstMembers.Items.Clear();
                 foreach (var peer in fCore.Peers) {
-                    if (!peer.IsLocal && peer.State >= PeerState.Unchecked) {
+                    if (!peer.IsLocal /*&& peer.State >= PeerState.Unchecked*/) {
                         membersNum += 1;
                         lstMembers.Items.Add(peer);
                     }
@@ -413,7 +391,7 @@ namespace GKNetUI
         void IChatForm.OnMessageReceived(Peer sender, GKNet.Message message)
         {
             Invoke((MethodInvoker)delegate {
-                PrintMessage(sender, message);
+                PrintMessage(message, true);
 
                 UpdateStatus();
             });

@@ -1,19 +1,17 @@
 # GKCommunicator
 
-This is a sub-project of GEDKeeper (application and plugin). The distributed, decentralized, serverless, peer-to-peer (P2P) chat client. 
+This project is a distributed, decentralized, serverless, peer-to-peer chat client for GEDKeeper.
 
 ## Roadmap
 
 ### Implemented
 
 - [x] Kademlia (Mainline) DHT
-- [x] STUN detection of public endpoint and NAT's type
-- [x] UPnP port's mapping (not used yet)
-- [x] IPv4 and IPv6 (untested)
+- [x] STUN detection of public endpoint
+- [x] UPnP port's mapping
 - [x] UDP hole-punching
 - [x] SQLite storage of DHT nodes, peer profiles and messages
 - [x] Keys generation, simple authentication and RSA traffic encryption
-- [x] Stable DHT peer discovery
 - [x] Chat with presence statuses, message history and delivery statuses
 
 ### Planned

@@ -52,6 +52,7 @@ namespace GKNet
         Message SendMessage(Peer target, string message);
 
         Peer FindPeer(IPEndPoint peerEndPoint);
+        Peer FindPeer(string id);
         bool UpdatePeer(IPEndPoint peerEndPoint);
     }
 }

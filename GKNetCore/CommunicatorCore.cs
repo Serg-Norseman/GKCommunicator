@@ -441,6 +441,11 @@ namespace GKNet
             return fPeers.FirstOrDefault(x => x.EndPoint.Equals(peerEndPoint));
         }
 
+        public Peer FindPeer(string id)
+        {
+            return fPeers.FirstOrDefault(x => x.ID.ToString().Equals(id));
+        }
+
         #region Protocol features
 
         private void SendData(IPEndPoint endPoint, BDictionary data)

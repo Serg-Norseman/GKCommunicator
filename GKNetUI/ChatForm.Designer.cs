@@ -19,7 +19,7 @@
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.Button btnSendToAll;
         private System.Windows.Forms.Button btnSend;
-        private System.Windows.Forms.RichTextBox lstChatMsgs;
+        private GKNetUI.MessagesList lstChatMsgs;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem miConnect;
         private System.Windows.Forms.ToolStripMenuItem miDisconnect;
@@ -84,7 +84,7 @@
             this.miPeerProfile = new System.Windows.Forms.ToolStripMenuItem();
             this.miAddPeer = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.lstChatMsgs = new System.Windows.Forms.RichTextBox();
+            this.lstChatMsgs = new GKNetUI.MessagesList();
             this.txtChatMsg = new System.Windows.Forms.TextBox();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.btnSendToAll = new System.Windows.Forms.Button();
@@ -429,7 +429,6 @@
             this.lstChatMsgs.Location = new System.Drawing.Point(0, 0);
             this.lstChatMsgs.Margin = new System.Windows.Forms.Padding(2, 4, 2, 4);
             this.lstChatMsgs.Name = "lstChatMsgs";
-            this.lstChatMsgs.ReadOnly = true;
             this.lstChatMsgs.Size = new System.Drawing.Size(617, 261);
             this.lstChatMsgs.TabIndex = 0;
             this.lstChatMsgs.Text = "";
