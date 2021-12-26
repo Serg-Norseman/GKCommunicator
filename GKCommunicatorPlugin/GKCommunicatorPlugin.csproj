@@ -27,6 +27,7 @@
       <HintPath>..\..\libs\BSLib.Design.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GKCommunicatorPlugin.cs" />
@@ -44,6 +45,18 @@
       <Project>{fee68cf6-1d60-4e90-aef3-6afa4a8c977d}</Project>
       <Name>GKNetCore</Name>
     </ProjectReference>
+    <ProjectReference Include="..\GKNetUI\GKNetUI.csproj">
+      <Project>{1d2c209a-6e19-4fcf-ba08-11b8096fca99}</Project>
+      <Name>GKNetUI</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="GKCommunicatorPlugin.enu">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="GKCommunicatorPlugin.rus">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
