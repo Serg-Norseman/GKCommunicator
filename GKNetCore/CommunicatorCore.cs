@@ -41,7 +41,7 @@ namespace GKNet
         public const string APP_NAME = "GKCommunicator";
         public const string APP_DESC = "Distributed, decentralized, serverless, peer-to-peer communication plugin for GEDKeeper.";
         public const string APP_COPYRIGHT = "Copyright © 2018-2021 by Sergey V. Zhdanovskih";
-        public const string APP_VERSION = "0.25.0.0";
+        public const string APP_VERSION = "0.28.0.0";
 
         private static readonly DHTId GKNInfoHash = ProtocolHelper.CreateSignInfoKey();
 
@@ -681,6 +681,17 @@ namespace GKNet
         {
             var result = (peer == null) ? new List<Message>() : fDatabase.LoadMessages(peer.ID.ToString());
             return result;
+        }
+
+        public void SendInvitation()
+        {
+            MailHelper.SendMail("", "Invite", "I invite you to join the GEDKeeper program network.\r\nMy network node id: " + fLocalPeer.ID.ToString());
+        }
+
+        public void AcceptInvitation(string nodeId)
+        {
+            if (string.IsNullOrEmpty(nodeId))
+                return;
         }
     }
 }

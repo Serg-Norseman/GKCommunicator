@@ -336,6 +336,19 @@ namespace GKNetUI
             UpdateShowConnectionInfo();
         }
 
+        private void tbSendInvitation_Click(object sender, EventArgs e)
+        {
+            fCore.SendInvitation();
+        }
+
+        private void tbAcceptInvitation_Click(object sender, EventArgs e)
+        {
+            string nodeId = string.Empty;
+            if (InputDlg.QueryPassword(this, CommunicatorCore.APP_NAME, "Friend's node id received by mail", ref nodeId)) {
+                fCore.AcceptInvitation(nodeId);
+            }
+        }
+
         #endregion
 
         #region IChatForm members

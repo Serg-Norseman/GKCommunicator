@@ -82,6 +82,7 @@
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\Log4NetHelper.cs" />
     <Compile Include="Logging\LogManager.cs" />
+    <Compile Include="MailHelper.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="Peer.cs" />
     <Compile Include="PeerProfile.cs" />

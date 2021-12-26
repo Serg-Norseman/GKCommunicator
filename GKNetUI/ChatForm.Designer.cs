@@ -44,10 +44,14 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripDropDownButton tbPresenceStatus;
         private System.Windows.Forms.ContextMenuStrip menuPresenceStatuses;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripButton tbSendInvitation;
+        private System.Windows.Forms.ToolStripButton tbAcceptInvitation;
 
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ChatForm));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.miConnection = new System.Windows.Forms.ToolStripMenuItem();
             this.miConnect = new System.Windows.Forms.ToolStripMenuItem();
@@ -89,6 +93,9 @@
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.btnSendToAll = new System.Windows.Forms.Button();
             this.btnSend = new System.Windows.Forms.Button();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.tbSendInvitation = new System.Windows.Forms.ToolStripButton();
+            this.tbAcceptInvitation = new System.Windows.Forms.ToolStripButton();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -114,7 +121,8 @@
             this.miHelp});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(914, 28);
+            this.menuStrip1.Padding = new System.Windows.Forms.Padding(5, 2, 0, 2);
+            this.menuStrip1.Size = new System.Drawing.Size(731, 24);
             this.menuStrip1.TabIndex = 9;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -128,44 +136,44 @@
             this.toolStripMenuItem2,
             this.miExit});
             this.miConnection.Name = "miConnection";
-            this.miConnection.Size = new System.Drawing.Size(98, 24);
+            this.miConnection.Size = new System.Drawing.Size(81, 20);
             this.miConnection.Text = "Connection";
             // 
             // miConnect
             // 
             this.miConnect.Name = "miConnect";
-            this.miConnect.Size = new System.Drawing.Size(165, 26);
+            this.miConnect.Size = new System.Drawing.Size(133, 22);
             this.miConnect.Text = "Connect";
             this.miConnect.Click += new System.EventHandler(this.miConnect_Click);
             // 
             // miDisconnect
             // 
             this.miDisconnect.Name = "miDisconnect";
-            this.miDisconnect.Size = new System.Drawing.Size(165, 26);
+            this.miDisconnect.Size = new System.Drawing.Size(133, 22);
             this.miDisconnect.Text = "Disconnect";
             this.miDisconnect.Click += new System.EventHandler(this.miDisconnect_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(162, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(130, 6);
             // 
             // miProfile
             // 
             this.miProfile.Name = "miProfile";
-            this.miProfile.Size = new System.Drawing.Size(165, 26);
+            this.miProfile.Size = new System.Drawing.Size(133, 22);
             this.miProfile.Text = "My Profile";
             this.miProfile.Click += new System.EventHandler(this.miMyProfile_Click);
             // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(162, 6);
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(130, 6);
             // 
             // miExit
             // 
             this.miExit.Name = "miExit";
-            this.miExit.Size = new System.Drawing.Size(165, 26);
+            this.miExit.Size = new System.Drawing.Size(133, 22);
             this.miExit.Text = "Exit";
             this.miExit.Click += new System.EventHandler(this.miExit_Click);
             // 
@@ -174,7 +182,7 @@
             this.miView.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.miPeersList});
             this.miView.Name = "miView";
-            this.miView.Size = new System.Drawing.Size(55, 24);
+            this.miView.Size = new System.Drawing.Size(44, 20);
             this.miView.Text = "View";
             // 
             // miPeersList
@@ -185,7 +193,7 @@
             this.toolStripMenuItem3,
             this.miConnectionInfo});
             this.miPeersList.Name = "miPeersList";
-            this.miPeersList.Size = new System.Drawing.Size(224, 26);
+            this.miPeersList.Size = new System.Drawing.Size(120, 22);
             this.miPeersList.Text = "Peers list";
             // 
             // miAllPeers
@@ -193,20 +201,20 @@
             this.miAllPeers.Checked = true;
             this.miAllPeers.CheckState = System.Windows.Forms.CheckState.Checked;
             this.miAllPeers.Name = "miAllPeers";
-            this.miAllPeers.Size = new System.Drawing.Size(224, 26);
+            this.miAllPeers.Size = new System.Drawing.Size(160, 22);
             this.miAllPeers.Text = "All peers";
             // 
             // miOnlyFriends
             // 
             this.miOnlyFriends.Enabled = false;
             this.miOnlyFriends.Name = "miOnlyFriends";
-            this.miOnlyFriends.Size = new System.Drawing.Size(224, 26);
+            this.miOnlyFriends.Size = new System.Drawing.Size(160, 22);
             this.miOnlyFriends.Text = "Only friends";
             // 
             // toolStripMenuItem3
             // 
             this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(221, 6);
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(157, 6);
             // 
             // miConnectionInfo
             // 
@@ -214,7 +222,7 @@
             this.miConnectionInfo.CheckOnClick = true;
             this.miConnectionInfo.CheckState = System.Windows.Forms.CheckState.Checked;
             this.miConnectionInfo.Name = "miConnectionInfo";
-            this.miConnectionInfo.Size = new System.Drawing.Size(224, 26);
+            this.miConnectionInfo.Size = new System.Drawing.Size(160, 22);
             this.miConnectionInfo.Text = "Connection Info";
             this.miConnectionInfo.CheckedChanged += new System.EventHandler(this.miConnectionInfo_CheckedChanged);
             // 
@@ -223,13 +231,13 @@
             this.miService.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.miDHTLog});
             this.miService.Name = "miService";
-            this.miService.Size = new System.Drawing.Size(70, 24);
+            this.miService.Size = new System.Drawing.Size(56, 20);
             this.miService.Text = "Service";
             // 
             // miDHTLog
             // 
             this.miDHTLog.Name = "miDHTLog";
-            this.miDHTLog.Size = new System.Drawing.Size(151, 26);
+            this.miDHTLog.Size = new System.Drawing.Size(120, 22);
             this.miDHTLog.Text = "DHT Log";
             this.miDHTLog.Click += new System.EventHandler(this.miDHTLog_Click);
             // 
@@ -239,21 +247,21 @@
             this.miContents,
             this.miAbout});
             this.miHelp.Name = "miHelp";
-            this.miHelp.Size = new System.Drawing.Size(55, 24);
+            this.miHelp.Size = new System.Drawing.Size(44, 20);
             this.miHelp.Text = "Help";
             // 
             // miContents
             // 
             this.miContents.Enabled = false;
             this.miContents.Name = "miContents";
-            this.miContents.Size = new System.Drawing.Size(150, 26);
+            this.miContents.Size = new System.Drawing.Size(122, 22);
             this.miContents.Text = "Contents";
             // 
             // miAbout
             // 
             this.miAbout.Enabled = false;
             this.miAbout.Name = "miAbout";
-            this.miAbout.Size = new System.Drawing.Size(150, 26);
+            this.miAbout.Size = new System.Drawing.Size(122, 22);
             this.miAbout.Text = "About";
             // 
             // toolStrip1
@@ -265,10 +273,13 @@
             this.toolStripSeparator1,
             this.tbProfile,
             this.toolStripSeparator2,
-            this.tbPresenceStatus});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 28);
+            this.tbPresenceStatus,
+            this.toolStripSeparator3,
+            this.tbSendInvitation,
+            this.tbAcceptInvitation});
+            this.toolStrip1.Location = new System.Drawing.Point(0, 24);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(914, 27);
+            this.toolStrip1.Size = new System.Drawing.Size(731, 27);
             this.toolStrip1.TabIndex = 13;
             // 
             // tbConnect
@@ -276,7 +287,7 @@
             this.tbConnect.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.tbConnect.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbConnect.Name = "tbConnect";
-            this.tbConnect.Size = new System.Drawing.Size(67, 24);
+            this.tbConnect.Size = new System.Drawing.Size(56, 24);
             this.tbConnect.Text = "Connect";
             this.tbConnect.Click += new System.EventHandler(this.miConnect_Click);
             // 
@@ -285,7 +296,7 @@
             this.tbDisconnect.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.tbDisconnect.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbDisconnect.Name = "tbDisconnect";
-            this.tbDisconnect.Size = new System.Drawing.Size(86, 24);
+            this.tbDisconnect.Size = new System.Drawing.Size(70, 24);
             this.tbDisconnect.Text = "Disconnect";
             this.tbDisconnect.Click += new System.EventHandler(this.miDisconnect_Click);
             // 
@@ -299,7 +310,7 @@
             this.tbProfile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.tbProfile.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbProfile.Name = "tbProfile";
-            this.tbProfile.Size = new System.Drawing.Size(80, 24);
+            this.tbProfile.Size = new System.Drawing.Size(65, 24);
             this.tbProfile.Text = "My Profile";
             this.tbProfile.Click += new System.EventHandler(this.miMyProfile_Click);
             // 
@@ -313,7 +324,7 @@
             this.tbPresenceStatus.DropDown = this.menuPresenceStatuses;
             this.tbPresenceStatus.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbPresenceStatus.Name = "tbPresenceStatus";
-            this.tbPresenceStatus.Size = new System.Drawing.Size(121, 24);
+            this.tbPresenceStatus.Size = new System.Drawing.Size(99, 24);
             this.tbPresenceStatus.Text = "PresenceStatus";
             // 
             // menuPresenceStatuses
@@ -329,31 +340,31 @@
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.lblConnectionStatus,
             this.lblTicks});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 526);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 420);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 16, 0);
-            this.statusStrip1.Size = new System.Drawing.Size(914, 26);
+            this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 13, 0);
+            this.statusStrip1.Size = new System.Drawing.Size(731, 22);
             this.statusStrip1.TabIndex = 10;
             this.statusStrip1.Text = "statusStrip1";
             // 
             // lblConnectionStatus
             // 
             this.lblConnectionStatus.Name = "lblConnectionStatus";
-            this.lblConnectionStatus.Size = new System.Drawing.Size(15, 20);
+            this.lblConnectionStatus.Size = new System.Drawing.Size(12, 17);
             this.lblConnectionStatus.Text = "-";
             // 
             // lblTicks
             // 
             this.lblTicks.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.lblTicks.Name = "lblTicks";
-            this.lblTicks.Size = new System.Drawing.Size(19, 20);
+            this.lblTicks.Size = new System.Drawing.Size(15, 17);
             this.lblTicks.Text = "+";
             // 
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 55);
-            this.splitContainer1.Margin = new System.Windows.Forms.Padding(2, 4, 2, 4);
+            this.splitContainer1.Location = new System.Drawing.Point(0, 51);
+            this.splitContainer1.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
@@ -363,8 +374,9 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(914, 471);
-            this.splitContainer1.SplitterDistance = 293;
+            this.splitContainer1.Size = new System.Drawing.Size(731, 369);
+            this.splitContainer1.SplitterDistance = 234;
+            this.splitContainer1.SplitterWidth = 3;
             this.splitContainer1.TabIndex = 12;
             // 
             // lstMembers
@@ -373,9 +385,10 @@
             this.lstMembers.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lstMembers.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
             this.lstMembers.Location = new System.Drawing.Point(0, 0);
-            this.lstMembers.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.lstMembers.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.lstMembers.Name = "lstMembers";
-            this.lstMembers.Size = new System.Drawing.Size(293, 471);
+            this.lstMembers.ShowConnectionInfo = false;
+            this.lstMembers.Size = new System.Drawing.Size(234, 369);
             this.lstMembers.TabIndex = 4;
             this.lstMembers.SelectedValueChanged += new System.EventHandler(this.lstMembers_SelectedValueChanged);
             // 
@@ -386,19 +399,19 @@
             this.miPeerProfile,
             this.miAddPeer});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(141, 52);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(123, 48);
             // 
             // miPeerProfile
             // 
             this.miPeerProfile.Name = "miPeerProfile";
-            this.miPeerProfile.Size = new System.Drawing.Size(140, 24);
+            this.miPeerProfile.Size = new System.Drawing.Size(122, 22);
             this.miPeerProfile.Text = "Profile";
             this.miPeerProfile.Click += new System.EventHandler(this.miPeerProfile_Click);
             // 
             // miAddPeer
             // 
             this.miAddPeer.Name = "miAddPeer";
-            this.miAddPeer.Size = new System.Drawing.Size(140, 24);
+            this.miAddPeer.Size = new System.Drawing.Size(122, 22);
             this.miAddPeer.Text = "Add peer";
             this.miAddPeer.Click += new System.EventHandler(this.miAddPeer_Click);
             // 
@@ -406,7 +419,7 @@
             // 
             this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer2.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer2.Margin = new System.Windows.Forms.Padding(2, 4, 2, 4);
+            this.splitContainer2.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.splitContainer2.Name = "splitContainer2";
             this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -418,29 +431,31 @@
             // 
             this.splitContainer2.Panel2.Controls.Add(this.txtChatMsg);
             this.splitContainer2.Panel2.Controls.Add(this.flowLayoutPanel1);
-            this.splitContainer2.Size = new System.Drawing.Size(617, 471);
-            this.splitContainer2.SplitterDistance = 261;
-            this.splitContainer2.SplitterWidth = 5;
+            this.splitContainer2.Size = new System.Drawing.Size(494, 369);
+            this.splitContainer2.SplitterDistance = 204;
             this.splitContainer2.TabIndex = 0;
             // 
             // lstChatMsgs
             // 
+            this.lstChatMsgs.BackColor = System.Drawing.Color.LightGray;
+            this.lstChatMsgs.Core = null;
             this.lstChatMsgs.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lstChatMsgs.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
+            this.lstChatMsgs.LocalId = null;
             this.lstChatMsgs.Location = new System.Drawing.Point(0, 0);
-            this.lstChatMsgs.Margin = new System.Windows.Forms.Padding(2, 4, 2, 4);
+            this.lstChatMsgs.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.lstChatMsgs.Name = "lstChatMsgs";
-            this.lstChatMsgs.Size = new System.Drawing.Size(617, 261);
+            this.lstChatMsgs.Size = new System.Drawing.Size(494, 204);
             this.lstChatMsgs.TabIndex = 0;
-            this.lstChatMsgs.Text = "";
             // 
             // txtChatMsg
             // 
             this.txtChatMsg.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtChatMsg.Location = new System.Drawing.Point(0, 0);
-            this.txtChatMsg.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.txtChatMsg.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtChatMsg.Multiline = true;
             this.txtChatMsg.Name = "txtChatMsg";
-            this.txtChatMsg.Size = new System.Drawing.Size(617, 153);
+            this.txtChatMsg.Size = new System.Drawing.Size(494, 119);
             this.txtChatMsg.TabIndex = 6;
             this.txtChatMsg.Text = "test";
             // 
@@ -450,18 +465,18 @@
             this.flowLayoutPanel1.Controls.Add(this.btnSend);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 153);
-            this.flowLayoutPanel1.Margin = new System.Windows.Forms.Padding(2, 4, 2, 4);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 119);
+            this.flowLayoutPanel1.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(617, 52);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(494, 42);
             this.flowLayoutPanel1.TabIndex = 0;
             // 
             // btnSendToAll
             // 
-            this.btnSendToAll.Location = new System.Drawing.Point(501, 5);
-            this.btnSendToAll.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.btnSendToAll.Location = new System.Drawing.Point(401, 4);
+            this.btnSendToAll.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnSendToAll.Name = "btnSendToAll";
-            this.btnSendToAll.Size = new System.Drawing.Size(112, 42);
+            this.btnSendToAll.Size = new System.Drawing.Size(90, 34);
             this.btnSendToAll.TabIndex = 7;
             this.btnSendToAll.Text = "Send to All";
             this.btnSendToAll.UseVisualStyleBackColor = true;
@@ -469,27 +484,48 @@
             // 
             // btnSend
             // 
-            this.btnSend.Location = new System.Drawing.Point(381, 5);
-            this.btnSend.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.btnSend.Location = new System.Drawing.Point(305, 4);
+            this.btnSend.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnSend.Name = "btnSend";
-            this.btnSend.Size = new System.Drawing.Size(112, 42);
+            this.btnSend.Size = new System.Drawing.Size(90, 34);
             this.btnSend.TabIndex = 8;
             this.btnSend.Text = "Send";
             this.btnSend.UseVisualStyleBackColor = true;
             this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
             // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 27);
+            // 
+            // tbSendInvitation
+            // 
+            this.tbSendInvitation.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbSendInvitation.Name = "tbSendInvitation";
+            this.tbSendInvitation.Size = new System.Drawing.Size(110, 24);
+            this.tbSendInvitation.Text = "Send Invitation";
+            this.tbSendInvitation.Click += new System.EventHandler(this.tbSendInvitation_Click);
+            // 
+            // tbAcceptInvitation
+            // 
+            this.tbAcceptInvitation.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbAcceptInvitation.Name = "tbAcceptInvitation";
+            this.tbAcceptInvitation.Size = new System.Drawing.Size(121, 24);
+            this.tbAcceptInvitation.Text = "Accept Invitation";
+            this.tbAcceptInvitation.Click += new System.EventHandler(this.tbAcceptInvitation_Click);
+            // 
             // ChatForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(120F, 120F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.ClientSize = new System.Drawing.Size(914, 552);
+            this.ClientSize = new System.Drawing.Size(731, 442);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.menuStrip1);
             this.Font = new System.Drawing.Font("Calibri", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.MainMenuStrip = this.menuStrip1;
-            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "ChatForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "GKCommunicator";
