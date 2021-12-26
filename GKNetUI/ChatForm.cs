@@ -344,7 +344,7 @@ namespace GKNetUI
         private void tbAcceptInvitation_Click(object sender, EventArgs e)
         {
             string nodeId = string.Empty;
-            if (InputDlg.QueryPassword(this, CommunicatorCore.APP_NAME, "Friend's node id received by mail", ref nodeId)) {
+            if (InputDlg.QueryText(this, CommunicatorCore.APP_NAME, "Friend's node id received by mail", ref nodeId)) {
                 fCore.AcceptInvitation(nodeId);
             }
         }

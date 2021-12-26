@@ -436,6 +436,16 @@ namespace GKNet
             }
         }
 
+        private Peer AddPeer(string nodeId)
+        {
+            lock (fPeers) {
+                Peer peer = new Peer(new IPEndPoint(DHTClient.IPAnyAddress, 0), new PeerProfile());
+                peer.ID = DHTId.Parse(nodeId);
+                fPeers.Add(peer);
+                return peer;
+            }
+        }
+
         public Peer FindPeer(IPEndPoint peerEndPoint)
         {
             return fPeers.FirstOrDefault(x => x.EndPoint.Equals(peerEndPoint));
@@ -685,13 +695,19 @@ namespace GKNet
 
         public void SendInvitation()
         {
-            MailHelper.SendMail("", "Invite", "I invite you to join the GEDKeeper program network.\r\nMy network node id: " + fLocalPeer.ID.ToString());
+            string message = string.Format("I invite you to join the GEDKeeper program network.\r\nMy network node id: {0}\r\n--\r\n{1}", fLocalPeer.ID.ToString(), fLocalPeer.Profile.UserName);
+            MailHelper.SendMail("", "Invite", message);
         }
 
         public void AcceptInvitation(string nodeId)
         {
             if (string.IsNullOrEmpty(nodeId))
                 return;
+
+            Peer peer = FindPeer(nodeId);
+            if (peer == null) {
+                peer = AddPeer(nodeId);
+            }
         }
     }
 }
