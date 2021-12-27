@@ -30,6 +30,7 @@ namespace GKNetUI
     public class UIHelper
     {
         private static Dictionary<PresenceStatus, Bitmap> fStatusIcons;
+        private static Dictionary<MessageStatus, Bitmap> fMessageStatusIcons;
 
         public static void InitResources()
         {
@@ -40,22 +41,37 @@ namespace GKNetUI
             fStatusIcons[PresenceStatus.Away] = UIHelper.LoadResourceImage("btn_away");
             fStatusIcons[PresenceStatus.Busy] = UIHelper.LoadResourceImage("btn_busy");
             fStatusIcons[PresenceStatus.Invisible] = UIHelper.LoadResourceImage("btn_invisible");
+
+            fMessageStatusIcons = new Dictionary<MessageStatus, Bitmap>();
+            fMessageStatusIcons[MessageStatus.Undelivered] = UIHelper.LoadResourceImage("status_undelivered");
+            fMessageStatusIcons[MessageStatus.Delivered] = UIHelper.LoadResourceImage("status_delivered");
         }
 
         public static void DoneResources()
         {
-            var values = fStatusIcons.Values;
-            foreach (var image in values) {
+            foreach (var image in fStatusIcons.Values) {
                 if (image != null) {
                     image.Dispose();
                 }
             }
             fStatusIcons.Clear();
+
+            foreach (var image in fMessageStatusIcons.Values) {
+                if (image != null) {
+                    image.Dispose();
+                }
+            }
+            fMessageStatusIcons.Clear();
         }
 
         public static Bitmap GetPresenceStatusImage(PresenceStatus status)
         {
             return fStatusIcons[status];
+        }
+
+        public static Bitmap GetMessageStatusImage(MessageStatus status)
+        {
+            return fMessageStatusIcons[status];
         }
 
         public static Bitmap LoadResourceImage(string name)

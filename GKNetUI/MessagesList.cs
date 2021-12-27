@@ -28,6 +28,9 @@ namespace GKNetUI
 {
     public class MessagesList : ListBox
     {
+        private static Pen fPen1 = new Pen(Color.Black, 1);
+        private static Pen fPen2 = new Pen(Color.Black, 3);
+
         public string LocalId
         {
             get; set;
@@ -94,10 +97,18 @@ namespace GKNetUI
             Rectangle rt1 = rt;
             rt1.Width -= 1;
             rt1.Height -= 1;
-            using (GraphicsPath path =
-                CreateRoundedRectangle(rt1.Left, rt1.Top + 3, rt1.Width, rt1.Height - 3 * 2, 5)) {
+            using (GraphicsPath path = CreateRoundedRectangle(rt1.Left, rt1.Top + 3, rt1.Width, rt1.Height - 3 * 2, 5)) {
                 e.Graphics.FillPath(itemBrush, path);
-                e.Graphics.DrawPath(Pens.Black, path);
+                var pen = (isSelected) ? fPen2 : fPen1;
+                e.Graphics.DrawPath(pen, path);
+            }
+
+            if (senderIsLocal) {
+                // Undelivered / Delivered
+                var icon = UIHelper.GetMessageStatusImage(msg.Status);
+                if (icon != null) {
+                    e.Graphics.DrawImage(icon, rt.Right - icon.Width - 2, rt.Top + 4);
+                }
             }
 
             rt.Inflate(-5, -2);
@@ -113,15 +124,9 @@ namespace GKNetUI
 
         private string GetMessageItem(GKNet.Message msg)
         {
-            string deliver = (msg.Status == MessageStatus.Delivered) ? " <vv>" : " <-->";
-            bool senderIsLocal = (msg.Sender == LocalId);
             Peer sender = Core.FindPeer(msg.Sender);
-
-            string text = msg.Text;
-            string senderName = (senderIsLocal) ? string.Empty : string.Format("[{0}]", sender.Profile.UserName);
-
-            string result = string.Format("{0:yyyy/MM/dd HH:mm} {1} {2}\r\n{3}", msg.Timestamp, senderName, deliver, text);
-            return result;
+            string senderName = (msg.Sender == LocalId) ? string.Empty : string.Format("[{0}]", sender.Profile.UserName);
+            return string.Format("{0:yyyy/MM/dd HH:mm} {1}\r\n{2}", msg.Timestamp, senderName, msg.Text);
         }
 
         private static GraphicsPath CreateRoundedRectangle(float x, float y, float width, float height, float radius)
