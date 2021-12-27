@@ -24,6 +24,7 @@ using BSLib.Design.Graphics;
 using GKCore;
 using GKCore.Interfaces;
 using GKCore.Plugins;
+using GKNetUI;
 
 [assembly: AssemblyTitle("GKCommunicatorPlugin")]
 [assembly: AssemblyDescription("GEDKeeper Communicator plugin")]
@@ -34,6 +35,11 @@ using GKCore.Plugins;
 
 namespace GKCommunicatorPlugin
 {
+    public enum CLS
+    {
+        /* 00 */ LSID_Title,
+    }
+
     public class Plugin : OrdinaryPlugin
     {
         private string fDisplayName = "GKCommunicatorPlugin";
@@ -44,20 +50,56 @@ namespace GKCommunicatorPlugin
         public override IImage Icon { get { return null; } }
         public override PluginCategory Category { get { return PluginCategory.Common; } }
 
+        private ChatForm fForm;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing) {
+                CloseForm();
+            }
+            base.Dispose(disposing);
+        }
+
+        internal void CloseForm()
+        {
+            if (fForm != null) {
+                fForm.Close();
+                fForm = null;
+            }
+        }
+
         public override void Execute()
         {
-            /*using (PluginForm frm = new PluginForm(this)) {
-                frm.ShowDialog();
-            }*/
+            if (fForm == null) {
+                fForm = new ChatForm();
+                fForm.Show();
+            } else {
+                CloseForm();
+            }
         }
 
         public override void OnLanguageChange()
         {
             try {
                 fLangMan = Host.CreateLangMan(this);
+                fDisplayName = fLangMan.LS(CLS.LSID_Title);
+
+                //if (fForm != null) fForm.SetLocale();
             } catch (Exception ex) {
                 Logger.WriteError("GKCommunicatorPlugin.OnLanguageChange()", ex);
             }
+        }
+
+        public override bool Shutdown()
+        {
+            bool result = true;
+            try {
+                CloseForm();
+            } catch (Exception ex) {
+                Logger.WriteError("GKCommunicatorPlugin.Shutdown()", ex);
+                result = false;
+            }
+            return result;
         }
     }
 }
