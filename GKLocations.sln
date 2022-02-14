@@ -1,0 +1,18 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+# SharpDevelop 5.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GKLocations.Database", "GKLocations.Database\GKLocations.Database.csproj", "{9043C29F-4307-4C16-B2ED-2707A463D285}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9043C29F-4307-4C16-B2ED-2707A463D285}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9043C29F-4307-4C16-B2ED-2707A463D285}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9043C29F-4307-4C16-B2ED-2707A463D285}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9043C29F-4307-4C16-B2ED-2707A463D285}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
