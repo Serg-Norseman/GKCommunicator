@@ -29,6 +29,12 @@ namespace GKLocations.Database
         public string Name { get; set; }
 
         /// <summary>
+        /// Settlement's type (village, town, city[capital]).
+        /// </summary>
+        [MaxLength(100), NotNull]
+        public string Type { get; set; }
+
+        /// <summary>
         /// ???
         /// </summary>
         public string Description { get; set; }
