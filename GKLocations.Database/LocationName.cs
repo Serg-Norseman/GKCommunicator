@@ -36,7 +36,7 @@ namespace GKLocations.Database
         /// <summary>
         /// Perfect notation - GEDCOM date range format ("BET 10 JUL 1805 AND 20 AUG 1917").
         /// </summary>
-        public string DateRange { get; set; }
+        public string ActualDates { get; set; }
 
         /// <summary>
         /// en_US, ru_RU and etc

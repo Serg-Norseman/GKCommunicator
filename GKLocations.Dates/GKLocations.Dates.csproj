@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
   <PropertyGroup>
-    <ProjectGuid>{9043C29F-4307-4C16-B2ED-2707A463D285}</ProjectGuid>
+    <ProjectGuid>{C7348020-E7E7-4F5F-8330-6774B9648999}</ProjectGuid>
     <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
-    <RootNamespace>GKLocations.Database</RootNamespace>
-    <AssemblyName>GKLocations.Database</AssemblyName>
+    <RootNamespace>GKLocations.Dates</RootNamespace>
+    <AssemblyName>GKLocations.Dates</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
   </PropertyGroup>
@@ -31,16 +31,19 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BSLib.SQLite">
-      <HintPath>..\libs\BSLib.SQLite.dll</HintPath>
+    <Reference Include="BSLib">
+      <HintPath>..\libs\BSLib.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Location.cs" />
-    <Compile Include="LocationName.cs" />
-    <Compile Include="LocationRelation.cs" />
+    <Compile Include="GDMCustomDate.cs" />
+    <Compile Include="GDMDate.cs" />
+    <Compile Include="GDMDateInterpreted.cs" />
+    <Compile Include="GDMDatePeriod.cs" />
+    <Compile Include="GDMDateRange.cs" />
+    <Compile Include="GDMDateValue.cs" />
+    <Compile Include="GEDCOMParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -7,4 +7,6 @@
 *.userprefs
 *.DotSettings.user
 
+/appdata/
 /temp/
+/packages/**/
