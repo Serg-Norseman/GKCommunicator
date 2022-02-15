@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
   <PropertyGroup>
-    <ProjectGuid>{9043C29F-4307-4C16-B2ED-2707A463D285}</ProjectGuid>
+    <ProjectGuid>{2E9DC388-BF8C-4FCC-B76E-837E221953EF}</ProjectGuid>
     <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
-    <RootNamespace>GKLocations.Database</RootNamespace>
-    <AssemblyName>GKLocations.Database</AssemblyName>
+    <RootNamespace>GKLocations.Core</RootNamespace>
+    <AssemblyName>GKLocations.Core</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
   </PropertyGroup>
@@ -31,19 +31,23 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BSLib.SQLite">
-      <HintPath>..\libs\BSLib.SQLite.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GKLDatabase.cs" />
-    <Compile Include="LocalTransaction.cs" />
-    <Compile Include="Location.cs" />
-    <Compile Include="LocationName.cs" />
-    <Compile Include="LocationRelation.cs" />
+    <Compile Include="GKLCore.cs" />
+    <Compile Include="ICore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GKLocations.Database\GKLocations.Database.csproj">
+      <Project>{9043c29f-4307-4c16-b2ed-2707a463d285}</Project>
+      <Name>GKLocations.Database</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GKLocations.Dates\GKLocations.Dates.csproj">
+      <Project>{c7348020-e7e7-4f5f-8330-6774b9648999}</Project>
+      <Name>GKLocations.Dates</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
