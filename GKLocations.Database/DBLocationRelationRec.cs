@@ -42,5 +42,14 @@ namespace GKLocations.Database
         public DBLocationRelationRec()
         {
         }
+
+        public DBLocationRelationRec(ILocationRelation source)
+        {
+            GUID = source.GUID;
+            LocationGUID = source.LocationGUID;
+            OwnerGUID = source.OwnerGUID;
+            RelationType = source.RelationType;
+            ActualDates = source.ActualDates;
+        }
     }
 }

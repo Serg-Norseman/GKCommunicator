@@ -18,11 +18,12 @@ namespace GKLocations.Core
         string GetAppPath();
         string GetBinPath();
         string GetDataPath();
+        void DeleteDatabase();
 
         string GetCurrentLanguage();
         IList<string> GetUsedLanguages();
 
-        Location AddLocation(double latitude, double longitude);
+        Location AddLocation(double latitude = 0.0d, double longitude = 0.0d);
         LocationName AddLocationName(string locationGUID, string name, string type, string description, string actualDates, string language);
         LocationRelation AddLocationRelation(string locationGUID, string ownerGUID, string relationType, string actualDates);
     }

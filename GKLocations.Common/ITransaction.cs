@@ -8,9 +8,30 @@ using System;
 
 namespace GKLocations.Common
 {
+    public enum TransactionType
+    {
+        Unknown,
+
+        Profile,
+
+        AddLocation,
+        UpdateLocation,
+        DeleteLocation,
+
+        AddLocationName,
+        UpdateLocationName,
+        DeleteLocationName,
+
+        AddLocationRelation,
+        UpdateLocationRelation,
+        DeleteLocationRelation,
+    }
+
     public interface ITransaction
     {
         DateTime Timestamp { get; set; }
+
+        TransactionType Type { get; set; }
 
         string Data { get; set; }
     }

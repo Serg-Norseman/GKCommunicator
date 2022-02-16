@@ -94,6 +94,14 @@ namespace GKLocations.Database
             return Path.Combine(fDatabasePath, "GKLocations.db3");
         }
 
+        public void DeleteDatabase()
+        {
+            string fileName = GetBaseName();
+            if (File.Exists(fileName)) {
+                File.Delete(fileName);
+            }
+        }
+
         private void CreateDatabase()
         {
             fConnection.CreateTable<DBLocationRec>();
@@ -187,6 +195,30 @@ namespace GKLocations.Database
         public IList<ITransaction> QueryLocalTransactions()
         {
             return (IList<ITransaction>)fConnection.Query<DBTransactionRec>("select * from LocalTransactions");
+        }
+
+        public void AddLocation(ILocation location)
+        {
+            var dtObj = new DBLocationRec(location);
+            AddRecord(dtObj);
+        }
+
+        public void AddLocationName(ILocationName locationName)
+        {
+            var dtObj = new DBLocationNameRec(locationName);
+            AddRecord(dtObj);
+        }
+
+        public void AddLocationRelation(ILocationRelation locationRelation)
+        {
+            var dtObj = new DBLocationRelationRec(locationRelation);
+            AddRecord(dtObj);
+        }
+
+        public void AddTransaction(DateTime timestamp, TransactionType type, string data)
+        {
+            var dtObj = new DBTransactionRec(timestamp, type, data);
+            AddRecord(dtObj);
         }
     }
 }

@@ -57,5 +57,16 @@ namespace GKLocations.Database
         public DBLocationNameRec()
         {
         }
+
+        public DBLocationNameRec(ILocationName source)
+        {
+            GUID = source.GUID;
+            LocationGUID = source.LocationGUID;
+            Name = source.Name;
+            Type = source.Type;
+            Description = source.Description;
+            ActualDates = source.ActualDates;
+            Language = source.Language;
+        }
     }
 }

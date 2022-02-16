@@ -4,6 +4,7 @@
  *  This program is licensed under the GNU General Public License.
  */
 
+using System;
 using System.Collections.Generic;
 
 namespace GKLocations.Common
@@ -13,11 +14,18 @@ namespace GKLocations.Common
         void SetPath(string dbPath);
         void Connect();
         void Disconnect();
+        void DeleteDatabase();
 
         IList<ILocation> QueryLocations();
         IList<ILocationName> QueryLocationNames();
         IList<string> QueryLanguages();
         IList<ILocationRelation> QueryLocationRelations();
         IList<ITransaction> QueryLocalTransactions();
+
+        void AddLocation(ILocation location);
+        void AddLocationName(ILocationName location);
+        void AddLocationRelation(ILocationRelation location);
+
+        void AddTransaction(DateTime timestamp, TransactionType type, string data);
     }
 }

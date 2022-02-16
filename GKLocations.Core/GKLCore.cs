@@ -12,6 +12,7 @@ using System.Reflection;
 using System.Threading;
 using GKLocations.Database;
 using GKLocations.Core.Model;
+using GKLocations.Common;
 
 namespace GKLocations.Core
 {
@@ -20,12 +21,19 @@ namespace GKLocations.Core
     /// </summary>
     public class GKLCore : ICore
     {
-        private readonly GKLDatabase fDatabase;
+        private readonly IDatabase fDatabase;
 
         public GKLCore()
         {
             fDatabase = new GKLDatabase();
             fDatabase.SetPath(GetDataPath());
+            fDatabase.Connect();
+        }
+
+        public void DeleteDatabase()
+        {
+            fDatabase.Disconnect();
+            fDatabase.DeleteDatabase();
             fDatabase.Connect();
         }
 
@@ -95,7 +103,11 @@ namespace GKLocations.Core
             };
 
             // save to local db
+            fDatabase.AddLocation(result);
+
             // save to local transaction pool
+            string json = JsonHelper.SerializeObject(result);
+            fDatabase.AddTransaction(DateTime.UtcNow, TransactionType.AddLocation, json);
 
             return result;
         }
@@ -115,7 +127,11 @@ namespace GKLocations.Core
             };
 
             // save to local db
+            fDatabase.AddLocationName(result);
+
             // save to local transaction pool
+            string json = JsonHelper.SerializeObject(result);
+            fDatabase.AddTransaction(DateTime.UtcNow, TransactionType.AddLocationName, json);
 
             return result;
         }
@@ -133,7 +149,11 @@ namespace GKLocations.Core
             };
 
             // save to local db
+            fDatabase.AddLocationRelation(result);
+
             // save to local transaction pool
+            string json = JsonHelper.SerializeObject(result);
+            fDatabase.AddTransaction(DateTime.UtcNow, TransactionType.AddLocationRelation, json);
 
             return result;
         }

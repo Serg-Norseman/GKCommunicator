@@ -13,3 +13,6 @@ rmdir .\GKLocations.Core\obj /s /q
 
 rmdir .\GKLocations.Manager\bin /s /q
 rmdir .\GKLocations.Manager\obj /s /q
+
+rmdir .\GKLocations.Common\bin /s /q
+rmdir .\GKLocations.Common\obj /s /q

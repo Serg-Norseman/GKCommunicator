@@ -23,11 +23,21 @@ namespace GKLocations.Database
         public DateTime Timestamp { get; set; }
 
         [NotNull]
+        public TransactionType Type { get; set; }
+
+        [NotNull]
         public string Data { get; set; }
 
 
         public DBTransactionRec()
         {
+        }
+
+        public DBTransactionRec(DateTime timestamp, TransactionType type, string data)
+        {
+            Timestamp = timestamp;
+            Type = type;
+            Data = data;
         }
     }
 }

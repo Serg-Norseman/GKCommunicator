@@ -29,5 +29,12 @@ namespace GKLocations.Database
         public DBLocationRec()
         {
         }
+
+        public DBLocationRec(ILocation source)
+        {
+            GUID = source.GUID;
+            Latitude = source.Latitude;
+            Longitude = source.Longitude;
+        }
     }
 }
