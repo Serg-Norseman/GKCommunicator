@@ -6,6 +6,7 @@
 
 using System;
 using System.Collections.Generic;
+using GKLocations.Core.Model;
 
 namespace GKLocations.Core
 {
@@ -20,5 +21,9 @@ namespace GKLocations.Core
 
         string GetCurrentLanguage();
         IList<string> GetUsedLanguages();
+
+        Location AddLocation(double latitude, double longitude);
+        LocationName AddLocationName(string locationGUID, string name, string type, string description, string actualDates, string language);
+        LocationRelation AddLocationRelation(string locationGUID, string ownerGUID, string relationType, string actualDates);
     }
 }

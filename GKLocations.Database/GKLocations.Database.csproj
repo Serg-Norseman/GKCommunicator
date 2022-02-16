@@ -39,11 +39,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GKLDatabase.cs" />
-    <Compile Include="LocalTransaction.cs" />
-    <Compile Include="Location.cs" />
-    <Compile Include="LocationName.cs" />
-    <Compile Include="LocationRelation.cs" />
+    <Compile Include="DBTransactionRec.cs" />
+    <Compile Include="DBLocationRec.cs" />
+    <Compile Include="DBLocationNameRec.cs" />
+    <Compile Include="DBLocationRelationRec.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GKLocations.Common\GKLocations.Common.csproj">
+      <Project>{9DD7D4F6-F853-426E-8AB5-5018737B654F}</Project>
+      <Name>GKLocations.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

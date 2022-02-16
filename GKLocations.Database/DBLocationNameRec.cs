@@ -4,22 +4,25 @@
  *  This program is licensed under the GNU General Public License.
  */
 
-using System;
+using GKLocations.Common;
 using SQLite;
 
 namespace GKLocations.Database
 {
     /// <summary>
-    /// 
+    /// DTO for LocationName records of database.
     /// </summary>
     [Table("LocationNames")]
-    public class LocationName
+    public class DBLocationNameRec : ILocationName
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
-        [NotNull]
-        public int LocationId { get; set; }
+        [MaxLength(38), NotNull, Unique]
+        public string GUID { get; set; }
+
+        [MaxLength(38), NotNull]
+        public string LocationGUID { get; set; }
 
         /// <summary>
         /// The longest geographical name in the world (the name of Bangkok) - consists of 176 latin letters
@@ -51,7 +54,7 @@ namespace GKLocations.Database
         public string Language { get; set; }
 
 
-        public LocationName()
+        public DBLocationNameRec()
         {
         }
     }

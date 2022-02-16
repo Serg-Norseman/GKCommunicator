@@ -31,15 +31,26 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\libs\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GKLCore.cs" />
     <Compile Include="ICore.cs" />
+    <Compile Include="JsonHelper.cs" />
+    <Compile Include="Model\Location.cs" />
+    <Compile Include="Model\LocationName.cs" />
+    <Compile Include="Model\LocationRelation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GKLocations.Common\GKLocations.Common.csproj">
+      <Project>{9DD7D4F6-F853-426E-8AB5-5018737B654F}</Project>
+      <Name>GKLocations.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GKLocations.Database\GKLocations.Database.csproj">
       <Project>{9043c29f-4307-4c16-b2ed-2707a463d285}</Project>
       <Name>GKLocations.Database</Name>
@@ -49,5 +60,6 @@
       <Name>GKLocations.Dates</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

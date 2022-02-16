@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using GKLocations.Common;
 using SQLite;
 
 namespace GKLocations.Database
@@ -23,7 +24,7 @@ namespace GKLocations.Database
     /// <summary>
     /// 
     /// </summary>
-    public class GKLDatabase
+    public class GKLDatabase : IDatabase
     {
         private class QString
         {
@@ -95,11 +96,11 @@ namespace GKLocations.Database
 
         private void CreateDatabase()
         {
-            fConnection.CreateTable<Location>();
-            fConnection.CreateTable<LocationName>();
-            fConnection.CreateTable<LocationRelation>();
+            fConnection.CreateTable<DBLocationRec>();
+            fConnection.CreateTable<DBLocationNameRec>();
+            fConnection.CreateTable<DBLocationRelationRec>();
 
-            fConnection.CreateTable<LocalTransaction>();
+            fConnection.CreateTable<DBTransactionRec>();
         }
 
         #region Records
@@ -162,14 +163,14 @@ namespace GKLocations.Database
 
         #endregion
 
-        public IList<Location> QueryLocations()
+        public IList<ILocation> QueryLocations()
         {
-            return fConnection.Query<Location>("select * from Locations");
+            return (IList<ILocation>)fConnection.Query<DBLocationRec>("select * from Locations");
         }
 
-        public IList<LocationName> QueryLocationNames()
+        public IList<ILocationName> QueryLocationNames()
         {
-            return fConnection.Query<LocationName>("select * from LocationNames");
+            return (IList<ILocationName>)fConnection.Query<DBLocationNameRec>("select * from LocationNames");
         }
 
         public IList<string> QueryLanguages()
@@ -178,14 +179,14 @@ namespace GKLocations.Database
             return GetStringList(result);
         }
 
-        public IList<LocationRelation> QueryLocationRelations()
+        public IList<ILocationRelation> QueryLocationRelations()
         {
-            return fConnection.Query<LocationRelation>("select * from LocationRelations");
+            return (IList<ILocationRelation>)fConnection.Query<DBLocationRelationRec>("select * from LocationRelations");
         }
 
-        public IList<LocalTransaction> QueryLocalTransactions()
+        public IList<ITransaction> QueryLocalTransactions()
         {
-            return fConnection.Query<LocalTransaction>("select * from LocalTransactions");
+            return (IList<ITransaction>)fConnection.Query<DBTransactionRec>("select * from LocalTransactions");
         }
     }
 }

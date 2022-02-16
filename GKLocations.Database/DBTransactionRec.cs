@@ -5,15 +5,16 @@
  */
 
 using System;
+using GKLocations.Common;
 using SQLite;
 
 namespace GKLocations.Database
 {
     /// <summary>
-    /// 
+    /// DTO for Transaction records of database.
     /// </summary>
     [Table("LocalTransactions")]
-    public class LocalTransaction
+    public class DBTransactionRec : ITransaction
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
@@ -25,7 +26,7 @@ namespace GKLocations.Database
         public string Data { get; set; }
 
 
-        public LocalTransaction()
+        public DBTransactionRec()
         {
         }
     }

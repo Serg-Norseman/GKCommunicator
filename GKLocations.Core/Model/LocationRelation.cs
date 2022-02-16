@@ -4,30 +4,24 @@
  *  This program is licensed under the GNU General Public License.
  */
 
-using System;
-using SQLite;
+using GKLocations.Common;
 
-namespace GKLocations.Database
+namespace GKLocations.Core.Model
 {
     /// <summary>
     /// 
     /// </summary>
-    [Table("LocationRelations")]
-    public class LocationRelation
+    public class LocationRelation : ILocationRelation
     {
-        [PrimaryKey, AutoIncrement]
-        public int Id { get; set; }
+        public string GUID { get; set; }
 
-        [NotNull]
-        public int LocationId { get; set; }
+        public string LocationGUID { get; set; }
 
-        [NotNull]
-        public int OwnerId { get; set; }
+        public string OwnerGUID { get; set; }
 
         /// <summary>
         /// [P]olitical, [R]eligious, [G]eographic, [C]ultural
         /// </summary>
-        [MaxLength(1), NotNull]
         public string RelationType { get; set; }
 
         /// <summary>

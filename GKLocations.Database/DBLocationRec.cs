@@ -4,16 +4,16 @@
  *  This program is licensed under the GNU General Public License.
  */
 
-using System;
+using GKLocations.Common;
 using SQLite;
 
 namespace GKLocations.Database
 {
     /// <summary>
-    /// 
+    /// DTO for Location records of database.
     /// </summary>
     [Table("Locations")]
-    public class Location
+    public class DBLocationRec : ILocation
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
@@ -26,7 +26,7 @@ namespace GKLocations.Database
         public double Longitude { get; set; }
 
 
-        public Location()
+        public DBLocationRec()
         {
         }
     }
