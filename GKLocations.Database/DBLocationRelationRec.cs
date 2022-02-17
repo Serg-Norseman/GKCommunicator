@@ -15,10 +15,10 @@ namespace GKLocations.Database
     [Table("LocationRelations")]
     public class DBLocationRelationRec : ILocationRelation
     {
-        [PrimaryKey, AutoIncrement]
-        public int Id { get; set; }
+        //[PrimaryKey, AutoIncrement]
+        //public int Id { get; set; }
 
-        [MaxLength(38), NotNull, Unique]
+        [PrimaryKey, MaxLength(38), NotNull, Unique]
         public string GUID { get; set; }
 
         [MaxLength(38), NotNull]

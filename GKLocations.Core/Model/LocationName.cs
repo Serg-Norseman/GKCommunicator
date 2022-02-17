@@ -11,9 +11,9 @@ namespace GKLocations.Core.Model
     /// <summary>
     /// 
     /// </summary>
-    public class LocationName : ILocationName
+    public class LocationName : Entity, ILocationName
     {
-        public string GUID { get; set; }
+        public override string GUID { get; set; }
 
         public string LocationGUID { get; set; }
 
@@ -25,6 +25,7 @@ namespace GKLocations.Core.Model
 
         /// <summary>
         /// Settlement's type (village, town, city[capital]).
+        /// TODO: may be canceled
         /// </summary>
         public string Type { get; set; }
 

@@ -41,6 +41,7 @@
     <Compile Include="GKLCore.cs" />
     <Compile Include="ICore.cs" />
     <Compile Include="JsonHelper.cs" />
+    <Compile Include="Model\Entity.cs" />
     <Compile Include="Model\Location.cs" />
     <Compile Include="Model\LocationName.cs" />
     <Compile Include="Model\LocationRelation.cs" />

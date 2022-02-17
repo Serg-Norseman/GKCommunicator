@@ -16,16 +16,21 @@ namespace GKLocations.Common
         void Disconnect();
         void DeleteDatabase();
 
+        int AddRecord(object obj);
+        void UpdateRecord(object obj);
+        void DeleteRecord(object obj);
+        int DeleteRecord<T>(object primaryKey);
+
         IList<ILocation> QueryLocations();
         IList<ILocationName> QueryLocationNames();
         IList<string> QueryLanguages();
         IList<ILocationRelation> QueryLocationRelations();
         IList<ITransaction> QueryLocalTransactions();
 
-        void AddLocation(ILocation location);
+        /*void AddLocation(ILocation location);
         void AddLocationName(ILocationName location);
         void AddLocationRelation(ILocationRelation location);
 
-        void AddTransaction(DateTime timestamp, TransactionType type, string data);
+        void AddTransaction(DateTime timestamp, TransactionType type, string data);*/
     }
 }

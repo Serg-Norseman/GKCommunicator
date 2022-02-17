@@ -103,13 +103,51 @@ namespace GKLocations.Core
             };
 
             // save to local db
-            fDatabase.AddLocation(result);
+            //fDatabase.AddLocation(result);
+            fDatabase.AddRecord(new DBLocationRec(result));
 
             // save to local transaction pool
             string json = JsonHelper.SerializeObject(result);
-            fDatabase.AddTransaction(DateTime.UtcNow, TransactionType.AddLocation, json);
+            //fDatabase.AddTransaction(DateTime.UtcNow, TransactionType.AddLocation, json);
+            fDatabase.AddRecord(new DBTransactionRec(DateTime.UtcNow, TransactionType.AddLocation, json));
 
             return result;
+        }
+
+        public Location UpdateLocation(string locationGUID, double latitude = 0.0d, double longitude = 0.0d)
+        {
+            var result = new Location() {
+                GUID = locationGUID,
+                Latitude = latitude,
+                Longitude = longitude
+            };
+
+            // save to local db
+            //fDatabase.AddLocation(result);
+            fDatabase.UpdateRecord(new DBLocationRec(result));
+
+            // save to local transaction pool
+            string json = JsonHelper.SerializeObject(result);
+            //fDatabase.AddTransaction(DateTime.UtcNow, TransactionType.AddLocation, json);
+            fDatabase.AddRecord(new DBTransactionRec(DateTime.UtcNow, TransactionType.UpdateLocation, json));
+
+            return result;
+        }
+
+        public void DeleteLocation(string locationGUID)
+        {
+            var result = new Entity() {
+                GUID = locationGUID,
+            };
+
+            // save to local db
+            //fDatabase.AddLocation(result);
+            fDatabase.DeleteRecord<DBLocationRec>(locationGUID);
+
+            // save to local transaction pool
+            string json = JsonHelper.SerializeObject(result);
+            //fDatabase.AddTransaction(DateTime.UtcNow, TransactionType.AddLocation, json);
+            fDatabase.AddRecord(new DBTransactionRec(DateTime.UtcNow, TransactionType.DeleteLocation, json));
         }
 
         public LocationName AddLocationName(string locationGUID, string name, string type, string description, string actualDates, string language)
@@ -127,13 +165,55 @@ namespace GKLocations.Core
             };
 
             // save to local db
-            fDatabase.AddLocationName(result);
+            //fDatabase.AddLocationName(result);
+            fDatabase.AddRecord(new DBLocationNameRec(result));
 
             // save to local transaction pool
             string json = JsonHelper.SerializeObject(result);
-            fDatabase.AddTransaction(DateTime.UtcNow, TransactionType.AddLocationName, json);
+            //fDatabase.AddTransaction(DateTime.UtcNow, TransactionType.AddLocationName, json);
+            fDatabase.AddRecord(new DBTransactionRec(DateTime.UtcNow, TransactionType.AddLocationName, json));
 
             return result;
+        }
+
+        public LocationName UpdateLocationName(string locationNameGUID, string locationGUID, string name, string type, string description, string actualDates, string language)
+        {
+            var result = new LocationName() {
+                GUID = locationNameGUID,
+                LocationGUID = locationGUID,
+                Name = name,
+                Type = type,
+                Description = description,
+                ActualDates = actualDates,
+                Language = language
+            };
+
+            // save to local db
+            //fDatabase.AddLocationName(result);
+            fDatabase.UpdateRecord(new DBLocationNameRec(result));
+
+            // save to local transaction pool
+            string json = JsonHelper.SerializeObject(result);
+            //fDatabase.AddTransaction(DateTime.UtcNow, TransactionType.AddLocationName, json);
+            fDatabase.AddRecord(new DBTransactionRec(DateTime.UtcNow, TransactionType.UpdateLocationName, json));
+
+            return result;
+        }
+
+        public void DeleteLocationName(string locationNameGUID)
+        {
+            var result = new Entity() {
+                GUID = locationNameGUID,
+            };
+
+            // save to local db
+            //fDatabase.AddLocationName(result);
+            fDatabase.DeleteRecord<DBLocationNameRec>(locationNameGUID);
+
+            // save to local transaction pool
+            string json = JsonHelper.SerializeObject(result);
+            //fDatabase.AddTransaction(DateTime.UtcNow, TransactionType.AddLocationName, json);
+            fDatabase.AddRecord(new DBTransactionRec(DateTime.UtcNow, TransactionType.DeleteLocationName, json));
         }
 
         public LocationRelation AddLocationRelation(string locationGUID, string ownerGUID, string relationType, string actualDates)
@@ -149,13 +229,53 @@ namespace GKLocations.Core
             };
 
             // save to local db
-            fDatabase.AddLocationRelation(result);
+            //fDatabase.AddLocationRelation(result);
+            fDatabase.AddRecord(new DBLocationRelationRec(result));
 
             // save to local transaction pool
             string json = JsonHelper.SerializeObject(result);
-            fDatabase.AddTransaction(DateTime.UtcNow, TransactionType.AddLocationRelation, json);
+            //fDatabase.AddTransaction(DateTime.UtcNow, TransactionType.AddLocationRelation, json);
+            fDatabase.AddRecord(new DBTransactionRec(DateTime.UtcNow, TransactionType.AddLocationRelation, json));
 
             return result;
+        }
+
+        public LocationRelation UpdateLocationRelation(string locationRelationGUID, string locationGUID, string ownerGUID, string relationType, string actualDates)
+        {
+            var result = new LocationRelation() {
+                GUID = locationRelationGUID,
+                LocationGUID = locationGUID,
+                OwnerGUID = ownerGUID,
+                RelationType = relationType,
+                ActualDates = actualDates
+            };
+
+            // save to local db
+            //fDatabase.AddLocationRelation(result);
+            fDatabase.UpdateRecord(new DBLocationRelationRec(result));
+
+            // save to local transaction pool
+            string json = JsonHelper.SerializeObject(result);
+            //fDatabase.AddTransaction(DateTime.UtcNow, TransactionType.AddLocationRelation, json);
+            fDatabase.AddRecord(new DBTransactionRec(DateTime.UtcNow, TransactionType.UpdateLocationRelation, json));
+
+            return result;
+        }
+
+        public void DeleteLocationRelation(string locationRelationGUID)
+        {
+            var result = new Entity() {
+                GUID = locationRelationGUID,
+            };
+
+            // save to local db
+            //fDatabase.AddLocationRelation(result);
+            fDatabase.DeleteRecord<DBLocationRelationRec>(locationRelationGUID);
+
+            // save to local transaction pool
+            string json = JsonHelper.SerializeObject(result);
+            //fDatabase.AddTransaction(DateTime.UtcNow, TransactionType.AddLocationRelation, json);
+            fDatabase.AddRecord(new DBTransactionRec(DateTime.UtcNow, TransactionType.DeleteLocationRelation, json));
         }
     }
 }

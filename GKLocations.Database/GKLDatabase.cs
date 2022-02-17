@@ -133,10 +133,15 @@ namespace GKLocations.Database
             fConnection.Delete(obj);
         }
 
-        public void DeleteRecord<T>(int objId)
+        public int DeleteRecord<T>(object primaryKey)
+        {
+            return fConnection.Delete<T>(primaryKey);
+        }
+
+        /*public void DeleteRecord<T>(int objId)
         {
             fConnection.Delete<T>(objId);
-        }
+        }*/
 
         public T GetRecord<T>(int objId) where T : new()
         {
@@ -197,7 +202,7 @@ namespace GKLocations.Database
             return (IList<ITransaction>)fConnection.Query<DBTransactionRec>("select * from LocalTransactions");
         }
 
-        public void AddLocation(ILocation location)
+        /*public void AddLocation(ILocation location)
         {
             var dtObj = new DBLocationRec(location);
             AddRecord(dtObj);
@@ -219,6 +224,6 @@ namespace GKLocations.Database
         {
             var dtObj = new DBTransactionRec(timestamp, type, data);
             AddRecord(dtObj);
-        }
+        }*/
     }
 }

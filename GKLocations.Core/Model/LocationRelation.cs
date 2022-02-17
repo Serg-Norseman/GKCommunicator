@@ -4,16 +4,18 @@
  *  This program is licensed under the GNU General Public License.
  */
 
+using System;
 using GKLocations.Common;
+using GKLocations.Dates;
 
 namespace GKLocations.Core.Model
 {
     /// <summary>
     /// 
     /// </summary>
-    public class LocationRelation : ILocationRelation
+    public class LocationRelation : Entity, ILocationRelation
     {
-        public string GUID { get; set; }
+        public override string GUID { get; set; }
 
         public string LocationGUID { get; set; }
 
@@ -32,6 +34,21 @@ namespace GKLocations.Core.Model
 
         public LocationRelation()
         {
+        }
+
+        public GDMDateValue GetActualDates()
+        {
+            var result = new GDMDateValue();
+            result.ParseString(ActualDates);
+            return result;
+        }
+
+        public void SetActualDates(GDMDateValue value)
+        {
+            if (value == null)
+                throw new ArgumentNullException("value");
+
+            ActualDates = value.StringValue;
         }
     }
 }

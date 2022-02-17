@@ -11,9 +11,9 @@ namespace GKLocations.Core.Model
     /// <summary>
     /// 
     /// </summary>
-    public class Location : ILocation
+    public class Location : Entity, ILocation
     {
-        public string GUID { get; set; }
+        public override string GUID { get; set; }
 
         // Optional, only for settlements
         public double Latitude { get; set; }
