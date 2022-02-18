@@ -16,3 +16,6 @@ rmdir .\GKLocations.Manager\obj /s /q
 
 rmdir .\GKLocations.Common\bin /s /q
 rmdir .\GKLocations.Common\obj /s /q
+
+rmdir .\GKLocations.Blockchain\bin /s /q
+rmdir .\GKLocations.Blockchain\obj /s /q

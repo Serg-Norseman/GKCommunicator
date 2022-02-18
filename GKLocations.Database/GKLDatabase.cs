@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using GKLocations.Blockchain;
 using GKLocations.Common;
 using SQLite;
 
@@ -24,7 +25,7 @@ namespace GKLocations.Database
     /// <summary>
     /// 
     /// </summary>
-    public class GKLDatabase : IDatabase
+    public class GKLDatabase : IDatabase, IDataProvider
     {
         private class QString
         {
@@ -225,5 +226,20 @@ namespace GKLocations.Database
             var dtObj = new DBTransactionRec(timestamp, type, data);
             AddRecord(dtObj);
         }*/
+
+        public void AddBlock(SerializableBlock block)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<SerializableBlock> GetBlocks()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ClearBlocks()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

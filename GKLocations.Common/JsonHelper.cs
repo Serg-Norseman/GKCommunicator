@@ -1,9 +1,15 @@
-﻿using System.Collections.Generic;
+﻿/*
+ *  This file is part of the "GKLocations".
+ *  Copyright (C) 2022 by Sergey V. Zhdanovskih.
+ *  This program is licensed under the GNU General Public License.
+ */
+
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 
-namespace GKLocations.Core
+namespace GKLocations.Common
 {
     public static class JsonHelper
     {
