@@ -21,7 +21,7 @@
 using System;
 using BSLib.Calendar;
 
-namespace GKLocations.Dates
+namespace GKLocations.Core.Dates
 {
     public sealed class GDMDatePeriod : GDMCustomDate
     {

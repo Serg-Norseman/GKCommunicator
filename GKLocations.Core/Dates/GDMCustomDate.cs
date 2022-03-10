@@ -24,7 +24,7 @@ using System.Text;
 using BSLib;
 using BSLib.Calendar;
 
-namespace GKLocations.Dates
+namespace GKLocations.Core.Dates
 {
     public enum GDMApproximated
     {

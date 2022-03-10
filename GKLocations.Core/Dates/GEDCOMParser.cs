@@ -20,7 +20,7 @@
 
 using System;
 
-namespace GKLocations.Dates
+namespace GKLocations.Core.Dates
 {
     public enum GEDCOMToken
     {

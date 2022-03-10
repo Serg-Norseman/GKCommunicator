@@ -5,10 +5,10 @@
  */
 
 using System;
-using GKLocations.Common;
+using GKLocations.Blockchain;
 using SQLite;
 
-namespace GKLocations.Database
+namespace GKLocations.Core.Database
 {
     /// <summary>
     /// DTO for Transaction records of database.
@@ -20,24 +20,24 @@ namespace GKLocations.Database
         public int Id { get; set; }
 
         [NotNull]
-        public DateTime Timestamp { get; set; }
+        public long Timestamp { get; set; }
 
         [NotNull]
-        public TransactionType Type { get; set; }
+        public string Type { get; set; }
 
         [NotNull]
-        public string Data { get; set; }
+        public string Content { get; set; }
 
 
         public DBTransactionRec()
         {
         }
 
-        public DBTransactionRec(DateTime timestamp, TransactionType type, string data)
+        public DBTransactionRec(long timestamp, string type, string content)
         {
             Timestamp = timestamp;
             Type = type;
-            Data = data;
+            Content = content;
         }
     }
 }

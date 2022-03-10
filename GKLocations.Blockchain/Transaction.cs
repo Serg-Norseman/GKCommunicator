@@ -1,38 +1,24 @@
-﻿using System;
-using GKLocations.Common;
+﻿/*
+ *  This file is part of the "GKLocations".
+ *  Copyright (C) 2022 by Sergey V. Zhdanovskih.
+ *  This program is licensed under the GNU General Public License.
+ */
+
+using System;
+using GKLocations.Utils;
 
 namespace GKLocations.Blockchain
 {
     /// <summary>
-    /// The type of data stored in the block.
+    /// Transaction stored in a block.
     /// </summary>
-    public enum DataType : byte
+    public class Transaction : ITransaction, IHashable
     {
-        Content = 0,
-        User = 1,
-        Node = 2
-    }
+        public long Timestamp { get; private set; }
 
+        public string Type { get; private set; }
 
-    /// <summary>
-    /// Data stored in a block.
-    /// </summary>
-    public class Data : IHashable
-    {
-        /// <summary>
-        /// Hashing algorithm.
-        /// </summary>
-        private IAlgorithm fAlgorithm = Helpers.GetDefaultAlgorithm();
-
-        /// <summary>
-        /// Block content.
-        /// </summary>
         public string Content { get; private set; }
-
-        /// <summary>
-        /// The type of data stored.
-        /// </summary>
-        public DataType Type { get; private set; }
 
         /// <summary>
         /// Data hash.
@@ -43,38 +29,35 @@ namespace GKLocations.Blockchain
         /// <summary>
         /// Create a data instance.
         /// </summary>
-        public Data(string content, DataType type, IAlgorithm algorithm = null)
+        public Transaction(long timestamp, string type, string content)
         {
             if (string.IsNullOrEmpty(content)) {
                 throw new ArgumentNullException(nameof(content));
             }
 
-            if (algorithm != null) {
-                fAlgorithm = algorithm;
-            }
-
-            Content = content;
+            Timestamp = timestamp;
             Type = type;
+            Content = content;
 
-            Hash = this.GetHash(fAlgorithm);
+            Hash = this.GetHash();
 
             if (!this.IsCorrect()) {
-                throw new MethodResultException(nameof(Data), "Data creation error. The data is incorrect.");
+                throw new MethodResultException(nameof(Transaction), "Data creation error. The data is incorrect.");
             }
         }
 
         /// <summary>
         /// Deserializing a object from JSON.
         /// </summary>
-        public static Data Deserialize(string json)
+        public static Transaction Deserialize(string json)
         {
-            var data = JsonHelper.DeserializeObject<Data>(json);
+            var data = JsonHelper.DeserializeObject<Transaction>(json);
 
             if (!data.IsCorrect()) {
                 throw new MethodResultException(nameof(data), "Incorrect data after deserialization.");
             }
 
-            return data as Data ??
+            return data as Transaction ??
                 throw new FormatException("Failed to deserialize data.");
         }
 
@@ -83,8 +66,8 @@ namespace GKLocations.Blockchain
         /// </summary>
         public string GetHashableContent()
         {
-            var text = Content;
-            text += (int)Type;
+            var text = Type;
+            text += Content;
             return text;
         }
 
@@ -99,6 +82,18 @@ namespace GKLocations.Blockchain
         public string GetJson()
         {
             return JsonHelper.SerializeObject(this);
+        }
+
+        public string GetTypeUnit()
+        {
+            string[] parts = Type.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
+            return (parts.Length > 0) ? parts[0] : string.Empty;
+        }
+
+        public string GetTypeOperator()
+        {
+            string[] parts = Type.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
+            return (parts.Length > 1) ? parts[1] : string.Empty;
         }
     }
 }

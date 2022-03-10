@@ -8,7 +8,7 @@ using System;
 using GKLocations.Blockchain;
 using SQLite;
 
-namespace GKLocations.Database
+namespace GKLocations.Core.Database
 {
     /// <summary>
     /// Block stored in the database.
@@ -23,14 +23,19 @@ namespace GKLocations.Database
         public int Id { get; set; }
 
         /// <summary>
+        /// Ordinal index of the block in the chain for checking chains between peers.
+        /// </summary>
+        public override ulong Index { get; set; }
+
+        /// <summary>
         /// The version of the block specification.
         /// </summary>
-        public override int Version { get; set; }
+        public override uint Version { get; set; }
 
         /// <summary>
         /// Block creation time.
         /// </summary>
-        public override DateTime CreatedOn { get; set; }
+        public override DateTime Timestamp { get; set; }
 
         /// <summary>
         /// Block hash.
@@ -45,11 +50,6 @@ namespace GKLocations.Database
         /// <summary>
         /// Block data.
         /// </summary>
-        public override string Data { get; set; }
-
-        /// <summary>
-        /// ID of the user who created the block.
-        /// </summary>
-        public override string User { get; set; }
+        public override string Transactions { get; set; }
     }
 }

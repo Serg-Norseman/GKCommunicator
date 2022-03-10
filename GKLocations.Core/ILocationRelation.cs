@@ -4,7 +4,7 @@
  *  This program is licensed under the GNU General Public License.
  */
 
-namespace GKLocations.Common
+namespace GKLocations.Core
 {
     public interface ILocationRelation
     {

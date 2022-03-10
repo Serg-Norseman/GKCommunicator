@@ -1,26 +1,32 @@
-﻿using System;
+﻿/*
+ *  This file is part of the "GKLocations".
+ *  Copyright (C) 2022 by Sergey V. Zhdanovskih.
+ *  This program is licensed under the GNU General Public License.
+ */
+
+using System;
 
 namespace GKLocations.Blockchain
 {
     /// <summary>
     /// Block serializable to Json.
     /// </summary>
-    public class SerializableBlock
+    public class SerializableBlock : IBlock
     {
+        /// <summary>
+        /// Ordinal index of the block in the chain for checking chains between peers.
+        /// </summary>
+        public virtual ulong Index { get; set; }
+
         /// <summary>
         /// The version of the block specification.
         /// </summary>
-        public virtual int Version { get; set; }
+        public virtual uint Version { get; set; }
 
         /// <summary>
         /// Block creation time.
         /// </summary>
-        public virtual DateTime CreatedOn { get; set; }
-
-        /// <summary>
-        /// Block hash.
-        /// </summary>
-        public virtual string Hash { get; set; }
+        public virtual DateTime Timestamp { get; set; }
 
         /// <summary>
         /// The hash of the previous block.
@@ -30,12 +36,12 @@ namespace GKLocations.Blockchain
         /// <summary>
         /// Block data.
         /// </summary>
-        public virtual string Data { get; set; }
+        public virtual string Transactions { get; set; }
 
         /// <summary>
-        /// ID of the user who created the block.
+        /// Block hash.
         /// </summary>
-        public virtual string User { get; set; }
+        public virtual string Hash { get; set; }
 
 
         public SerializableBlock()
@@ -44,11 +50,11 @@ namespace GKLocations.Blockchain
 
         public SerializableBlock(Block block)
         {
-            Version = block.Version; // FIXME
-            CreatedOn = block.CreatedOn;
+            Index = block.Index;
+            Version = block.Version;
+            Timestamp = block.Timestamp;
             PreviousHash = block.PreviousHash;
-            Data = block.Data.GetJson();
-            User = block.User.GetJson();
+            Transactions = Helpers.SerializeTransactions(block.Transactions);
             Hash = block.Hash;
         }
     }

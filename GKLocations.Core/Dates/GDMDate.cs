@@ -23,7 +23,7 @@ using System.Collections.Generic;
 using BSLib;
 using BSLib.Calendar;
 
-namespace GKLocations.Dates
+namespace GKLocations.Core.Dates
 {
     /// <summary>
     /// Class to hold simple standard GEDCOM dates.

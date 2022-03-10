@@ -9,10 +9,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using GKLocations.Blockchain;
-using GKLocations.Common;
 using SQLite;
 
-namespace GKLocations.Database
+namespace GKLocations.Core.Database
 {
     public class GKLDatabaseException : Exception
     {

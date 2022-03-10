@@ -10,9 +10,10 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Threading;
-using GKLocations.Database;
+using GKLocations.Blockchain;
+using GKLocations.Core.Database;
 using GKLocations.Core.Model;
-using GKLocations.Common;
+using GKLocations.Utils;
 
 namespace GKLocations.Core
 {
@@ -21,6 +22,7 @@ namespace GKLocations.Core
     /// </summary>
     public class GKLCore : ICore
     {
+        private readonly IBlockchainNode fBlockchainNode;
         private readonly IDatabase fDatabase;
 
         public GKLCore()
@@ -28,6 +30,8 @@ namespace GKLocations.Core
             fDatabase = new GKLDatabase();
             fDatabase.SetPath(GetDataPath());
             fDatabase.Connect();
+
+            fBlockchainNode = new BlockchainNode(fDatabase);
         }
 
         public void DeleteDatabase()
@@ -92,6 +96,12 @@ namespace GKLocations.Core
             return Guid.NewGuid().ToString();
         }
 
+        private void AddPendingTransaction(string type, object data)
+        {
+            string json = JsonHelper.SerializeObject(data);
+            fDatabase.AddRecord(new DBTransactionRec(TimeHelper.DateTimeToUnixTime(DateTime.UtcNow), type, json));
+        }
+
         public Location AddLocation(double latitude = 0.0d, double longitude = 0.0d)
         {
             string locationGUID = NewGUID();
@@ -103,13 +113,10 @@ namespace GKLocations.Core
             };
 
             // save to local db
-            //fDatabase.AddLocation(result);
             fDatabase.AddRecord(new DBLocationRec(result));
 
             // save to local transaction pool
-            string json = JsonHelper.SerializeObject(result);
-            //fDatabase.AddTransaction(DateTime.UtcNow, TransactionType.AddLocation, json);
-            fDatabase.AddRecord(new DBTransactionRec(DateTime.UtcNow, TransactionType.AddLocation, json));
+            AddPendingTransaction(TransactionType.Location_Create, result);
 
             return result;
         }
@@ -123,13 +130,10 @@ namespace GKLocations.Core
             };
 
             // save to local db
-            //fDatabase.AddLocation(result);
             fDatabase.UpdateRecord(new DBLocationRec(result));
 
             // save to local transaction pool
-            string json = JsonHelper.SerializeObject(result);
-            //fDatabase.AddTransaction(DateTime.UtcNow, TransactionType.AddLocation, json);
-            fDatabase.AddRecord(new DBTransactionRec(DateTime.UtcNow, TransactionType.UpdateLocation, json));
+            AddPendingTransaction(TransactionType.Location_Update, result);
 
             return result;
         }
@@ -141,13 +145,10 @@ namespace GKLocations.Core
             };
 
             // save to local db
-            //fDatabase.AddLocation(result);
             fDatabase.DeleteRecord<DBLocationRec>(locationGUID);
 
             // save to local transaction pool
-            string json = JsonHelper.SerializeObject(result);
-            //fDatabase.AddTransaction(DateTime.UtcNow, TransactionType.AddLocation, json);
-            fDatabase.AddRecord(new DBTransactionRec(DateTime.UtcNow, TransactionType.DeleteLocation, json));
+            AddPendingTransaction(TransactionType.Location_Delete, result);
         }
 
         public LocationName AddLocationName(string locationGUID, string name, string type, string description, string actualDates, string language)
@@ -165,13 +166,10 @@ namespace GKLocations.Core
             };
 
             // save to local db
-            //fDatabase.AddLocationName(result);
             fDatabase.AddRecord(new DBLocationNameRec(result));
 
             // save to local transaction pool
-            string json = JsonHelper.SerializeObject(result);
-            //fDatabase.AddTransaction(DateTime.UtcNow, TransactionType.AddLocationName, json);
-            fDatabase.AddRecord(new DBTransactionRec(DateTime.UtcNow, TransactionType.AddLocationName, json));
+            AddPendingTransaction(TransactionType.LocationName_Create, result);
 
             return result;
         }
@@ -189,13 +187,10 @@ namespace GKLocations.Core
             };
 
             // save to local db
-            //fDatabase.AddLocationName(result);
             fDatabase.UpdateRecord(new DBLocationNameRec(result));
 
             // save to local transaction pool
-            string json = JsonHelper.SerializeObject(result);
-            //fDatabase.AddTransaction(DateTime.UtcNow, TransactionType.AddLocationName, json);
-            fDatabase.AddRecord(new DBTransactionRec(DateTime.UtcNow, TransactionType.UpdateLocationName, json));
+            AddPendingTransaction(TransactionType.LocationName_Update, result);
 
             return result;
         }
@@ -207,13 +202,10 @@ namespace GKLocations.Core
             };
 
             // save to local db
-            //fDatabase.AddLocationName(result);
             fDatabase.DeleteRecord<DBLocationNameRec>(locationNameGUID);
 
             // save to local transaction pool
-            string json = JsonHelper.SerializeObject(result);
-            //fDatabase.AddTransaction(DateTime.UtcNow, TransactionType.AddLocationName, json);
-            fDatabase.AddRecord(new DBTransactionRec(DateTime.UtcNow, TransactionType.DeleteLocationName, json));
+            AddPendingTransaction(TransactionType.LocationName_Delete, result);
         }
 
         public LocationRelation AddLocationRelation(string locationGUID, string ownerGUID, string relationType, string actualDates)
@@ -229,13 +221,10 @@ namespace GKLocations.Core
             };
 
             // save to local db
-            //fDatabase.AddLocationRelation(result);
             fDatabase.AddRecord(new DBLocationRelationRec(result));
 
             // save to local transaction pool
-            string json = JsonHelper.SerializeObject(result);
-            //fDatabase.AddTransaction(DateTime.UtcNow, TransactionType.AddLocationRelation, json);
-            fDatabase.AddRecord(new DBTransactionRec(DateTime.UtcNow, TransactionType.AddLocationRelation, json));
+            AddPendingTransaction(TransactionType.LocationRelation_Create, result);
 
             return result;
         }
@@ -251,13 +240,10 @@ namespace GKLocations.Core
             };
 
             // save to local db
-            //fDatabase.AddLocationRelation(result);
             fDatabase.UpdateRecord(new DBLocationRelationRec(result));
 
             // save to local transaction pool
-            string json = JsonHelper.SerializeObject(result);
-            //fDatabase.AddTransaction(DateTime.UtcNow, TransactionType.AddLocationRelation, json);
-            fDatabase.AddRecord(new DBTransactionRec(DateTime.UtcNow, TransactionType.UpdateLocationRelation, json));
+            AddPendingTransaction(TransactionType.LocationRelation_Update, result);
 
             return result;
         }
@@ -269,13 +255,10 @@ namespace GKLocations.Core
             };
 
             // save to local db
-            //fDatabase.AddLocationRelation(result);
             fDatabase.DeleteRecord<DBLocationRelationRec>(locationRelationGUID);
 
             // save to local transaction pool
-            string json = JsonHelper.SerializeObject(result);
-            //fDatabase.AddTransaction(DateTime.UtcNow, TransactionType.AddLocationRelation, json);
-            fDatabase.AddRecord(new DBTransactionRec(DateTime.UtcNow, TransactionType.DeleteLocationRelation, json));
+            AddPendingTransaction(TransactionType.LocationRelation_Delete, result);
         }
     }
 }

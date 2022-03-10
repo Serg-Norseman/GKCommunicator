@@ -6,19 +6,21 @@
 
 namespace GKLocations.Blockchain
 {
-    /// <summary>
-    /// Interface for objects that can be hashed. 
-    /// </summary>
-    public interface IHashable
+    public interface ITransaction
     {
         /// <summary>
-        /// The stored hash of the component.
+        /// Transaction creation time.
         /// </summary>
-        string Hash { get; }
+        long Timestamp { get; }
 
         /// <summary>
-        /// Get data from the object, based on which the hash will be built.
+        /// The type of data stored.
         /// </summary>
-        string GetHashableContent();
+        string Type { get; }
+
+        /// <summary>
+        /// Data content.
+        /// </summary>
+        string Content { get; }
     }
 }

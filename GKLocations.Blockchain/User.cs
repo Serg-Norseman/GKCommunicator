@@ -1,5 +1,11 @@
-﻿using System;
-using GKLocations.Common;
+﻿/*
+ *  This file is part of the "GKLocations".
+ *  Copyright (C) 2022 by Sergey V. Zhdanovskih.
+ *  This program is licensed under the GNU General Public License.
+ */
+
+using System;
+using GKLocations.Utils;
 
 namespace GKLocations.Blockchain
 {
@@ -18,11 +24,7 @@ namespace GKLocations.Blockchain
     /// </summary>
     public class User : IHashable
     {
-        /// <summary>
-        /// Hashing algorithm.
-        /// </summary>
-        private IAlgorithm fAlgorithm = Helpers.GetDefaultAlgorithm();
-
+        public const string ProfileTransactionType = "profile";
 
         /// <summary>
         /// User login.
@@ -48,7 +50,7 @@ namespace GKLocations.Blockchain
         /// <summary>
         /// Create a new user instance.
         /// </summary>
-        public User(string login, string password, UserRole role, IAlgorithm algorithm = null)
+        public User(string login, string password, UserRole role)
         {
             if (string.IsNullOrEmpty(login)) {
                 throw new ArgumentNullException(nameof(login));
@@ -58,14 +60,10 @@ namespace GKLocations.Blockchain
                 throw new ArgumentNullException(nameof(password));
             }
 
-            if (algorithm != null) {
-                fAlgorithm = algorithm;
-            }
-
             Login = login;
-            PasswordHash = password.GetHash(fAlgorithm);
+            PasswordHash = password.GetHash();
             Role = role;
-            Hash = this.GetHash(fAlgorithm);
+            Hash = this.GetHash();
 
             if (!this.IsCorrect()) {
                 throw new MethodResultException(nameof(User), "User creation error. The user is invalid.");
@@ -75,25 +73,25 @@ namespace GKLocations.Blockchain
         /// <summary>
         /// Create a user instance from a block.
         /// </summary>
-        public User(Block block)
+        public User(Transaction transaction)
         {
-            if (block == null) {
-                throw new ArgumentNullException(nameof(block));
+            if (transaction == null) {
+                throw new ArgumentNullException(nameof(transaction));
             }
 
-            if (!block.IsCorrect()) {
-                throw new MethodArgumentException(nameof(block), "The block is invalid.");
+            if (!transaction.IsCorrect()) {
+                throw new MethodArgumentException(nameof(transaction), "The block is invalid.");
             }
 
-            if (block.Data == null) {
-                throw new MethodArgumentException(nameof(block), "Block data cannot be null.");
+            if (transaction.Content == null) {
+                throw new MethodArgumentException(nameof(transaction), "Transaction content cannot be null.");
             }
 
-            if (block.Data.Type != DataType.User) {
-                throw new MethodArgumentException(nameof(block), "Invalid block data type.");
+            if (transaction.Type != ProfileTransactionType) {
+                throw new MethodArgumentException(nameof(transaction), "Invalid transaction data type.");
             }
 
-            var user = Deserialize(block.Data.Content);
+            var user = Deserialize(transaction.Content);
 
             Login = user.Login;
             PasswordHash = user.PasswordHash;
@@ -127,10 +125,10 @@ namespace GKLocations.Blockchain
         /// <summary>
         /// Get a block to add a user to the network.
         /// </summary>
-        public Data GetData()
+        public Transaction GetData()
         {
             var jsonString = this.GetJson();
-            var data = new Data(jsonString, DataType.User, fAlgorithm);
+            var data = new Transaction(TimeHelper.GetUtcNow(), ProfileTransactionType, jsonString);
             return data;
         }
 

@@ -8,9 +8,10 @@ using System.Collections.Generic;
 
 namespace GKLocations.Blockchain
 {
-    public interface INetwork
+    public interface IBlockchainNode
     {
-        IList<string> Hosts { get; }
+        IList<string> Peers { get; }
+        IList<User> Users { get; }
 
         // TODO: the host with the largest chain of blocks is pre-selected and it is synchronized.
         // response from Network -> Chain.ReceivedGlobalBlockchain()
@@ -19,5 +20,11 @@ namespace GKLocations.Blockchain
         bool SendBlockToHost(string ip, string method, string data);
 
         User GetCurrentUser();
+
+        User LoginUser(string login, string password);
+
+        void RegisterSolver(ITransactionSolver solver);
+
+        ITransactionSolver GetSolver(string sign);
     }
 }

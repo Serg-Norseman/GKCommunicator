@@ -4,12 +4,12 @@
  *  This program is licensed under the GNU General Public License.
  */
 
-using System;
 using System.Collections.Generic;
+using GKLocations.Blockchain;
 
-namespace GKLocations.Common
+namespace GKLocations.Core
 {
-    public interface IDatabase
+    public interface IDatabase : IDataProvider
     {
         void SetPath(string dbPath);
         void Connect();
@@ -25,12 +25,5 @@ namespace GKLocations.Common
         IList<ILocationName> QueryLocationNames();
         IList<string> QueryLanguages();
         IList<ILocationRelation> QueryLocationRelations();
-        IList<ITransaction> QueryLocalTransactions();
-
-        /*void AddLocation(ILocation location);
-        void AddLocationName(ILocationName location);
-        void AddLocationRelation(ILocationRelation location);
-
-        void AddTransaction(DateTime timestamp, TransactionType type, string data);*/
     }
 }

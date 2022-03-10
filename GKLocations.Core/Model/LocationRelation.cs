@@ -5,8 +5,7 @@
  */
 
 using System;
-using GKLocations.Common;
-using GKLocations.Dates;
+using GKLocations.Core.Dates;
 
 namespace GKLocations.Core.Model
 {

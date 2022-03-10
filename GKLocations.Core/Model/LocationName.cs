@@ -4,8 +4,6 @@
  *  This program is licensed under the GNU General Public License.
  */
 
-using GKLocations.Common;
-
 namespace GKLocations.Core.Model
 {
     /// <summary>

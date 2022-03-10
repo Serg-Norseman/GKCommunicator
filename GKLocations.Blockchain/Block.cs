@@ -1,32 +1,34 @@
-﻿using System;
-using GKLocations.Common;
+﻿/*
+ *  This file is part of the "GKLocations".
+ *  Copyright (C) 2022 by Sergey V. Zhdanovskih.
+ *  This program is licensed under the GNU General Public License.
+ */
+
+using System;
+using System.Collections.Generic;
+using GKLocations.Utils;
 
 namespace GKLocations.Blockchain
 {
     /// <summary>
     /// Chain block.
     /// </summary>
-    public class Block : IHashable
+    public class Block : IBlock, IHashable
     {
         /// <summary>
-        /// Hashing algorithm.
+        /// Ordinal index of the block in the chain for checking chains between peers.
         /// </summary>
-        private IAlgorithm fAlgorithm = Helpers.GetDefaultAlgorithm();
+        public ulong Index { get; private set; }
 
         /// <summary>
         /// The version of the block specification.
         /// </summary>
-        public int Version { get; private set; }
+        public uint Version { get; private set; }
 
         /// <summary>
         /// Block creation time.
         /// </summary>
-        public DateTime CreatedOn { get; private set; }
-
-        /// <summary>
-        /// Block hash.
-        /// </summary>
-        public string Hash { get; private set; }
+        public DateTime Timestamp { get; private set; }
 
         /// <summary>
         /// The hash of the previous block.
@@ -36,53 +38,41 @@ namespace GKLocations.Blockchain
         /// <summary>
         /// Block data.
         /// </summary>
-        public Data Data { get; private set; }
+        public List<Transaction> Transactions { get; private set; }
 
         /// <summary>
-        /// ID of the user who created the block.
+        /// Block hash.
         /// </summary>
-        public User User { get; private set; }
+        public string Hash { get; private set; }
 
 
         /// <summary>
         /// Create a block instance.
         /// </summary>
-        public Block(Block previousBlock, Data data, User user, IAlgorithm algorithm = null)
+        public Block(Block previousBlock, List<Transaction> transactions)
         {
             if (previousBlock == null) {
                 throw new ArgumentNullException(nameof(previousBlock));
             }
 
-            if (data == null) {
-                throw new ArgumentNullException(nameof(data));
-            }
-
-            if (user == null) {
-                throw new ArgumentNullException(nameof(user));
-            }
-
-            if (algorithm != null) {
-                fAlgorithm = algorithm;
+            if (transactions == null) {
+                throw new ArgumentNullException(nameof(transactions));
             }
 
             if (!previousBlock.IsCorrect()) {
                 throw new MethodArgumentException(nameof(previousBlock), "The previous block is invalid.");
             }
 
-            if (!data.IsCorrect()) {
-                throw new MethodArgumentException(nameof(data), "Data is incorrect.");
+            if (!transactions.IsCorrect()) {
+                throw new MethodArgumentException(nameof(transactions), "Transactions is incorrect.");
             }
 
-            if (!user.IsCorrect()) {
-                throw new MethodArgumentException(nameof(user), "User is incorrect.");
-            }
-
-            Version = 1; // FIXME
-            CreatedOn = DateTime.UtcNow;
+            Index = previousBlock.Index + 1;
+            Version = Chain.CurrentVersion;
+            Timestamp = DateTime.UtcNow;
             PreviousHash = previousBlock.Hash;
-            Data = data;
-            User = user;
-            Hash = this.GetHash(fAlgorithm);
+            Transactions = transactions;
+            Hash = this.GetHash();
 
             if (!this.IsCorrect()) {
                 throw new MethodResultException(nameof(Block), "Block creation error. The block is invalid.");
@@ -90,20 +80,16 @@ namespace GKLocations.Blockchain
         }
 
         /// <summary>
-        /// Create a new instance of the block.
+        /// Create a new instance of the genesis block.
         /// </summary>
-        protected Block(string previousHash, Data data, User user, IAlgorithm algorithm = null)
+        protected Block(string previousHash, List<Transaction> transactions)
         {
-            if (algorithm != null) {
-                fAlgorithm = algorithm;
-            }
-
-            Version = 1; // FIXME
-            CreatedOn = DateTime.UtcNow;
-            User = user;
+            Index = 0;
+            Version = Chain.CurrentVersion;
+            Timestamp = DateTime.UtcNow;
             PreviousHash = previousHash;
-            Data = data;
-            Hash = this.GetHash(fAlgorithm);
+            Transactions = transactions;
+            Hash = this.GetHash();
 
             if (!this.IsCorrect()) {
                 throw new MethodResultException(nameof(Block), "Genesis block creation error. The block is invalid.");
@@ -119,11 +105,11 @@ namespace GKLocations.Blockchain
                 throw new ArgumentNullException(nameof(block));
             }
 
+            Index = block.Index;
             Version = block.Version;
-            CreatedOn = block.CreatedOn.ToUniversalTime();
-            User = User.Deserialize(block.User);
+            Timestamp = block.Timestamp.ToUniversalTime();
             PreviousHash = block.PreviousHash;
-            Data = Data.Deserialize(block.Data);
+            Transactions = Helpers.DeserializeTransactions(block.Transactions);
             Hash = block.Hash;
 
             if (!this.IsCorrect()) {
@@ -134,15 +120,10 @@ namespace GKLocations.Blockchain
         /// <summary>
         /// Get the starting (genesis) block of the block chain.
         /// </summary>
-        public static Block CreateGenesisBlock(User user, IAlgorithm algorithm = null)
+        public static Block CreateGenesisBlock(User user)
         {
-            if (algorithm == null) {
-                algorithm = Helpers.GetDefaultAlgorithm();
-            }
-
-            var previousHash = algorithm.GetHash("5DBB70E1-34B3-4E74-87ED-EC9A4C5A5D41");
-            var data = user.GetData();
-            var genesisBlock = new Block(previousHash, data, user, algorithm);
+            var previousHash = Helpers.GetHash("5DBB70E1-34B3-4E74-87ED-EC9A4C5A5D41");
+            var genesisBlock = new Block(previousHash, new List<Transaction>());
             return genesisBlock;
         }
 
@@ -152,12 +133,11 @@ namespace GKLocations.Blockchain
         public string GetHashableContent()
         {
             var data = "";
+            data += Index;
             data += Version;
-            data += CreatedOn.Ticks;
+            data += Timestamp.Ticks;
             data += PreviousHash;
-            data += Data.Hash;
-            data += User.Hash;
-
+            data += Transactions.GetHash();
             return data;
         }
 

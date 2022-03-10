@@ -68,7 +68,7 @@ namespace GKLocations.Manager
             fCore.AddLocationName(locNVZ.GUID, "село Невьянский завод", "село", "", "", lang);
             fCore.AddLocationRelation(locNVZ.GUID, locNVV.GUID, "P", "");
 
-            // Total 23 transaction
+            // Total 23 transaction, 4360 bytes
         }
 
         private void FillLanguagesCombo()

@@ -5,6 +5,11 @@ This project is a distributed, decentralized, serverless, peer-to-peer knowledge
 
 ## Roadmap
 
+- [x] SQLite storage of location, names and relations with history
+- [x] GEDCOM format of dates of locations history
+- [x] Pool of local data modification transaction
+- [x] Simple primitive blockchain without network features
+
 - [ ] Target data model
 - [ ] Local transactions pool
 - [ ] Simple data editing user interface

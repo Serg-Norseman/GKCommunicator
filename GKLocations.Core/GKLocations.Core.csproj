@@ -31,6 +31,13 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BSLib, Version=0.47.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libs\BSLib.dll</HintPath>
+    </Reference>
+    <Reference Include="BSLib.SQLite">
+      <HintPath>..\libs\BSLib.SQLite.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\libs\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -38,13 +45,31 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Database\DBBlockRec.cs" />
+    <Compile Include="Database\DBLocationNameRec.cs" />
+    <Compile Include="Database\DBLocationRec.cs" />
+    <Compile Include="Database\DBLocationRelationRec.cs" />
+    <Compile Include="Database\DBTransactionRec.cs" />
+    <Compile Include="Database\GKLDatabase.cs" />
+    <Compile Include="Dates\GDMCustomDate.cs" />
+    <Compile Include="Dates\GDMDate.cs" />
+    <Compile Include="Dates\GDMDateInterpreted.cs" />
+    <Compile Include="Dates\GDMDatePeriod.cs" />
+    <Compile Include="Dates\GDMDateRange.cs" />
+    <Compile Include="Dates\GDMDateValue.cs" />
+    <Compile Include="Dates\GEDCOMParser.cs" />
     <Compile Include="GKLCore.cs" />
     <Compile Include="ICore.cs" />
+    <Compile Include="IDatabase.cs" />
+    <Compile Include="ILocation.cs" />
+    <Compile Include="ILocationName.cs" />
+    <Compile Include="ILocationRelation.cs" />
     <Compile Include="Model\Entity.cs" />
     <Compile Include="Model\Location.cs" />
     <Compile Include="Model\LocationName.cs" />
     <Compile Include="Model\LocationRelation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TransactionType.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GKLocations.Blockchain\GKLocations.Blockchain.csproj">
@@ -54,14 +79,6 @@
     <ProjectReference Include="..\GKLocations.Common\GKLocations.Common.csproj">
       <Project>{9DD7D4F6-F853-426E-8AB5-5018737B654F}</Project>
       <Name>GKLocations.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\GKLocations.Database\GKLocations.Database.csproj">
-      <Project>{9043c29f-4307-4c16-b2ed-2707a463d285}</Project>
-      <Name>GKLocations.Database</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\GKLocations.Dates\GKLocations.Dates.csproj">
-      <Project>{c7348020-e7e7-4f5f-8330-6774b9648999}</Project>
-      <Name>GKLocations.Dates</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

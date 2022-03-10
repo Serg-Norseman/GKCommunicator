@@ -4,10 +4,9 @@
  *  This program is licensed under the GNU General Public License.
  */
 
-using GKLocations.Common;
 using SQLite;
 
-namespace GKLocations.Database
+namespace GKLocations.Core.Database
 {
     /// <summary>
     /// DTO for LocationRelation records of database.
