@@ -9,6 +9,15 @@ using GKLocations.Blockchain;
 
 namespace GKLocations.Core
 {
+    public class QLocation
+    {
+        public string LocationGUID { get; set; }
+        public string OwnerGUID { get; set; }
+        public string RelationType { get; set; }
+        public string Name { get; set; }
+        public string Language { get; set; }
+    }
+
     public interface IDatabase : IDataProvider
     {
         void SetPath(string dbPath);
@@ -25,5 +34,7 @@ namespace GKLocations.Core
         IList<ILocationName> QueryLocationNames();
         IList<string> QueryLanguages();
         IList<ILocationRelation> QueryLocationRelations();
+
+        IList<QLocation> QueryLocationsEx(string lang);
     }
 }

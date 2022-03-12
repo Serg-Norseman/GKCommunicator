@@ -28,7 +28,7 @@ namespace GKLocations.Blockchain
         /// <summary>
         /// Block creation time.
         /// </summary>
-        public DateTime Timestamp { get; private set; }
+        public long Timestamp { get; private set; }
 
         /// <summary>
         /// The hash of the previous block.
@@ -69,7 +69,7 @@ namespace GKLocations.Blockchain
 
             Index = previousBlock.Index + 1;
             Version = Chain.CurrentVersion;
-            Timestamp = DateTime.UtcNow;
+            Timestamp = TimeHelper.GetUtcNow();
             PreviousHash = previousBlock.Hash;
             Transactions = transactions;
             Hash = this.GetHash();
@@ -86,7 +86,7 @@ namespace GKLocations.Blockchain
         {
             Index = 0;
             Version = Chain.CurrentVersion;
-            Timestamp = DateTime.UtcNow;
+            Timestamp = TimeHelper.GetUtcNow();
             PreviousHash = previousHash;
             Transactions = transactions;
             Hash = this.GetHash();
@@ -107,7 +107,7 @@ namespace GKLocations.Blockchain
 
             Index = block.Index;
             Version = block.Version;
-            Timestamp = block.Timestamp.ToUniversalTime();
+            Timestamp = block.Timestamp;
             PreviousHash = block.PreviousHash;
             Transactions = Helpers.DeserializeTransactions(block.Transactions);
             Hash = block.Hash;
@@ -135,7 +135,7 @@ namespace GKLocations.Blockchain
             var data = "";
             data += Index;
             data += Version;
-            data += Timestamp.Ticks;
+            data += Timestamp;
             data += PreviousHash;
             data += Transactions.GetHash();
             return data;

@@ -26,7 +26,7 @@ namespace GKLocations.Blockchain
         /// <summary>
         /// Block creation time.
         /// </summary>
-        public virtual DateTime Timestamp { get; set; }
+        public virtual long Timestamp { get; set; }
 
         /// <summary>
         /// The hash of the previous block.

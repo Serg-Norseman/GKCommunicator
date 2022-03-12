@@ -46,6 +46,23 @@ namespace GKLocations.Blockchain
             }
         }
 
+        public Transaction(ITransaction transaction)
+        {
+            if (transaction == null) {
+                throw new ArgumentNullException(nameof(transaction));
+            }
+
+            Timestamp = transaction.Timestamp;
+            Type = transaction.Type;
+            Content = transaction.Content;
+
+            Hash = this.GetHash();
+
+            if (!this.IsCorrect()) {
+                throw new MethodResultException(nameof(Transaction), "Data creation error. The data is incorrect.");
+            }
+        }
+
         /// <summary>
         /// Deserializing a object from JSON.
         /// </summary>

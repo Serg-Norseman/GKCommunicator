@@ -20,5 +20,10 @@ namespace GKLocations.Blockchain
             var user = new User(transaction);
             node.Users.Add(user);
         }
+
+        public bool Verify(Transaction transaction)
+        {
+            return true;
+        }
     }
 }

@@ -7,6 +7,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using GKLocations.Utils;
 
 namespace GKLocations.Blockchain
@@ -64,38 +66,6 @@ namespace GKLocations.Blockchain
         }
 
         /// <summary>
-        /// Get data from the local chain.
-        /// </summary>
-        private void LoadDataFromLocalChain(Chain localChain)
-        {
-            if (localChain == null) {
-                throw new ArgumentNullException(nameof(localChain));
-            }
-
-            foreach (var block in localChain.fBlockChain) {
-                fBlockChain.Add(block);
-                ProcessBlockTransactions(block);
-            }
-        }
-
-        /// <summary>
-        /// Replace the local data chain with blocks from the global chain.
-        /// </summary>
-        private void ReplaceLocalChainFromGlobalChain(Chain globalChain)
-        {
-            if (globalChain == null) {
-                throw new ArgumentNullException(nameof(globalChain));
-            }
-
-            // TODO: Develop a merge algorithm
-            fDataProvider.ClearBlocks();
-
-            foreach (var block in globalChain.fBlockChain) {
-                AddBlock(block);
-            }
-        }
-
-        /// <summary>
         /// Create a block chain from a data provider block list.
         /// </summary>
         private Chain(List<SerializableBlock> blocks)
@@ -129,6 +99,45 @@ namespace GKLocations.Blockchain
 
             if (!CheckCorrect()) {
                 throw new MethodResultException(nameof(Chain), "Error creating block chain. The chain is incorrect.");
+            }
+        }
+
+        public void CreateNewBlock()
+        {
+            if (fPendingTransactions.Count <= 0) {
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Get data from the local chain.
+        /// </summary>
+        private void LoadDataFromLocalChain(Chain localChain)
+        {
+            if (localChain == null) {
+                throw new ArgumentNullException(nameof(localChain));
+            }
+
+            foreach (var block in localChain.fBlockChain) {
+                fBlockChain.Add(block);
+                ProcessBlockTransactions(block);
+            }
+        }
+
+        /// <summary>
+        /// Replace the local data chain with blocks from the global chain.
+        /// </summary>
+        private void ReplaceLocalChainFromGlobalChain(Chain globalChain)
+        {
+            if (globalChain == null) {
+                throw new ArgumentNullException(nameof(globalChain));
+            }
+
+            // TODO: Develop a merge algorithm
+            fDataProvider.ClearBlocks();
+
+            foreach (var block in globalChain.fBlockChain) {
+                AddBlock(block);
             }
         }
 
@@ -228,7 +237,7 @@ namespace GKLocations.Blockchain
         /// <summary>
         /// Add block to local chain and database.
         /// </summary>
-        private void AddBlock(Block block)
+        public void AddBlock(Block block)
         {
             if (block == null) {
                 throw new ArgumentNullException(nameof(block));
@@ -249,6 +258,11 @@ namespace GKLocations.Blockchain
             if (!CheckCorrect()) {
                 throw new MethodResultException(nameof(Chain), "The correctness was violated after adding the block.");
             }
+        }
+
+        public void AddPendingTransaction(ITransaction transaction)
+        {
+            fPendingTransactions.Add(new Transaction(transaction));
         }
 
         public void ProcessBlockTransactions(Block block)

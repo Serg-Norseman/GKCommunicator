@@ -25,6 +25,15 @@ namespace GKLocations.Core
         private readonly IBlockchainNode fBlockchainNode;
         private readonly IDatabase fDatabase;
 
+
+        public IDatabase Database
+        {
+            get {
+                return fDatabase;
+            }
+        }
+
+
         public GKLCore()
         {
             fDatabase = new GKLDatabase();
@@ -99,7 +108,9 @@ namespace GKLocations.Core
         private void AddPendingTransaction(string type, object data)
         {
             string json = JsonHelper.SerializeObject(data);
-            fDatabase.AddRecord(new DBTransactionRec(TimeHelper.DateTimeToUnixTime(DateTime.UtcNow), type, json));
+            var transaction = new DBTransactionRec(TimeHelper.DateTimeToUnixTime(DateTime.UtcNow), type, json);
+            fDatabase.AddRecord(transaction);
+            fBlockchainNode.AddPendingTransaction(transaction);
         }
 
         public Location AddLocation(double latitude = 0.0d, double longitude = 0.0d)

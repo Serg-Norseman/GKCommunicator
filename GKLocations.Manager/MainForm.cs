@@ -4,9 +4,6 @@
  *  This program is licensed under the GNU General Public License.
  */
 
-using System;
-using System.Globalization;
-using System.Threading;
 using System.Windows.Forms;
 using GKLocations.Core;
 
@@ -25,9 +22,13 @@ namespace GKLocations.Manager
 
             fCore = new GKLCore();
 
+            treeControl1.Core = fCore;
+
             FillLanguagesCombo();
 
             FillTests();
+
+            treeControl1.UpdateContent(GetSelectedLanguage());
         }
 
         private void FillTests()
@@ -82,6 +83,12 @@ namespace GKLocations.Manager
 
             var curLang = fCore.GetCurrentLanguage();
             cmbLanguages.Text = curLang;
+        }
+
+        public string GetSelectedLanguage()
+        {
+            string result = cmbLanguages.Text;
+            return (!string.IsNullOrEmpty(result)) ? result : fCore.GetCurrentLanguage();
         }
     }
 }

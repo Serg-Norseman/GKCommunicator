@@ -15,6 +15,8 @@ namespace GKLocations.Core
     /// </summary>
     public interface ICore
     {
+        IDatabase Database { get; }
+
         string GetAppPath();
         string GetBinPath();
         string GetDataPath();

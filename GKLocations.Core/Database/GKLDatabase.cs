@@ -240,5 +240,10 @@ namespace GKLocations.Core.Database
         {
             throw new NotImplementedException();
         }
+
+        public IList<QLocation> QueryLocationsEx(string lang)
+        {
+            return fConnection.Query<QLocation>("select locrel.OwnerGUID, locrel.RelationType, locnam.LocationGUID, locnam.Name, locnam.Language from LocationNames locnam left join LocationRelations locrel on locnam.LocationGUID = locrel.LocationGUID where locnam.Language = ?", lang); // 'ru-RU'
+        }
     }
 }

@@ -6,12 +6,7 @@
 
 namespace GKLocations.Blockchain
 {
-    public interface ITransactionSolver
+    public interface IBlockchainPeer
     {
-        string Sign { get; }
-
-        void Solve(IBlockchainNode node, Transaction transaction);
-
-        bool Verify(Transaction transaction);
     }
 }

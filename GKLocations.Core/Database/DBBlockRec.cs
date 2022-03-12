@@ -35,7 +35,7 @@ namespace GKLocations.Core.Database
         /// <summary>
         /// Block creation time.
         /// </summary>
-        public override DateTime Timestamp { get; set; }
+        public override long Timestamp { get; set; }
 
         /// <summary>
         /// Block hash.

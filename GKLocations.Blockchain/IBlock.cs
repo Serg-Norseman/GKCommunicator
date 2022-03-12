@@ -8,6 +8,10 @@ using System;
 
 namespace GKLocations.Blockchain
 {
+    /// <summary>
+    ///
+    /// Will not be used: MerkleHash, Difficulty and Nonce (with PoW)
+    /// </summary>
     public interface IBlock
     {
         /// <summary>
@@ -23,7 +27,7 @@ namespace GKLocations.Blockchain
         /// <summary>
         /// Block creation time.
         /// </summary>
-        DateTime Timestamp { get; }
+        long Timestamp { get; }
 
         /// <summary>
         /// The hash of the previous block.

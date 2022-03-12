@@ -10,7 +10,7 @@ namespace GKLocations.Blockchain
 {
     public interface IBlockchainNode
     {
-        IList<string> Peers { get; }
+        IList<IBlockchainPeer> Peers { get; }
         IList<User> Users { get; }
 
         // TODO: the host with the largest chain of blocks is pre-selected and it is synchronized.
@@ -26,5 +26,7 @@ namespace GKLocations.Blockchain
         void RegisterSolver(ITransactionSolver solver);
 
         ITransactionSolver GetSolver(string sign);
+
+        void AddPendingTransaction(ITransaction transaction);
     }
 }
