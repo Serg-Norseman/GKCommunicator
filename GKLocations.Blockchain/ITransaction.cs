@@ -22,5 +22,13 @@ namespace GKLocations.Blockchain
         /// Data content.
         /// </summary>
         string Content { get; }
+
+        /// <summary>
+        /// Transaction hash.
+        /// </summary>
+        string Hash { get; }
+
+
+        string Serialize();
     }
 }

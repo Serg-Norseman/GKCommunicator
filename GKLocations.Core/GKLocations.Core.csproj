@@ -76,10 +76,6 @@
       <Project>{ACDDCD1F-028D-4B5A-B040-B3C092BEDC91}</Project>
       <Name>GKLocations.Blockchain</Name>
     </ProjectReference>
-    <ProjectReference Include="..\GKLocations.Common\GKLocations.Common.csproj">
-      <Project>{9DD7D4F6-F853-426E-8AB5-5018737B654F}</Project>
-      <Name>GKLocations.Common</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

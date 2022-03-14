@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using BSLib;
 
 namespace GKLocations.Blockchain
 {
@@ -52,13 +53,15 @@ namespace GKLocations.Blockchain
 
         public BlockchainNode(IDataProvider dataProvider)
         {
-            fChain = new Chain(this, fDataProvider);
             fDataProvider = dataProvider;
+            fChain = new Chain(this, fDataProvider);
             fPeers = new List<IBlockchainPeer>();
             fUsers = new List<User>();
             fSolvers = new Dictionary<string, ITransactionSolver>();
 
             RegisterSolver(new ProfileTransactionSolver());
+
+            fChain.CreateNewBlockChain();
 
             fTimer = new Timer(new TimerCallback(TimerCallback));
             fTimer.Change(1 * 60 * 1000, Timeout.Infinite);
@@ -71,7 +74,7 @@ namespace GKLocations.Blockchain
 
         public User GetCurrentUser()
         {
-            throw new System.NotImplementedException();
+            return null;
         }
 
         public void RequestGlobalBlockchain()
@@ -124,8 +127,11 @@ namespace GKLocations.Blockchain
             return (fSolvers.TryGetValue(sign, out result)) ? result : null;
         }
 
-        public void AddPendingTransaction(ITransaction transaction)
+        public void AddPendingTransaction(string type, object data)
         {
+            string json = JsonHelper.SerializeObject(data);
+            var transaction = new Transaction(TimeHelper.DateTimeToUnixTime(DateTime.UtcNow), type, json);
+            //fDatabase.AddRecord(transaction);
             fChain.AddPendingTransaction(transaction);
         }
 
@@ -157,7 +163,7 @@ namespace GKLocations.Blockchain
             });
         }
 
-        public void ReceiveTransaction(IBlockchainPeer sender, ITransaction transaction)
+        public void ReceiveTransaction(IBlockchainPeer sender, Transaction transaction)
         {
             try {
                 fChain.AddPendingTransaction(transaction);

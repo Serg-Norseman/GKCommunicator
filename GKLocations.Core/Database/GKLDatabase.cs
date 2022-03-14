@@ -109,6 +109,7 @@ namespace GKLocations.Core.Database
             fConnection.CreateTable<DBLocationRelationRec>();
 
             fConnection.CreateTable<DBTransactionRec>();
+            fConnection.CreateTable<DBBlockRec>();
         }
 
         #region Records
@@ -176,6 +177,8 @@ namespace GKLocations.Core.Database
 
         #endregion
 
+        #region Locations records
+
         public IList<ILocation> QueryLocations()
         {
             return (IList<ILocation>)fConnection.Query<DBLocationRec>("select * from Locations");
@@ -197,53 +200,59 @@ namespace GKLocations.Core.Database
             return (IList<ILocationRelation>)fConnection.Query<DBLocationRelationRec>("select * from LocationRelations");
         }
 
-        public IList<ITransaction> QueryLocalTransactions()
-        {
-            return (IList<ITransaction>)fConnection.Query<DBTransactionRec>("select * from LocalTransactions");
-        }
-
-        /*public void AddLocation(ILocation location)
-        {
-            var dtObj = new DBLocationRec(location);
-            AddRecord(dtObj);
-        }
-
-        public void AddLocationName(ILocationName locationName)
-        {
-            var dtObj = new DBLocationNameRec(locationName);
-            AddRecord(dtObj);
-        }
-
-        public void AddLocationRelation(ILocationRelation locationRelation)
-        {
-            var dtObj = new DBLocationRelationRec(locationRelation);
-            AddRecord(dtObj);
-        }
-
-        public void AddTransaction(DateTime timestamp, TransactionType type, string data)
-        {
-            var dtObj = new DBTransactionRec(timestamp, type, data);
-            AddRecord(dtObj);
-        }*/
-
-        public void AddBlock(SerializableBlock block)
-        {
-            throw new NotImplementedException();
-        }
-
-        public List<SerializableBlock> GetBlocks()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void ClearBlocks()
-        {
-            throw new NotImplementedException();
-        }
-
         public IList<QLocation> QueryLocationsEx(string lang)
         {
             return fConnection.Query<QLocation>("select locrel.OwnerGUID, locrel.RelationType, locnam.LocationGUID, locnam.Name, locnam.Language from LocationNames locnam left join LocationRelations locrel on locnam.LocationGUID = locrel.LocationGUID where locnam.Language = ?", lang); // 'ru-RU'
         }
+
+        #endregion
+
+        #region Blockchain Data Provider
+
+        public void AddBlock(IBlock block)
+        {
+            var dtObj = new DBBlockRec(block);
+            AddRecord(dtObj);
+        }
+
+        public void ClearBlocks()
+        {
+            fConnection.DeleteAll<DBBlockRec>();
+        }
+
+        public IList<IBlock> GetBlocks()
+        {
+            var dtRecs = fConnection.Query<DBBlockRec>("select * from Blocks");
+
+            var result = new List<Block>();
+            foreach (var blk in dtRecs) {
+                result.Add(blk.GetData());
+            }
+            return (IList<IBlock>)result;
+        }
+
+        public void AddTransaction(ITransaction transaction)
+        {
+            var dtObj = new DBTransactionRec(transaction);
+            AddRecord(dtObj);
+        }
+
+        public void ClearLocalTransactions()
+        {
+            fConnection.DeleteAll<DBTransactionRec>();
+        }
+
+        public IList<ITransaction> GetLocalTransactions()
+        {
+            var dtRecs = fConnection.Query<DBTransactionRec>("select * from LocalTransactions");
+
+            var result = new List<Transaction>();
+            foreach (var trx in dtRecs) {
+                result.Add(trx.GetData());
+            }
+            return (IList<ITransaction>)result;
+        }
+
+        #endregion
     }
 }

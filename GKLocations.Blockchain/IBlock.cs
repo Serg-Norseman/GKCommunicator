@@ -5,6 +5,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 
 namespace GKLocations.Blockchain
 {
@@ -17,7 +18,7 @@ namespace GKLocations.Blockchain
         /// <summary>
         /// Ordinal index of the block in the chain for checking chains between peers.
         /// </summary>
-        ulong Index { get; }
+        long Index { get; }
 
         /// <summary>
         /// The version of the block specification.
@@ -33,5 +34,18 @@ namespace GKLocations.Blockchain
         /// The hash of the previous block.
         /// </summary>
         string PreviousHash { get; }
+
+        /// <summary>
+        /// Block data.
+        /// </summary>
+        IList<Transaction> Transactions { get; }
+
+        /// <summary>
+        /// Block hash.
+        /// </summary>
+        string Hash { get; }
+
+
+        string Serialize();
     }
 }

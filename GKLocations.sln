@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GKLocations.Manager", "GKLo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GKLocations.Core", "GKLocations.Core\GKLocations.Core.csproj", "{2E9DC388-BF8C-4FCC-B76E-837E221953EF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GKLocations.Common", "GKLocations.Common\GKLocations.Common.csproj", "{9DD7D4F6-F853-426E-8AB5-5018737B654F}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GKLocations.Blockchain", "GKLocations.Blockchain\GKLocations.Blockchain.csproj", "{ACDDCD1F-028D-4B5A-B040-B3C092BEDC91}"
 EndProject
 Global
@@ -25,10 +23,6 @@ Global
 		{2E9DC388-BF8C-4FCC-B76E-837E221953EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E9DC388-BF8C-4FCC-B76E-837E221953EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E9DC388-BF8C-4FCC-B76E-837E221953EF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9DD7D4F6-F853-426E-8AB5-5018737B654F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9DD7D4F6-F853-426E-8AB5-5018737B654F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9DD7D4F6-F853-426E-8AB5-5018737B654F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9DD7D4F6-F853-426E-8AB5-5018737B654F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{ACDDCD1F-028D-4B5A-B040-B3C092BEDC91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{ACDDCD1F-028D-4B5A-B040-B3C092BEDC91}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ACDDCD1F-028D-4B5A-B040-B3C092BEDC91}.Release|Any CPU.ActiveCfg = Release|Any CPU

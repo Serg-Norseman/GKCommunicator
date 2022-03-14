@@ -13,7 +13,6 @@ using System.Threading;
 using GKLocations.Blockchain;
 using GKLocations.Core.Database;
 using GKLocations.Core.Model;
-using GKLocations.Utils;
 
 namespace GKLocations.Core
 {
@@ -25,6 +24,13 @@ namespace GKLocations.Core
         private readonly IBlockchainNode fBlockchainNode;
         private readonly IDatabase fDatabase;
 
+
+        public IBlockchainNode BlockchainNode
+        {
+            get {
+                return fBlockchainNode;
+            }
+        }
 
         public IDatabase Database
         {
@@ -107,10 +113,7 @@ namespace GKLocations.Core
 
         private void AddPendingTransaction(string type, object data)
         {
-            string json = JsonHelper.SerializeObject(data);
-            var transaction = new DBTransactionRec(TimeHelper.DateTimeToUnixTime(DateTime.UtcNow), type, json);
-            fDatabase.AddRecord(transaction);
-            fBlockchainNode.AddPendingTransaction(transaction);
+            fBlockchainNode.AddPendingTransaction(type, data);
         }
 
         public Location AddLocation(double latitude = 0.0d, double longitude = 0.0d)

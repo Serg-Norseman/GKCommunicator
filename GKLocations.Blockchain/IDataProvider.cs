@@ -16,12 +16,12 @@ namespace GKLocations.Blockchain
         /// <summary>
         /// Adding a data block.
         /// </summary>
-        void AddBlock(SerializableBlock block);
+        void AddBlock(IBlock block);
 
         /// <summary>
         /// Get all blocks.
         /// </summary>
-        List<SerializableBlock> GetBlocks();
+        IList<IBlock> GetBlocks();
 
         /// <summary>
         /// Clear storage. Removing all blocks.
@@ -29,8 +29,18 @@ namespace GKLocations.Blockchain
         void ClearBlocks();
 
         /// <summary>
-        /// 
+        /// Adding a transaction.
         /// </summary>
-        IList<ITransaction> QueryLocalTransactions();
+        void AddTransaction(ITransaction transaction);
+
+        /// <summary>
+        /// Get all transactions.
+        /// </summary>
+        IList<ITransaction> GetLocalTransactions();
+
+        /// <summary>
+        /// Clear storage. Removing all transactions.
+        /// </summary>
+        void ClearLocalTransactions();
     }
 }

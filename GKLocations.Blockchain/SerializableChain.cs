@@ -13,6 +13,6 @@ namespace GKLocations.Blockchain
     /// </summary>
     public class SerializableChain
     {
-        public List<SerializableBlock> Chain { get; set; }
+        public List<IBlock> Chain { get; set; }
     }
 }

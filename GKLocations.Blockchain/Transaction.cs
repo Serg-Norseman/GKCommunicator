@@ -5,14 +5,13 @@
  */
 
 using System;
-using GKLocations.Utils;
 
 namespace GKLocations.Blockchain
 {
     /// <summary>
     /// Transaction stored in a block.
     /// </summary>
-    public class Transaction : ITransaction, IHashable
+    public class Transaction : Hashable, ITransaction
     {
         public long Timestamp { get; private set; }
 
@@ -23,7 +22,7 @@ namespace GKLocations.Blockchain
         /// <summary>
         /// Data hash.
         /// </summary>
-        public string Hash { get; private set; }
+        public override string Hash { get; set; }
 
 
         /// <summary>
@@ -81,9 +80,11 @@ namespace GKLocations.Blockchain
         /// <summary>
         /// Get data from the object, based on which the hash will be built.
         /// </summary>
-        public string GetHashableContent()
+        public override string GetHashableContent()
         {
-            var text = Type;
+            var text = "";
+            text += Timestamp;
+            text += Type;
             text += Content;
             return text;
         }
@@ -96,7 +97,7 @@ namespace GKLocations.Blockchain
             return Content;
         }
 
-        public string GetJson()
+        public string Serialize()
         {
             return JsonHelper.SerializeObject(this);
         }

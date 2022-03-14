@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 
-namespace GKLocations.Utils
+namespace GKLocations.Blockchain
 {
     public static class JsonHelper
     {

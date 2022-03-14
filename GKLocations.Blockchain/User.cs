@@ -5,7 +5,7 @@
  */
 
 using System;
-using GKLocations.Utils;
+using BSLib;
 
 namespace GKLocations.Blockchain
 {
@@ -22,7 +22,7 @@ namespace GKLocations.Blockchain
     /// <summary>
     /// Network user.
     /// </summary>
-    public class User : IHashable
+    public class User : Hashable
     {
         public const string ProfileTransactionType = "profile";
 
@@ -44,7 +44,7 @@ namespace GKLocations.Blockchain
         /// <summary>
         /// User hash.
         /// </summary>
-        public string Hash { get; private set; }
+        public override string Hash { get; set; }
 
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace GKLocations.Blockchain
         /// <summary>
         /// Get data from the object, based on which the hash will be built.
         /// </summary>
-        public string GetHashableContent()
+        public override string GetHashableContent()
         {
             var text = Login;
             text += (int)Role;
@@ -127,7 +127,7 @@ namespace GKLocations.Blockchain
         /// </summary>
         public Transaction GetData()
         {
-            var jsonString = this.GetJson();
+            var jsonString = this.Serialize();
             var data = new Transaction(TimeHelper.GetUtcNow(), ProfileTransactionType, jsonString);
             return data;
         }
@@ -151,7 +151,7 @@ namespace GKLocations.Blockchain
                 throw new FormatException("Failed to deserialize user.");
         }
 
-        public string GetJson()
+        public string Serialize()
         {
             return JsonHelper.SerializeObject(this);
         }

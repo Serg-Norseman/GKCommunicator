@@ -6,6 +6,7 @@
 
 using System;
 using System.Collections.Generic;
+using GKLocations.Blockchain;
 using GKLocations.Core.Model;
 
 namespace GKLocations.Core
@@ -15,6 +16,7 @@ namespace GKLocations.Core
     /// </summary>
     public interface ICore
     {
+        IBlockchainNode BlockchainNode { get; }
         IDatabase Database { get; }
 
         string GetAppPath();

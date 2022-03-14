@@ -4,7 +4,6 @@
  *  This program is licensed under the GNU General Public License.
  */
 
-using System;
 using GKLocations.Blockchain;
 using SQLite;
 
@@ -14,7 +13,7 @@ namespace GKLocations.Core.Database
     /// Block stored in the database.
     /// </summary>
     [Table("Blocks")]
-    public class DBBlockRec : SerializableBlock
+    public class DBBlockRec
     {
         /// <summary>
         /// Identifier.
@@ -25,31 +24,43 @@ namespace GKLocations.Core.Database
         /// <summary>
         /// Ordinal index of the block in the chain for checking chains between peers.
         /// </summary>
-        public override ulong Index { get; set; }
-
-        /// <summary>
-        /// The version of the block specification.
-        /// </summary>
-        public override uint Version { get; set; }
+        [NotNull, Indexed]
+        public long Index { get; set; }
 
         /// <summary>
         /// Block creation time.
         /// </summary>
-        public override long Timestamp { get; set; }
+        [NotNull, Indexed]
+        public long Timestamp { get; set; }
 
         /// <summary>
         /// Block hash.
         /// </summary>
-        public override string Hash { get; set; }
-
-        /// <summary>
-        /// The hash of the previous block.
-        /// </summary>
-        public override string PreviousHash { get; set; }
+        [NotNull, Indexed]
+        public string Hash { get; set; }
 
         /// <summary>
         /// Block data.
         /// </summary>
-        public override string Transactions { get; set; }
+        [NotNull]
+        public string Data { get; set; }
+
+
+        public DBBlockRec()
+        {
+        }
+
+        public DBBlockRec(IBlock block)
+        {
+            Index = block.Index;
+            Timestamp = block.Timestamp;
+            Hash = block.Hash;
+            Data = block.Serialize();
+        }
+
+        public Block GetData()
+        {
+            return Block.Deserialize(Data);
+        }
     }
 }

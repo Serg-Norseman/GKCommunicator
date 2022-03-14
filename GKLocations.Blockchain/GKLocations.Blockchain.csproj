@@ -47,24 +47,18 @@
     <Compile Include="IBlock.cs" />
     <Compile Include="IBlockchainPeer.cs" />
     <Compile Include="IDataProvider.cs" />
+    <Compile Include="JsonHelper.cs" />
     <Compile Include="Transaction.cs" />
     <Compile Include="ITransaction.cs" />
     <Compile Include="ITransactionSolver.cs" />
     <Compile Include="ProfileTransactionSolver.cs" />
-    <Compile Include="SerializableBlock.cs" />
     <Compile Include="SerializableChain.cs" />
     <Compile Include="Helpers.cs" />
-    <Compile Include="IHashable.cs" />
+    <Compile Include="Hashable.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="IBlockchainNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="User.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\GKLocations.Common\GKLocations.Common.csproj">
-      <Project>{9dd7d4f6-f853-426e-8ab5-5018737b654f}</Project>
-      <Name>GKLocations.Common</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

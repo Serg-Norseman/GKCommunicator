@@ -6,19 +6,19 @@
 
 using System;
 using System.Collections.Generic;
-using GKLocations.Utils;
+using BSLib;
 
 namespace GKLocations.Blockchain
 {
     /// <summary>
     /// Chain block.
     /// </summary>
-    public class Block : IBlock, IHashable
+    public class Block : Hashable, IBlock
     {
         /// <summary>
         /// Ordinal index of the block in the chain for checking chains between peers.
         /// </summary>
-        public ulong Index { get; private set; }
+        public long Index { get; private set; }
 
         /// <summary>
         /// The version of the block specification.
@@ -38,18 +38,18 @@ namespace GKLocations.Blockchain
         /// <summary>
         /// Block data.
         /// </summary>
-        public List<Transaction> Transactions { get; private set; }
+        public IList<Transaction> Transactions { get; private set; }
 
         /// <summary>
         /// Block hash.
         /// </summary>
-        public string Hash { get; private set; }
+        public override string Hash { get; set; }
 
 
         /// <summary>
         /// Create a block instance.
         /// </summary>
-        public Block(Block previousBlock, List<Transaction> transactions)
+        public Block(Block previousBlock, IList<Transaction> transactions)
         {
             if (previousBlock == null) {
                 throw new ArgumentNullException(nameof(previousBlock));
@@ -99,7 +99,7 @@ namespace GKLocations.Blockchain
         /// <summary>
         /// Creating a chain block from a data provider block.
         /// </summary>
-        public Block(SerializableBlock block)
+        public Block(IBlock block)
         {
             if (block == null) {
                 throw new ArgumentNullException(nameof(block));
@@ -109,7 +109,7 @@ namespace GKLocations.Blockchain
             Version = block.Version;
             Timestamp = block.Timestamp;
             PreviousHash = block.PreviousHash;
-            Transactions = Helpers.DeserializeTransactions(block.Transactions);
+            Transactions = block.Transactions;
             Hash = block.Hash;
 
             if (!this.IsCorrect()) {
@@ -130,7 +130,7 @@ namespace GKLocations.Blockchain
         /// <summary>
         /// Get data from the object, based on which the hash will be built.
         /// </summary>
-        public string GetHashableContent()
+        public override string GetHashableContent()
         {
             var data = "";
             data += Index;
@@ -149,7 +149,22 @@ namespace GKLocations.Blockchain
             return Hash;
         }
 
-        public string GetJson()
+        /// <summary>
+        /// Deserializing a object from JSON.
+        /// </summary>
+        public static Block Deserialize(string json)
+        {
+            var data = JsonHelper.DeserializeObject<Block>(json);
+
+            if (!data.IsCorrect()) {
+                throw new MethodResultException(nameof(data), "Incorrect data after deserialization.");
+            }
+
+            return data as Block ??
+                throw new FormatException("Failed to deserialize data.");
+        }
+
+        public string Serialize()
         {
             return JsonHelper.SerializeObject(this);
         }

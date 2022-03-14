@@ -10,6 +10,7 @@ namespace GKLocations.Blockchain
 {
     public interface IBlockchainNode
     {
+        Chain Chain { get; }
         IList<IBlockchainPeer> Peers { get; }
         IList<User> Users { get; }
 
@@ -27,6 +28,6 @@ namespace GKLocations.Blockchain
 
         ITransactionSolver GetSolver(string sign);
 
-        void AddPendingTransaction(ITransaction transaction);
+        void AddPendingTransaction(string type, object data);
     }
 }

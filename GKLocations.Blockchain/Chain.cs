@@ -7,9 +7,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using GKLocations.Utils;
 
 namespace GKLocations.Blockchain
 {
@@ -24,7 +21,7 @@ namespace GKLocations.Blockchain
         private IBlockchainNode fNode;
         private List<Block> fBlockChain = new List<Block>();
         private List<Transaction> fData = new List<Transaction>();
-        public IList<ITransaction> fPendingTransactions = new List<ITransaction>();
+        public IList<Transaction> fPendingTransactions = new List<Transaction>();
 
 
         public IEnumerable<Block> BlockChain
@@ -68,7 +65,7 @@ namespace GKLocations.Blockchain
         /// <summary>
         /// Create a block chain from a data provider block list.
         /// </summary>
-        private Chain(List<SerializableBlock> blocks)
+        private Chain(IList<IBlock> blocks)
         {
             if (blocks == null) {
                 throw new ArgumentNullException(nameof(blocks));
@@ -107,6 +104,29 @@ namespace GKLocations.Blockchain
             if (fPendingTransactions.Count <= 0) {
                 return;
             }
+
+            var newBlock = new Block(PreviousBlock, fPendingTransactions);
+            AddBlock(newBlock);
+
+            fPendingTransactions.Clear();
+            fDataProvider.ClearLocalTransactions();
+        }
+
+        public void CreateGenesisBlock()
+        {
+            var genesisBlock = Block.CreateGenesisBlock(GetCurrentUser());
+            AddBlock(genesisBlock);
+        }
+
+        /// <summary>
+        /// Create a new empty block chain.
+        /// </summary>
+        public void CreateNewBlockChain()
+        {
+            fDataProvider.ClearBlocks();
+            fBlockChain = new List<Block>();
+
+            CreateGenesisBlock();
         }
 
         /// <summary>
@@ -154,18 +174,6 @@ namespace GKLocations.Blockchain
             }
 
             return result;
-        }
-
-        /// <summary>
-        /// Create a new empty block chain.
-        /// </summary>
-        private void CreateNewBlockChain()
-        {
-            fDataProvider.ClearBlocks();
-            fBlockChain = new List<Block>();
-
-            var genesisBlock = Block.CreateGenesisBlock(GetCurrentUser());
-            AddBlock(genesisBlock);
         }
 
         /// <summary>
@@ -253,16 +261,16 @@ namespace GKLocations.Blockchain
             }
 
             fBlockChain.Add(block);
-            fDataProvider.AddBlock(new SerializableBlock(block));
+            fDataProvider.AddBlock(block);
 
             if (!CheckCorrect()) {
                 throw new MethodResultException(nameof(Chain), "The correctness was violated after adding the block.");
             }
         }
 
-        public void AddPendingTransaction(ITransaction transaction)
+        public void AddPendingTransaction(Transaction transaction)
         {
-            fPendingTransactions.Add(new Transaction(transaction));
+            fPendingTransactions.Add(transaction);
         }
 
         public void ProcessBlockTransactions(Block block)

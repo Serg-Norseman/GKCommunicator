@@ -35,6 +35,8 @@ namespace GKLocations.Manager
         {
             fCore.DeleteDatabase();
 
+            fCore.BlockchainNode.Chain.CreateGenesisBlock();
+
             var lang = fCore.GetCurrentLanguage();
 
             var locRI = fCore.AddLocation();
@@ -70,6 +72,8 @@ namespace GKLocations.Manager
             fCore.AddLocationRelation(locNVZ.GUID, locNVV.GUID, "P", "");
 
             // Total 23 transaction, 4360 bytes
+
+            fCore.BlockchainNode.Chain.CreateNewBlock();
         }
 
         private void FillLanguagesCombo()

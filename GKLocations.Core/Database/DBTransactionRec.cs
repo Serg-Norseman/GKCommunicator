@@ -4,7 +4,6 @@
  *  This program is licensed under the GNU General Public License.
  */
 
-using System;
 using GKLocations.Blockchain;
 using SQLite;
 
@@ -14,30 +13,42 @@ namespace GKLocations.Core.Database
     /// DTO for Transaction records of database.
     /// </summary>
     [Table("LocalTransactions")]
-    public class DBTransactionRec : ITransaction
+    public class DBTransactionRec
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
-        [NotNull]
+        [NotNull, Indexed]
         public long Timestamp { get; set; }
 
-        [NotNull]
+        [NotNull, Indexed]
         public string Type { get; set; }
 
+        /// <summary>
+        /// Block hash.
+        /// </summary>
+        [NotNull, Indexed]
+        public string Hash { get; set; }
+
         [NotNull]
-        public string Content { get; set; }
+        public string Data { get; set; }
 
 
         public DBTransactionRec()
         {
         }
 
-        public DBTransactionRec(long timestamp, string type, string content)
+        public DBTransactionRec(ITransaction transaction)
         {
-            Timestamp = timestamp;
-            Type = type;
-            Content = content;
+            Timestamp = transaction.Timestamp;
+            Type = transaction.Type;
+            Hash = transaction.Hash;
+            Data = transaction.Serialize();
+        }
+
+        public Transaction GetData()
+        {
+            return Transaction.Deserialize(Data);
         }
     }
 }
