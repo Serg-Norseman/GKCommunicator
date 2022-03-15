@@ -16,7 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GKNetUI", "GKNetUI\GKNetUI.csproj", "{1D2C209A-6E19-4FCF-BA08-11B8096FCA99}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GKLocations.Core", "GKLocations.Core\GKLocations.Core.csproj", "{2E9DC388-BF8C-4FCC-B76E-837E221953EF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GKNetLocationsPlugin", "GKNetLocationsPlugin\GKNetLocationsPlugin.csproj", "{2E9DC388-BF8C-4FCC-B76E-837E221953EF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GKLocations.Manager", "GKLocations.Manager\GKLocations.Manager.csproj", "{DC3CADF2-36A2-46ED-88B1-F6A4F9309DB0}"
 EndProject

@@ -82,6 +82,7 @@
     <Compile Include="CommunicatorCore.cs" />
     <Compile Include="ConnectivitySettings.cs" />
     <Compile Include="Database\GKNetDatabase.cs" />
+    <Compile Include="DataPlugin.cs" />
     <Compile Include="DHT\DHTTransactions.cs" />
     <Compile Include="DHT\IDHTPeer.cs" />
     <Compile Include="DHT\IDHTPeersHolder.cs" />
@@ -100,6 +101,7 @@
     <Compile Include="DHT\DHTRoutingTable.cs" />
     <Compile Include="DHT\Events\PeersFoundEventArgs.cs" />
     <Compile Include="ICommunicatorCore.cs" />
+    <Compile Include="IDataPlugin.cs" />
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\Log4NetHelper.cs" />
     <Compile Include="Logging\LogManager.cs" />
