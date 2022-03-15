@@ -52,7 +52,7 @@ namespace GKNet
         private readonly DHTClient fDHTClient;
         private readonly IChatForm fForm;
         private Peer fLocalPeer;
-        private readonly ILogger fLogger;
+        private readonly GKNet.Logging.ILogger fLogger;
         private string fPassword; // TODO: remove this field, combine password hashing methods to store passwordHash here
         private readonly IList<Peer> fPeers;
         private readonly UserProfile fProfile;

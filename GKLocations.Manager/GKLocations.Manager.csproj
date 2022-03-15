@@ -69,13 +69,13 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\GKLocations.Blockchain\GKLocations.Blockchain.csproj">
-      <Project>{acddcd1f-028d-4b5a-b040-b3c092bedc91}</Project>
-      <Name>GKLocations.Blockchain</Name>
-    </ProjectReference>
     <ProjectReference Include="..\GKLocations.Core\GKLocations.Core.csproj">
       <Project>{2e9dc388-bf8c-4fcc-b76e-837e221953ef}</Project>
       <Name>GKLocations.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GKNetCore\GKNetCore.csproj">
+      <Project>{fee68cf6-1d60-4e90-aef3-6afa4a8c977d}</Project>
+      <Name>GKNetCore</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

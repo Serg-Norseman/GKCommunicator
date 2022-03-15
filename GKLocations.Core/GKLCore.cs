@@ -10,9 +10,9 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Threading;
-using GKLocations.Blockchain;
 using GKLocations.Core.Database;
 using GKLocations.Core.Model;
+using GKNet.Blockchain;
 
 namespace GKLocations.Core
 {

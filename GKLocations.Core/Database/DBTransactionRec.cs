@@ -4,7 +4,7 @@
  *  This program is licensed under the GNU General Public License.
  */
 
-using GKLocations.Blockchain;
+using GKNet.Blockchain;
 using SQLite;
 
 namespace GKLocations.Core.Database

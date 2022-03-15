@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using GKLocations.Blockchain;
+using GKNet.Blockchain;
 using SQLite;
 
 namespace GKLocations.Core.Database

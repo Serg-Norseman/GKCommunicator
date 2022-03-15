@@ -41,7 +41,7 @@ namespace GKNet.DHT
         private byte[] fBuffer;
         private bool fConnected;
         private readonly IPEndPoint fLocalEndPoint;
-        private readonly ILogger fLogger;
+        private readonly GKNet.Logging.ILogger fLogger;
         private IPEndPoint fPublicEndPoint;
         private readonly Socket fSocket;
 

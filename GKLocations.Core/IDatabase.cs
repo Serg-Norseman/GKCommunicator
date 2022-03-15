@@ -5,7 +5,7 @@
  */
 
 using System.Collections.Generic;
-using GKLocations.Blockchain;
+using GKNet.Blockchain;
 
 namespace GKLocations.Core
 {

@@ -38,6 +38,10 @@
     <Reference Include="Mono.Nat">
       <HintPath>..\libs\Mono.Nat.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libs\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.XML" />
   </ItemGroup>
@@ -54,6 +58,23 @@
     <Compile Include="BencodeNET\IBObject.cs" />
     <Compile Include="BencodeNET\InvalidBencodeException.cs" />
     <Compile Include="BencodeNET\UnsupportedBencodeException.cs" />
+    <Compile Include="Blockchain\Block.cs" />
+    <Compile Include="Blockchain\BlockchainNode.cs" />
+    <Compile Include="Blockchain\Chain.cs" />
+    <Compile Include="Blockchain\Exceptions.cs" />
+    <Compile Include="Blockchain\Hashable.cs" />
+    <Compile Include="Blockchain\Helpers.cs" />
+    <Compile Include="Blockchain\IBlock.cs" />
+    <Compile Include="Blockchain\IBlockchainNode.cs" />
+    <Compile Include="Blockchain\IBlockchainPeer.cs" />
+    <Compile Include="Blockchain\IDataProvider.cs" />
+    <Compile Include="Blockchain\ITransaction.cs" />
+    <Compile Include="Blockchain\ITransactionSolver.cs" />
+    <Compile Include="Blockchain\JsonHelper.cs" />
+    <Compile Include="Blockchain\ProfileTransactionSolver.cs" />
+    <Compile Include="Blockchain\SerializableChain.cs" />
+    <Compile Include="Blockchain\Transaction.cs" />
+    <Compile Include="Blockchain\User.cs" />
     <Compile Include="Database\DBMessage.cs" />
     <Compile Include="Database\DBNode.cs" />
     <Compile Include="Database\DBParameter.cs" />

@@ -36,7 +36,7 @@
       <HintPath>..\libs\BSLib.dll</HintPath>
     </Reference>
     <Reference Include="BSLib.SQLite">
-      <HintPath>..\libs\BSLib.SQLite.dll</HintPath>
+      <HintPath>..\libs\mswin\BSLib.SQLite.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\libs\Newtonsoft.Json.dll</HintPath>
@@ -72,11 +72,10 @@
     <Compile Include="TransactionType.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\GKLocations.Blockchain\GKLocations.Blockchain.csproj">
-      <Project>{ACDDCD1F-028D-4B5A-B040-B3C092BEDC91}</Project>
-      <Name>GKLocations.Blockchain</Name>
+    <ProjectReference Include="..\GKNetCore\GKNetCore.csproj">
+      <Project>{fee68cf6-1d60-4e90-aef3-6afa4a8c977d}</Project>
+      <Name>GKNetCore</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

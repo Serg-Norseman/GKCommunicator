@@ -4,10 +4,9 @@
  *  This program is licensed under the GNU General Public License.
  */
 
-using System;
 using System.Collections.Generic;
-using GKLocations.Blockchain;
 using GKLocations.Core.Model;
+using GKNet.Blockchain;
 
 namespace GKLocations.Core
 {
