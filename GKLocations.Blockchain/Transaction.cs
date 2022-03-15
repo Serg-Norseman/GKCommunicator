@@ -1,0 +1,117 @@
+﻿/*
+ *  This file is part of the "GKLocations".
+ *  Copyright (C) 2022 by Sergey V. Zhdanovskih.
+ *  This program is licensed under the GNU General Public License.
+ */
+
+using System;
+
+namespace GKLocations.Blockchain
+{
+    /// <summary>
+    /// Transaction stored in a block.
+    /// </summary>
+    public class Transaction : Hashable, ITransaction
+    {
+        public long Timestamp { get; private set; }
+
+        public string Type { get; private set; }
+
+        public string Content { get; private set; }
+
+        /// <summary>
+        /// Data hash.
+        /// </summary>
+        public override string Hash { get; set; }
+
+
+        /// <summary>
+        /// Create a data instance.
+        /// </summary>
+        public Transaction(long timestamp, string type, string content)
+        {
+            if (string.IsNullOrEmpty(content)) {
+                throw new ArgumentNullException(nameof(content));
+            }
+
+            Timestamp = timestamp;
+            Type = type;
+            Content = content;
+
+            Hash = this.GetHash();
+
+            if (!this.IsCorrect()) {
+                throw new MethodResultException(nameof(Transaction), "Data creation error. The data is incorrect.");
+            }
+        }
+
+        public Transaction(ITransaction transaction)
+        {
+            if (transaction == null) {
+                throw new ArgumentNullException(nameof(transaction));
+            }
+
+            Timestamp = transaction.Timestamp;
+            Type = transaction.Type;
+            Content = transaction.Content;
+
+            Hash = this.GetHash();
+
+            if (!this.IsCorrect()) {
+                throw new MethodResultException(nameof(Transaction), "Data creation error. The data is incorrect.");
+            }
+        }
+
+        /// <summary>
+        /// Deserializing a object from JSON.
+        /// </summary>
+        public static Transaction Deserialize(string json)
+        {
+            var data = JsonHelper.DeserializeObject<Transaction>(json);
+
+            if (!data.IsCorrect()) {
+                throw new MethodResultException(nameof(data), "Incorrect data after deserialization.");
+            }
+
+            return data as Transaction ??
+                throw new FormatException("Failed to deserialize data.");
+        }
+
+        /// <summary>
+        /// Get data from the object, based on which the hash will be built.
+        /// </summary>
+        public override string GetHashableContent()
+        {
+            var text = "";
+            text += Timestamp;
+            text += Type;
+            text += Content;
+            return text;
+        }
+
+        /// <summary>
+        /// Casting an object to a string.
+        /// </summary>
+        public override string ToString()
+        {
+            return Content;
+        }
+
+        public string Serialize()
+        {
+            return JsonHelper.SerializeObject(this);
+        }
+
+        public string GetTypeUnit()
+        {
+            string[] parts = Type.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
+            return (parts.Length > 0) ? parts[0] : string.Empty;
+        }
+
+        public string GetTypeOperator()
+        {
+            string[] parts = Type.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
+            return (parts.Length > 1) ? parts[1] : string.Empty;
+        }
+    }
+}
