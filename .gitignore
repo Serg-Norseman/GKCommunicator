@@ -8,5 +8,6 @@
 *.DotSettings.user
 
 /temp/
+/appdata/
+/packages/**/
 test_copy.*
-
