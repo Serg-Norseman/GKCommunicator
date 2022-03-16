@@ -28,15 +28,15 @@ This project is a distributed, decentralized, serverless, peer-to-peer chat clie
 
 # GKLocations
 
-This project is a distributed, decentralized, serverless, peer-to-peer knowledge base of the history of locations 
-(cities, villages and other settlements). Will be implemented as a plugin for GKCommunicator.
+This project is a plugin of knowledge base of the history of locations (cities, villages and other settlements) 
+for GKCommunicator.
 
 ## Roadmap
 
+- [x] Database model of the history of locations
 - [x] SQLite storage of location, names and relations with history
 - [x] GEDCOM format of dates of locations history
 - [x] Pool of local data modification transaction
+- [x] Integration with GKCommunicator (as plugin)
 
-- [ ] Target data model
 - [ ] Simple data editing user interface
-- [ ] Integration with GKCommunicator (as plugin)

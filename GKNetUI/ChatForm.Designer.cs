@@ -47,6 +47,8 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripButton tbSendInvitation;
         private System.Windows.Forms.ToolStripButton tbAcceptInvitation;
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tabChat;
 
         private void InitializeComponent()
         {
@@ -96,6 +98,8 @@
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.tbSendInvitation = new System.Windows.Forms.ToolStripButton();
             this.tbAcceptInvitation = new System.Windows.Forms.ToolStripButton();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabChat = new System.Windows.Forms.TabPage();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -373,7 +377,7 @@
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
+            this.splitContainer1.Panel2.Controls.Add(this.tabControl1);
             this.splitContainer1.Size = new System.Drawing.Size(731, 369);
             this.splitContainer1.SplitterDistance = 234;
             this.splitContainer1.SplitterWidth = 3;
@@ -434,6 +438,24 @@
             this.splitContainer2.Size = new System.Drawing.Size(494, 369);
             this.splitContainer2.SplitterDistance = 204;
             this.splitContainer2.TabIndex = 0;
+            // 
+            // tabChat
+            //
+            this.tabChat.Controls.Add(this.splitContainer2);
+            this.tabChat.Location = new System.Drawing.Point(4, 26);
+            this.tabChat.Name = "tabChat";
+            this.tabChat.Size = new System.Drawing.Size(564, 291);
+            this.tabChat.TabIndex = 0;
+            this.tabChat.Text = "Chat";
+            // 
+            // tabControl1
+            //
+            this.tabControl1.Controls.Add(this.tabChat);
+            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl1.Location = new System.Drawing.Point(0, 0);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(572, 321);
             // 
             // lstChatMsgs
             // 

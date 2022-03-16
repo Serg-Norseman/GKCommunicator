@@ -7,7 +7,7 @@
 using System.Collections.Generic;
 using GKNet.Blockchain;
 
-namespace GKNetLocationsPlugin
+namespace GKNetLocationsPlugin.Model
 {
     public class QLocation
     {

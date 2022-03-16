@@ -4,6 +4,7 @@
  *  This program is licensed under the GNU General Public License.
  */
 
+using GKNetLocationsPlugin.Model;
 using SQLite;
 
 namespace GKNetLocationsPlugin.Database

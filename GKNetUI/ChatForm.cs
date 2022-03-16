@@ -1,6 +1,6 @@
 ﻿/*
  *  "GKCommunicator", the chat and bulletin board of the genealogical network.
- *  Copyright (C) 2018-2021 by Sergey V. Zhdanovskih.
+ *  Copyright (C) 2018-2022 by Sergey V. Zhdanovskih.
  *
  *  This file is part of "GEDKeeper".
  *
@@ -20,7 +20,6 @@
 
 using System;
 using System.ComponentModel;
-using System.Drawing;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
@@ -80,6 +79,8 @@ namespace GKNetUI
             lblConnectionStatus.Text = "Network initialization...";
             UIHelper.SetMenuItemTag(menuPresenceStatuses, fCore.LocalPeer.Presence);
             UpdateStatus();
+
+            ProcessPlugins();
         }
 
         protected override void Dispose(bool disposing)
@@ -92,6 +93,21 @@ namespace GKNetUI
                 }
             }
             base.Dispose(disposing);
+        }
+
+        private void ProcessPlugins()
+        {
+            foreach (var dataPlugin in fCore.DataPlugins) {
+                TabPage tabPage = new TabPage(dataPlugin.DisplayName);
+                tabControl1.Controls.Add(tabPage);
+
+                var editor = Activator.CreateInstance(dataPlugin.EditorType) as UserControl;
+                editor.Dock = DockStyle.Fill;
+
+                tabPage.Controls.Add(editor);
+
+                ((IDataEditor)editor).Init(dataPlugin);
+            }
         }
 
         #region Private methods

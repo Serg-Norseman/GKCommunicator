@@ -12,9 +12,8 @@ using System.Reflection;
 using System.Threading;
 using GKNet.Blockchain;
 using GKNetLocationsPlugin.Database;
-using GKNetLocationsPlugin.Model;
 
-namespace GKNetLocationsPlugin
+namespace GKNetLocationsPlugin.Model
 {
     /// <summary>
     /// 

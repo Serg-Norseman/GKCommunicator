@@ -1,6 +1,6 @@
 ﻿/*
  *  "GKCommunicator", the chat and bulletin board of the genealogical network.
- *  Copyright (C) 2018-2021 by Sergey V. Zhdanovskih.
+ *  Copyright (C) 2018-2022 by Sergey V. Zhdanovskih.
  *
  *  This file is part of "GEDKeeper".
  *
@@ -20,8 +20,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using BencodeNET;
@@ -40,8 +42,8 @@ namespace GKNet
     {
         public const string APP_NAME = "GKCommunicator";
         public const string APP_DESC = "Distributed, decentralized, serverless, peer-to-peer communication plugin for GEDKeeper.";
-        public const string APP_COPYRIGHT = "Copyright © 2018-2021 by Sergey V. Zhdanovskih";
-        public const string APP_VERSION = "0.28.0.0";
+        public const string APP_COPYRIGHT = "Copyright © 2018-2022 by Sergey V. Zhdanovskih";
+        public const string APP_VERSION = "0.29.0.0";
 
         private static readonly DHTId GKNInfoHash = ProtocolHelper.CreateSignInfoKey();
 
@@ -49,6 +51,7 @@ namespace GKNet
 
         private ConnectionState fConnectionState;
         private readonly GKNetDatabase fDatabase;
+        private List<IDataPlugin> fDataPlugins;
         private readonly DHTClient fDHTClient;
         private readonly IChatForm fForm;
         private Peer fLocalPeer;
@@ -77,6 +80,11 @@ namespace GKNet
         public GKNetDatabase Database
         {
             get { return fDatabase; }
+        }
+
+        public List<IDataPlugin> DataPlugins
+        {
+            get { return fDataPlugins; }
         }
 
         public DHTClient DHTClient
@@ -146,6 +154,9 @@ namespace GKNet
             fForm = form;
             fLogger = LogManager.GetLogger(ProtocolHelper.LOG_FILE, ProtocolHelper.LOG_LEVEL, "CommCore");
             fPeers = new List<Peer>();
+
+            fDataPlugins = new List<IDataPlugin>();
+            LoadPlugins(Utilities.GetAppPath());
 
             fProfile = new UserProfile();
 
@@ -707,6 +718,58 @@ namespace GKNet
             Peer peer = FindPeer(nodeId);
             if (peer == null) {
                 peer = AddPeer(nodeId);
+            }
+        }
+
+        private void LoadPlugin(/*IHost host,*/ Assembly asm)
+        {
+            if (/*host == null ||*/ asm == null) {
+                return;
+            }
+
+            Type pluginType = typeof(IDataPlugin);
+
+            Type[] types = asm.GetTypes();
+            foreach (Type type in types) {
+                if (type.IsInterface || type.IsAbstract)
+                    continue;
+                if (type.GetInterface(pluginType.FullName) == null)
+                    continue;
+
+                IDataPlugin plugin = (IDataPlugin)Activator.CreateInstance(type);
+                plugin.Startup(/*host*/);
+                fDataPlugins.Add(plugin);
+            }
+        }
+
+        public void LoadPlugins(/*IHost host,*/ string path)
+        {
+            if (!Directory.Exists(path))
+                return;
+
+            //Logger.WriteInfo("Plugins load path: " + path);
+
+            try {
+#if !NETSTANDARD
+                AppDomain.CurrentDomain.SetupInformation.PrivateBinPath = path;
+#else
+#endif
+
+                string[] pluginFiles = Directory.GetFiles(path, "*.dll");
+                foreach (string pfn in pluginFiles) {
+                    try {
+                        AssemblyName assemblyName = AssemblyName.GetAssemblyName(pfn);
+                        Assembly asm = Assembly.Load(assemblyName);
+
+                        if (asm != null) {
+                            LoadPlugin(/*host,*/ asm);
+                        }
+                    } catch {
+                        // block exceptions for bad or non-dotnet assemblies
+                    }
+                }
+            } catch (Exception ex) {
+                //Logger.WriteError("PluginsMan.Load(" + path + ")", ex);
             }
         }
     }

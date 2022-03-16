@@ -18,8 +18,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GKNetUI", "GKNetUI\GKNetUI.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GKNetLocationsPlugin", "GKNetLocationsPlugin\GKNetLocationsPlugin.csproj", "{2E9DC388-BF8C-4FCC-B76E-837E221953EF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GKLocations.Manager", "GKLocations.Manager\GKLocations.Manager.csproj", "{DC3CADF2-36A2-46ED-88B1-F6A4F9309DB0}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -46,10 +44,6 @@ Global
 		{2E9DC388-BF8C-4FCC-B76E-837E221953EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E9DC388-BF8C-4FCC-B76E-837E221953EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E9DC388-BF8C-4FCC-B76E-837E221953EF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DC3CADF2-36A2-46ED-88B1-F6A4F9309DB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DC3CADF2-36A2-46ED-88B1-F6A4F9309DB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DC3CADF2-36A2-46ED-88B1-F6A4F9309DB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DC3CADF2-36A2-46ED-88B1-F6A4F9309DB0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

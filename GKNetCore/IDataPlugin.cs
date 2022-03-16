@@ -24,6 +24,16 @@ namespace GKNet
 {
     public interface IDataPlugin
     {
+        string DisplayName { get; }
+
         Type EditorType { get; }
+
+        bool Startup(/*IHost host*/);
+        bool Shutdown();
+    }
+
+    public interface IDataEditor
+    {
+        void Init(IDataPlugin dataPlugin);
     }
 }

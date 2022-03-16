@@ -6,9 +6,8 @@
 
 using System.Collections.Generic;
 using GKNet.Blockchain;
-using GKNetLocationsPlugin.Model;
 
-namespace GKNetLocationsPlugin
+namespace GKNetLocationsPlugin.Model
 {
     /// <summary>
     /// 

@@ -20,11 +20,5 @@ rmdir .\GKNetCore.Tests\bin /s /q
 rmdir .\GKNetCore.Tests\obj /s /q
 rmdir .\GKNetCore.Tests\OpenCover /s /q
 
-rmdir .\GKLocations.Core\bin /s /q
-rmdir .\GKLocations.Core\obj /s /q
-
-rmdir .\GKLocations.Manager\bin /s /q
-rmdir .\GKLocations.Manager\obj /s /q
-
-rmdir .\GKLocations.Blockchain\bin /s /q
-rmdir .\GKLocations.Blockchain\obj /s /q
+rmdir .\GKNetLocationsPlugin\bin /s /q
+rmdir .\GKNetLocationsPlugin\obj /s /q

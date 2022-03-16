@@ -30,6 +30,12 @@
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <OutputPath>..\bin\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>..\bin\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="BSLib, Version=0.47.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -66,12 +72,13 @@
     <Compile Include="Editor\TreeControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="GKLCore.cs" />
-    <Compile Include="ICore.cs" />
-    <Compile Include="IDatabase.cs" />
-    <Compile Include="ILocation.cs" />
-    <Compile Include="ILocationName.cs" />
-    <Compile Include="ILocationRelation.cs" />
+    <Compile Include="Model\GKLCore.cs" />
+    <Compile Include="Model\ICore.cs" />
+    <Compile Include="Model\IDatabase.cs" />
+    <Compile Include="Model\ILocation.cs" />
+    <Compile Include="Model\ILocationName.cs" />
+    <Compile Include="Model\ILocationRelation.cs" />
+    <Compile Include="LocationsDataPlugin.cs" />
     <Compile Include="Model\Entity.cs" />
     <Compile Include="Model\Location.cs" />
     <Compile Include="Model\LocationName.cs" />

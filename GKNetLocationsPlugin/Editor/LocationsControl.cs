@@ -6,10 +6,11 @@
 
 using System.Windows.Forms;
 using GKNet;
+using GKNetLocationsPlugin.Model;
 
 namespace GKNetLocationsPlugin.Editor
 {
-    public partial class LocationsControl : UserControl
+    public partial class LocationsControl : UserControl, IDataEditor
     {
         private ToolStrip toolStrip1;
         private ToolStripComboBox cmbLanguages;

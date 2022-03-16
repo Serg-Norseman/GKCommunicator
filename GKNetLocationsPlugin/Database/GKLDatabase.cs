@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using GKNet.Blockchain;
+using GKNetLocationsPlugin.Model;
 using SQLite;
 
 namespace GKNetLocationsPlugin.Database

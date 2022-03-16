@@ -22,13 +22,30 @@ using System;
 
 namespace GKNet
 {
-    public class DataPlugin : IDataPlugin
+    public abstract class DataPlugin : IDataPlugin
     {
+        public virtual string DisplayName
+        {
+            get {
+                return string.Empty;
+            }
+        }
+
         public virtual Type EditorType
         {
             get {
                 return null;
             }
+        }
+
+        public virtual bool Shutdown()
+        {
+            return true;
+        }
+
+        public virtual bool Startup()
+        {
+            return true;
         }
     }
 }

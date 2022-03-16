@@ -4,7 +4,7 @@
  *  This program is licensed under the GNU General Public License.
  */
 
-namespace GKNetLocationsPlugin
+namespace GKNetLocationsPlugin.Model
 {
     public interface ILocation
     {
