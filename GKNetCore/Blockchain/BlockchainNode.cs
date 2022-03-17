@@ -36,10 +36,9 @@ namespace GKNet.Blockchain
     public class BlockchainNode : IBlockchainNode
     {
         private readonly Chain fChain;
+        private readonly ICommunicatorCore fCommunicatorCore;
         private readonly IDataProvider fDataProvider;
-        private readonly IList<IBlockchainPeer> fPeers;
         private readonly Dictionary<string, ITransactionSolver> fSolvers;
-        private readonly List<User> fUsers;
         private readonly Timer fTimer;
 
 
@@ -50,27 +49,26 @@ namespace GKNet.Blockchain
             }
         }
 
+        public ICommunicatorCore CommunicatorCore
+        {
+            get {
+                return fCommunicatorCore;
+            }
+        }
+
         public IList<IBlockchainPeer> Peers
         {
             get {
-                return fPeers;
-            }
-        }
-
-        public IList<User> Users
-        {
-            get {
-                return fUsers;
+                return (IList<IBlockchainPeer>)fCommunicatorCore.Peers;
             }
         }
 
 
-        public BlockchainNode(IDataProvider dataProvider)
+        public BlockchainNode(ICommunicatorCore communicatorCore, IDataProvider dataProvider)
         {
+            fCommunicatorCore = communicatorCore;
             fDataProvider = dataProvider;
             fChain = new Chain(this, fDataProvider);
-            fPeers = new List<IBlockchainPeer>();
-            fUsers = new List<User>();
             fSolvers = new Dictionary<string, ITransactionSolver>();
 
             RegisterSolver(new ProfileTransactionSolver());
@@ -86,44 +84,9 @@ namespace GKNet.Blockchain
             fChain.CreateNewBlock();
         }
 
-        public User GetCurrentUser()
+        public UserProfile GetCurrentUser()
         {
-            return null;
-        }
-
-        public void RequestGlobalBlockchain()
-        {
-        }
-
-        public bool SendBlockToHost(string ip, string method, string data)
-        {
-            return false;
-        }
-
-        /// <summary>
-        /// Log in as a network user.
-        /// </summary>
-        public User LoginUser(string login, string password)
-        {
-            if (string.IsNullOrEmpty(login)) {
-                throw new ArgumentNullException(nameof(login));
-            }
-
-            if (string.IsNullOrEmpty(password)) {
-                throw new ArgumentNullException(nameof(password));
-            }
-
-            var user = fUsers.SingleOrDefault(b => b.Login == login);
-            if (user == null) {
-                return null;
-            }
-
-            var passwordHash = password.GetHash();
-            if (user.PasswordHash != passwordHash) {
-                return null;
-            }
-
-            return user;
+            return fCommunicatorCore.Profile;
         }
 
         public void RegisterSolver(ITransactionSolver solver)
@@ -145,14 +108,32 @@ namespace GKNet.Blockchain
         {
             string json = JsonHelper.SerializeObject(data);
             var transaction = new Transaction(TimeHelper.DateTimeToUnixTime(DateTime.UtcNow), type, json);
-            //fDatabase.AddRecord(transaction);
-            fChain.AddPendingTransaction(transaction);
+            AddPendingTransaction(transaction);
+        }
+
+        public void AddPendingTransaction(Transaction transaction)
+        {
+            fDataProvider.AddPendingTransaction(transaction);
+        }
+
+        public void AddPeerProfile(PeerProfile profile)
+        {
+            AddPendingTransaction(ProfileTransactionSolver.ProfileTransactionType, profile);
+        }
+
+
+        public void RequestGlobalBlockchain()
+        {
+            var lastBlock = fChain.PreviousBlock;
+            foreach (var peer in Peers) {
+                SendChainStateRequest(peer, lastBlock.Index, lastBlock.Hash);
+            }
         }
 
         /// <summary>
         /// Send connected peers a request for characteristics (index, hash) of the last blocks in their chains.
         /// </summary>
-        public virtual void SendChainStateRequest(ulong selfLastBlockIndex, string selfLastBlockHash)
+        private void SendChainStateRequest(IBlockchainPeer peer, long selfLastBlockIndex, string selfLastBlockHash)
         {
             // dummy
         }
@@ -160,9 +141,14 @@ namespace GKNet.Blockchain
         /// <summary>
         /// Received from the connected peer a response with the characteristics (index, hash) of the last block in the chain.
         /// </summary>
-        public virtual void ReceiveChainStateResponse(ulong peerLastBlockIndex, string peerLastBlockHash)
+        public void ReceiveChainStateResponse(long peerLastBlockIndex, string peerLastBlockHash)
         {
             // dummy
+        }
+
+        public bool SendBlockToHost(IBlockchainPeer peer, string method, string data)
+        {
+            return false;
         }
 
         public void SendTransaction(IBlockchainPeer peer, ITransaction transaction)
@@ -172,7 +158,7 @@ namespace GKNet.Blockchain
 
         public void BroadcastTransaction(ITransaction transaction)
         {
-            Parallel.ForEach(fPeers, peer => {
+            Parallel.ForEach(Peers, peer => {
                 SendTransaction(peer, transaction);
             });
         }
@@ -180,7 +166,7 @@ namespace GKNet.Blockchain
         public void ReceiveTransaction(IBlockchainPeer sender, Transaction transaction)
         {
             try {
-                fChain.AddPendingTransaction(transaction);
+                AddPendingTransaction(transaction);
             } catch {
                 // if !trx.IsCorrect(), then do nothing
             }
@@ -193,7 +179,7 @@ namespace GKNet.Blockchain
 
         public void BroadcastBlock(IBlock block)
         {
-            Parallel.ForEach(fPeers, peer => {
+            Parallel.ForEach(Peers, peer => {
                 SendBlock(peer, block);
             });
         }

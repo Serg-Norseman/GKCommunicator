@@ -66,5 +66,10 @@ namespace GKNet
         {
             throw new NotImplementedException();
         }
+
+        public override string ToString()
+        {
+            return UserName;
+        }
     }
 }

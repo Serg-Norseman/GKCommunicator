@@ -81,9 +81,9 @@ namespace GKNet.Blockchain
             Timestamp = TimeHelper.GetUtcNow();
             PreviousHash = previousBlock.Hash;
             Transactions = transactions;
-            Hash = this.GetHash();
+            Hash = GetHash();
 
-            if (!this.IsCorrect()) {
+            if (!IsCorrect()) {
                 throw new MethodResultException(nameof(Block), "Block creation error. The block is invalid.");
             }
         }
@@ -98,9 +98,9 @@ namespace GKNet.Blockchain
             Timestamp = TimeHelper.GetUtcNow();
             PreviousHash = previousHash;
             Transactions = transactions;
-            Hash = this.GetHash();
+            Hash = GetHash();
 
-            if (!this.IsCorrect()) {
+            if (!IsCorrect()) {
                 throw new MethodResultException(nameof(Block), "Genesis block creation error. The block is invalid.");
             }
         }
@@ -121,7 +121,7 @@ namespace GKNet.Blockchain
             Transactions = block.Transactions;
             Hash = block.Hash;
 
-            if (!this.IsCorrect()) {
+            if (!IsCorrect()) {
                 throw new MethodResultException(nameof(Block), "Block creation from database error. The block is invalid.");
             }
         }
@@ -129,7 +129,7 @@ namespace GKNet.Blockchain
         /// <summary>
         /// Get the starting (genesis) block of the block chain.
         /// </summary>
-        public static Block CreateGenesisBlock(User user)
+        public static Block CreateGenesisBlock(UserProfile userProfile)
         {
             var previousHash = Helpers.GetHash("5DBB70E1-34B3-4E74-87ED-EC9A4C5A5D41");
             var genesisBlock = new Block(previousHash, new List<Transaction>());

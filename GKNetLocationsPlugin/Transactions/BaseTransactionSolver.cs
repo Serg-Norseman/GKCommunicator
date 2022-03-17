@@ -2,7 +2,7 @@
  *  "GKCommunicator", the chat and bulletin board of the genealogical network.
  *  Copyright (C) 2018-2022 by Sergey V. Zhdanovskih.
  *
- *  This file is part of "GEDKeeper".
+ *  This file is part of "GKCommunicator".
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,22 +18,26 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
+using GKNet.Blockchain;
+using GKNetLocationsPlugin.Model;
 
-namespace GKNet
+namespace GKNetLocationsPlugin.Transactions
 {
-    public interface IDataPlugin
+    public abstract class BaseTransactionSolver : ITransactionSolver
     {
-        string DisplayName { get; }
+        protected readonly GKLCore fCore;
 
-        Type EditorType { get; }
 
-        bool Startup(ICommunicatorCore host);
-        bool Shutdown();
-    }
+        public abstract string Sign { get; }
 
-    public interface IDataEditor
-    {
-        void Init(IDataPlugin dataPlugin);
+
+        public BaseTransactionSolver(GKLCore core)
+        {
+            fCore = core;
+        }
+
+        public abstract void Solve(IBlockchainNode node, Transaction transaction);
+
+        public abstract bool Verify(Transaction transaction);
     }
 }

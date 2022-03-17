@@ -31,38 +31,29 @@ namespace GKNet.Blockchain
     {
         public const int CurrentVersion = 1;
 
+        private List<Block> fBlocks;
         private IDataProvider fDataProvider;
         private IBlockchainNode fNode;
-        private List<Block> fBlockChain = new List<Block>();
-        private List<Transaction> fData = new List<Transaction>();
-        public IList<Transaction> fPendingTransactions = new List<Transaction>();
 
 
-        public IEnumerable<Block> BlockChain
+        public IEnumerable<Block> Blocks
         {
             get {
-                return fBlockChain;
-            }
-        }
-
-        public Block PreviousBlock
-        {
-            get {
-                return fBlockChain.Last();
-            }
-        }
-
-        public IEnumerable<Transaction> Content
-        {
-            get {
-                return fData;
+                return fBlocks;
             }
         }
 
         public int Length
         {
             get {
-                return fBlockChain.Count;
+                return fBlocks.Count;
+            }
+        }
+
+        public Block PreviousBlock
+        {
+            get {
+                return fBlocks.Last();
             }
         }
 
@@ -72,6 +63,15 @@ namespace GKNet.Blockchain
         /// </summary>
         public Chain(IBlockchainNode network, IDataProvider dataProvider)
         {
+            if (network == null) {
+                throw new ArgumentNullException(nameof(network));
+            }
+
+            if (dataProvider == null) {
+                throw new ArgumentNullException(nameof(dataProvider));
+            }
+
+            fBlocks = new List<Block>();
             fNode = network;
             fDataProvider = dataProvider;
         }
@@ -79,15 +79,17 @@ namespace GKNet.Blockchain
         /// <summary>
         /// Create a block chain from a data provider block list.
         /// </summary>
-        private Chain(IList<IBlock> blocks)
+        private Chain(IList<Block> blocks)
         {
             if (blocks == null) {
                 throw new ArgumentNullException(nameof(blocks));
             }
 
+            fBlocks = new List<Block>();
+
             foreach (var block in blocks) {
                 var b = new Block(block);
-                fBlockChain.Add(b);
+                fBlocks.Add(b);
             }
 
             if (!CheckCorrect()) {
@@ -105,7 +107,7 @@ namespace GKNet.Blockchain
             }
 
             foreach (var block in blocks) {
-                fBlockChain.Add(block);
+                fBlocks.Add(block);
             }
 
             if (!CheckCorrect()) {
@@ -115,15 +117,15 @@ namespace GKNet.Blockchain
 
         public void CreateNewBlock()
         {
-            if (fPendingTransactions.Count <= 0) {
+            var pendingTransactions = fDataProvider.GetPendingTransactions();
+            if (pendingTransactions.Count <= 0) {
                 return;
             }
 
-            var newBlock = new Block(PreviousBlock, fPendingTransactions);
+            var newBlock = new Block(PreviousBlock, pendingTransactions);
             AddBlock(newBlock);
 
-            fPendingTransactions.Clear();
-            fDataProvider.ClearLocalTransactions();
+            fDataProvider.ClearPendingTransactions();
         }
 
         public void CreateGenesisBlock()
@@ -138,7 +140,7 @@ namespace GKNet.Blockchain
         public void CreateNewBlockChain()
         {
             fDataProvider.ClearBlocks();
-            fBlockChain = new List<Block>();
+            fBlocks = new List<Block>();
 
             CreateGenesisBlock();
         }
@@ -152,8 +154,8 @@ namespace GKNet.Blockchain
                 throw new ArgumentNullException(nameof(localChain));
             }
 
-            foreach (var block in localChain.fBlockChain) {
-                fBlockChain.Add(block);
+            foreach (var block in localChain.fBlocks) {
+                fBlocks.Add(block);
                 ProcessBlockTransactions(block);
             }
         }
@@ -170,7 +172,7 @@ namespace GKNet.Blockchain
             // TODO: Develop a merge algorithm
             fDataProvider.ClearBlocks();
 
-            foreach (var block in globalChain.fBlockChain) {
+            foreach (var block in globalChain.fBlocks) {
                 AddBlock(block);
             }
         }
@@ -178,16 +180,9 @@ namespace GKNet.Blockchain
         /// <summary>
         /// Get the current user of the system.
         /// </summary>
-        public User GetCurrentUser()
+        public UserProfile GetCurrentUser()
         {
-            User result = fNode.GetCurrentUser();
-
-            // FIXME
-            if (result == null) {
-                result = new User("user", "password", UserRole.Reader);
-            }
-
-            return result;
+            return fNode.GetCurrentUser();
         }
 
         /// <summary>
@@ -195,7 +190,7 @@ namespace GKNet.Blockchain
         /// </summary>
         public bool CheckCorrect()
         {
-            foreach (var block in fBlockChain) {
+            foreach (var block in fBlocks) {
                 if (!block.IsCorrect()) {
                     return false;
                 }
@@ -270,21 +265,16 @@ namespace GKNet.Blockchain
             }
 
             // Do not add an existing block
-            if (fBlockChain.Any(b => b.Hash == block.Hash)) {
+            if (fBlocks.Any(b => b.Hash == block.Hash)) {
                 return;
             }
 
-            fBlockChain.Add(block);
+            fBlocks.Add(block);
             fDataProvider.AddBlock(block);
 
             if (!CheckCorrect()) {
                 throw new MethodResultException(nameof(Chain), "The correctness was violated after adding the block.");
             }
-        }
-
-        public void AddPendingTransaction(Transaction transaction)
-        {
-            fPendingTransactions.Add(transaction);
         }
 
         public void ProcessBlockTransactions(Block block)
@@ -299,8 +289,8 @@ namespace GKNet.Blockchain
 
             var transactions = block.Transactions;
             foreach (var trx in transactions) {
-                string typeUnit = trx.GetTypeUnit();
-                string typeOperator = trx.GetTypeOperator();
+                string typeUnit, typeOperator;
+                trx.GetTypeParams(out typeUnit, out typeOperator);
 
                 ITransactionSolver solver = fNode.GetSolver(typeUnit);
                 if (solver != null) {
@@ -321,14 +311,6 @@ namespace GKNet.Blockchain
                 result.Add(new Block(block));
             }
             return result;
-        }
-
-        /// <summary>
-        /// Request to the host to add a block of data.
-        /// </summary>
-        private bool SendBlockToHosts(string ip, string method, string data)
-        {
-            return fNode.SendBlockToHost(ip, method, data);
         }
     }
 }

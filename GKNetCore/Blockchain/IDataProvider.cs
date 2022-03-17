@@ -30,12 +30,12 @@ namespace GKNet.Blockchain
         /// <summary>
         /// Adding a data block.
         /// </summary>
-        void AddBlock(IBlock block);
+        void AddBlock(Block block);
 
         /// <summary>
         /// Get all blocks.
         /// </summary>
-        IList<IBlock> GetBlocks();
+        IList<Block> GetBlocks();
 
         /// <summary>
         /// Clear storage. Removing all blocks.
@@ -45,16 +45,16 @@ namespace GKNet.Blockchain
         /// <summary>
         /// Adding a transaction.
         /// </summary>
-        void AddTransaction(ITransaction transaction);
+        void AddPendingTransaction(Transaction transaction);
 
         /// <summary>
         /// Get all transactions.
         /// </summary>
-        IList<ITransaction> GetLocalTransactions();
+        IList<Transaction> GetPendingTransactions();
 
         /// <summary>
         /// Clear storage. Removing all transactions.
         /// </summary>
-        void ClearLocalTransactions();
+        void ClearPendingTransactions();
     }
 }

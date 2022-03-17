@@ -28,6 +28,7 @@ using System.Text;
 using System.Threading;
 using BencodeNET;
 using BSLib;
+using GKNet.Blockchain;
 using GKNet.Database;
 using GKNet.DHT;
 using GKNet.Logging;
@@ -38,7 +39,7 @@ using Mono.Nat;
 
 namespace GKNet
 {
-    public sealed class CommunicatorCore : BaseObject, ICommunicatorCore, IDHTPeersHolder
+    public sealed class CommunicatorCore : BaseObject, ICommunicatorCore
     {
         public const string APP_NAME = "GKCommunicator";
         public const string APP_DESC = "Distributed, decentralized, serverless, peer-to-peer communication plugin for GEDKeeper.";
@@ -49,6 +50,7 @@ namespace GKNet
 
         private static readonly TimeSpan PingInterval = TimeSpan.FromMinutes(1);
 
+        private readonly IBlockchainNode fBlockchainNode;
         private ConnectionState fConnectionState;
         private readonly GKNetDatabase fDatabase;
         private List<IDataPlugin> fDataPlugins;
@@ -66,6 +68,13 @@ namespace GKNet
         private int fTCPListenerPort;
         private Semaphore fUPnPSem = new Semaphore(0, 1);
 
+
+        public IBlockchainNode BlockchainNode
+        {
+            get {
+                return fBlockchainNode;
+            }
+        }
 
         public DHTId ClientNodeId
         {
@@ -155,14 +164,16 @@ namespace GKNet
             fLogger = LogManager.GetLogger(ProtocolHelper.LOG_FILE, ProtocolHelper.LOG_LEVEL, "CommCore");
             fPeers = new List<Peer>();
 
-            fDataPlugins = new List<IDataPlugin>();
-            LoadPlugins(Utilities.GetAppPath());
-
             fProfile = new UserProfile();
 
             fDatabase = new GKNetDatabase();
             fDatabase.Connect();
             fDatabase.LoadProfile(fProfile);
+
+            fBlockchainNode = new BlockchainNode(this, fDatabase);
+
+            fDataPlugins = new List<IDataPlugin>();
+            LoadPlugins(Utilities.GetAppPath());
 
             Port = DHTClient.PublicDHTPort;
             fLogger.WriteInfo("Port: {0}", Port);
@@ -721,6 +732,11 @@ namespace GKNet
             }
         }
 
+        public void AddProfile(PeerProfile peerProfile)
+        {
+            // TODO: add and check existing
+        }
+
         private void LoadPlugin(/*IHost host,*/ Assembly asm)
         {
             if (/*host == null ||*/ asm == null) {
@@ -737,7 +753,7 @@ namespace GKNet
                     continue;
 
                 IDataPlugin plugin = (IDataPlugin)Activator.CreateInstance(type);
-                plugin.Startup(/*host*/);
+                plugin.Startup(this);
                 fDataPlugins.Add(plugin);
             }
         }
@@ -772,5 +788,19 @@ namespace GKNet
                 //Logger.WriteError("PluginsMan.Load(" + path + ")", ex);
             }
         }
+
+        #region Path processing
+
+        public string GetBinPath()
+        {
+            return Utilities.GetAppPath();
+        }
+
+        public string GetDataPath()
+        {
+            return Utilities.GetAppDataPath();
+        }
+
+        #endregion
     }
 }

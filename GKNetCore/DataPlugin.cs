@@ -38,12 +38,12 @@ namespace GKNet
             }
         }
 
-        public virtual bool Shutdown()
+        public virtual bool Startup(ICommunicatorCore host)
         {
             return true;
         }
 
-        public virtual bool Startup()
+        public virtual bool Shutdown()
         {
             return true;
         }

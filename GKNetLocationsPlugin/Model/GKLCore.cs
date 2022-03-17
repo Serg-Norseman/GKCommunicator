@@ -1,37 +1,43 @@
 ﻿/*
- *  This file is part of the "GKLocations".
- *  Copyright (C) 2022 by Sergey V. Zhdanovskih.
- *  This program is licensed under the GNU General Public License.
+ *  "GKCommunicator", the chat and bulletin board of the genealogical network.
+ *  Copyright (C) 2018-2022 by Sergey V. Zhdanovskih.
+ *
+ *  This file is part of "GKCommunicator".
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
-using System.Reflection;
 using System.Threading;
-using GKNet.Blockchain;
+using GKNet;
 using GKNetLocationsPlugin.Database;
+using GKNetLocationsPlugin.Transactions;
 
 namespace GKNetLocationsPlugin.Model
 {
     /// <summary>
     /// 
     /// </summary>
-    public class GKLCore : ICore
+    public class GKLCore
     {
-        private readonly IBlockchainNode fBlockchainNode;
-        private readonly IDatabase fDatabase;
+        private readonly ICommunicatorCore fHost;
+        private readonly GKLDatabase fDatabase;
 
 
-        public IBlockchainNode BlockchainNode
-        {
-            get {
-                return fBlockchainNode;
-            }
-        }
-
-        public IDatabase Database
+        public GKLDatabase Database
         {
             get {
                 return fDatabase;
@@ -39,13 +45,12 @@ namespace GKNetLocationsPlugin.Model
         }
 
 
-        public GKLCore()
+        public GKLCore(ICommunicatorCore host)
         {
-            fDatabase = new GKLDatabase();
-            fDatabase.SetPath(GetDataPath());
-            fDatabase.Connect();
+            fHost = host;
 
-            fBlockchainNode = new BlockchainNode(fDatabase);
+            fDatabase = new GKLDatabase(host.GetDataPath());
+            fDatabase.Connect();
         }
 
         public void DeleteDatabase()
@@ -54,34 +59,6 @@ namespace GKNetLocationsPlugin.Model
             fDatabase.DeleteDatabase();
             fDatabase.Connect();
         }
-
-        #region Path processing
-
-        public string GetBinPath()
-        {
-            Assembly asm = Assembly.GetEntryAssembly();
-            if (asm == null) {
-                asm = Assembly.GetExecutingAssembly();
-            }
-
-            Module[] mods = asm.GetModules();
-            string fn = mods[0].FullyQualifiedName;
-            return Path.GetDirectoryName(fn) + Path.DirectorySeparatorChar;
-        }
-
-        public string GetAppPath()
-        {
-            string result = Path.GetFullPath(Path.Combine(GetBinPath(), @".." + Path.DirectorySeparatorChar));
-            return result;
-        }
-
-        public string GetDataPath()
-        {
-            string result = Path.GetFullPath(Path.Combine(GetBinPath(), @".." + Path.DirectorySeparatorChar + "appdata" + Path.DirectorySeparatorChar));
-            return result;
-        }
-
-        #endregion
 
         #region Language processing
 
@@ -112,7 +89,7 @@ namespace GKNetLocationsPlugin.Model
 
         private void AddPendingTransaction(string type, object data)
         {
-            fBlockchainNode.AddPendingTransaction(type, data);
+            fHost.BlockchainNode.AddPendingTransaction(type, data);
         }
 
         public Location AddLocation(double latitude = 0.0d, double longitude = 0.0d)

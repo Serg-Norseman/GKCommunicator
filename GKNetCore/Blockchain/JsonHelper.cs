@@ -27,21 +27,21 @@ namespace GKNet.Blockchain
 {
     public static class JsonHelper
     {
-        private static JsonSerializerSettings _serializerSettings;
+        private static JsonSerializerSettings fSerializerSettings;
 
         private static JsonSerializerSettings SerializerSettings
         {
             get {
-                if (_serializerSettings == null) {
+                if (fSerializerSettings == null) {
                     var converters = new List<JsonConverter> { new StringEnumConverter { CamelCaseText = false } };
                     var resolver = new DefaultContractResolver();
-                    _serializerSettings = new JsonSerializerSettings {
+                    fSerializerSettings = new JsonSerializerSettings {
                         ContractResolver = resolver,
                         Converters = converters,
                         NullValueHandling = NullValueHandling.Ignore
                     };
                 }
-                return _serializerSettings;
+                return fSerializerSettings;
             }
         }
 

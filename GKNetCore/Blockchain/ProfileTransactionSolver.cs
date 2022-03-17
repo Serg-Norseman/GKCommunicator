@@ -22,17 +22,19 @@ namespace GKNet.Blockchain
 {
     public class ProfileTransactionSolver : ITransactionSolver
     {
+        public const string ProfileTransactionType = "profile";
+
         public string Sign
         {
             get {
-                return "profile";
+                return ProfileTransactionType;
             }
         }
 
         public void Solve(IBlockchainNode node, Transaction transaction)
         {
-            var user = new User(transaction);
-            node.Users.Add(user);
+            var profile = transaction.DeserializeContent<PeerProfile>();
+            node.CommunicatorCore.AddProfile(profile);
         }
 
         public bool Verify(Transaction transaction)

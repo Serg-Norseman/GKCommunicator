@@ -22,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using GKNet.Blockchain;
 using GKNet.DHT;
 using GKNet.Logging;
 using SQLite;
@@ -38,7 +39,7 @@ namespace GKNet.Database
     /// <summary>
     /// 
     /// </summary>
-    public sealed class GKNetDatabase
+    public sealed class GKNetDatabase : IDataProvider
     {
         private SQLiteConnection fConnection;
         private readonly ILogger fLogger;
@@ -119,6 +120,9 @@ namespace GKNet.Database
                 connection.CreateTable<DBNode>();
                 connection.CreateTable<DBPeer>();
                 connection.CreateTable<DBMessage>();
+
+                connection.CreateTable<DBTransactionRec>();
+                connection.CreateTable<DBBlockRec>();
             }
         }
 
@@ -334,6 +338,54 @@ namespace GKNet.Database
         private class QString
         {
             public string value { get; set; }
+        }
+
+        #endregion
+
+        #region Blockchain Data Provider
+
+        public void AddBlock(Block block)
+        {
+            var dtObj = new DBBlockRec(block);
+            fConnection.Insert(dtObj);
+        }
+
+        public void ClearBlocks()
+        {
+            fConnection.DeleteAll<DBBlockRec>();
+        }
+
+        public IList<Block> GetBlocks()
+        {
+            var dtRecs = fConnection.Query<DBBlockRec>("select * from Blocks");
+
+            var result = new List<Block>();
+            foreach (var blk in dtRecs) {
+                result.Add(blk.GetData());
+            }
+            return result;
+        }
+
+        public void AddPendingTransaction(Transaction transaction)
+        {
+            var dtObj = new DBTransactionRec(transaction);
+            fConnection.Insert(dtObj);
+        }
+
+        public void ClearPendingTransactions()
+        {
+            fConnection.DeleteAll<DBTransactionRec>();
+        }
+
+        public IList<Transaction> GetPendingTransactions()
+        {
+            var dtRecs = fConnection.Query<DBTransactionRec>("select * from PendingTransactions");
+
+            var result = new List<Transaction>();
+            foreach (var trx in dtRecs) {
+                result.Add(trx.GetData());
+            }
+            return result;
         }
 
         #endregion

@@ -33,10 +33,9 @@ for GKCommunicator.
 
 ## Roadmap
 
-- [x] Database model of the history of locations
-- [x] SQLite storage of location, names and relations with history
+- [x] Local (offline) database (SQLite) of the history of locations
 - [x] GEDCOM format of dates of locations history
-- [x] Pool of local data modification transaction
+- [x] Pool of local data modification transactions
 - [x] Integration with GKCommunicator (as plugin)
 
 - [ ] Simple data editing user interface

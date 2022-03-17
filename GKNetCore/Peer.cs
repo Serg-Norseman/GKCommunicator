@@ -20,6 +20,7 @@
 
 using System;
 using System.Net;
+using GKNet.Blockchain;
 using GKNet.DHT;
 
 namespace GKNet
@@ -37,7 +38,7 @@ namespace GKNet
         Unknown, Offline, Online, Away, Busy, Invisible
     }
 
-    public class Peer : IDHTPeer
+    public class Peer : IDHTPeer, IBlockchainPeer
     {
         public IPEndPoint EndPoint { get; private set; }
 

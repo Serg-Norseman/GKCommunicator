@@ -20,6 +20,7 @@
 
 using System.Collections.Generic;
 using System.Net;
+using GKNet.Blockchain;
 using GKNet.Database;
 using GKNet.DHT;
 using LumiSoft.Net.STUN.Client;
@@ -33,8 +34,9 @@ namespace GKNet
         Connected,
     }
 
-    public interface ICommunicatorCore
+    public interface ICommunicatorCore : IDHTPeersHolder
     {
+        IBlockchainNode BlockchainNode { get; }
         ConnectionState ConnectionState { get; }
         GKNetDatabase Database { get; }
         DHTClient DHTClient { get; }
@@ -54,5 +56,10 @@ namespace GKNet
         Peer FindPeer(IPEndPoint peerEndPoint);
         Peer FindPeer(string id);
         bool UpdatePeer(IPEndPoint peerEndPoint);
+
+        void AddProfile(PeerProfile peerProfile);
+
+        string GetBinPath();
+        string GetDataPath();
     }
 }

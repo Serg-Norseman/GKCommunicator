@@ -37,8 +37,8 @@ namespace GKNet.Blockchain
 
         public string GetHash()
         {
-            var dataBeforeHash = GetHashableContent();
-            var hash = Helpers.GetHash(dataBeforeHash);
+            var hashableContent = GetHashableContent();
+            var hash = Helpers.GetHash(hashableContent);
             return hash;
         }
 

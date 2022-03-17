@@ -1,14 +1,26 @@
 ﻿/*
- *  This file is part of the "GKLocations".
- *  Copyright (C) 2022 by Sergey V. Zhdanovskih.
- *  This program is licensed under the GNU General Public License.
+ *  "GKCommunicator", the chat and bulletin board of the genealogical network.
+ *  Copyright (C) 2018-2022 by Sergey V. Zhdanovskih.
+ *
+ *  This file is part of "GKCommunicator".
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using GKNet.Blockchain;
 using GKNetLocationsPlugin.Model;
 using SQLite;
 
@@ -25,7 +37,7 @@ namespace GKNetLocationsPlugin.Database
     /// <summary>
     /// 
     /// </summary>
-    public class GKLDatabase : IDatabase, IDataProvider
+    public class GKLDatabase
     {
         private class QString
         {
@@ -49,11 +61,7 @@ namespace GKNetLocationsPlugin.Database
 #endif
         }
 
-        public GKLDatabase()
-        {
-        }
-
-        public void SetPath(string dbPath)
+        public GKLDatabase(string dbPath)
         {
             fDatabasePath = dbPath;
         }
@@ -64,9 +72,6 @@ namespace GKNetLocationsPlugin.Database
                 throw new GKLDatabaseException("Database already connected");
 
             string databaseName = GetBaseName();
-
-            Debug.WriteLine("DatabaseName: " + databaseName);
-
             fConnection = new SQLiteConnection(databaseName);
 
             CreateDatabase();
@@ -108,9 +113,6 @@ namespace GKNetLocationsPlugin.Database
             fConnection.CreateTable<DBLocationRec>();
             fConnection.CreateTable<DBLocationNameRec>();
             fConnection.CreateTable<DBLocationRelationRec>();
-
-            fConnection.CreateTable<DBTransactionRec>();
-            fConnection.CreateTable<DBBlockRec>();
         }
 
         #region Records
@@ -130,20 +132,10 @@ namespace GKNetLocationsPlugin.Database
             fConnection.Update(obj);
         }
 
-        public void DeleteRecord(object obj)
-        {
-            fConnection.Delete(obj);
-        }
-
         public int DeleteRecord<T>(object primaryKey)
         {
             return fConnection.Delete<T>(primaryKey);
         }
-
-        /*public void DeleteRecord<T>(int objId)
-        {
-            fConnection.Delete<T>(objId);
-        }*/
 
         public T GetRecord<T>(int objId) where T : new()
         {
@@ -204,54 +196,6 @@ namespace GKNetLocationsPlugin.Database
         public IList<QLocation> QueryLocationsEx(string lang)
         {
             return fConnection.Query<QLocation>("select locrel.OwnerGUID, locrel.RelationType, locnam.LocationGUID, locnam.Name, locnam.Language from LocationNames locnam left join LocationRelations locrel on locnam.LocationGUID = locrel.LocationGUID where locnam.Language = ?", lang); // 'ru-RU'
-        }
-
-        #endregion
-
-        #region Blockchain Data Provider
-
-        public void AddBlock(IBlock block)
-        {
-            var dtObj = new DBBlockRec(block);
-            AddRecord(dtObj);
-        }
-
-        public void ClearBlocks()
-        {
-            fConnection.DeleteAll<DBBlockRec>();
-        }
-
-        public IList<IBlock> GetBlocks()
-        {
-            var dtRecs = fConnection.Query<DBBlockRec>("select * from Blocks");
-
-            var result = new List<Block>();
-            foreach (var blk in dtRecs) {
-                result.Add(blk.GetData());
-            }
-            return (IList<IBlock>)result;
-        }
-
-        public void AddTransaction(ITransaction transaction)
-        {
-            var dtObj = new DBTransactionRec(transaction);
-            AddRecord(dtObj);
-        }
-
-        public void ClearLocalTransactions()
-        {
-            fConnection.DeleteAll<DBTransactionRec>();
-        }
-
-        public IList<ITransaction> GetLocalTransactions()
-        {
-            var dtRecs = fConnection.Query<DBTransactionRec>("select * from LocalTransactions");
-
-            var result = new List<Transaction>();
-            foreach (var trx in dtRecs) {
-                result.Add(trx.GetData());
-            }
-            return (IList<ITransaction>)result;
         }
 
         #endregion

@@ -74,13 +74,14 @@
     <Compile Include="Blockchain\ProfileTransactionSolver.cs" />
     <Compile Include="Blockchain\SerializableChain.cs" />
     <Compile Include="Blockchain\Transaction.cs" />
-    <Compile Include="Blockchain\User.cs" />
+    <Compile Include="Database\DBBlockRec.cs" />
     <Compile Include="Database\DBMessage.cs" />
     <Compile Include="Database\DBNode.cs" />
     <Compile Include="Database\DBParameter.cs" />
     <Compile Include="Database\DBPeer.cs" />
     <Compile Include="CommunicatorCore.cs" />
     <Compile Include="ConnectivitySettings.cs" />
+    <Compile Include="Database\DBTransactionRec.cs" />
     <Compile Include="Database\GKNetDatabase.cs" />
     <Compile Include="DataPlugin.cs" />
     <Compile Include="DHT\DHTTransactions.cs" />

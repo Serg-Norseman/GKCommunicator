@@ -50,14 +50,11 @@
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Database\DBBlockRec.cs" />
     <Compile Include="Database\DBLocationNameRec.cs" />
     <Compile Include="Database\DBLocationRec.cs" />
     <Compile Include="Database\DBLocationRelationRec.cs" />
-    <Compile Include="Database\DBTransactionRec.cs" />
     <Compile Include="Database\GKLDatabase.cs" />
     <Compile Include="Dates\GDMCustomDate.cs" />
     <Compile Include="Dates\GDMDate.cs" />
@@ -72,9 +69,10 @@
     <Compile Include="Editor\TreeControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Transactions\BaseTransactionSolver.cs" />
+    <Compile Include="Transactions\LocationNameTransactionSolver.cs" />
+    <Compile Include="Transactions\LocationRelationTransactionSolver.cs" />
     <Compile Include="Model\GKLCore.cs" />
-    <Compile Include="Model\ICore.cs" />
-    <Compile Include="Model\IDatabase.cs" />
     <Compile Include="Model\ILocation.cs" />
     <Compile Include="Model\ILocationName.cs" />
     <Compile Include="Model\ILocationRelation.cs" />
@@ -83,8 +81,10 @@
     <Compile Include="Model\Location.cs" />
     <Compile Include="Model\LocationName.cs" />
     <Compile Include="Model\LocationRelation.cs" />
+    <Compile Include="Database\QLocation.cs" />
+    <Compile Include="Transactions\LocationTransactionSolver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TransactionType.cs" />
+    <Compile Include="Transactions\TransactionType.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GKNetCore\GKNetCore.csproj">

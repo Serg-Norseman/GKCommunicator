@@ -46,10 +46,9 @@ namespace GKNet.Blockchain
             Timestamp = timestamp;
             Type = type;
             Content = content;
+            Hash = GetHash();
 
-            Hash = this.GetHash();
-
-            if (!this.IsCorrect()) {
+            if (!IsCorrect()) {
                 throw new MethodResultException(nameof(Transaction), "Data creation error. The data is incorrect.");
             }
         }
@@ -63,10 +62,9 @@ namespace GKNet.Blockchain
             Timestamp = transaction.Timestamp;
             Type = transaction.Type;
             Content = transaction.Content;
+            Hash = GetHash();
 
-            Hash = this.GetHash();
-
-            if (!this.IsCorrect()) {
+            if (!IsCorrect()) {
                 throw new MethodResultException(nameof(Transaction), "Data creation error. The data is incorrect.");
             }
         }
@@ -111,16 +109,16 @@ namespace GKNet.Blockchain
             return JsonHelper.SerializeObject(this);
         }
 
-        public string GetTypeUnit()
+        public void GetTypeParams(out string typeUnit, out string typeOperator)
         {
             string[] parts = Type.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
-            return (parts.Length > 0) ? parts[0] : string.Empty;
+            typeUnit = (parts.Length > 0) ? parts[0] : string.Empty;
+            typeOperator = (parts.Length > 1) ? parts[1] : string.Empty;
         }
 
-        public string GetTypeOperator()
+        public T DeserializeContent<T>()
         {
-            string[] parts = Type.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
-            return (parts.Length > 1) ? parts[1] : string.Empty;
+            return JsonHelper.DeserializeObject<T>(Content);
         }
     }
 }
