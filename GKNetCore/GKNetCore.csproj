@@ -60,7 +60,6 @@
     <Compile Include="BencodeNET\UnsupportedBencodeException.cs" />
     <Compile Include="Blockchain\Block.cs" />
     <Compile Include="Blockchain\BlockchainNode.cs" />
-    <Compile Include="Blockchain\Chain.cs" />
     <Compile Include="Blockchain\Exceptions.cs" />
     <Compile Include="Blockchain\Hashable.cs" />
     <Compile Include="Blockchain\Helpers.cs" />
@@ -72,7 +71,6 @@
     <Compile Include="Blockchain\ITransactionSolver.cs" />
     <Compile Include="Blockchain\JsonHelper.cs" />
     <Compile Include="Blockchain\ProfileTransactionSolver.cs" />
-    <Compile Include="Blockchain\SerializableChain.cs" />
     <Compile Include="Blockchain\Transaction.cs" />
     <Compile Include="Database\DBBlockRec.cs" />
     <Compile Include="Database\DBMessage.cs" />

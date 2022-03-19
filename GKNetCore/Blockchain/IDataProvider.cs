@@ -37,6 +37,12 @@ namespace GKNet.Blockchain
         /// </summary>
         IList<Block> GetBlocks();
 
+        IList<Block> GetBlocks(long startBlockIndex);
+
+        Block FindBlock(string hash);
+
+        Block GetLastBlock();
+
         /// <summary>
         /// Clear storage. Removing all blocks.
         /// </summary>

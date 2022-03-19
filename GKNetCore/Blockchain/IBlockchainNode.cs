@@ -24,7 +24,6 @@ namespace GKNet.Blockchain
 {
     public interface IBlockchainNode
     {
-        Chain Chain { get; }
         ICommunicatorCore CommunicatorCore { get; }
         IList<IBlockchainPeer> Peers { get; }
 
@@ -43,8 +42,8 @@ namespace GKNet.Blockchain
         // TODO: the host with the largest chain of blocks is pre-selected and it is synchronized.
         // response from Network -> Chain.ReceivedGlobalBlockchain()
         void RequestGlobalBlockchain();
-        void ReceiveChainStateResponse(long peerLastBlockIndex, string peerLastBlockHash);
+        void ReceiveChainStateRequest(IBlockchainPeer peer, long peerLastBlockIndex, string peerLastBlockHash);
 
-        bool SendBlockToHost(IBlockchainPeer peer, string method, string data);
+        bool SendBlocks(IBlockchainPeer peer, IList<Block> blocks);
     }
 }

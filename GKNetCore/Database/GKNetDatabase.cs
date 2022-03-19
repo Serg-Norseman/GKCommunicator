@@ -366,6 +366,40 @@ namespace GKNet.Database
             return result;
         }
 
+
+        public IList<Block> GetBlocks(long startBlockIndex)
+        {
+            var dtRecs = fConnection.Query<DBBlockRec>("select * from Blocks where Index > ? order by Index asc", startBlockIndex);
+
+            var result = new List<Block>();
+            foreach (var blk in dtRecs) {
+                result.Add(blk.GetData());
+            }
+            return result;
+        }
+
+        public Block FindBlock(string hash)
+        {
+            var dtRecs = fConnection.Query<DBBlockRec>("select * from Blocks where Hash = ?", hash);
+
+            if (dtRecs == null || dtRecs.Count < 1) {
+                return null;
+            } else {
+                return dtRecs[0].GetData();
+            }
+        }
+
+        public Block GetLastBlock()
+        {
+            var dtRecs = fConnection.Query<DBBlockRec>("select * from Blocks order by Index desc limit 1");
+
+            if (dtRecs == null || dtRecs.Count < 1) {
+                return null;
+            } else {
+                return dtRecs[0].GetData();
+            }
+        }
+
         public void AddPendingTransaction(Transaction transaction)
         {
             var dtObj = new DBTransactionRec(transaction);

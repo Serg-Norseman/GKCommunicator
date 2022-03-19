@@ -77,7 +77,7 @@ namespace GKNet.Blockchain
             }
 
             Index = previousBlock.Index + 1;
-            Version = Chain.CurrentVersion;
+            Version = BlockchainNode.CurrentVersion;
             Timestamp = TimeHelper.GetUtcNow();
             PreviousHash = previousBlock.Hash;
             Transactions = transactions;
@@ -94,7 +94,7 @@ namespace GKNet.Blockchain
         protected Block(string previousHash, List<Transaction> transactions)
         {
             Index = 0;
-            Version = Chain.CurrentVersion;
+            Version = BlockchainNode.CurrentVersion;
             Timestamp = TimeHelper.GetUtcNow();
             PreviousHash = previousHash;
             Transactions = transactions;

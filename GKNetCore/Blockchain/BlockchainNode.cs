@@ -20,7 +20,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BSLib;
@@ -35,19 +34,13 @@ namespace GKNet.Blockchain
     /// </summary>
     public class BlockchainNode : IBlockchainNode
     {
-        private readonly Chain fChain;
+        public const int CurrentVersion = 1;
+
         private readonly ICommunicatorCore fCommunicatorCore;
         private readonly IDataProvider fDataProvider;
         private readonly Dictionary<string, ITransactionSolver> fSolvers;
         private readonly Timer fTimer;
 
-
-        public Chain Chain
-        {
-            get {
-                return fChain;
-            }
-        }
 
         public ICommunicatorCore CommunicatorCore
         {
@@ -68,22 +61,113 @@ namespace GKNet.Blockchain
         {
             fCommunicatorCore = communicatorCore;
             fDataProvider = dataProvider;
-            fChain = new Chain(this, fDataProvider);
+
             fSolvers = new Dictionary<string, ITransactionSolver>();
 
             RegisterSolver(new ProfileTransactionSolver());
 
-            fChain.CreateNewBlockChain();
+            var lastBlock = fDataProvider.GetLastBlock();
+            if (lastBlock == null) {
+                CreateGenesisBlock();
+            }
 
             fTimer = new Timer(new TimerCallback(TimerCallback));
-            fTimer.Change(1 * 60 * 1000, Timeout.Infinite);
+            fTimer.Change(10 * 60 * 1000, Timeout.Infinite);
         }
 
         private void TimerCallback(object e)
         {
-            fChain.CreateNewBlock();
+            CreateNewBlock();
         }
 
+        public void CreateNewBlock()
+        {
+            var pendingTransactions = fDataProvider.GetPendingTransactions();
+            if (pendingTransactions.Count <= 0) {
+                return;
+            }
+
+            var newBlock = new Block(fDataProvider.GetLastBlock(), pendingTransactions);
+            AddBlock(newBlock);
+
+            fDataProvider.ClearPendingTransactions();
+
+            BroadcastBlock(newBlock);
+        }
+
+        public void CreateGenesisBlock()
+        {
+            var genesisBlock = Block.CreateGenesisBlock(GetCurrentUser());
+            AddBlock(genesisBlock);
+        }
+
+        /// <summary>
+        /// Check the correctness of the block chain.
+        /// </summary>
+        public bool CheckCorrect()
+        {
+            // get full local chain
+            var blocks = fDataProvider.GetBlocks();
+
+            foreach (var block in blocks) {
+                if (!block.IsCorrect()) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Add block to local chain and database.
+        /// </summary>
+        public void AddBlock(Block block)
+        {
+            if (block == null) {
+                throw new ArgumentNullException(nameof(block));
+            }
+
+            if (!block.IsCorrect()) {
+                throw new MethodArgumentException(nameof(block), "The block is invalid.");
+            }
+
+            // Do not add an existing block
+            if (fDataProvider.FindBlock(block.Hash) != null) {
+                return;
+            }
+
+            fDataProvider.AddBlock(block);
+
+            if (!CheckCorrect()) {
+                throw new MethodResultException(nameof(BlockchainNode), "The correctness was violated after adding the block.");
+            }
+        }
+
+        public void ProcessBlockTransactions(Block block)
+        {
+            if (block == null) {
+                throw new ArgumentNullException(nameof(block));
+            }
+
+            if (!block.IsCorrect()) {
+                throw new MethodArgumentException(nameof(block), "The block is invalid.");
+            }
+
+            var transactions = block.Transactions;
+            foreach (var trx in transactions) {
+                string typeUnit, typeOperator;
+                trx.GetTypeParams(out typeUnit, out typeOperator);
+
+                ITransactionSolver solver = GetSolver(typeUnit);
+                if (solver != null) {
+                    solver.Solve(this, trx);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get the current user of the system.
+        /// </summary>
         public UserProfile GetCurrentUser()
         {
             return fCommunicatorCore.Profile;
@@ -121,10 +205,9 @@ namespace GKNet.Blockchain
             AddPendingTransaction(ProfileTransactionSolver.ProfileTransactionType, profile);
         }
 
-
         public void RequestGlobalBlockchain()
         {
-            var lastBlock = fChain.PreviousBlock;
+            var lastBlock = fDataProvider.GetLastBlock();
             foreach (var peer in Peers) {
                 SendChainStateRequest(peer, lastBlock.Index, lastBlock.Hash);
             }
@@ -141,14 +224,51 @@ namespace GKNet.Blockchain
         /// <summary>
         /// Received from the connected peer a response with the characteristics (index, hash) of the last block in the chain.
         /// </summary>
-        public void ReceiveChainStateResponse(long peerLastBlockIndex, string peerLastBlockHash)
+        public void ReceiveChainStateRequest(IBlockchainPeer peer, long peerLastBlockIndex, string peerLastBlockHash)
         {
-            // dummy
+            var lastBlock = fDataProvider.GetLastBlock();
+            if (peerLastBlockIndex < lastBlock.Index) {
+                if (peerLastBlockIndex > 0) {
+                    var peerLastBlock = fDataProvider.FindBlock(peerLastBlockHash);
+                    if (peerLastBlock != null && peerLastBlock.Index == peerLastBlockIndex) {
+                        var blocks = fDataProvider.GetBlocks(peerLastBlockIndex + 1);
+                        SendBlocks(peer, blocks);
+                    }
+                } else {
+                    // A peer only has a genesis block
+                    var blocks = fDataProvider.GetBlocks(0);
+                    SendBlocks(peer, blocks);
+                }
+            }
         }
 
-        public bool SendBlockToHost(IBlockchainPeer peer, string method, string data)
+        public bool SendBlocks(IBlockchainPeer peer, IList<Block> blocks)
         {
             return false;
+        }
+
+        /// <summary>
+        /// Replenishment of the blockchain with a list of blocks received from a peer.
+        /// </summary>
+        public void ReceiveBlocksResponse(IBlockchainPeer peer, string json)
+        {
+            var newBlocks = Helpers.DeserializeBlocks(json);
+
+            if (!newBlocks.IsCorrect()) {
+                throw new MethodResultException(nameof(newBlocks), "Error receive block chain. The chain is incorrect.");
+            }
+
+            var lastBlock = fDataProvider.GetLastBlock();
+            if (lastBlock.Index == 0) {
+                // A node only has a genesis block
+                // Therefore, the response will come with the full chain, including the genesis block
+                fDataProvider.ClearBlocks();
+            }
+
+            foreach (var blk in newBlocks) {
+                fDataProvider.AddBlock(blk);
+                ProcessBlockTransactions(blk);
+            }
         }
 
         public void SendTransaction(IBlockchainPeer peer, ITransaction transaction)

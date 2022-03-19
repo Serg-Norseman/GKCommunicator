@@ -54,6 +54,18 @@ namespace GKNet.Blockchain
             return true;
         }
 
+        /// <summary>
+        /// Checking the correctness of the hashed object.
+        /// </summary>
+        public static bool IsCorrect(this IList<Block> blocks)
+        {
+            foreach (var block in blocks) {
+                if (block.Hash != block.GetHash())
+                    return false;
+            }
+            return true;
+        }
+
         public static string GetHash(this IList<Transaction> transactions)
         {
             var data = JsonHelper.SerializeObject(transactions);
@@ -68,6 +80,11 @@ namespace GKNet.Blockchain
         public static List<Transaction> DeserializeTransactions(string json)
         {
             return JsonHelper.DeserializeObject<List<Transaction>>(json);
+        }
+
+        public static List<Block> DeserializeBlocks(string json)
+        {
+            return JsonHelper.DeserializeObject<List<Block>>(json);
         }
     }
 }
