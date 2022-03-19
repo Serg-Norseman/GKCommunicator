@@ -92,6 +92,12 @@ namespace GKNetLocationsPlugin.Model
             fHost.BlockchainNode.AddPendingTransaction(type, data);
         }
 
+        // TODO: check the existing record in the database and in the transaction pool
+        public bool ExistsRecord<T>(string recordGUID)
+        {
+            return true;
+        }
+
         public Location AddLocation(double latitude = 0.0d, double longitude = 0.0d)
         {
             string locationGUID = NewGUID();

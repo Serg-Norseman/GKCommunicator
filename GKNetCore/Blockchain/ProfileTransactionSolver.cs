@@ -39,7 +39,19 @@ namespace GKNet.Blockchain
 
         public bool Verify(Transaction transaction)
         {
-            return true;
+            try {
+                var profile = transaction.DeserializeContent<PeerProfile>();
+
+                bool validTrx = !string.IsNullOrEmpty(transaction.Type) && !string.IsNullOrEmpty(transaction.Content);
+                if (!validTrx) {
+                    return false;
+                }
+
+                bool validProfile = (profile.NodeId != null) && !string.IsNullOrEmpty(profile.NodeId.ToString()) && !string.IsNullOrEmpty(profile.UserName) && !string.IsNullOrEmpty(profile.Email) && !string.IsNullOrEmpty(profile.PublicKey);
+                return validProfile;
+            } catch {
+                return false;
+            }
         }
     }
 }

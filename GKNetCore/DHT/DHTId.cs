@@ -156,5 +156,15 @@ namespace GKNet.DHT
 
             return new DHTId(data);
         }
+
+        public static implicit operator DHTId(string hex)
+        {
+            return DHTId.Parse(hex);
+        }
+
+        public static explicit operator string(DHTId id)
+        {
+            return id.ToString();
+        }
     }
 }

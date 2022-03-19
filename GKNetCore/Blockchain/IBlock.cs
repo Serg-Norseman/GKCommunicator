@@ -25,6 +25,8 @@ namespace GKNet.Blockchain
     /// <summary>
     ///
     /// Will not be used: MerkleHash, Difficulty and Nonce (with PoW)
+    ///
+    /// TODO: implement a Merkle tree to check if a particular transaction exists in a block
     /// </summary>
     public interface IBlock
     {

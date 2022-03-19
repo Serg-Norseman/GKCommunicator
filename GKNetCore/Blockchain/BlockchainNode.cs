@@ -31,6 +31,7 @@ namespace GKNet.Blockchain
     /// https://en.wikipedia.org/wiki/Proof_of_stake
     /// https://ru.wikipedia.org/wiki/%D0%94%D0%BE%D0%BA%D0%B0%D0%B7%D0%B0%D1%82%D0%B5%D0%BB%D1%8C%D1%81%D1%82%D0%B2%D0%BE_%D0%B4%D0%BE%D0%BB%D0%B8_%D0%B2%D0%BB%D0%B0%D0%B4%D0%B5%D0%BD%D0%B8%D1%8F
     /// https://putukusuma.medium.com/creating-simple-cryptocurrency-part-5-peer-to-peer-p2p-with-grpc-f96913ddd7dd
+    /// https://www-oreilly-com.translate.goog/library/view/mastering-bitcoin/9781491902639/ch08.html?_x_tr_sl=en&_x_tr_tl=ru&_x_tr_hl=ru&_x_tr_pto=wapp
     /// </summary>
     public class BlockchainNode : IBlockchainNode
     {
@@ -86,6 +87,8 @@ namespace GKNet.Blockchain
             if (pendingTransactions.Count <= 0) {
                 return;
             }
+
+            // TODO: implement a selection of transactions that pass verification and do not exceed the maximum block size
 
             var newBlock = new Block(fDataProvider.GetLastBlock(), pendingTransactions);
             AddBlock(newBlock);
@@ -155,13 +158,33 @@ namespace GKNet.Blockchain
 
             var transactions = block.Transactions;
             foreach (var trx in transactions) {
-                string typeUnit, typeOperator;
-                trx.GetTypeParams(out typeUnit, out typeOperator);
-
+                // The solver is responsible for processing the data from the transaction for specific purposes
+                string typeUnit = trx.GetTypeUnit();
                 ITransactionSolver solver = GetSolver(typeUnit);
                 if (solver != null) {
                     solver.Solve(this, trx);
                 }
+
+                // TODO: remove the transaction from the pool of pending transactions, if it exists
+            }
+        }
+
+        public bool VerifyTransactions(Transaction transaction)
+        {
+            if (transaction == null) {
+                throw new ArgumentNullException(nameof(transaction));
+            }
+
+            if (!transaction.IsCorrect()) {
+                throw new MethodArgumentException(nameof(transaction), "The transaction is invalid.");
+            }
+
+            try {
+                string typeUnit = transaction.GetTypeUnit();
+                ITransactionSolver solver = GetSolver(typeUnit);
+                return (solver != null) && solver.Verify(transaction);
+            } catch {
+                return false;
             }
         }
 
@@ -229,6 +252,7 @@ namespace GKNet.Blockchain
             var lastBlock = fDataProvider.GetLastBlock();
             if (peerLastBlockIndex < lastBlock.Index) {
                 if (peerLastBlockIndex > 0) {
+                    // The chain has the specified common block?
                     var peerLastBlock = fDataProvider.FindBlock(peerLastBlockHash);
                     if (peerLastBlock != null && peerLastBlock.Index == peerLastBlockIndex) {
                         var blocks = fDataProvider.GetBlocks(peerLastBlockIndex + 1);
@@ -276,6 +300,9 @@ namespace GKNet.Blockchain
 
         }
 
+        /// <summary>
+        /// The function sends a pending transaction to all other known nodes.
+        /// </summary>
         public void BroadcastTransaction(ITransaction transaction)
         {
             Parallel.ForEach(Peers, peer => {
@@ -283,10 +310,24 @@ namespace GKNet.Blockchain
             });
         }
 
+        /// <summary>
+        /// The function accepts a pending transaction from another node.
+        /// </summary>
         public void ReceiveTransaction(IBlockchainPeer sender, Transaction transaction)
         {
             try {
-                AddPendingTransaction(transaction);
+                // TODO: check that the transaction is not in the pool (if received earlier from another node and has not yet been processed)
+                // or blockchain (if an old, long-processed transaction has been received)
+
+                // TODO: transaction validation should take into account the scenario when the receive order is violated and the transaction
+                // tries to modify data not yet added by a transaction that is not in the pool (leave pending)
+
+                if (VerifyTransactions(transaction)) {
+                    AddPendingTransaction(transaction);
+
+                    // TODO: what should be the mechanism of protection against flooding here?!
+                    //BroadcastTransaction(transaction);
+                }
             } catch {
                 // if !trx.IsCorrect(), then do nothing
             }
@@ -304,10 +345,18 @@ namespace GKNet.Blockchain
             });
         }
 
-        public void ReceiveTransaction(IBlockchainPeer sender, IBlock block)
+        public void ReceiveBlock(IBlockchainPeer sender, IBlock block)
         {
             try {
+                // TODO: full block check
+
+                // TODO: implement remembering the last block of the main chain for fork verification
+                // TODO: implement a pool of orphan blocks in case of receiving a block for which its parent block was not previously received
+
                 //fChain.AddBlock();
+
+                // TODO: what should be the mechanism of protection against flooding here?!
+                //BroadcastBlock(block);
             } catch {
                 // if !block.IsCorrect(), then do nothing
             }

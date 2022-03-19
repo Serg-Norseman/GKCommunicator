@@ -40,8 +40,7 @@ namespace GKNetLocationsPlugin.Transactions
 
         public override void Solve(IBlockchainNode node, Transaction transaction)
         {
-            string typeUnit, typeOperator;
-            transaction.GetTypeParams(out typeUnit, out typeOperator);
+            string typeOperator = transaction.GetTypeOperator();
 
             var loc = transaction.DeserializeContent<Location>();
 
@@ -62,7 +61,31 @@ namespace GKNetLocationsPlugin.Transactions
 
         public override bool Verify(Transaction transaction)
         {
-            return true;
+            try {
+                string typeOperator = transaction.GetTypeOperator();
+
+                var loc = transaction.DeserializeContent<Location>();
+
+                // TODO: check record contents 
+                bool result;
+                switch (typeOperator) {
+                    case TransactionType.Oper_Create:
+                        result = !string.IsNullOrEmpty(loc.GUID);
+                        break;
+
+                    case TransactionType.Oper_Update:
+                    case TransactionType.Oper_Delete:
+                        result = !string.IsNullOrEmpty(loc.GUID) && fCore.ExistsRecord<Location>(loc.GUID);
+                        break;
+
+                    default:
+                        result = false;
+                        break;
+                }
+                return result;
+            } catch {
+                return false;
+            }
         }
     }
 }

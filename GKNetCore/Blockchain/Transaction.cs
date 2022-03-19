@@ -109,16 +109,21 @@ namespace GKNet.Blockchain
             return JsonHelper.SerializeObject(this);
         }
 
-        public void GetTypeParams(out string typeUnit, out string typeOperator)
-        {
-            string[] parts = Type.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
-            typeUnit = (parts.Length > 0) ? parts[0] : string.Empty;
-            typeOperator = (parts.Length > 1) ? parts[1] : string.Empty;
-        }
-
         public T DeserializeContent<T>()
         {
             return JsonHelper.DeserializeObject<T>(Content);
+        }
+
+        public string GetTypeUnit()
+        {
+            string[] parts = Type.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
+            return (parts.Length > 0) ? parts[0] : string.Empty;
+        }
+
+        public string GetTypeOperator()
+        {
+            string[] parts = Type.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
+            return (parts.Length > 1) ? parts[1] : string.Empty;
         }
     }
 }
