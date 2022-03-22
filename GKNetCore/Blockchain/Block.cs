@@ -164,13 +164,15 @@ namespace GKNet.Blockchain
         public static Block Deserialize(string json)
         {
             var data = JsonHelper.DeserializeObject<Block>(json);
+            if (data == null) {
+                throw new FormatException("Failed to deserialize data.");
+            }
 
             if (!data.IsCorrect()) {
                 throw new MethodResultException(nameof(data), "Incorrect data after deserialization.");
             }
 
-            return data as Block ??
-                throw new FormatException("Failed to deserialize data.");
+            return data;
         }
 
         public string Serialize()

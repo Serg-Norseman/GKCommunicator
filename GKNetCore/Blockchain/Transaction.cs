@@ -75,13 +75,15 @@ namespace GKNet.Blockchain
         public static Transaction Deserialize(string json)
         {
             var data = JsonHelper.DeserializeObject<Transaction>(json);
+            if (data == null) {
+                throw new FormatException("Failed to deserialize data.");
+            }
 
             if (!data.IsCorrect()) {
                 throw new MethodResultException(nameof(data), "Incorrect data after deserialization.");
             }
 
-            return data as Transaction ??
-                throw new FormatException("Failed to deserialize data.");
+            return data;
         }
 
         /// <summary>
