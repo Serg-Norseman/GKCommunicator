@@ -37,8 +37,8 @@ namespace GKNet
             try {
 #if MONO
 
-                const string mailto = "'{0}' --subject '{1}' --body '{2}' --attach {3}";
-                string args = string.Format(mailto, address, subject, body, attach);
+                const string mailto = "'{0}' --subject '{1}' --body '{2}'";
+                string args = string.Format(mailto, address, subject, body);
 
                 var proc = new System.Diagnostics.Process();
                 proc.EnableRaisingEvents = false;
