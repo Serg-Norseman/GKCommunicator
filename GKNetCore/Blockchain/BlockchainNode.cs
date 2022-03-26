@@ -72,7 +72,7 @@ namespace GKNet.Blockchain
                 CreateGenesisBlock();
             }
 
-            fTimer = new Timer(new TimerCallback(TimerCallback));
+            fTimer = new Timer(TimerCallback);
             fTimer.Change(10 * 60 * 1000, Timeout.Infinite);
         }
 
@@ -83,6 +83,12 @@ namespace GKNet.Blockchain
 
         public void CreateNewBlock()
         {
+            var lastBlock = fDataProvider.GetLastBlock();
+            if (lastBlock == null) {
+                CreateGenesisBlock();
+                return;
+            }
+
             var pendingTransactions = fDataProvider.GetPendingTransactions();
             if (pendingTransactions.Count <= 0) {
                 return;
@@ -90,7 +96,7 @@ namespace GKNet.Blockchain
 
             // TODO: implement a selection of transactions that pass verification and do not exceed the maximum block size
 
-            var newBlock = new Block(fDataProvider.GetLastBlock(), pendingTransactions);
+            var newBlock = new Block(lastBlock, pendingTransactions);
             AddBlock(newBlock);
 
             fDataProvider.ClearPendingTransactions();
@@ -127,11 +133,11 @@ namespace GKNet.Blockchain
         public void AddBlock(Block block)
         {
             if (block == null) {
-                throw new ArgumentNullException(nameof(block));
+                throw new ArgumentNullException("block");
             }
 
             if (!block.IsCorrect()) {
-                throw new MethodArgumentException(nameof(block), "The block is invalid.");
+                throw new MethodArgumentException("block", "The block is invalid.");
             }
 
             // Do not add an existing block
@@ -142,18 +148,18 @@ namespace GKNet.Blockchain
             fDataProvider.AddBlock(block);
 
             if (!CheckCorrect()) {
-                throw new MethodResultException(nameof(BlockchainNode), "The correctness was violated after adding the block.");
+                throw new MethodResultException("BlockchainNode", "The correctness was violated after adding the block.");
             }
         }
 
         public void ProcessBlockTransactions(Block block)
         {
             if (block == null) {
-                throw new ArgumentNullException(nameof(block));
+                throw new ArgumentNullException("block");
             }
 
             if (!block.IsCorrect()) {
-                throw new MethodArgumentException(nameof(block), "The block is invalid.");
+                throw new MethodArgumentException("block", "The block is invalid.");
             }
 
             var transactions = block.Transactions;
@@ -172,11 +178,11 @@ namespace GKNet.Blockchain
         public bool VerifyTransactions(Transaction transaction)
         {
             if (transaction == null) {
-                throw new ArgumentNullException(nameof(transaction));
+                throw new ArgumentNullException("transaction");
             }
 
             if (!transaction.IsCorrect()) {
-                throw new MethodArgumentException(nameof(transaction), "The transaction is invalid.");
+                throw new MethodArgumentException("transaction", "The transaction is invalid.");
             }
 
             try {
@@ -231,6 +237,10 @@ namespace GKNet.Blockchain
         public void RequestGlobalBlockchain()
         {
             var lastBlock = fDataProvider.GetLastBlock();
+            if (lastBlock == null) {
+                return;
+            }
+
             foreach (var peer in Peers) {
                 SendChainStateRequest(peer, lastBlock.Index, lastBlock.Hash);
             }
@@ -250,7 +260,7 @@ namespace GKNet.Blockchain
         public void ReceiveChainStateRequest(IBlockchainPeer peer, long peerLastBlockIndex, string peerLastBlockHash)
         {
             var lastBlock = fDataProvider.GetLastBlock();
-            if (peerLastBlockIndex < lastBlock.Index) {
+            if (lastBlock != null && peerLastBlockIndex < lastBlock.Index) {
                 if (peerLastBlockIndex > 0) {
                     // The chain has the specified common block?
                     var peerLastBlock = fDataProvider.FindBlock(peerLastBlockHash);
@@ -279,11 +289,11 @@ namespace GKNet.Blockchain
             var newBlocks = Helpers.DeserializeBlocks(json);
 
             if (!newBlocks.IsCorrect()) {
-                throw new MethodResultException(nameof(newBlocks), "Error receive block chain. The chain is incorrect.");
+                throw new MethodResultException("newBlocks", "Error receive block chain. The chain is incorrect.");
             }
 
             var lastBlock = fDataProvider.GetLastBlock();
-            if (lastBlock.Index == 0) {
+            if (lastBlock != null && lastBlock.Index == 0) {
                 // A node only has a genesis block
                 // Therefore, the response will come with the full chain, including the genesis block
                 fDataProvider.ClearBlocks();

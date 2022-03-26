@@ -333,7 +333,7 @@ namespace GKNetUI
             lstChatMsgs.Items.Clear();
 
             var selectedPeer = GetSelectedPeer();
-            if (selectedPeer.IsLocal || selectedPeer.ID == null) {
+            if (selectedPeer == null || selectedPeer.IsLocal || selectedPeer.ID == null) {
                 return;
             }
 

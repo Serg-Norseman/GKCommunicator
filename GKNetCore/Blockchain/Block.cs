@@ -61,19 +61,19 @@ namespace GKNet.Blockchain
         public Block(Block previousBlock, IList<Transaction> transactions)
         {
             if (previousBlock == null) {
-                throw new ArgumentNullException(nameof(previousBlock));
+                throw new ArgumentNullException("previousBlock");
             }
 
             if (transactions == null) {
-                throw new ArgumentNullException(nameof(transactions));
+                throw new ArgumentNullException("transactions");
             }
 
             if (!previousBlock.IsCorrect()) {
-                throw new MethodArgumentException(nameof(previousBlock), "The previous block is invalid.");
+                throw new MethodArgumentException("previousBlock", "The previous block is invalid.");
             }
 
             if (!transactions.IsCorrect()) {
-                throw new MethodArgumentException(nameof(transactions), "Transactions is incorrect.");
+                throw new MethodArgumentException("transactions", "Transactions is incorrect.");
             }
 
             Index = previousBlock.Index + 1;
@@ -84,7 +84,7 @@ namespace GKNet.Blockchain
             Hash = GetHash();
 
             if (!IsCorrect()) {
-                throw new MethodResultException(nameof(Block), "Block creation error. The block is invalid.");
+                throw new MethodResultException("Block", "Block creation error. The block is invalid.");
             }
         }
 
@@ -101,7 +101,7 @@ namespace GKNet.Blockchain
             Hash = GetHash();
 
             if (!IsCorrect()) {
-                throw new MethodResultException(nameof(Block), "Genesis block creation error. The block is invalid.");
+                throw new MethodResultException("Block", "Genesis block creation error. The block is invalid.");
             }
         }
 
@@ -111,7 +111,7 @@ namespace GKNet.Blockchain
         public Block(IBlock block)
         {
             if (block == null) {
-                throw new ArgumentNullException(nameof(block));
+                throw new ArgumentNullException("block");
             }
 
             Index = block.Index;
@@ -122,7 +122,7 @@ namespace GKNet.Blockchain
             Hash = block.Hash;
 
             if (!IsCorrect()) {
-                throw new MethodResultException(nameof(Block), "Block creation from database error. The block is invalid.");
+                throw new MethodResultException("Block", "Block creation from database error. The block is invalid.");
             }
         }
 
@@ -169,7 +169,7 @@ namespace GKNet.Blockchain
             }
 
             if (!data.IsCorrect()) {
-                throw new MethodResultException(nameof(data), "Incorrect data after deserialization.");
+                throw new MethodResultException("data", "Incorrect data after deserialization.");
             }
 
             return data;

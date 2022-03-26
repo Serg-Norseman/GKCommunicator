@@ -25,7 +25,7 @@ namespace GKNet.Blockchain
     public class MethodArgumentException : ArgumentException
     {
         public MethodArgumentException(string paramName, string message)
-            : base($"The argument {paramName} does not match the conditions. {message}", paramName)
+            : base(string.Format("The argument {0} does not match the conditions. {1}", paramName, message))
         {
         }
     }
@@ -33,7 +33,7 @@ namespace GKNet.Blockchain
     public class MethodResultException : ArgumentException
     {
         public MethodResultException(string paramName, string message)
-            : base($"The result {paramName} does not match the conditions. {message}", paramName)
+            : base(string.Format("The result {0} does not match the conditions. {1}", paramName, message))
         {
         }
     }

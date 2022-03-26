@@ -21,7 +21,6 @@
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
-using BSLib;
 using GKNet;
 
 namespace GKNetUI

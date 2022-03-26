@@ -40,7 +40,7 @@ namespace GKNet.Blockchain
         public Transaction(long timestamp, string type, string content)
         {
             if (string.IsNullOrEmpty(content)) {
-                throw new ArgumentNullException(nameof(content));
+                throw new ArgumentNullException("content");
             }
 
             Timestamp = timestamp;
@@ -49,14 +49,14 @@ namespace GKNet.Blockchain
             Hash = GetHash();
 
             if (!IsCorrect()) {
-                throw new MethodResultException(nameof(Transaction), "Data creation error. The data is incorrect.");
+                throw new MethodResultException("Transaction", "Data creation error. The data is incorrect.");
             }
         }
 
         public Transaction(ITransaction transaction)
         {
             if (transaction == null) {
-                throw new ArgumentNullException(nameof(transaction));
+                throw new ArgumentNullException("transaction");
             }
 
             Timestamp = transaction.Timestamp;
@@ -65,7 +65,7 @@ namespace GKNet.Blockchain
             Hash = GetHash();
 
             if (!IsCorrect()) {
-                throw new MethodResultException(nameof(Transaction), "Data creation error. The data is incorrect.");
+                throw new MethodResultException("Transaction", "Data creation error. The data is incorrect.");
             }
         }
 
@@ -80,7 +80,7 @@ namespace GKNet.Blockchain
             }
 
             if (!data.IsCorrect()) {
-                throw new MethodResultException(nameof(data), "Incorrect data after deserialization.");
+                throw new MethodResultException("data", "Incorrect data after deserialization.");
             }
 
             return data;
