@@ -115,7 +115,7 @@ namespace GKNet.Database
         {
             string baseName = GetBaseName();
 
-            using (var connection = new SQLiteConnection(baseName)) {
+            using (var connection = new SQLiteConnection(baseName, SQLiteOpenFlags.Create)) {
                 connection.CreateTable<DBParameter>();
                 connection.CreateTable<DBNode>();
                 connection.CreateTable<DBPeer>();
