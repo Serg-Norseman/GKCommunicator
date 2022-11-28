@@ -33,7 +33,7 @@ namespace GKNet.Blockchain
         {
             get {
                 if (fSerializerSettings == null) {
-                    var converters = new List<JsonConverter> { new StringEnumConverter { CamelCaseText = false } };
+                    var converters = new List<JsonConverter> { new StringEnumConverter { NamingStrategy = null } };
                     var resolver = new DefaultContractResolver();
                     fSerializerSettings = new JsonSerializerSettings {
                         ContractResolver = resolver,

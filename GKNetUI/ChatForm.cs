@@ -223,24 +223,30 @@ namespace GKNetUI
 
         private void SendMessage(Peer selectedPeer)
         {
-            var msgText = txtChatMsg.Text;
-            if (string.IsNullOrEmpty(msgText)) return;
+            try {
+                var msgText = txtChatMsg.Text;
+                if (string.IsNullOrEmpty(msgText))
+                    return;
 
-            txtChatMsg.Clear();
-            txtChatMsg.Focus();
+                txtChatMsg.Clear();
+                txtChatMsg.Focus();
 
-            if (selectedPeer != null && !selectedPeer.IsLocal) {
-                var msg = fCore.SendMessage(selectedPeer, msgText);
-                PrintMessage(msg, true);
-            } else {
-                foreach (var peer in fCore.Peers) {
-                    if (peer.IsLocal) continue;
+                if (selectedPeer != null && !selectedPeer.IsLocal) {
+                    var msg = fCore.SendMessage(selectedPeer, msgText);
+                    PrintMessage(msg, true);
+                } else {
+                    foreach (var peer in fCore.Peers) {
+                        if (peer.IsLocal)
+                            continue;
 
-                    var msg = fCore.SendMessage(peer, msgText);
-                    if (peer == selectedPeer) {
-                        PrintMessage(msg, true);
+                        var msg = fCore.SendMessage(peer, msgText);
+                        if (peer == selectedPeer) {
+                            PrintMessage(msg, true);
+                        }
                     }
                 }
+            } catch (Exception ex) {
+                fLogger.WriteError("ChatForm.SendMessage()", ex);
             }
         }
 

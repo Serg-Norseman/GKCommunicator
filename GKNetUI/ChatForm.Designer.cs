@@ -53,7 +53,6 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ChatForm));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.miConnection = new System.Windows.Forms.ToolStripMenuItem();
             this.miConnect = new System.Windows.Forms.ToolStripMenuItem();

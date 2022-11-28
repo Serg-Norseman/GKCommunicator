@@ -247,7 +247,7 @@ namespace GKNet
                                     decryptedByteCount = reader.Read(decrypted, 0, decrypted.Length);
                                 }
                             }
-                        } catch (Exception e) {
+                        } catch {
                             return string.Empty;
                         }
                     } finally {

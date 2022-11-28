@@ -31,7 +31,7 @@ namespace GKNet.TCP
     {
         private int fBacklog;
         private readonly List<TCPConnection> fConnections;
-        private IPAddress fLocalAddress = IPAddress.Any;
+        private IPAddress fLocalAddress;
         private int fLocalPort;
         internal readonly ILogger fLogger;
         private Socket fSocket;
@@ -48,13 +48,14 @@ namespace GKNet.TCP
         public void Connect(int port)
         {
             fBacklog = 100;
+            fLocalAddress = IPAddress.Any;
             fLocalPort = port;
             // Create the new socket on which we'll be listening.
             fSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             // global with NAT traversal
             fSocket.SetIPProtectionLevelUnrestricted();
             // Bind the socket to the address and port.
-            fSocket.Bind(new IPEndPoint(IPAddress.Any, port));
+            fSocket.Bind(new IPEndPoint(fLocalAddress, fLocalPort));
             // Start listening.
             fSocket.Listen(fBacklog);
             // Set up the callback to be notified when somebody requests a new connection.

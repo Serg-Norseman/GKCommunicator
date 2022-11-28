@@ -785,7 +785,7 @@ namespace GKNet
                     }
                 }
             } catch (Exception ex) {
-                //Logger.WriteError("PluginsMan.Load(" + path + ")", ex);
+                fLogger.WriteError("CommunicatorCore.Load(" + path + ")", ex);
             }
         }
 
