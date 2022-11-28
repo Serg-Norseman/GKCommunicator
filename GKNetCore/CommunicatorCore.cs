@@ -763,7 +763,7 @@ namespace GKNet
             if (!Directory.Exists(path))
                 return;
 
-            //Logger.WriteInfo("Plugins load path: " + path);
+            fLogger.WriteInfo("Plugins load path: " + path);
 
             try {
 #if !NETSTANDARD
@@ -785,7 +785,7 @@ namespace GKNet
                     }
                 }
             } catch (Exception ex) {
-                fLogger.WriteError("CommunicatorCore.Load(" + path + ")", ex);
+                fLogger.WriteError("LoadPlugins(" + path + ")", ex);
             }
         }
 
