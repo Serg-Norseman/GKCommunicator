@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>netstandard2.0</TargetFrameworks>
+        <AssemblyName>GKNetCore</AssemblyName>
+        <RootNamespace>GKNet</RootNamespace>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+
+        <Configurations>MSWin_Debug;MSWin_Release;Linux_Debug;Linux_Release;MacOS_Debug;MacOS_Release;FreeBSD_Debug;FreeBSD_Release</Configurations>
+    </PropertyGroup>
+
+    <Import Project="..\GKConfigurations3.targets" />
+
+
+    <PropertyGroup Condition="' $(Platform)' == 'AnyCPU' ">
+        <OutputPath>bin\</OutputPath>
+    </PropertyGroup>
+
+
+    <ItemGroup>
+        <Reference Include="BSLib">
+            <HintPath>..\libs\netstd\BSLib.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+
+
+    <ItemGroup>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+        <PackageReference Include="log4net" Version="2.0.15" />
+        <PackageReference Include="Mono.Nat" Version="3.0.4" />
+    </ItemGroup>
+
+
+    <ItemGroup>
+        <EmbeddedResource Include="Resources\Images\btn_available.png" />
+        <EmbeddedResource Include="Resources\Images\btn_away.png" />
+        <EmbeddedResource Include="Resources\Images\btn_busy.png" />
+        <EmbeddedResource Include="Resources\Images\btn_offline.png" />
+        <EmbeddedResource Include="Resources\Images\btn_invisible.png" />
+        <EmbeddedResource Include="Resources\Images\status_delivered.png" />
+        <EmbeddedResource Include="Resources\Images\status_undelivered.png" />
+    </ItemGroup>
+</Project>
