@@ -1,4 +1,5 @@
 del .\bin\*.* /s /q
+for /d %%p in (.\bin\*) do rd "%%p" /s /q
 
 rmdir .\.vs /s /q
 
@@ -9,6 +10,9 @@ rmdir .\GKNetCore\obj /s /q
 
 rmdir .\GKNetUI\bin /s /q
 rmdir .\GKNetUI\obj /s /q
+
+rmdir .\GKNetUI.EtoForms\bin /s /q
+rmdir .\GKNetUI.EtoForms\obj /s /q
 
 rmdir .\GKCommunicatorApp\bin /s /q
 rmdir .\GKCommunicatorApp\obj /s /q

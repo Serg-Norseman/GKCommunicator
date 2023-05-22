@@ -22,7 +22,7 @@ using System;
 using System.Globalization;
 using System.Text;
 using BSLib;
-using BSLib.Calendar;
+//using BSLib.Calendar;
 
 namespace GKNetLocationsPlugin.Dates
 {
@@ -109,7 +109,7 @@ namespace GKNetLocationsPlugin.Dates
     }
 
 
-    public abstract class GDMCustomDate : IComparable, IComparable<GDMCustomDate>, IEquatable<GDMCustomDate>
+    public abstract class GDMCustomDate : IComparable, IComparable<GDMCustomDate>//, IEquatable<GDMCustomDate>
     {
         public static readonly string[] GEDCOMDateTypes = 
             new string[] { "", "ABT", "AFT", "BEF", "BET", "CAL", "EST", "FROM", "INT", "TO" };
@@ -197,7 +197,7 @@ namespace GKNetLocationsPlugin.Dates
         /// Obtaining UDN (Unified Date Number) for purposes of processing and sorting.
         /// </summary>
         /// <returns></returns>
-        public abstract UDN GetUDN();
+        //public abstract UDN GetUDN();
 
         /// <summary>
         /// In the historical chronology of the year 0 does not exist.
@@ -206,7 +206,7 @@ namespace GKNetLocationsPlugin.Dates
         /// Is estimated from -4714 BC to 3268 AD.
         /// </summary>
         /// <returns>chronological year</returns>
-        public virtual int GetChronologicalYear()
+        /*public virtual int GetChronologicalYear()
         {
             int resultYear;
 
@@ -219,7 +219,7 @@ namespace GKNetLocationsPlugin.Dates
             }
 
             return resultYear;
-        }
+        }*/
 
         public int CompareTo(object obj)
         {
@@ -228,40 +228,40 @@ namespace GKNetLocationsPlugin.Dates
 
         public int CompareTo(GDMCustomDate other)
         {
-            if (other != null) {
+            /*if (other != null) {
                 UDN abs1 = GetUDN();
                 UDN abs2 = other.GetUDN();
                 return abs1.CompareTo(abs2);
-            }
+            }*/
 
             return -1;
         }
 
-        public override int GetHashCode()
+        /*public override int GetHashCode()
         {
             var udn = GetUDN();
             return udn.GetHashCode();
-        }
+        }*/
 
         public override bool Equals(object obj)
         {
             GDMCustomDate otherDate = obj as GDMCustomDate;
 
-            if (otherDate != null) {
+            /*if (otherDate != null) {
                 UDN abs1 = GetUDN();
                 UDN abs2 = otherDate.GetUDN();
                 return abs1.Equals(abs2);
-            }
+            }*/
 
             return false;
         }
 
-        public bool Equals(GDMCustomDate other)
+        /*public bool Equals(GDMCustomDate other)
         {
             UDN abs1 = GetUDN();
             UDN abs2 = other.GetUDN();
             return abs1.Equals(abs2);
-        }
+        }*/
 
         public static GDMDate CreateApproximated(GDMDate date, GDMApproximated approximated)
         {
@@ -308,7 +308,7 @@ namespace GKNetLocationsPlugin.Dates
             var token = strTok.CurrentToken;
             if (token == GEDCOMToken.Word) {
                 string su = strTok.GetWord();
-                idx = Algorithms.BinarySearch(GDMCustomDate.GEDCOMDateTypes, su, string.CompareOrdinal);
+                idx = ArrayHelper.BinarySearch(GDMCustomDate.GEDCOMDateTypes, su, string.CompareOrdinal);
             }
             var dateType = (idx < 0) ? GEDCOMDateType.SIMP : (GEDCOMDateType)idx;
 
@@ -386,7 +386,7 @@ namespace GKNetLocationsPlugin.Dates
                 // error!
             }
             string su = strTok.GetWord();
-            int dateType = Algorithms.BinarySearch(GDMCustomDate.GEDCOMDateRangeArray, su, string.CompareOrdinal);
+            int dateType = ArrayHelper.BinarySearch(GDMCustomDate.GEDCOMDateRangeArray, su, string.CompareOrdinal);
 
             if (dateType == 0) { // "AFT"
                 strTok.Next();
@@ -492,7 +492,7 @@ namespace GKNetLocationsPlugin.Dates
             token = strTok.CurrentToken;
             if (token == GEDCOMToken.Word) {
                 string su = InvariantTextInfo.ToUpper(strTok.GetWord());
-                int idx = Algorithms.BinarySearch(GDMCustomDate.GEDCOMDateApproximatedArray, su, string.CompareOrdinal);
+                int idx = ArrayHelper.BinarySearch(GDMCustomDate.GEDCOMDateApproximatedArray, su, string.CompareOrdinal);
                 if (idx >= 0) {
                     approximated = (GDMApproximated)idx;
                     strTok.Next();

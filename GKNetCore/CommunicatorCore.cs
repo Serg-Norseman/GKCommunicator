@@ -1,6 +1,6 @@
 ﻿/*
  *  "GKCommunicator", the chat and bulletin board of the genealogical network.
- *  Copyright (C) 2018-2022 by Sergey V. Zhdanovskih.
+ *  Copyright (C) 2018-2023 by Sergey V. Zhdanovskih.
  *
  *  This file is part of "GEDKeeper".
  *
@@ -43,8 +43,8 @@ namespace GKNet
     {
         public const string APP_NAME = "GKCommunicator";
         public const string APP_DESC = "Distributed, decentralized, serverless, peer-to-peer communication plugin for GEDKeeper.";
-        public const string APP_COPYRIGHT = "Copyright © 2018-2022 by Sergey V. Zhdanovskih";
-        public const string APP_VERSION = "0.29.0.0";
+        public const string APP_COPYRIGHT = "Copyright © 2018-2023 by Sergey V. Zhdanovskih";
+        public const string APP_VERSION = "0.30.0.0";
 
         private static readonly DHTId GKNInfoHash = ProtocolHelper.CreateSignInfoKey();
 

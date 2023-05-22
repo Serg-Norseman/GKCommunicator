@@ -70,7 +70,7 @@ namespace GKNet.DHT
 
         public bool Equals(byte[] other)
         {
-            return (other == null || other.Length != 20) ? false : Algorithms.ArraysEqual(fData, other);
+            return (other == null || other.Length != 20) ? false : ArrayHelper.ArraysEqual(fData, other);
         }
 
         public bool Equals(DHTId other)
@@ -78,7 +78,7 @@ namespace GKNet.DHT
             if ((object)other == null)
                 return false;
 
-            return Algorithms.ArraysEqual(fData, other.fData);
+            return ArrayHelper.ArraysEqual(fData, other.fData);
         }
 
         public int CompareTo(object obj)
@@ -115,7 +115,7 @@ namespace GKNet.DHT
                 return (object)right == null;
             if ((object)right == null)
                 return false;
-            return Algorithms.ArraysEqual(left.Data, right.Data);
+            return ArrayHelper.ArraysEqual(left.Data, right.Data);
         }
 
         public static bool operator !=(DHTId left, DHTId right)

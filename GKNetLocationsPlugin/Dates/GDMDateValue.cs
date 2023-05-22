@@ -19,7 +19,7 @@
  */
 
 using System;
-using BSLib.Calendar;
+//using BSLib.Calendar;
 
 namespace GKNetLocationsPlugin.Dates
 {
@@ -79,7 +79,7 @@ namespace GKNetLocationsPlugin.Dates
         /// <param name="tag"></param>
         /// <param name="matchParams"></param>
         /// <returns></returns>
-        public override float IsMatch(GDMCustomDate tag, MatchParams matchParams)
+        /*public override float IsMatch(GDMCustomDate tag, MatchParams matchParams)
         {
             if (tag == null) return 0.0f;
             GDMDateValue date = (GDMDateValue)tag;
@@ -98,12 +98,12 @@ namespace GKNetLocationsPlugin.Dates
             }
 
             return (match / matches);
-        }
+        }*/
 
-        public override UDN GetUDN()
+        /*public override UDN GetUDN()
         {
             return (fValue == null) ? UDN.CreateEmpty() : fValue.GetUDN();
-        }
+        }*/
 
         /// <summary>
         /// In the historical chronology of the year 0 does not exist.
@@ -112,10 +112,10 @@ namespace GKNetLocationsPlugin.Dates
         /// Is estimated from -4714 BC to 3268 AD.
         /// </summary>
         /// <returns>chronological year</returns>
-        public override int GetChronologicalYear()
+        /*public override int GetChronologicalYear()
         {
             return (fValue == null) ? 0 : fValue.GetChronologicalYear();
-        }
+        }*/
 
         public override string GetDisplayStringExt(DateFormat format, bool sign, bool showCalendar)
         {

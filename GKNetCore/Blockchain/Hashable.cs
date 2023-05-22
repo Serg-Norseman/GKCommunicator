@@ -1,6 +1,6 @@
 ﻿/*
  *  "GKCommunicator", the chat and bulletin board of the genealogical network.
- *  Copyright (C) 2018-2022 by Sergey V. Zhdanovskih.
+ *  Copyright (C) 2018-2023 by Sergey V. Zhdanovskih.
  *
  *  This file is part of "GEDKeeper".
  *
@@ -27,8 +27,9 @@ namespace GKNet.Blockchain
     {
         /// <summary>
         /// The stored hash of the component.
+        /// For json deserialization to work correctly, the setter must be public.
         /// </summary>
-        public string Hash { get; protected set; }
+        public string Hash { get; set; }
 
         /// <summary>
         /// Get data from the object, based on which the hash will be built.

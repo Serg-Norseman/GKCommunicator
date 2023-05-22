@@ -29,7 +29,7 @@ using GKNetUI;
 [assembly: AssemblyTitle("GKCommunicatorPlugin")]
 [assembly: AssemblyDescription("GEDKeeper Communicator plugin")]
 [assembly: AssemblyProduct("GEDKeeper")]
-[assembly: AssemblyCopyright("Copyright © 2018-2021 by Sergey V. Zhdanovskih")]
+[assembly: AssemblyCopyright("Copyright © 2018-2023 by Sergey V. Zhdanovskih")]
 [assembly: AssemblyVersion("0.1.0.0")]
 [assembly: AssemblyCulture("")]
 

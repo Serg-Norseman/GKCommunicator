@@ -21,7 +21,7 @@
 using System;
 using System.Collections.Generic;
 using BSLib;
-using BSLib.Calendar;
+//using BSLib.Calendar;
 
 namespace GKNetLocationsPlugin.Dates
 {
@@ -41,7 +41,7 @@ namespace GKNetLocationsPlugin.Dates
         private short fYear;
         private bool fYearBC;
         private string fYearModifier;
-        private UDN fUDN;
+        //private UDN fUDN;
 
 
         public GDMApproximated Approximated
@@ -242,7 +242,7 @@ namespace GKNetLocationsPlugin.Dates
         {
             string su = InvariantTextInfo.ToUpper(strMonth);
 
-            int month = Algorithms.IndexOf(GDMCustomDate.GEDCOMMonthArray, su);
+            int month = ArrayHelper.IndexOf(GDMCustomDate.GEDCOMMonthArray, su);
             return (byte)(month + 1);
         }
 
@@ -281,7 +281,7 @@ namespace GKNetLocationsPlugin.Dates
 
         protected override void DateChanged()
         {
-            int year = fYear;
+            /*int year = fYear;
             if (year == UNKNOWN_YEAR) {
                 year = UDN.UnknownYear;
             } else {
@@ -289,13 +289,13 @@ namespace GKNetLocationsPlugin.Dates
             }
 
             UDNCalendarType udnCalendar = UDNCalendarType.ctGregorian;
-            fUDN = new UDN(udnCalendar, year, fMonth, fDay);
+            fUDN = new UDN(udnCalendar, year, fMonth, fDay);*/
         }
 
-        public override UDN GetUDN()
+        /*public override UDN GetUDN()
         {
             return (fApproximated == GDMApproximated.daExact) ? fUDN : UDN.CreateApproximate(fUDN);
-        }
+        }*/
 
         #endregion
 
@@ -336,11 +336,11 @@ namespace GKNetLocationsPlugin.Dates
             return date;
         }
 
-        public static UDN GetUDNByFormattedStr(string dateStr, bool aException = false)
+        /*public static UDN GetUDNByFormattedStr(string dateStr, bool aException = false)
         {
             GDMDate dtx = GDMDate.CreateByFormattedStr(dateStr, aException);
             return (dtx != null) ? dtx.GetUDN() : UDN.CreateEmpty();
-        }
+        }*/
 
         public string GetDisplayString(DateFormat format, bool includeBC = false, bool showCalendar = false)
         {

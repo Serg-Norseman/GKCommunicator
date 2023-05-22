@@ -18,7 +18,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using BSLib.Calendar;
+//using BSLib.Calendar;
 
 namespace GKNetLocationsPlugin.Dates
 {
@@ -79,7 +79,7 @@ namespace GKNetLocationsPlugin.Dates
             return result;
         }
 
-        public override UDN GetUDN()
+        /*public override UDN GetUDN()
         {
             UDN result;
 
@@ -94,7 +94,7 @@ namespace GKNetLocationsPlugin.Dates
             }
 
             return result;
-        }
+        }*/
 
         public override string GetDisplayStringExt(DateFormat format, bool sign, bool showCalendar)
         {

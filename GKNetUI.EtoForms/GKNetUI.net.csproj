@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>netstandard2.0</TargetFrameworks>
+        <AssemblyName>GKNetUI</AssemblyName>
+        <RootNamespace>GKNetUI</RootNamespace>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+
+        <Configurations>MSWin_Debug;MSWin_Release;Linux_Debug;Linux_Release;MacOS_Debug;MacOS_Release;FreeBSD_Debug;FreeBSD_Release</Configurations>
+    </PropertyGroup>
+
+    <Import Project="..\GKConfigurations3.targets" />
+
+
+    <PropertyGroup Condition="' $(Platform)' == 'AnyCPU' ">
+        <OutputPath>bin\</OutputPath>
+    </PropertyGroup>
+
+
+    <ItemGroup>
+        <ProjectReference Include="..\GKNetCore\GKNetCore.nstd.csproj" />
+    </ItemGroup>
+
+
+    <ItemGroup>
+        <Reference Include="BSLib">
+            <HintPath>..\libs\netstd\BSLib.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+
+
+    <ItemGroup>
+        <PackageReference Include="Eto.Forms" Version="2.7.5" />
+        <PackageReference Include="Eto.Serialization.Xaml" Version="2.7.5" />
+    </ItemGroup>
+</Project>

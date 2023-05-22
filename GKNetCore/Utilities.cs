@@ -113,7 +113,10 @@ namespace GKNet
 
         public static string GetAppDataPath()
         {
-            return GetAppPath() + ".." + Path.DirectorySeparatorChar + "appdata" + Path.DirectorySeparatorChar;
+            var path = GetAppPath() + ".." + Path.DirectorySeparatorChar + "appdata" + Path.DirectorySeparatorChar;
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path); 
+            return path;
         }
 
         public static void LoadExtFile(string fileName)

@@ -25,6 +25,6 @@ csharp_indent_preprocessor_if = 4
 csharp_indent_preprocessor_other = 4
 csharp_indent_preprocessor_region = 4
 
-[*.{md,yml}]
+[*.{md,yml,xeto}]
 indent_style = space
 indent_size = 2

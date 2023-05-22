@@ -71,7 +71,7 @@ namespace GKNet.Database
 
         private string GetBaseName()
         {
-            return Utilities.GetAppDataPath() + "gkcommunicator.db";
+            return Path.Combine(Utilities.GetAppDataPath(), "gkcommunicator.db");
         }
 
         public void Connect()
@@ -115,7 +115,7 @@ namespace GKNet.Database
         {
             string baseName = GetBaseName();
 
-            using (var connection = new SQLiteConnection(baseName, SQLiteOpenFlags.Create)) {
+            using (var connection = new SQLiteConnection(baseName/*, SQLiteOpenFlags.Create*/)) {
                 connection.CreateTable<DBParameter>();
                 connection.CreateTable<DBNode>();
                 connection.CreateTable<DBPeer>();
@@ -369,7 +369,7 @@ namespace GKNet.Database
 
         public IList<Block> GetBlocks(long startBlockIndex)
         {
-            var dtRecs = fConnection.Query<DBBlockRec>("select * from Blocks where Index > ? order by Index asc", startBlockIndex);
+            var dtRecs = fConnection.Query<DBBlockRec>("select * from Blocks where \"Index\" > ? order by \"Index\" asc", startBlockIndex);
 
             var result = new List<Block>();
             foreach (var blk in dtRecs) {
@@ -391,7 +391,7 @@ namespace GKNet.Database
 
         public Block GetLastBlock()
         {
-            var dtRecs = fConnection.Query<DBBlockRec>("select * from Blocks order by Index desc limit 1");
+            var dtRecs = fConnection.Query<DBBlockRec>("select * from Blocks order by \"Index\" desc limit 1");
 
             if (dtRecs == null || dtRecs.Count < 1) {
                 return null;

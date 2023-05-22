@@ -1,6 +1,6 @@
 ﻿/*
  *  "GKCommunicator", the chat and bulletin board of the genealogical network.
- *  Copyright (C) 2018-2022 by Sergey V. Zhdanovskih.
+ *  Copyright (C) 2018-2023 by Sergey V. Zhdanovskih.
  *
  *  This file is part of "GEDKeeper".
  *
@@ -26,34 +26,42 @@ namespace GKNet.Blockchain
 {
     /// <summary>
     /// Chain block.
+    /// For json deserialization to work correctly, the setters must be public.
     /// </summary>
     public class Block : Hashable, IBlock
     {
         /// <summary>
         /// Ordinal index of the block in the chain for checking chains between peers.
         /// </summary>
-        public long Index { get; private set; }
+        public long Index { get; set; }
 
         /// <summary>
         /// The version of the block specification.
         /// </summary>
-        public uint Version { get; private set; }
+        public uint Version { get; set; }
 
         /// <summary>
         /// Block creation time.
         /// </summary>
-        public long Timestamp { get; private set; }
+        public long Timestamp { get; set; }
 
         /// <summary>
         /// The hash of the previous block.
         /// </summary>
-        public string PreviousHash { get; private set; }
+        public string PreviousHash { get; set; }
 
         /// <summary>
         /// Block data.
         /// </summary>
-        public IList<Transaction> Transactions { get; private set; }
+        public IList<Transaction> Transactions { get; set; }
 
+
+        /// <summary>
+        /// Creating a chain block for deserializer.
+        /// </summary>
+        public Block()
+        {
+        }
 
         /// <summary>
         /// Create a block instance.
