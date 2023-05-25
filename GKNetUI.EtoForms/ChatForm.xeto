@@ -59,7 +59,7 @@
     <TableRow ScaleHeight="True">
       <Splitter Orientation="Horizontal" FixedPanel="Panel1" RelativePosition="230">
         <Splitter.Panel1>
-          <netui:PeersList x:Name="lstMembers" Width="230" SelectedValueChanged="lstMembers_SelectedValueChanged">
+          <netui:PeersList x:Name="lstMembers" Width="230" SelectionChanged="lstMembers_SelectedValueChanged">
             <netui:PeersList.ContextMenu>
               <ContextMenu x:Name="contextMenuStrip1">
                 <ButtonMenuItem x:Name="miPeerProfile" Text="Profile" Click="miPeerProfile_Click" />
@@ -74,7 +74,7 @@
             <TabPage x:Name="tabChat" Text="Chat">
               <Splitter x:Name="splitContainer2" Orientation="Vertical" FixedPanel="Panel2" RelativePosition="200">
                 <Splitter.Panel1>
-                  <netui:MessagesList x:Name="lstChatMsgs" BackgroundColor="LightGrey" Width="230" SelectedValueChanged="lstMembers_SelectedValueChanged" />
+                  <netui:MessagesList x:Name="lstChatMsgs" BackgroundColor="LightGrey" Width="230" />
                 </Splitter.Panel1>
 
                 <Splitter.Panel2>

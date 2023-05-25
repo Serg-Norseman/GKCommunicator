@@ -34,6 +34,8 @@
 
 
     <ItemGroup>
+        <EmbeddedResource Include="Resources\Images\btn_accept.gif" />
+        <EmbeddedResource Include="Resources\Images\btn_cancel.gif" />
         <EmbeddedResource Include="Resources\Images\btn_available.png" />
         <EmbeddedResource Include="Resources\Images\btn_away.png" />
         <EmbeddedResource Include="Resources\Images\btn_busy.png" />

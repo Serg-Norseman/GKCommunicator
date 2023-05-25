@@ -24,10 +24,76 @@ using GKNet;
 
 namespace GKNetUI
 {
-    public class MessagesList : ListBox
+    public class MessagesList : Scrollable
     {
+        private sealed class MessageFrame : Drawable
+        {
+            private readonly MessagesList fOwner;
+
+            public Message Message { get; }
+
+            public MessageFrame(GKNet.Message msg, MessagesList owner)
+            {
+                Message = msg;
+                fOwner = owner;
+
+                string txt = owner.GetMessageItem(msg);
+                SizeF txt_size = owner.fFont.MeasureString(txt);
+
+                Size = new Size((int)txt_size.Width, (int)txt_size.Height + 2 * ItemMargin);
+
+                Paint += (sender, e) => {
+                    var rect = e.ClipRectangle;
+                    e.Graphics.DrawRectangle(Colors.Magenta, rect);
+
+                    /*GKNet.Message msg = (GKNet.Message)Items[e.Index];
+                    bool senderIsLocal = (msg.Sender == LocalId);
+                    string txt = GetMessageItem(msg);
+
+                    bool isSelected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
+                    Rectangle rt = e.Bounds;
+                    Font fnt = Font;
+
+                    Brush itemBrush;
+                    if (isSelected) {
+                        itemBrush = (senderIsLocal) ? Brushes.Goldenrod : Brushes.LightSteelBlue;
+                    } else {
+                        itemBrush = (senderIsLocal) ? Brushes.PaleGoldenrod : Brushes.GhostWhite;
+                    }
+
+                    Rectangle rt1 = rt;
+                    rt1.Width -= 1;
+                    rt1.Height -= 1;
+                    using (GraphicsPath path = CreateRoundedRectangle(rt1.Left, rt1.Top + 3, rt1.Width, rt1.Height - 3 * 2, 5)) {
+                        e.Graphics.FillPath(itemBrush, path);
+                        var pen = (isSelected) ? fPen2 : fPen1;
+                        e.Graphics.DrawPath(pen, path);
+                    }
+
+                    if (senderIsLocal) {
+                        // Undelivered / Delivered
+                        var icon = UIHelper.GetMessageStatusImage(msg.Status);
+                        if (icon != null) {
+                            e.Graphics.DrawImage(icon, rt.Right - icon.Width - 2, rt.Top + 4);
+                        }
+                    }
+
+                    rt.Inflate(-5, -2);
+
+                    //StringFormat fmt = new StringFormat();
+                    //fmt.Alignment = StringAlignment.Near;
+                    //fmt.LineAlignment = StringAlignment.Center;
+
+                    e.Graphics.DrawString(txt, fnt, Brushes.Black, rt);*/
+                };
+            }
+        }
+
         private static Pen fPen1 = new Pen(Colors.Black, 1);
         private static Pen fPen2 = new Pen(Colors.Black, 3);
+
+        private Font fFont;
+        private StackLayout fStackLayout;
 
         public string LocalId
         {
@@ -43,86 +109,43 @@ namespace GKNetUI
         public MessagesList()
         {
             BackgroundColor = Colors.LightGrey;
+
+            fFont = new Font(FontFamilies.SansFamilyName, 9, FontStyle.None);
+
+            fStackLayout = new StackLayout();
+            fStackLayout.Orientation = Orientation.Vertical;
+            fStackLayout.Padding = new Padding(4);
+            fStackLayout.Spacing = 8;
+
+            Content = fStackLayout;
+        }
+
+        public void Clear()
+        {
+            fStackLayout.Items.Clear();
         }
 
         public void ScrollToBottom()
         {
             //TopIndex = Items.Count - 1;
+            ScrollPosition = new Point(0, fStackLayout.Height);
+        }
+
+        public void AddMessage(GKNet.Message msg, bool scrollToBottom)
+        {
+            fStackLayout.Items.Add(new StackLayoutItem(new MessageFrame(msg, this), HorizontalAlignment.Stretch, false));
         }
 
         private const int ItemMargin = 10;
 
-        /*protected override void OnMeasureItem(MeasureItemEventArgs e)
-        {
-            base.OnMeasureItem(e);
-
-            if (e.Index < 0 || e.Index >= Items.Count)
-                return;
-
-            GKNet.Message msg = (GKNet.Message)Items[e.Index];
-            string txt = GetMessageItem(msg);
-            SizeF txt_size = e.Graphics.MeasureString(txt, this.Font);
-
-            e.ItemHeight = (int)txt_size.Height + 2 * ItemMargin;
-            e.ItemWidth = (int)txt_size.Width;
-        }
-
-        protected override void OnDrawItem(DrawItemEventArgs e)
-        {
-            if (e.Index < 0 || e.Index >= Items.Count)
-                return;
-
-            GKNet.Message msg = (GKNet.Message)Items[e.Index];
-            bool senderIsLocal = (msg.Sender == LocalId);
-            string txt = GetMessageItem(msg);
-
-            bool isSelected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
-            Rectangle rt = e.Bounds;
-            Font fnt = Font;
-
-            Brush itemBrush;
-            if (isSelected) {
-                itemBrush = (senderIsLocal) ? Brushes.Goldenrod : Brushes.LightSteelBlue;
-            } else {
-                itemBrush = (senderIsLocal) ? Brushes.PaleGoldenrod : Brushes.GhostWhite;
-            }
-
-            Rectangle rt1 = rt;
-            rt1.Width -= 1;
-            rt1.Height -= 1;
-            using (GraphicsPath path = CreateRoundedRectangle(rt1.Left, rt1.Top + 3, rt1.Width, rt1.Height - 3 * 2, 5)) {
-                e.Graphics.FillPath(itemBrush, path);
-                var pen = (isSelected) ? fPen2 : fPen1;
-                e.Graphics.DrawPath(pen, path);
-            }
-
-            if (senderIsLocal) {
-                // Undelivered / Delivered
-                var icon = UIHelper.GetMessageStatusImage(msg.Status);
-                if (icon != null) {
-                    e.Graphics.DrawImage(icon, rt.Right - icon.Width - 2, rt.Top + 4);
-                }
-            }
-
-            rt.Inflate(-5, -2);
-
-            //StringFormat fmt = new StringFormat();
-            //fmt.Alignment = StringAlignment.Near;
-            //fmt.LineAlignment = StringAlignment.Center;
-
-            e.Graphics.DrawString(txt, fnt, Brushes.Black, rt);
-
-            //base.OnDrawItem(e);
-        }*/
-
-        private string GetMessageItem(GKNet.Message msg)
+        protected string GetMessageItem(GKNet.Message msg)
         {
             Peer sender = Core.FindPeer(msg.Sender);
-            string senderName = (msg.Sender == LocalId) ? string.Empty : string.Format("[{0}]", sender.Profile.UserName);
+            string senderName = (sender == null || msg.Sender == LocalId) ? string.Empty : string.Format("[{0}]", sender.Profile.UserName);
             return string.Format("{0:yyyy/MM/dd HH:mm} {1}\r\n{2}", msg.Timestamp, senderName, msg.Text);
         }
 
-        private static GraphicsPath CreateRoundedRectangle(float x, float y, float width, float height, float radius)
+        protected static GraphicsPath CreateRoundedRectangle(float x, float y, float width, float height, float radius)
         {
             float xw = x + width;
             float yh = y + height;

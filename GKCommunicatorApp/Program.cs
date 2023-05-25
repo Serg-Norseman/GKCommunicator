@@ -1,6 +1,6 @@
 ﻿/*
  *  "GKCommunicator", the chat and bulletin board of the genealogical network.
- *  Copyright (C) 2018-2021 by Sergey V. Zhdanovskih.
+ *  Copyright (C) 2018-2023 by Sergey V. Zhdanovskih.
  *
  *  This file is part of "GEDKeeper".
  *
@@ -19,10 +19,9 @@
  */
 
 using System;
-using System.Windows.Forms;
 using System.Reflection;
-using GKNetUI;
 using GKNet;
+using GKNetUI;
 
 [assembly: AssemblyTitle("GKCommunicatorApp")]
 [assembly: AssemblyDescription(CommunicatorCore.APP_DESC)]
@@ -30,18 +29,38 @@ using GKNet;
 [assembly: AssemblyCopyright(CommunicatorCore.APP_COPYRIGHT)]
 [assembly: AssemblyVersion(CommunicatorCore.APP_VERSION)]
 [assembly: AssemblyCulture("")]
-[assembly: AssemblyConfiguration("")]
+
+#if DEBUG
+[assembly: AssemblyConfiguration("Debug")]
+#elif RELEASE
+[assembly: AssemblyConfiguration("Release")]
+#endif
 
 namespace GKCommunicatorApp
 {
-    static class Program
+#if !ETO
+    using System.Windows.Forms;
+#else
+    using Eto.Forms;
+#endif
+
+    /// <summary>
+    /// The main startup class of application.
+    /// </summary>
+    public static class Program
     {
         [STAThread]
-        static void Main()
+        public static void Main(string[] args)
         {
+#if !ETO
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new ChatForm());
+#else
+            UIHelper.InitCommonStyles();
+            var application = new Application();
+            application.Run(new ChatForm());
+#endif
         }
     }
 }

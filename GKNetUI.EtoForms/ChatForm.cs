@@ -96,13 +96,6 @@ namespace GKNetUI
         }
 
 
-        /*
-        <DropDownToolItem.ContextMenu>
-          <ContextMenu x:Name="menuPresenceStatuses">
-          </ContextMenu>
-        </DropDownToolItem.ContextMenu>
-         */
-
         public ChatForm()
         {
             XamlReader.Load(this);
@@ -113,7 +106,6 @@ namespace GKNetUI
 
             RadioMenuItem controller = null;
             for (var ps = PresenceStatus.Offline; ps <= PresenceStatus.Invisible; ps++) {
-                // menuPresenceStatuses
                 var menuItem = UIHelper.AddToolStripItem(tbPresenceStatus, ref controller, ps.ToString(), ps, miPresenceStatus_Click);
                 //menuItem.Image = UIHelper.GetPresenceStatusImage(ps);
             }
@@ -135,7 +127,7 @@ namespace GKNetUI
             UpdateShowConnectionInfo();
 
             lblConnectionStatus.Text = "Network initialization...";
-            UIHelper.SetMenuItemTag(/*menuPresenceStatuses*/tbPresenceStatus, fCore.LocalPeer.Presence);
+            UIHelper.SetMenuItemTag(tbPresenceStatus, fCore.LocalPeer.Presence);
             UpdateStatus();
 
             ProcessPlugins();
@@ -200,11 +192,11 @@ namespace GKNetUI
 
         private void PrintMessage(GKNet.Message msg, bool scrollToBottom)
         {
-            //lstChatMsgs.Items.Add(msg);
+            lstChatMsgs.AddMessage(msg, scrollToBottom);
 
-            if (scrollToBottom) {
+            /*if (scrollToBottom) {
                 lstChatMsgs.ScrollToBottom();
-            }
+            }*/
         }
 
         private void ShowProfile(PeerProfile profile)
@@ -324,6 +316,8 @@ namespace GKNetUI
 
         private void btnSend_Click(object sender, EventArgs e)
         {
+            //PrintMessage(new Message(DateTime.Now, "sample", "noname", "noname"), false);
+
             SendMessage(GetSelectedPeer());
         }
 
@@ -374,7 +368,7 @@ namespace GKNetUI
 
         private void miPresenceStatus_Click(object sender, EventArgs e)
         {
-            var ps = UIHelper.GetMenuItemTag<PresenceStatus>(/*menuPresenceStatuses*/tbPresenceStatus, sender);
+            var ps = UIHelper.GetMenuItemTag<PresenceStatus>(tbPresenceStatus, sender);
             tbPresenceStatus.Image = UIHelper.GetPresenceStatusImage(ps);
             tbPresenceStatus.Text = ps.ToString();
             fCore.LocalPeer.Presence = ps;
@@ -383,7 +377,7 @@ namespace GKNetUI
 
         private void lstMembers_SelectedValueChanged(object sender, EventArgs e)
         {
-            lstChatMsgs.Items.Clear();
+            lstChatMsgs.Clear();
 
             var selectedPeer = GetSelectedPeer();
             if (selectedPeer == null || selectedPeer.IsLocal || selectedPeer.ID == null) {
@@ -444,13 +438,13 @@ namespace GKNetUI
             InvokeX(delegate {
                 int membersNum = 0;
 
-                var selItem = lstMembers.SelectedValue as Peer;
+                var selItem = lstMembers.SelectedValue;
                 //lstMembers.BeginUpdate();
                 lstMembers.Items.Clear();
                 foreach (var peer in fCore.Peers) {
                     if (!peer.IsLocal /*&& peer.State >= PeerState.Unchecked*/) {
                         membersNum += 1;
-                        //lstMembers.Items.Add(peer);
+                        lstMembers.Items.Add(peer);
                     }
                 }
                 //lstMembers.EndUpdate();

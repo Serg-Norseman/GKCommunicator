@@ -18,80 +18,100 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System;
+using System.Collections.ObjectModel;
 using Eto.Drawing;
 using Eto.Forms;
 using GKNet;
 
 namespace GKNetUI
 {
-    public class PeersList : ListBox
+    public class PeersList : Panel
     {
+        private Font fFont;
+        private GridView fGrid;
+        private ObservableCollection<Peer> fItems;
+
+        public Collection<Peer> Items
+        {
+            get { return fItems; }
+        }
+
         public bool ShowConnectionInfo
         {
             get; set;
         }
 
+        public Peer SelectedValue
+        {
+            get { return fGrid.SelectedItem as Peer; }
+            set { fGrid.SelectRow(fItems.IndexOf(value)); }
+        }
+
+        public event EventHandler<EventArgs> SelectionChanged
+        {
+            add {
+                fGrid.SelectionChanged += value;
+            }
+            remove {
+                fGrid.SelectionChanged -= value;
+            }
+        }
+
         public PeersList()
         {
-        }
+            fItems = new ObservableCollection<Peer>();
 
-        /*protected override void OnMeasureItem(MeasureItemEventArgs e)
-        {
-            base.OnMeasureItem(e);
+            fFont = new Font(FontFamilies.SansFamilyName, 9, FontStyle.None);
 
-            if (e.Index < 0 || e.Index >= Items.Count)
-                return;
+            fGrid = new GridView();
+            fGrid.AllowMultipleSelection = false;
+            fGrid.AllowEmptySelection = false;
+            fGrid.ShowHeader = false;
+            fGrid.DataStore = fItems;
+            fGrid.RowHeight = (int)(fFont.LineHeight * 3);
 
-            Peer peer = (Peer)Items[e.Index];
+            var drawableCell = new DrawableCell();
+            drawableCell.Paint += (sender, e) => {
+                var peer = e.Item as Peer;
+                if (peer != null) {
+                    Color textColor;
+                    if (e.CellState.HasFlag(CellStates.Selected)) {
+                        e.Graphics.FillRectangle(Brushes.Cached(Colors.Blue), e.ClipRectangle);
+                        textColor = Colors.White;
+                    } else {
+                        e.Graphics.FillRectangle(Brushes.Cached(Colors.White), e.ClipRectangle);
+                        textColor = Colors.Black;
+                    }
 
-            int defItemHeight = e.ItemHeight;
+                    var rect = e.ClipRectangle;
 
-            if (peer.State == PeerState.Identified) {
-            }
+                    e.Graphics.DrawRectangle(textColor, rect);
 
-            e.ItemHeight = defItemHeight * 3;
-        }
+                    rect.Inflate(-5, -5);
 
-        protected override void OnDrawItem(DrawItemEventArgs e)
-        {
-            if (e.Index < 0 || e.Index >= Items.Count)
-                return;
+                    if (peer.State == PeerState.Identified) {
+                        var status = peer.Presence;
+                        var icon = UIHelper.GetPresenceStatusImage(status);
+                        if (icon != null) {
+                            float iconY = (!ShowConnectionInfo) ? (rect.Height - icon.Width) / 2 : rect.Top + 2;
+                            e.Graphics.DrawImage(icon, rect.Right - icon.Width - 2, iconY);
+                        }
+                    }
 
-            Peer peer = (Peer)Items[e.Index];
-            bool isSelected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
+                    rect.Inflate(-5, -2);
 
-            Rectangle rt = e.Bounds;
-            Font fnt = Font;
-
-            Brush sysBrush = (isSelected) ? SystemBrushes.GradientActiveCaption : SystemBrushes.Control;
-            e.Graphics.FillRectangle(sysBrush, rt);
-
-            if (isSelected) {
-                Rectangle rt1 = rt;
-                rt1.Width -= 1;
-                rt1.Height -= 1;
-                e.Graphics.DrawRectangle(SystemPens.WindowFrame, rt1);
-            }
-
-            if (peer.State == PeerState.Identified) {
-                var status = peer.Presence;
-                var icon = UIHelper.GetPresenceStatusImage(status);
-                if (icon != null) {
-                    int iconY = (!ShowConnectionInfo) ? (rt.Height - icon.Width) / 2 : rt.Top + 2;
-                    e.Graphics.DrawImage(icon, rt.Right - icon.Width - 2, iconY);
+                    e.Graphics.DrawText(fFont, Brushes.Cached(textColor), rect, GetPeerItem(peer));
                 }
-            }
+            };
+            fGrid.Columns.Add(new GridColumn {
+                HeaderText = "Peer",
+                DataCell = drawableCell,
+                Expand = true
+            });
 
-            rt.Inflate(-5, -2);
-
-            //StringFormat fmt = new StringFormat();
-            //fmt.Alignment = StringAlignment.Near;
-            //fmt.LineAlignment = StringAlignment.Center;
-
-            e.Graphics.DrawString(GetPeerItem(peer), fnt, Brushes.Black, rt);
-
-            //base.OnDrawItem(e);
-        }*/
+            Content = fGrid;
+        }
 
         private string GetPeerItem(Peer peer)
         {

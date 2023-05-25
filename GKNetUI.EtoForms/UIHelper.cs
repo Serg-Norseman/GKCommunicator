@@ -36,15 +36,15 @@ namespace GKNetUI
         {
             fStatusIcons = new Dictionary<PresenceStatus, Bitmap>();
             fStatusIcons[PresenceStatus.Unknown] = null;
-            fStatusIcons[PresenceStatus.Offline] = UIHelper.LoadResourceImage("btn_offline");
-            fStatusIcons[PresenceStatus.Online] = UIHelper.LoadResourceImage("btn_available");
-            fStatusIcons[PresenceStatus.Away] = UIHelper.LoadResourceImage("btn_away");
-            fStatusIcons[PresenceStatus.Busy] = UIHelper.LoadResourceImage("btn_busy");
-            fStatusIcons[PresenceStatus.Invisible] = UIHelper.LoadResourceImage("btn_invisible");
+            fStatusIcons[PresenceStatus.Offline] = UIHelper.LoadResourceImage("btn_offline.png");
+            fStatusIcons[PresenceStatus.Online] = UIHelper.LoadResourceImage("btn_available.png");
+            fStatusIcons[PresenceStatus.Away] = UIHelper.LoadResourceImage("btn_away.png");
+            fStatusIcons[PresenceStatus.Busy] = UIHelper.LoadResourceImage("btn_busy.png");
+            fStatusIcons[PresenceStatus.Invisible] = UIHelper.LoadResourceImage("btn_invisible.png");
 
             fMessageStatusIcons = new Dictionary<MessageStatus, Bitmap>();
-            fMessageStatusIcons[MessageStatus.Undelivered] = UIHelper.LoadResourceImage("status_undelivered");
-            fMessageStatusIcons[MessageStatus.Delivered] = UIHelper.LoadResourceImage("status_delivered");
+            fMessageStatusIcons[MessageStatus.Undelivered] = UIHelper.LoadResourceImage("status_undelivered.png");
+            fMessageStatusIcons[MessageStatus.Delivered] = UIHelper.LoadResourceImage("status_delivered.png");
         }
 
         public static void DoneResources()
@@ -76,43 +76,10 @@ namespace GKNetUI
 
         public static Bitmap LoadResourceImage(string name)
         {
-            string resName = "GKNet.Resources.Images." + name + ".png";
+            string resName = "GKNet.Resources.Images." + name;
             Stream resStream = Utilities.LoadResourceStream(resName);
             return new Bitmap(resStream);
         }
-
-        public static RadioMenuItem AddToolStripItem(ContextMenu contextMenu, RadioMenuItem controller, string text, object tag, EventHandler<EventArgs> clickHandler)
-        {
-            var tsItem = new RadioMenuItem(controller);
-            tsItem.Text = text;
-            tsItem.Tag = tag;
-            tsItem.Click += clickHandler;
-            contextMenu.Items.Add(tsItem);
-            return tsItem;
-        }
-
-        public static T GetMenuItemTag<T>(ContextMenu contextMenu, object sender)
-        {
-            foreach (RadioMenuItem tsItem in contextMenu.Items) {
-                tsItem.Checked = false;
-            }
-            var senderItem = ((RadioMenuItem)sender);
-            ((RadioMenuItem)sender).Checked = true;
-            return (T)senderItem.Tag;
-        }
-
-        public static void SetMenuItemTag<T>(ContextMenu contextMenu, T value)
-        {
-            foreach (RadioMenuItem tsItem in contextMenu.Items) {
-                T itemTag = (T)tsItem.Tag;
-                if (Equals(itemTag, value)) {
-                    tsItem.PerformClick();
-                    break;
-                }
-            }
-        }
-
-
 
         public static RadioMenuItem AddToolStripItem(DropDownToolItem owner, ref RadioMenuItem controller, string text, object tag, EventHandler<EventArgs> clickHandler)
         {
@@ -147,6 +114,58 @@ namespace GKNetUI
                     break;
                 }
             }
+        }
+
+        public static void InitCommonStyles()
+        {
+            Eto.Style.Add<TableLayout>("paddedTable", table => {
+                table.Padding = new Padding(8);
+                table.Spacing = new Size(4, 4);
+            });
+
+            Eto.Style.Add<TableLayout>("paddedTable8", table => {
+                table.Padding = new Padding(8);
+                table.Spacing = new Size(8, 8);
+            });
+
+            Eto.Style.Add<StackLayout>("vertListStack", stack => {
+                stack.Orientation = Orientation.Vertical;
+                stack.Padding = new Padding(8);
+                stack.Spacing = 4;
+            });
+
+            Eto.Style.Add<StackLayout>("horzListStack", stack => {
+                stack.Orientation = Orientation.Horizontal;
+                stack.Padding = new Padding(8);
+                stack.Spacing = 4;
+            });
+
+            Eto.Style.Add<StackLayout>("dlgFooter", stack => {
+                stack.Orientation = Orientation.Horizontal;
+                stack.Padding = new Padding(0);
+                stack.Spacing = 8;
+            });
+
+            Eto.Style.Add<StackLayout>("labtexStack", stack => {
+                stack.Orientation = Orientation.Vertical;
+                stack.Padding = new Padding(0);
+                stack.Spacing = 2;
+            });
+
+            Eto.Style.Add<Button>("funcBtn", button => {
+                button.ImagePosition = ButtonImagePosition.Left;
+                button.Size = new Size(160, 26);
+            });
+
+            Eto.Style.Add<Button>("dlgBtn", button => {
+                button.ImagePosition = ButtonImagePosition.Left;
+                button.Size = new Size(120, 26);
+            });
+
+            Eto.Style.Add<Button>("iconBtn", button => {
+                button.ImagePosition = ButtonImagePosition.Overlay;
+                button.Size = new Size(26, 26);
+            });
         }
     }
 }
