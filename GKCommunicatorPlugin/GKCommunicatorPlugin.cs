@@ -37,7 +37,7 @@ namespace GKCommunicatorPlugin
 {
     public enum CLS
     {
-        /* 00 */ LSID_Title,
+        Title = 1,
     }
 
     public class Plugin : OrdinaryPlugin
@@ -82,7 +82,7 @@ namespace GKCommunicatorPlugin
         {
             try {
                 fLangMan = Host.CreateLangMan(this);
-                fDisplayName = fLangMan.LS(CLS.LSID_Title);
+                fDisplayName = fLangMan.LS(CLS.Title);
 
                 //if (fForm != null) fForm.SetLocale();
             } catch (Exception ex) {
