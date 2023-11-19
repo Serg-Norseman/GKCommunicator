@@ -65,7 +65,7 @@ namespace GKNet
             Country = RegionInfo.CurrentRegion.ThreeLetterISORegionName;
             //return RegionInfo.CurrentRegion.DisplayName;
 
-            TimeZone localZone = System.TimeZone.CurrentTimeZone;
+            var localZone = TimeZoneInfo.Local;
             var result = localZone.StandardName;
             var offset = localZone.GetUtcOffset(DateTime.Now);
             var offsetStr = (offset.TotalMilliseconds < 0) ? offset.ToString() : "+" + offset.ToString();
