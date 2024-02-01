@@ -1,6 +1,6 @@
 ﻿/*
  *  "GKCommunicator", the chat and bulletin board of the genealogical network.
- *  Copyright (C) 2018-2022 by Sergey V. Zhdanovskih.
+ *  Copyright (C) 2018-2024 by Sergey V. Zhdanovskih.
  *
  *  This file is part of "GKCommunicator".
  *
@@ -64,7 +64,9 @@ namespace GKNetLocationsPlugin.Editor
         {
             var locItems = FindLocations(source, ownerGUID);
             foreach (var item in locItems) {
-                var curNode = AddNode(ownerNode, item.Name, item.LocationGUID);
+                string dateExt = string.IsNullOrEmpty(item.NameDate) ? string.Empty : string.Format(" [{0}]", item.NameDate);
+
+                var curNode = AddNode(ownerNode, item.Name + dateExt, item.LocationGUID);
 
                 FillNodes(curNode, source, item.LocationGUID);
             }

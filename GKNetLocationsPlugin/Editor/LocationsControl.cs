@@ -1,6 +1,6 @@
 ﻿/*
  *  "GKCommunicator", the chat and bulletin board of the genealogical network.
- *  Copyright (C) 2018-2022 by Sergey V. Zhdanovskih.
+ *  Copyright (C) 2018-2024 by Sergey V. Zhdanovskih.
  *
  *  This file is part of "GKCommunicator".
  *
@@ -110,15 +110,15 @@ namespace GKNetLocationsPlugin.Editor
             var lang = fCore.GetCurrentLanguage();
 
             var locRI = fCore.AddLocation();
-            fCore.AddLocationName(locRI.GUID, "Российская Империя", "государство", "", "BET 02 NOV 1721 AND 14 SEP 1917", lang);
+            fCore.AddLocationName(locRI.GUID, "Российская Империя", "государство", "", "FROM 02 NOV 1721 TO 14 SEP 1917", lang);
 
             var locPG = fCore.AddLocation();
-            fCore.AddLocationName(locPG.GUID, "Пермская губерния", "губерния", "", "BET 12 DEC 1796 AND 03 NOV 1923", lang);
-            fCore.AddLocationRelation(locPG.GUID, locRI.GUID, "P", "BET 12 DEC 1796 AND 03 NOV 1923");
+            fCore.AddLocationName(locPG.GUID, "Пермская губерния", "губерния", "", "FROM 12 DEC 1796 TO 03 NOV 1923", lang);
+            fCore.AddLocationRelation(locPG.GUID, locRI.GUID, "P", "FROM 12 DEC 1796 TO 03 NOV 1923");
 
             var locKUU = fCore.AddLocation();
-            fCore.AddLocationName(locKUU.GUID, "Красноуфимский уезд", "уезд", "", "BET 1781 AND 1923", lang);
-            fCore.AddLocationRelation(locKUU.GUID, locPG.GUID, "P", "BET 1781 AND 1923");
+            fCore.AddLocationName(locKUU.GUID, "Красноуфимский уезд", "уезд", "", "FROM 1781 TO 1923", lang);
+            fCore.AddLocationRelation(locKUU.GUID, locPG.GUID, "P", "FROM 1781 TO 1923");
 
             var locSHV = fCore.AddLocation();
             fCore.AddLocationName(locSHV.GUID, "Шайтанская волость", "волость", "", "", lang);
@@ -130,8 +130,8 @@ namespace GKNetLocationsPlugin.Editor
 
 
             var locEKU = fCore.AddLocation();
-            fCore.AddLocationName(locEKU.GUID, "Екатеринбургский уезд", "уезд", "", "BET 1781 AND 1923", lang);
-            fCore.AddLocationRelation(locEKU.GUID, locPG.GUID, "P", "BET 1781 AND 1923");
+            fCore.AddLocationName(locEKU.GUID, "Екатеринбургский уезд", "уезд", "", "FROM 1781 TO 1923", lang);
+            fCore.AddLocationRelation(locEKU.GUID, locPG.GUID, "P", "FROM 1781 TO 1923");
 
             var locNVV = fCore.AddLocation();
             fCore.AddLocationName(locNVV.GUID, "Невьянская волость", "волость", "", "", lang);

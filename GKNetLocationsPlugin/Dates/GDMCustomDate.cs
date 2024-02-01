@@ -1,6 +1,6 @@
 ﻿/*
  *  "GEDKeeper", the personal genealogical database editor.
- *  Copyright (C) 2009-2022 by Sergey V. Zhdanovskih.
+ *  Copyright (C) 2009-2024 by Sergey V. Zhdanovskih.
  *
  *  This file is part of "GEDKeeper".
  *
@@ -22,7 +22,6 @@ using System;
 using System.Globalization;
 using System.Text;
 using BSLib;
-//using BSLib.Calendar;
 
 namespace GKNetLocationsPlugin.Dates
 {
@@ -121,14 +120,10 @@ namespace GKNetLocationsPlugin.Dates
         internal static readonly string[] GEDCOMDateApproximatedArray =
             new string[] { "", "ABT", "CAL", "EST" };
 
-        internal static readonly string[] GEDCOMDateRangeArray =
-            new string[] { "AFT", "BEF", "BET", "AND" };
-
         public static readonly string[] GEDCOMMonthArray =
             new string[] { "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC" };
 
         public const string FROM = "FROM";
-        public const string INT = "INT";
         public const string TO = "TO";
 
         internal static readonly EnumTuple[] GEDCOMMonthValues;
@@ -184,6 +179,11 @@ namespace GKNetLocationsPlugin.Dates
 
         public abstract string GetDisplayStringExt(DateFormat format, bool sign, bool showCalendar);
 
+        public override string ToString()
+        {
+            return GetDisplayStringExt(DateFormat.dfDD_MM_YYYY, true, true);
+        }
+
         public virtual float IsMatch(GDMCustomDate tag, MatchParams matchParams)
         {
             return 0.0f;
@@ -197,7 +197,7 @@ namespace GKNetLocationsPlugin.Dates
         /// Obtaining UDN (Unified Date Number) for purposes of processing and sorting.
         /// </summary>
         /// <returns></returns>
-        //public abstract UDN GetUDN();
+        public abstract UDN GetUDN();
 
         /// <summary>
         /// In the historical chronology of the year 0 does not exist.
@@ -228,40 +228,40 @@ namespace GKNetLocationsPlugin.Dates
 
         public int CompareTo(GDMCustomDate other)
         {
-            /*if (other != null) {
+            if (other != null) {
                 UDN abs1 = GetUDN();
                 UDN abs2 = other.GetUDN();
                 return abs1.CompareTo(abs2);
-            }*/
+            }
 
             return -1;
         }
 
-        /*public override int GetHashCode()
+        public override int GetHashCode()
         {
             var udn = GetUDN();
             return udn.GetHashCode();
-        }*/
+        }
 
         public override bool Equals(object obj)
         {
             GDMCustomDate otherDate = obj as GDMCustomDate;
 
-            /*if (otherDate != null) {
+            if (otherDate != null) {
                 UDN abs1 = GetUDN();
                 UDN abs2 = otherDate.GetUDN();
                 return abs1.Equals(abs2);
-            }*/
+            }
 
             return false;
         }
 
-        /*public bool Equals(GDMCustomDate other)
+        public bool Equals(GDMCustomDate other)
         {
             UDN abs1 = GetUDN();
             UDN abs2 = other.GetUDN();
             return abs1.Equals(abs2);
-        }*/
+        }
 
         public static GDMDate CreateApproximated(GDMDate date, GDMApproximated approximated)
         {
@@ -279,66 +279,12 @@ namespace GKNetLocationsPlugin.Dates
             return result;
         }
 
-        public static GDMDateRange CreateRange(GDMDate dateAfter, GDMDate dateBefore)
-        {
-            GDMDateRange result = new GDMDateRange();
-            if (dateAfter != null) result.After.Assign(dateAfter);
-            if (dateBefore != null) result.Before.Assign(dateBefore);
-            return result;
-        }
-
 
         #region Special parsing routines
 
         protected static readonly TextInfo InvariantTextInfo = CultureInfo.InvariantCulture.TextInfo;
 
         private enum GEDCOMDateType { SIMP, ABT, AFT, BEF, BET, CAL, EST, FROM, INT, TO }
-
-        // DateValue format: INT/FROM/TO/etc..._<date>
-        protected static string ParseDateValue(GDMDateValue dateValue, string str)
-        {
-            if (str == null) {
-                return string.Empty;
-            }
-
-            var strTok = new GEDCOMParser(str, false);
-            strTok.SkipWhitespaces();
-
-            int idx = 0;
-            var token = strTok.CurrentToken;
-            if (token == GEDCOMToken.Word) {
-                string su = strTok.GetWord();
-                idx = ArrayHelper.BinarySearch(GDMCustomDate.GEDCOMDateTypes, su, string.CompareOrdinal);
-            }
-            var dateType = (idx < 0) ? GEDCOMDateType.SIMP : (GEDCOMDateType)idx;
-
-            string result;
-            GDMCustomDate date;
-            switch (dateType) {
-                case GEDCOMDateType.AFT:
-                case GEDCOMDateType.BEF:
-                case GEDCOMDateType.BET:
-                    date = new GDMDateRange();
-                    result = ParseRangeDate((GDMDateRange)date, strTok);
-                    break;
-                case GEDCOMDateType.INT:
-                    date = new GDMDateInterpreted();
-                    result = ParseIntDate((GDMDateInterpreted)date, strTok);
-                    break;
-                case GEDCOMDateType.FROM:
-                case GEDCOMDateType.TO:
-                    date = new GDMDatePeriod();
-                    result = ParsePeriodDate((GDMDatePeriod)date, strTok);
-                    break;
-                default:
-                    date = new GDMDate();
-                    result = ParseDate((GDMDate)date, strTok);
-                    break;
-            }
-
-            dateValue.SetRawData(date);
-            return result;
-        }
 
         // Format: FROM DATE1 TO DATE2
         protected static string ParsePeriodDate(GDMDatePeriod date, string strValue)
@@ -363,86 +309,6 @@ namespace GKNetLocationsPlugin.Dates
                 strTok.Next();
                 ParseDate(date.DateTo, strTok);
                 strTok.SkipWhitespaces();
-            }
-
-            return strTok.GetRest();
-        }
-
-        // Format: AFT DATE | BEF DATE | BET AFT_DATE AND BEF_DATE
-        protected static string ParseRangeDate(GDMDateRange date, string strValue)
-        {
-            var strTok = new GEDCOMParser(strValue, false);
-            // only standard GEDCOM dates (for owner == null)
-            return ParseRangeDate(date, strTok);
-        }
-
-        // Format: AFT DATE | BEF DATE | BET AFT_DATE AND BEF_DATE
-        protected static string ParseRangeDate(GDMDateRange date, GEDCOMParser strTok)
-        {
-            strTok.SkipWhitespaces();
-
-            var token = strTok.CurrentToken;
-            if (token != GEDCOMToken.Word) {
-                // error!
-            }
-            string su = strTok.GetWord();
-            int dateType = ArrayHelper.BinarySearch(GDMCustomDate.GEDCOMDateRangeArray, su, string.CompareOrdinal);
-
-            if (dateType == 0) { // "AFT"
-                strTok.Next();
-                ParseDate(date.After, strTok);
-            } else if (dateType == 1) { // "BEF"
-                strTok.Next();
-                ParseDate(date.Before, strTok);
-            } else if (dateType == 2) { // "BET"
-                strTok.Next();
-                ParseDate(date.After, strTok);
-                strTok.SkipWhitespaces();
-
-                if (!strTok.RequireWord(GDMCustomDate.GEDCOMDateRangeArray[3])) { // "AND"
-                    throw new GEDCOMRangeDateException(strTok.GetFullStr());
-                }
-
-                strTok.Next();
-                strTok.SkipWhitespaces();
-                ParseDate(date.Before, strTok);
-            }
-
-            return strTok.GetRest();
-        }
-
-        // Format: INT DATE (phrase)
-        protected static string ParseIntDate(GDMDateInterpreted date, string strValue)
-        {
-            var strTok = new GEDCOMParser(strValue, false);
-            // only standard GEDCOM dates (for owner == null)
-            return ParseIntDate(date, strTok);
-        }
-
-        // Format: INT DATE (phrase)
-        protected static string ParseIntDate(GDMDateInterpreted date, GEDCOMParser strTok)
-        {
-            strTok.SkipWhitespaces();
-
-            if (!strTok.RequireWord(GDMCustomDate.INT)) {
-                throw new GEDCOMIntDateException(strTok.GetFullStr());
-            }
-            strTok.Next();
-            ParseDate(date, strTok);
-
-            strTok.SkipWhitespaces();
-            var token = strTok.CurrentToken;
-            if (token == GEDCOMToken.Symbol && strTok.GetSymbol() == '(') {
-                var phrase = new StringBuilder();
-                phrase.Append(strTok.GetWord());
-                do {
-                    token = strTok.Next();
-                    phrase.Append(strTok.GetWord());
-                } while (token != GEDCOMToken.Symbol || strTok.GetSymbol() != ')');
-
-                date.DatePhrase = phrase.ToString();
-            } else {
-                date.DatePhrase = string.Empty;
             }
 
             return strTok.GetRest();

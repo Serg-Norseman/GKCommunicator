@@ -1,6 +1,6 @@
 ﻿/*
  *  "GKCommunicator", the chat and bulletin board of the genealogical network.
- *  Copyright (C) 2018-2022 by Sergey V. Zhdanovskih.
+ *  Copyright (C) 2018-2024 by Sergey V. Zhdanovskih.
  *
  *  This file is part of "GKCommunicator".
  *
@@ -40,7 +40,7 @@ namespace GKNetLocationsPlugin.Model
         public string RelationType { get; set; }
 
         /// <summary>
-        /// Perfect notation - GEDCOM date range format ("BET 10 JUL 1805 AND 20 AUG 1917").
+        /// Perfect notation - GEDCOM date period format ("FROM 10 JUL 1805 TO 20 AUG 1917").
         /// </summary>
         public string ActualDates { get; set; }
 
@@ -49,14 +49,14 @@ namespace GKNetLocationsPlugin.Model
         {
         }
 
-        public GDMDateValue GetActualDates()
+        public GDMDatePeriod GetActualDates()
         {
-            var result = new GDMDateValue();
+            var result = new GDMDatePeriod();
             result.ParseString(ActualDates);
             return result;
         }
 
-        public void SetActualDates(GDMDateValue value)
+        public void SetActualDates(GDMDatePeriod value)
         {
             if (value == null)
                 throw new ArgumentNullException("value");

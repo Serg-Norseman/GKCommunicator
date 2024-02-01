@@ -1,6 +1,6 @@
 ﻿/*
  *  "GKCommunicator", the chat and bulletin board of the genealogical network.
- *  Copyright (C) 2018-2022 by Sergey V. Zhdanovskih.
+ *  Copyright (C) 2018-2024 by Sergey V. Zhdanovskih.
  *
  *  This file is part of "GKCommunicator".
  *
@@ -195,7 +195,11 @@ namespace GKNetLocationsPlugin.Database
 
         public IList<QLocation> QueryLocationsEx(string lang)
         {
-            return fConnection.Query<QLocation>("select locrel.OwnerGUID, locrel.RelationType, locnam.LocationGUID, locnam.Name, locnam.Language from LocationNames locnam left join LocationRelations locrel on locnam.LocationGUID = locrel.LocationGUID where locnam.Language = ?", lang); // 'ru-RU'
+            return fConnection.Query<QLocation>(
+                "select locrel.OwnerGUID, locrel.RelationType, locnam.LocationGUID, locnam.Name, locnam.Language, locnam.ActualDates as NameDate, locrel.ActualDates as RelationDate " +
+                "from LocationNames locnam " +
+                "left join LocationRelations locrel on locnam.LocationGUID = locrel.LocationGUID " +
+                "where locnam.Language = ?", lang); // 'ru-RU'
         }
 
         #endregion

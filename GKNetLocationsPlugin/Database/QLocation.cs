@@ -1,6 +1,6 @@
 ﻿/*
  *  "GKCommunicator", the chat and bulletin board of the genealogical network.
- *  Copyright (C) 2018-2022 by Sergey V. Zhdanovskih.
+ *  Copyright (C) 2018-2024 by Sergey V. Zhdanovskih.
  *
  *  This file is part of "GKCommunicator".
  *
@@ -27,5 +27,7 @@ namespace GKNetLocationsPlugin.Database
         public string RelationType { get; set; }
         public string Name { get; set; }
         public string Language { get; set; }
+        public string NameDate { get; set; }
+        public string RelationDate { get; set; }
     }
 }

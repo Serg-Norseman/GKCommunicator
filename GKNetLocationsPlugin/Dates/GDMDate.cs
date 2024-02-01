@@ -1,6 +1,6 @@
 ﻿/*
  *  "GEDKeeper", the personal genealogical database editor.
- *  Copyright (C) 2009-2022 by Sergey V. Zhdanovskih.
+ *  Copyright (C) 2009-2024 by Sergey V. Zhdanovskih.
  *
  *  This file is part of "GEDKeeper".
  *
@@ -21,7 +21,6 @@
 using System;
 using System.Collections.Generic;
 using BSLib;
-//using BSLib.Calendar;
 
 namespace GKNetLocationsPlugin.Dates
 {
@@ -41,7 +40,7 @@ namespace GKNetLocationsPlugin.Dates
         private short fYear;
         private bool fYearBC;
         private string fYearModifier;
-        //private UDN fUDN;
+        private UDN fUDN;
 
 
         public GDMApproximated Approximated
@@ -281,7 +280,7 @@ namespace GKNetLocationsPlugin.Dates
 
         protected override void DateChanged()
         {
-            /*int year = fYear;
+            int year = fYear;
             if (year == UNKNOWN_YEAR) {
                 year = UDN.UnknownYear;
             } else {
@@ -289,13 +288,13 @@ namespace GKNetLocationsPlugin.Dates
             }
 
             UDNCalendarType udnCalendar = UDNCalendarType.ctGregorian;
-            fUDN = new UDN(udnCalendar, year, fMonth, fDay);*/
+            fUDN = new UDN(udnCalendar, year, fMonth, fDay);
         }
 
-        /*public override UDN GetUDN()
+        public override UDN GetUDN()
         {
             return (fApproximated == GDMApproximated.daExact) ? fUDN : UDN.CreateApproximate(fUDN);
-        }*/
+        }
 
         #endregion
 

@@ -1,6 +1,6 @@
 ﻿/*
  *  "GEDKeeper", the personal genealogical database editor.
- *  Copyright (C) 2009-2022 by Sergey V. Zhdanovskih.
+ *  Copyright (C) 2009-2024 by Sergey V. Zhdanovskih.
  *
  *  This file is part of "GEDKeeper".
  *
@@ -17,8 +17,6 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-//using BSLib.Calendar;
 
 namespace GKNetLocationsPlugin.Dates
 {
@@ -78,7 +76,7 @@ namespace GKNetLocationsPlugin.Dates
             return result;
         }
 
-        /*public override UDN GetUDN()
+        public override UDN GetUDN()
         {
             UDN result;
 
@@ -93,7 +91,7 @@ namespace GKNetLocationsPlugin.Dates
             }
 
             return result;
-        }*/
+        }
 
         public override string GetDisplayStringExt(DateFormat format, bool sign, bool showCalendar)
         {

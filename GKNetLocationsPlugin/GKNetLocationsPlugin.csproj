@@ -36,13 +36,12 @@
     <Compile Include="Database\DBLocationRec.cs" />
     <Compile Include="Database\DBLocationRelationRec.cs" />
     <Compile Include="Database\GKLDatabase.cs" />
+    <Compile Include="Dates\CalendarConverter.cs" />
     <Compile Include="Dates\GDMCustomDate.cs" />
     <Compile Include="Dates\GDMDate.cs" />
-    <Compile Include="Dates\GDMDateInterpreted.cs" />
     <Compile Include="Dates\GDMDatePeriod.cs" />
-    <Compile Include="Dates\GDMDateRange.cs" />
-    <Compile Include="Dates\GDMDateValue.cs" />
     <Compile Include="Dates\GEDCOMParser.cs" />
+    <Compile Include="Dates\UDN.cs" />
     <Compile Include="Editor\LocationsControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
