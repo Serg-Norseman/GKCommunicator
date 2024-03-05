@@ -110,35 +110,35 @@ namespace GKNetLocationsPlugin.Editor
             var lang = fCore.GetCurrentLanguage();
 
             var locRI = fCore.AddLocation();
-            fCore.AddLocationName(locRI.GUID, "Российская Империя", "государство", "", "FROM 02 NOV 1721 TO 14 SEP 1917", lang);
+            fCore.AddLocationName(locRI.GUID, "Российская Империя", "государство", "FROM 02 NOV 1721 TO 14 SEP 1917", lang);
 
             var locPG = fCore.AddLocation();
-            fCore.AddLocationName(locPG.GUID, "Пермская губерния", "губерния", "", "FROM 12 DEC 1796 TO 03 NOV 1923", lang);
+            fCore.AddLocationName(locPG.GUID, "Пермская губерния", "губерния", "FROM 12 DEC 1796 TO 03 NOV 1923", lang);
             fCore.AddLocationRelation(locPG.GUID, locRI.GUID, "P", "FROM 12 DEC 1796 TO 03 NOV 1923");
 
             var locKUU = fCore.AddLocation();
-            fCore.AddLocationName(locKUU.GUID, "Красноуфимский уезд", "уезд", "", "FROM 1781 TO 1923", lang);
+            fCore.AddLocationName(locKUU.GUID, "Красноуфимский уезд", "уезд", "FROM 1781 TO 1923", lang);
             fCore.AddLocationRelation(locKUU.GUID, locPG.GUID, "P", "FROM 1781 TO 1923");
 
             var locSHV = fCore.AddLocation();
-            fCore.AddLocationName(locSHV.GUID, "Шайтанская волость", "волость", "", "", lang);
+            fCore.AddLocationName(locSHV.GUID, "Шайтанская волость", "волость", "", lang);
             fCore.AddLocationRelation(locSHV.GUID, locKUU.GUID, "P", "");
 
             var locSHZ = fCore.AddLocation();
-            fCore.AddLocationName(locSHZ.GUID, "село Шайтанский завод", "село", "", "", lang);
+            fCore.AddLocationName(locSHZ.GUID, "село Шайтанский завод", "село", "", lang);
             fCore.AddLocationRelation(locSHZ.GUID, locSHV.GUID, "P", "");
 
 
             var locEKU = fCore.AddLocation();
-            fCore.AddLocationName(locEKU.GUID, "Екатеринбургский уезд", "уезд", "", "FROM 1781 TO 1923", lang);
+            fCore.AddLocationName(locEKU.GUID, "Екатеринбургский уезд", "уезд", "FROM 1781 TO 1923", lang);
             fCore.AddLocationRelation(locEKU.GUID, locPG.GUID, "P", "FROM 1781 TO 1923");
 
             var locNVV = fCore.AddLocation();
-            fCore.AddLocationName(locNVV.GUID, "Невьянская волость", "волость", "", "", lang);
+            fCore.AddLocationName(locNVV.GUID, "Невьянская волость", "волость", "", lang);
             fCore.AddLocationRelation(locNVV.GUID, locEKU.GUID, "P", "");
 
             var locNVZ = fCore.AddLocation();
-            fCore.AddLocationName(locNVZ.GUID, "село Невьянский завод", "село", "", "", lang);
+            fCore.AddLocationName(locNVZ.GUID, "село Невьянский завод", "село", "", lang);
             fCore.AddLocationRelation(locNVZ.GUID, locNVV.GUID, "P", "");
 
             // Total 23 transaction, 4360 bytes

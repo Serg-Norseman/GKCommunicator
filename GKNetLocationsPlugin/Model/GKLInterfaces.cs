@@ -20,6 +20,17 @@
 
 namespace GKNetLocationsPlugin.Model
 {
+    public interface ILocation
+    {
+        string GUID { get; set; }
+
+        /// <summary>
+        /// Optional, only for settlements.
+        /// </summary>
+        string Coordinates { get; set; }
+    }
+
+
     public interface ILocationName
     {
         string GUID { get; set; }
@@ -27,6 +38,7 @@ namespace GKNetLocationsPlugin.Model
         string LocationGUID { get; set; }
 
         /// <summary>
+        /// Native name of the location.
         /// The longest geographical name in the world (the name of Bangkok) - consists of 176 latin letters
         /// (or 132 native letters + 7 spaces).
         /// </summary>
@@ -38,18 +50,51 @@ namespace GKNetLocationsPlugin.Model
         string Type { get; set; }
 
         /// <summary>
-        /// ???
-        /// </summary>
-        string Description { get; set; }
-
-        /// <summary>
         /// Perfect notation - GEDCOM date period format ("FROM 10 JUL 1805 TO 20 AUG 1917").
         /// </summary>
         string ActualDates { get; set; }
 
         /// <summary>
-        /// en_US, ru_RU and etc
+        /// Language of native name (en_US, ru_RU and etc).
         /// </summary>
         string Language { get; set; }
+    }
+
+
+    public interface ILocationNameTranslation
+    {
+        string GUID { get; set; }
+
+        string NameGUID { get; set; }
+
+        /// <summary>
+        /// Translation of name.
+        /// </summary>
+        string Name { get; set; }
+
+        /// <summary>
+        /// Language of translation (en_US, ru_RU and etc).
+        /// </summary>
+        string Language { get; set; }
+    }
+
+
+    public interface ILocationRelation
+    {
+        string GUID { get; set; }
+
+        string LocationGUID { get; set; }
+
+        string OwnerGUID { get; set; }
+
+        /// <summary>
+        /// [P]olitical, [R]eligious, [G]eographic, [C]ultural
+        /// </summary>
+        string RelationType { get; set; }
+
+        /// <summary>
+        /// Perfect notation - GEDCOM date period format ("FROM 10 JUL 1805 TO 20 AUG 1917").
+        /// </summary>
+        string ActualDates { get; set; }
     }
 }

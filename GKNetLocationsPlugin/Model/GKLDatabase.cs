@@ -21,16 +21,27 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using GKNetLocationsPlugin.Model;
 using SQLite;
 
-namespace GKNetLocationsPlugin.Database
+namespace GKNetLocationsPlugin.Model
 {
     public class GKLDatabaseException : Exception
     {
         public GKLDatabaseException(string message) : base(message)
         {
         }
+    }
+
+
+    public class QLocation
+    {
+        public string LocationGUID { get; set; }
+        public string OwnerGUID { get; set; }
+        public string RelationType { get; set; }
+        public string Name { get; set; }
+        public string Language { get; set; }
+        public string NameDate { get; set; }
+        public string RelationDate { get; set; }
     }
 
 
@@ -41,7 +52,7 @@ namespace GKNetLocationsPlugin.Database
     {
         private class QString
         {
-            public string element { get; set; }
+            public string value { get; set; }
         }
 
         private class QDecimal
@@ -112,6 +123,7 @@ namespace GKNetLocationsPlugin.Database
         {
             fConnection.CreateTable<DBLocationRec>();
             fConnection.CreateTable<DBLocationNameRec>();
+            fConnection.CreateTable<DBLocationNameTranslationRec>();
             fConnection.CreateTable<DBLocationRelationRec>();
         }
 
@@ -162,8 +174,8 @@ namespace GKNetLocationsPlugin.Database
         {
             var result = new List<string>();
             foreach (var qs in queryStrings) {
-                if (!string.IsNullOrEmpty(qs.element))
-                    result.Add(qs.element);
+                if (!string.IsNullOrEmpty(qs.value))
+                    result.Add(qs.value);
             }
             return result;
         }
@@ -184,7 +196,7 @@ namespace GKNetLocationsPlugin.Database
 
         public IList<string> QueryLanguages()
         {
-            var result = fConnection.Query<QString>("select distinct [Language] as element from LocationNames");
+            var result = fConnection.Query<QString>("select [Language] as value from LocationNames union select [Language] as value from LocationNameTranslations");
             return GetStringList(result);
         }
 

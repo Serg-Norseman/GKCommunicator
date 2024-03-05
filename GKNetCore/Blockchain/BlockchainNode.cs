@@ -27,13 +27,9 @@ using BSLib;
 namespace GKNet.Blockchain
 {
     /// <summary>
-    /// Priorities: PoS & PoI
-    /// https://en.wikipedia.org/wiki/Proof_of_stake
-    /// https://ru.wikipedia.org/wiki/%D0%94%D0%BE%D0%BA%D0%B0%D0%B7%D0%B0%D1%82%D0%B5%D0%BB%D1%8C%D1%81%D1%82%D0%B2%D0%BE_%D0%B4%D0%BE%D0%BB%D0%B8_%D0%B2%D0%BB%D0%B0%D0%B4%D0%B5%D0%BD%D0%B8%D1%8F
-    /// https://putukusuma.medium.com/creating-simple-cryptocurrency-part-5-peer-to-peer-p2p-with-grpc-f96913ddd7dd
-    /// https://www-oreilly-com.translate.goog/library/view/mastering-bitcoin/9781491902639/ch08.html?_x_tr_sl=en&_x_tr_tl=ru&_x_tr_hl=ru&_x_tr_pto=wapp
+    /// 
     /// </summary>
-    public class BlockchainNode : IBlockchainNode
+    public partial class BlockchainNode : IBlockchainNode
     {
         public const int CurrentVersion = 1;
 
@@ -74,6 +70,8 @@ namespace GKNet.Blockchain
 
             fTimer = new Timer(TimerCallback);
             fTimer.Change(10 * 60 * 1000, Timeout.Infinite);
+
+            InitConsensus();
         }
 
         private void TimerCallback(object e)

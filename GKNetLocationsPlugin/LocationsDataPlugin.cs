@@ -1,6 +1,6 @@
 ﻿/*
  *  "GKCommunicator", the chat and bulletin board of the genealogical network.
- *  Copyright (C) 2018-2022 by Sergey V. Zhdanovskih.
+ *  Copyright (C) 2018-2024 by Sergey V. Zhdanovskih.
  *
  *  This file is part of "GKCommunicator".
  *
@@ -22,7 +22,6 @@ using System;
 using GKNet;
 using GKNetLocationsPlugin.Editor;
 using GKNetLocationsPlugin.Model;
-using GKNetLocationsPlugin.Transactions;
 
 namespace GKNetLocationsPlugin
 {
@@ -71,6 +70,7 @@ namespace GKNetLocationsPlugin
             fCore = new GKLCore(fHost);
             fHost.BlockchainNode.RegisterSolver(new LocationTransactionSolver(fCore));
             fHost.BlockchainNode.RegisterSolver(new LocationNameTransactionSolver(fCore));
+            fHost.BlockchainNode.RegisterSolver(new LocationNameTranslationTransactionSolver(fCore));
             fHost.BlockchainNode.RegisterSolver(new LocationRelationTransactionSolver(fCore));
             return true;
         }
