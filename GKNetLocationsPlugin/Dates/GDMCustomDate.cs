@@ -20,34 +20,15 @@
 
 using System;
 using System.Globalization;
-using System.Text;
 using BSLib;
 
 namespace GKNetLocationsPlugin.Dates
 {
-    public enum GDMApproximated
-    {
-        daExact,
-        daAbout,
-        daCalculated,
-        daEstimated
-    }
-
-
     public enum DateFormat
     {
         dfDD_MM_YYYY,
         dfYYYY_MM_DD,
         dfYYYY
-    }
-
-
-    public struct MatchParams
-    {
-        public float NamesIndistinctThreshold;
-
-        public bool DatesCheck;
-        public int YearsInaccuracy;
     }
 
 
@@ -58,24 +39,6 @@ namespace GKNetLocationsPlugin.Dates
         }
 
         public GDMDateException(string message, params object[] args) : base(string.Format(message, args))
-        {
-        }
-    }
-
-
-    public class GEDCOMIntDateException : GDMDateException
-    {
-        public GEDCOMIntDateException(string intDate)
-            : base(string.Format("The interpreted date '{0}' doesn't start with a valid ident", intDate))
-        {
-        }
-    }
-
-
-    public class GEDCOMRangeDateException : GDMDateException
-    {
-        public GEDCOMRangeDateException(string rangeDate)
-            : base(string.Format("The range date '{0}' doesn't contain 'and' token", rangeDate))
         {
         }
     }
@@ -108,17 +71,11 @@ namespace GKNetLocationsPlugin.Dates
     }
 
 
-    public abstract class GDMCustomDate : IComparable, IComparable<GDMCustomDate>//, IEquatable<GDMCustomDate>
+    public abstract class GDMCustomDate : IComparable<GDMCustomDate>
     {
-        public static readonly string[] GEDCOMDateTypes = 
-            new string[] { "", "ABT", "AFT", "BEF", "BET", "CAL", "EST", "FROM", "INT", "TO" };
-
         public const char Delimiter = ' ';
         public const char YearModifierSeparator = '/';
         public const string YearBC = "B.C.";
-
-        internal static readonly string[] GEDCOMDateApproximatedArray =
-            new string[] { "", "ABT", "CAL", "EST" };
 
         public static readonly string[] GEDCOMMonthArray =
             new string[] { "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC" };
@@ -179,16 +136,6 @@ namespace GKNetLocationsPlugin.Dates
 
         public abstract string GetDisplayStringExt(DateFormat format, bool sign, bool showCalendar);
 
-        public override string ToString()
-        {
-            return GetDisplayStringExt(DateFormat.dfDD_MM_YYYY, true, true);
-        }
-
-        public virtual float IsMatch(GDMCustomDate tag, MatchParams matchParams)
-        {
-            return 0.0f;
-        }
-
         protected virtual void DateChanged()
         {
         }
@@ -198,33 +145,6 @@ namespace GKNetLocationsPlugin.Dates
         /// </summary>
         /// <returns></returns>
         public abstract UDN GetUDN();
-
-        /// <summary>
-        /// In the historical chronology of the year 0 does not exist.
-        /// Therefore, the digit 0 in the year value can be used as a sign of lack or error.
-        /// ChronologicalYear - introduced for the purposes of uniform chronology years in the Gregorian calendar.
-        /// Is estimated from -4714 BC to 3268 AD.
-        /// </summary>
-        /// <returns>chronological year</returns>
-        /*public virtual int GetChronologicalYear()
-        {
-            int resultYear;
-
-            UDN udn = GetUDN();
-            if (udn.HasKnownYear()) {
-                int month, day;
-                CalendarConverter.jd_to_gregorian2(udn.GetUnmaskedValue(), out resultYear, out month, out day);
-            } else {
-                resultYear = 0;
-            }
-
-            return resultYear;
-        }*/
-
-        public int CompareTo(object obj)
-        {
-            return CompareTo(obj as GDMCustomDate);
-        }
 
         public int CompareTo(GDMCustomDate other)
         {
@@ -237,39 +157,7 @@ namespace GKNetLocationsPlugin.Dates
             return -1;
         }
 
-        public override int GetHashCode()
-        {
-            var udn = GetUDN();
-            return udn.GetHashCode();
-        }
-
-        public override bool Equals(object obj)
-        {
-            GDMCustomDate otherDate = obj as GDMCustomDate;
-
-            if (otherDate != null) {
-                UDN abs1 = GetUDN();
-                UDN abs2 = otherDate.GetUDN();
-                return abs1.Equals(abs2);
-            }
-
-            return false;
-        }
-
-        public bool Equals(GDMCustomDate other)
-        {
-            UDN abs1 = GetUDN();
-            UDN abs2 = other.GetUDN();
-            return abs1.Equals(abs2);
-        }
-
-        public static GDMDate CreateApproximated(GDMDate date, GDMApproximated approximated)
-        {
-            GDMDate result = new GDMDate();
-            result.Assign(date);
-            result.Approximated = approximated;
-            return result;
-        }
+        public abstract void GetDateRange(out GDMDate dateStart, out GDMDate dateEnd);
 
         public static GDMDatePeriod CreatePeriod(GDMDate dateFrom, GDMDate dateTo)
         {
@@ -283,8 +171,6 @@ namespace GKNetLocationsPlugin.Dates
         #region Special parsing routines
 
         protected static readonly TextInfo InvariantTextInfo = CultureInfo.InvariantCulture.TextInfo;
-
-        private enum GEDCOMDateType { SIMP, ABT, AFT, BEF, BET, CAL, EST, FROM, INT, TO }
 
         // Format: FROM DATE1 TO DATE2
         protected static string ParsePeriodDate(GDMDatePeriod date, string strValue)
@@ -323,27 +209,24 @@ namespace GKNetLocationsPlugin.Dates
 
         protected static string ParseDate(GDMDate date, GEDCOMParser strTok)
         {
-            GDMApproximated approximated;
             short year;
             bool yearBC;
             string yearModifier;
             byte month;
             byte day;
 
-            string result = ParseDate(strTok, out approximated, out year, out yearBC, 
+            string result = ParseDate(strTok, out year, out yearBC, 
                                       out yearModifier, out month, out day);
 
-            date.SetRawData(approximated, year, yearBC, yearModifier, month, day);
+            date.SetRawData(year, yearBC, yearModifier, month, day);
 
             return result;
         }
 
         // Format: [ <YEAR>[B.C.] | <MONTH> <YEAR> | <DAY> <MONTH> <YEAR> ] (see p.45-46)
-        protected static string ParseDate(GEDCOMParser strTok, out GDMApproximated approximated,
-                                       out short year, out bool yearBC,
+        protected static string ParseDate(GEDCOMParser strTok, out short year, out bool yearBC,
                                        out string yearModifier, out byte month, out byte day)
         {
-            approximated = GDMApproximated.daExact;
             year = GDMDate.UNKNOWN_YEAR;
             yearBC = false;
             yearModifier = string.Empty;
@@ -353,18 +236,6 @@ namespace GKNetLocationsPlugin.Dates
             strTok.SkipWhitespaces();
 
             var token = strTok.CurrentToken;
-
-            // extract approximated
-            token = strTok.CurrentToken;
-            if (token == GEDCOMToken.Word) {
-                string su = InvariantTextInfo.ToUpper(strTok.GetWord());
-                int idx = ArrayHelper.BinarySearch(GDMCustomDate.GEDCOMDateApproximatedArray, su, string.CompareOrdinal);
-                if (idx >= 0) {
-                    approximated = (GDMApproximated)idx;
-                    strTok.Next();
-                    strTok.SkipWhitespaces();
-                }
-            }
 
             // extract day
             token = strTok.CurrentToken;
@@ -472,5 +343,25 @@ namespace GKNetLocationsPlugin.Dates
         }
 
         #endregion
+
+        public static GDMDatePeriod GetIntersection(GDMCustomDate range1, GDMCustomDate range2)
+        {
+            if (range1 == null || range1.IsEmpty() || range2 == null || range2.IsEmpty())
+                return GDMDatePeriod.Empty;
+
+            GDMDate r1start, r1end, r2start, r2end;
+            range1.GetDateRange(out r1start, out r1end);
+            range2.GetDateRange(out r2start, out r2end);
+
+            GDMDate greatestStart = r1start.IsEmpty() ? r2start : (r2start.IsEmpty() ? r1start : (r1start.CompareTo(r2start) > 0) ? r1start : r2start);
+            GDMDate smallestEnd = r1end.IsEmpty() ? r2end : (r2end.IsEmpty() ? r1end : (r1end.CompareTo(r2end) < 0) ? r1end : r2end);
+
+            // no intersection
+            if (greatestStart.CompareTo(smallestEnd) > 0) {
+                return GDMDatePeriod.Empty;
+            }
+
+            return CreatePeriod(greatestStart, smallestEnd);
+        }
     }
 }

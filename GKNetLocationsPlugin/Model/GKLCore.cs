@@ -320,5 +320,18 @@ namespace GKNetLocationsPlugin.Model
             // save to local transaction pool
             AddPendingTransaction(TransactionType.LocationRelation_Delete, result);
         }
+
+        private Dictionary<string, DBLocationRec> fCache = new Dictionary<string, DBLocationRec>();
+
+        public DBLocationRec GetLocation(string locGUID)
+        {
+            DBLocationRec result = null;
+            if (!fCache.TryGetValue(locGUID, out result)) {
+                result = fDatabase.LoadLocation(locGUID);
+                fCache.Add(locGUID, result);
+            }
+            return result;
+        }
+
     }
 }

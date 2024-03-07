@@ -19,7 +19,6 @@
  */
 
 using System;
-using System.Collections.Generic;
 using BSLib;
 
 namespace GKNetLocationsPlugin.Dates
@@ -34,20 +33,12 @@ namespace GKNetLocationsPlugin.Dates
     {
         public const int UNKNOWN_YEAR = -1;
 
-        private GDMApproximated fApproximated;
         private byte fDay;
         private byte fMonth;
         private short fYear;
         private bool fYearBC;
-        private string fYearModifier;
         private UDN fUDN;
 
-
-        public GDMApproximated Approximated
-        {
-            get { return fApproximated; }
-            set { fApproximated = value; }
-        }
 
         public byte Day
         {
@@ -85,19 +76,11 @@ namespace GKNetLocationsPlugin.Dates
             }
         }
 
-        public string YearModifier
-        {
-            get { return fYearModifier; }
-            set { fYearModifier = value; }
-        }
-
 
         public GDMDate()
         {
-            fApproximated = GDMApproximated.daExact;
             fYear = UNKNOWN_YEAR;
             fYearBC = false;
-            fYearModifier = string.Empty;
             fMonth = 0;
             fDay = 0;
         }
@@ -106,23 +89,12 @@ namespace GKNetLocationsPlugin.Dates
         {
             base.Clear();
 
-            fApproximated = GDMApproximated.daExact;
             fYear = UNKNOWN_YEAR;
             fYearBC = false;
-            fYearModifier = string.Empty;
             fMonth = 0;
             fDay = 0;
 
             DateChanged();
-        }
-
-        /// <summary>
-        /// This function is intended only for checking the completeness of parts of the date 
-        /// (year, month and day are defined, are not unknown).
-        /// </summary>
-        public bool IsValidDate()
-        {
-            return (fYear > 0 && fMonth > 0 && fDay > 0);
         }
 
         public override bool IsEmpty()
@@ -136,10 +108,8 @@ namespace GKNetLocationsPlugin.Dates
             if (srcDate == null)
                 throw new ArgumentException(@"Argument is null or wrong type", "source");
 
-            fApproximated = srcDate.fApproximated;
             fYear = srcDate.fYear;
             fYearBC = srcDate.fYearBC;
-            fYearModifier = srcDate.fYearModifier;
             fMonth = srcDate.fMonth;
             fDay = srcDate.fDay;
 
@@ -161,13 +131,10 @@ namespace GKNetLocationsPlugin.Dates
         /// <summary>
         /// Internal helper method for parser
         /// </summary>
-        internal void SetRawData(GDMApproximated approximated,  
-                                 short year, bool yearBC, string yearModifier, byte month, byte day)
+        internal void SetRawData(short year, bool yearBC, string yearModifier, byte month, byte day)
         {
-            fApproximated = approximated;
             fYear = year;
             fYearBC = yearBC;
-            fYearModifier = yearModifier;
             fMonth = month;
             fDay = day;
 
@@ -207,34 +174,29 @@ namespace GKNetLocationsPlugin.Dates
 
         protected override string GetStringValue()
         {
-            var parts = new List<string>(5);
-            if (fApproximated != GDMApproximated.daExact) {
-                parts.Add(GDMCustomDate.GEDCOMDateApproximatedArray[(int)fApproximated]);
-            }
+            var parts = new string[5];
+            int pIdx = 0;
 
             if (fDay > 0) {
-                parts.Add(fDay.ToString("D2"));
+                parts[pIdx++] = fDay.ToString("D2");
             }
 
             if (fMonth > 0) {
                 string[] months = GetMonthNames();
-                parts.Add(months[fMonth - 1]);
+                parts[pIdx++] = months[fMonth - 1];
             }
 
             if (fYear != UNKNOWN_YEAR) {
                 string yearStr = fYear.ToString("D3");
-                if (!string.IsNullOrEmpty(fYearModifier)) {
-                    yearStr = yearStr + "/" + fYearModifier;
-                }
 
                 if (fYearBC) {
                     yearStr += GDMCustomDate.YearBC;
                 }
 
-                parts.Add(yearStr);
+                parts[pIdx++] = yearStr;
             }
 
-            return string.Join(" ", parts);
+            return string.Join(" ", parts, 0, pIdx);
         }
 
         private static byte GetMonthNumber(string strMonth)
@@ -250,17 +212,11 @@ namespace GKNetLocationsPlugin.Dates
             SetGregorian(day, month, year);
         }
 
-        private void SetDateInternal(int day, string month, int year, string yearModifier, bool yearBC)
-        {
-            SetDateInternal(day, GetMonthNumber(month), year, yearModifier, yearBC);
-        }
-
         private void SetDateInternal(int day, int month, int year, string yearModifier, bool yearBC)
         {
             fDay = (byte)day;
             fMonth = (byte)month;
             fYear = (short)year;
-            fYearModifier = yearModifier;
             fYearBC = yearBC;
 
             DateChanged();
@@ -269,11 +225,6 @@ namespace GKNetLocationsPlugin.Dates
         public void SetGregorian(int day, int month, int year)
         {
             SetDateInternal(day, month, year, "", false);
-        }
-
-        public void SetGregorian(int day, string month, int year, string yearModifier, bool yearBC)
-        {
-            SetDateInternal(day, CheckGEDCOMMonth(month), year, yearModifier, yearBC);
         }
 
         #region UDN processing
@@ -293,7 +244,7 @@ namespace GKNetLocationsPlugin.Dates
 
         public override UDN GetUDN()
         {
-            return (fApproximated == GDMApproximated.daExact) ? fUDN : UDN.CreateApproximate(fUDN);
+            return fUDN;
         }
 
         #endregion
@@ -335,15 +286,10 @@ namespace GKNetLocationsPlugin.Dates
             return date;
         }
 
-        /*public static UDN GetUDNByFormattedStr(string dateStr, bool aException = false)
-        {
-            GDMDate dtx = GDMDate.CreateByFormattedStr(dateStr, aException);
-            return (dtx != null) ? dtx.GetUDN() : UDN.CreateEmpty();
-        }*/
-
         public string GetDisplayString(DateFormat format, bool includeBC = false, bool showCalendar = false)
         {
-            string result = "";
+            var parts = new string[5];
+            int pIdx = 0;
 
             int year = fYear;
             int month = fMonth;
@@ -353,56 +299,49 @@ namespace GKNetLocationsPlugin.Dates
             if (year > 0 || month > 0 || day > 0) {
                 switch (format) {
                     case DateFormat.dfDD_MM_YYYY:
-                        result += day > 0 ? ConvertHelper.AdjustNumber(day, 2) + "." : "__.";
-                        result += month > 0 ? ConvertHelper.AdjustNumber(month, 2) + "." : "__.";
-                        result += year > 0 ? year.ToString().PadLeft(4, '_') : "____";
+                        parts[pIdx++] = day > 0 ? day.ToString("D2", null) + "." : "__.";
+                        parts[pIdx++] = month > 0 ? month.ToString("D2", null) + "." : "__.";
+                        parts[pIdx++] = year > 0 ? year.ToString().PadLeft(4, '_') : "____";
+                        if (includeBC && ybc) {
+                            parts[pIdx++] = " BC";
+                        }
                         break;
 
                     case DateFormat.dfYYYY_MM_DD:
-                        result += year > 0 ? year.ToString().PadLeft(4, '_') + "." : "____.";
-                        result += month > 0 ? ConvertHelper.AdjustNumber(month, 2) + "." : "__.";
-                        result += day > 0 ? ConvertHelper.AdjustNumber(day, 2) : "__";
+                        if (includeBC && ybc) {
+                            parts[pIdx++] = "BC ";
+                        }
+                        parts[pIdx++] = year > 0 ? year.ToString().PadLeft(4, '_') + "." : "____.";
+                        parts[pIdx++] = month > 0 ? month.ToString("D2", null) + "." : "__.";
+                        parts[pIdx++] = day > 0 ? day.ToString("D2", null) : "__";
                         break;
 
                     case DateFormat.dfYYYY:
                         if (year > 0) {
-                            result = year.ToString().PadLeft(4, '_');
+                            if (includeBC && ybc) {
+                                parts[pIdx++] = "BC ";
+                            }
+                            parts[pIdx++] = year.ToString().PadLeft(4, '_');
                         }
                         break;
                 }
             }
 
-            if (includeBC && ybc) {
-                switch (format) {
-                    case DateFormat.dfDD_MM_YYYY:
-                        result = result + " BC";
-                        break;
-                    case DateFormat.dfYYYY_MM_DD:
-                        result = "BC " + result;
-                        break;
-                    case DateFormat.dfYYYY:
-                        result = "BC " + result;
-                        break;
-                }
-            }
-
-            /*if (showCalendar) {
-                result = result + GKData.DateCalendars[(int)fCalendar].Sign;
-            }*/
-
-            return result;
+            return string.Concat(parts);
         }
 
         public override string GetDisplayStringExt(DateFormat format, bool sign, bool showCalendar)
         {
             string result = GetDisplayString(format, true, showCalendar);
-            if (sign && fApproximated != GDMApproximated.daExact) {
-                result = "~ " + result;
-            }
-
             return result;
         }
 
         #endregion
+
+        public override void GetDateRange(out GDMDate dateStart, out GDMDate dateEnd)
+        {
+            dateStart = this;
+            dateEnd = this;
+        }
     }
 }

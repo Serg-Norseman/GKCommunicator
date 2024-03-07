@@ -18,10 +18,19 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System.Collections.Generic;
+using GKNetLocationsPlugin.Dates;
 using SQLite;
 
 namespace GKNetLocationsPlugin.Model
 {
+
+    public interface ILocationElement
+    {
+        GDMDatePeriod ActualDatesEx { get; }
+    }
+
+
     /// <summary>
     /// DTO for Location records of database.
     /// </summary>
@@ -34,14 +43,72 @@ namespace GKNetLocationsPlugin.Model
         public string Coordinates { get; set; }
 
 
+        [Ignore]
+        public List<DBLocationNameRec> Names { get; set; }
+
+        [Ignore]
+        public List<DBLocationRelationRec> Relations { get; set; }
+
+
         public DBLocationRec()
         {
+            Names = new List<DBLocationNameRec>();
+            Relations = new List<DBLocationRelationRec>();
         }
 
         public DBLocationRec(ILocation source)
         {
             GUID = source.GUID;
             Coordinates = source.Coordinates;
+        }
+
+        public bool ValidateNames()
+        {
+            GDMCustomDate prevDate = null;
+            for (int i = 0; i < Names.Count; i++) {
+                var locName = Names[i];
+
+                var interDate = GDMCustomDate.GetIntersection(prevDate, locName.ActualDatesEx);
+                if (!interDate.IsEmpty()) {
+                    return false;
+                }
+
+                prevDate = locName.ActualDatesEx;
+            }
+            return true;
+        }
+
+        public bool ValidateLinks()
+        {
+            GDMCustomDate prevDate = null;
+            for (int i = 0; i < Relations.Count; i++) {
+                var locLink = Relations[i];
+
+                var interDate = GDMCustomDate.GetIntersection(prevDate, locLink.ActualDatesEx);
+                if (!interDate.IsEmpty()) {
+                    return false;
+                }
+
+                prevDate = locLink.ActualDatesEx;
+            }
+            return true;
+        }
+
+        public void SortNames()
+        {
+            Names.Sort(ElementsCompare);
+        }
+
+        public void SortTopLevels()
+        {
+            Relations.Sort(ElementsCompare);
+        }
+
+        private static int ElementsCompare(ILocationElement cp1, ILocationElement cp2)
+        {
+            UDN udn1 = cp1.ActualDatesEx.GetUDN();
+            UDN udn2 = cp2.ActualDatesEx.GetUDN();
+            return udn1.CompareTo(udn2);
         }
     }
 
@@ -50,7 +117,7 @@ namespace GKNetLocationsPlugin.Model
     /// DTO for LocationName records of database.
     /// </summary>
     [Table("LocationNames")]
-    public class DBLocationNameRec : ILocationName
+    public class DBLocationNameRec : ILocationName, ILocationElement
     {
         [PrimaryKey, MaxLength(38), NotNull, Unique]
         public string GUID { get; set; }
@@ -66,6 +133,9 @@ namespace GKNetLocationsPlugin.Model
 
         [MaxLength(100), NotNull]
         public string ActualDates { get; set; }
+
+        [Ignore]
+        public GDMDatePeriod ActualDatesEx { get; set; }
 
         [MaxLength(5), NotNull]
         public string Language { get; set; }
@@ -121,7 +191,7 @@ namespace GKNetLocationsPlugin.Model
     /// DTO for LocationRelation records of database.
     /// </summary>
     [Table("LocationRelations")]
-    public class DBLocationRelationRec : ILocationRelation
+    public class DBLocationRelationRec : ILocationRelation, ILocationElement
     {
         [PrimaryKey, MaxLength(38), NotNull, Unique]
         public string GUID { get; set; }
@@ -137,6 +207,9 @@ namespace GKNetLocationsPlugin.Model
 
         [MaxLength(100), NotNull]
         public string ActualDates { get; set; }
+
+        [Ignore]
+        public GDMDatePeriod ActualDatesEx { get; set; }
 
 
         public DBLocationRelationRec()

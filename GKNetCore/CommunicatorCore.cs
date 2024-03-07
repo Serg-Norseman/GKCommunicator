@@ -780,7 +780,8 @@ namespace GKNet
                         if (asm != null) {
                             LoadPlugin(/*host,*/ asm);
                         }
-                    } catch {
+                    } catch (Exception ex) {
+                        fLogger.WriteError("LoadPlugins(" + path + ").1", ex);
                         // block exceptions for bad or non-dotnet assemblies
                     }
                 }

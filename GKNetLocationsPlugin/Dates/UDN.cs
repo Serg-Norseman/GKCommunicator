@@ -590,30 +590,5 @@ namespace GKNetLocationsPlugin.Dates
         {
             return (ValueMask & fValue);
         }
-
-        public DateTime GetGregorianDateTime()
-        {
-            DateTime result;
-
-            if (HasKnownYear()) {
-                int jdn = GetUnmaskedValue();
-
-                int year, month, day;
-                CalendarConverter.jd_to_gregorian2(jdn, out year, out month, out day);
-
-                if (month <= 0) month = 1;
-                if (day <= 0) day = 1;
-
-                try {
-                    result = new DateTime(year, month, day);
-                    return result;
-                } catch (Exception ex) {
-                    //Logger.WriteError(string.Format("UDN.GetGregorianDateTime({0}, {1}, {2})", year, month, day), ex);
-                }
-            }
-
-            result = new DateTime(0);
-            return result;
-        }
     }
 }

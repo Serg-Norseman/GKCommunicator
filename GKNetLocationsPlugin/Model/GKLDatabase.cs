@@ -21,6 +21,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using GKNetLocationsPlugin.Dates;
 using SQLite;
 
 namespace GKNetLocationsPlugin.Model
@@ -30,18 +31,6 @@ namespace GKNetLocationsPlugin.Model
         public GKLDatabaseException(string message) : base(message)
         {
         }
-    }
-
-
-    public class QLocation
-    {
-        public string LocationGUID { get; set; }
-        public string OwnerGUID { get; set; }
-        public string RelationType { get; set; }
-        public string Name { get; set; }
-        public string Language { get; set; }
-        public string NameDate { get; set; }
-        public string RelationDate { get; set; }
     }
 
 
@@ -184,14 +173,14 @@ namespace GKNetLocationsPlugin.Model
 
         #region Locations records
 
-        public IList<ILocation> QueryLocations()
+        public List<DBLocationRec> QueryLocations()
         {
-            return (IList<ILocation>)fConnection.Query<DBLocationRec>("select * from Locations");
+            return fConnection.Query<DBLocationRec>("select * from Locations");
         }
 
-        public IList<ILocationName> QueryLocationNames()
+        public List<DBLocationNameRec> QueryLocationNames(string locGUID)
         {
-            return (IList<ILocationName>)fConnection.Query<DBLocationNameRec>("select * from LocationNames");
+            return fConnection.Query<DBLocationNameRec>("select * from LocationNames where LocationGUID = ?", locGUID);
         }
 
         public IList<string> QueryLanguages()
@@ -200,18 +189,78 @@ namespace GKNetLocationsPlugin.Model
             return GetStringList(result);
         }
 
-        public IList<ILocationRelation> QueryLocationRelations()
+        public List<DBLocationRelationRec> QueryLocationRelations(string locGUID)
         {
-            return (IList<ILocationRelation>)fConnection.Query<DBLocationRelationRec>("select * from LocationRelations");
+            return fConnection.Query<DBLocationRelationRec>("select * from LocationRelations where LocationGUID = ?", locGUID);
         }
 
-        public IList<QLocation> QueryLocationsEx(string lang)
+        public IList<string> QueryLowerLocations(string locGUID)
         {
-            return fConnection.Query<QLocation>(
-                "select locrel.OwnerGUID, locrel.RelationType, locnam.LocationGUID, locnam.Name, locnam.Language, locnam.ActualDates as NameDate, locrel.ActualDates as RelationDate " +
-                "from LocationNames locnam " +
-                "left join LocationRelations locrel on locnam.LocationGUID = locrel.LocationGUID " +
-                "where locnam.Language = ?", lang); // 'ru-RU'
+            return GetStringList(fConnection.Query<QString>(
+                "WITH RECURSIVE hierarchy AS (" +
+                "    SELECT lh.LocationGUID, lh.OwnerGUID FROM LocationRelations lh" +
+                "    WHERE lh.OwnerGUID = ?" +
+                "    UNION ALL" +
+                "    SELECT lh.LocationGUID, lh.OwnerGUID FROM LocationRelations lh" +
+                "    JOIN hierarchy h ON lh.OwnerGUID = h.LocationGUID" +
+                ")" +
+                "SELECT LocationGUID as value FROM hierarchy;", locGUID));
+        }
+
+        public IList<string> QueryHigherLocations(string locGUID)
+        {
+            return GetStringList(fConnection.Query<QString>(
+                "WITH RECURSIVE hierarchy AS (" +
+                "    SELECT lh.LocationGUID, lh.OwnerGUID FROM LocationRelations lh" +
+                "    WHERE lh.LocationGUID = ?" +
+                "    UNION ALL" +
+                "    SELECT lh.LocationGUID, lh.OwnerGUID FROM LocationRelations lh" +
+                "    JOIN hierarchy h ON lh.LocationGUID = h.OwnerGUID" +
+                ")" +
+                "SELECT LocationGUID as value FROM hierarchy union select l.GUID as value from Locations l " +
+                "join hierarchy h on l.GUID = h.OwnerGUID;", locGUID));
+        }
+
+        public void PreloadLocations(List<DBLocationRec> locs)
+        {
+            foreach (var loc in locs) {
+                LoadLocationExt(loc);
+            }
+        }
+
+        public DBLocationRec LoadLocation(string locGUID)
+        {
+            var result = fConnection.Query<DBLocationRec>("select * from Locations where GUID = ?", locGUID);
+            if (result.Count != 1) {
+                return null;
+            } else {
+                var rec = result[0];
+                LoadLocationExt(rec);
+                return rec;
+            }
+        }
+
+        public void LoadLocationExt(DBLocationRec rec)
+        {
+            var names = QueryLocationNames(rec.GUID);
+            if (names.Count != 0) {
+                rec.Names = names;
+                foreach (var name in names) {
+                    var dtx = new GDMDatePeriod();
+                    dtx.ParseString(name.ActualDates);
+                    name.ActualDatesEx = dtx;
+                }
+            }
+
+            var rels = QueryLocationRelations(rec.GUID);
+            if (names.Count != 0) {
+                rec.Relations = rels;
+                foreach (var rel in rels) {
+                    var dtx = new GDMDatePeriod();
+                    dtx.ParseString(rel.ActualDates);
+                    rel.ActualDatesEx = dtx;
+                }
+            }
         }
 
         #endregion

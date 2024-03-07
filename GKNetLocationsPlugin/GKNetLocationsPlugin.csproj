@@ -32,6 +32,21 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\BBTextChunk.cs" />
+    <Compile Include="Controls\BBTextParser.cs" />
+    <Compile Include="Controls\GKDateBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\GKDateControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\GKListView.cs" />
+    <Compile Include="Controls\HyperView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\ScrollablePanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Model\GKLRecords.cs" />
     <Compile Include="Model\GKLDatabase.cs" />
     <Compile Include="Dates\CalendarConverter.cs" />
@@ -41,9 +56,6 @@
     <Compile Include="Dates\GEDCOMParser.cs" />
     <Compile Include="Dates\UDN.cs" />
     <Compile Include="Editor\LocationsControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Editor\TreeControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Model\GKLTransactions.cs" />
