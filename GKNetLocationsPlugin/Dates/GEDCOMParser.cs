@@ -1,6 +1,6 @@
 ﻿/*
  *  "GEDKeeper", the personal genealogical database editor.
- *  Copyright (C) 2009-2022 by Sergey V. Zhdanovskih.
+ *  Copyright (C) 2009-2024 by Sergey V. Zhdanovskih.
  *
  *  This file is part of "GEDKeeper".
  *
@@ -62,26 +62,6 @@ namespace GKNetLocationsPlugin.Dates
             get { return fCurrentToken; }
         }
 
-        public char[] Data
-        {
-            get { return fData; }
-        }
-
-        public int Length
-        {
-            get { return fLength; }
-        }
-
-        public int Position
-        {
-            get { return fPos; }
-        }
-
-
-        public GEDCOMParser(bool ignoreWhitespace)
-        {
-            fIgnoreWhitespace = ignoreWhitespace;
-        }
 
         public GEDCOMParser(string data, bool ignoreWhitespace)
         {
@@ -250,11 +230,6 @@ namespace GKNetLocationsPlugin.Dates
             return (fPos >= fLength) ? string.Empty : new string(fData, fPos, fLength - fPos);
         }
 
-        public string GetFullStr()
-        {
-            return new string(fData, 0, fLength);
-        }
-
         public bool RequireToken(GEDCOMToken tokenKind)
         {
             return (fCurrentToken == tokenKind);
@@ -268,38 +243,6 @@ namespace GKNetLocationsPlugin.Dates
         public bool RequireSymbol(char symbol)
         {
             return (fCurrentToken == GEDCOMToken.Symbol && GetSymbol() == symbol);
-        }
-
-        public void RequestSymbol(char symbol)
-        {
-            if (fCurrentToken != GEDCOMToken.Symbol || GetSymbol() != symbol) {
-                throw new GEDCOMParserException("Required symbol not found");
-            }
-        }
-
-        public void RequestNextSymbol(char symbol)
-        {
-            var token = Next();
-            if (token != GEDCOMToken.Symbol || GetSymbol() != symbol) {
-                throw new GEDCOMParserException("Required symbol not found");
-            }
-        }
-
-        public int RequestInt()
-        {
-            if (fCurrentToken != GEDCOMToken.Number) {
-                throw new GEDCOMParserException("Required integer not found");
-            }
-            return GetNumber();
-        }
-
-        public int RequestNextInt()
-        {
-            var token = Next();
-            if (token != GEDCOMToken.Number) {
-                throw new GEDCOMParserException("Required integer not found");
-            }
-            return GetNumber();
         }
 
         public int TokenLength()

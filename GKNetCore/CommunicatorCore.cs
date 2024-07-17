@@ -1,6 +1,6 @@
 ﻿/*
  *  "GKCommunicator", the chat and bulletin board of the genealogical network.
- *  Copyright (C) 2018-2023 by Sergey V. Zhdanovskih.
+ *  Copyright (C) 2018-2024 by Sergey V. Zhdanovskih.
  *
  *  This file is part of "GEDKeeper".
  *
@@ -771,7 +771,7 @@ namespace GKNet
 #else
 #endif
 
-                string[] pluginFiles = Directory.GetFiles(path, "*.dll");
+                string[] pluginFiles = Directory.GetFiles(path, "*Plugin.dll");
                 foreach (string pfn in pluginFiles) {
                     try {
                         AssemblyName assemblyName = AssemblyName.GetAssemblyName(pfn);
@@ -780,7 +780,8 @@ namespace GKNet
                         if (asm != null) {
                             LoadPlugin(/*host,*/ asm);
                         }
-                    } catch {
+                    } catch (Exception ex) {
+                        fLogger.WriteError("LoadPlugins(" + path + ").1", ex);
                         // block exceptions for bad or non-dotnet assemblies
                     }
                 }

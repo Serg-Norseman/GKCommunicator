@@ -1,6 +1,6 @@
 ﻿/*
  *  "GKCommunicator", the chat and bulletin board of the genealogical network.
- *  Copyright (C) 2018-2022 by Sergey V. Zhdanovskih.
+ *  Copyright (C) 2018-2024 by Sergey V. Zhdanovskih.
  *
  *  This file is part of "GKCommunicator".
  *
@@ -23,8 +23,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
 using GKNet;
-using GKNetLocationsPlugin.Database;
-using GKNetLocationsPlugin.Transactions;
 
 namespace GKNetLocationsPlugin.Model
 {
@@ -33,6 +31,10 @@ namespace GKNetLocationsPlugin.Model
     /// </summary>
     public class GKLCore
     {
+        public static readonly NumberFormatInfo CoordNumberFormatInfo = new NumberFormatInfo() { NumberDecimalSeparator = "." };
+        public static readonly string CoordFormat = "0.000000";
+
+
         private readonly ICommunicatorCore fHost;
         private readonly GKLDatabase fDatabase;
 
@@ -98,14 +100,24 @@ namespace GKNetLocationsPlugin.Model
             return true;
         }
 
+        private static string GetCoordsStr(double latitude = 0.0d, double longitude = 0.0d)
+        {
+            string result;
+            if (latitude == 0.0d && longitude == 0.0d) {
+                result = string.Empty;
+            } else {
+                result = string.Concat(latitude.ToString("N6", CoordNumberFormatInfo), ", ", longitude.ToString("N6", CoordNumberFormatInfo));
+            }
+            return result;
+        }
+
         public Location AddLocation(double latitude = 0.0d, double longitude = 0.0d)
         {
             string locationGUID = NewGUID();
 
             var result = new Location() {
                 GUID = locationGUID,
-                Latitude = latitude,
-                Longitude = longitude
+                Coordinates = GetCoordsStr(latitude, longitude)
             };
 
             // save to local db
@@ -121,8 +133,7 @@ namespace GKNetLocationsPlugin.Model
         {
             var result = new Location() {
                 GUID = locationGUID,
-                Latitude = latitude,
-                Longitude = longitude
+                Coordinates = GetCoordsStr(latitude, longitude)
             };
 
             // save to local db
@@ -147,7 +158,7 @@ namespace GKNetLocationsPlugin.Model
             AddPendingTransaction(TransactionType.Location_Delete, result);
         }
 
-        public LocationName AddLocationName(string locationGUID, string name, string type, string description, string actualDates, string language)
+        public LocationName AddLocationName(string locationGUID, string name, string type, string actualDates, string language)
         {
             string locationNameGUID = NewGUID();
 
@@ -156,7 +167,6 @@ namespace GKNetLocationsPlugin.Model
                 LocationGUID = locationGUID,
                 Name = name,
                 Type = type,
-                Description = description,
                 ActualDates = actualDates,
                 Language = language
             };
@@ -170,14 +180,13 @@ namespace GKNetLocationsPlugin.Model
             return result;
         }
 
-        public LocationName UpdateLocationName(string locationNameGUID, string locationGUID, string name, string type, string description, string actualDates, string language)
+        public LocationName UpdateLocationName(string locationNameGUID, string locationGUID, string name, string type, string actualDates, string language)
         {
             var result = new LocationName() {
                 GUID = locationNameGUID,
                 LocationGUID = locationGUID,
                 Name = name,
                 Type = type,
-                Description = description,
                 ActualDates = actualDates,
                 Language = language
             };
@@ -203,6 +212,61 @@ namespace GKNetLocationsPlugin.Model
             // save to local transaction pool
             AddPendingTransaction(TransactionType.LocationName_Delete, result);
         }
+
+        #region Name Translations
+
+        public LocationNameTranslation AddLocationNameTranslation(string nameGUID, string name, string language)
+        {
+            string locationNameTranslationGUID = NewGUID();
+
+            var result = new LocationNameTranslation() {
+                GUID = locationNameTranslationGUID,
+                NameGUID = nameGUID,
+                Name = name,
+                Language = language
+            };
+
+            // save to local db
+            fDatabase.AddRecord(new DBLocationNameTranslationRec(result));
+
+            // save to local transaction pool
+            AddPendingTransaction(TransactionType.LocationNameTranslation_Create, result);
+
+            return result;
+        }
+
+        public LocationNameTranslation UpdateLocationNameTranslation(string locationNameTranslationGUID, string nameGUID, string name, string language)
+        {
+            var result = new LocationNameTranslation() {
+                GUID = locationNameTranslationGUID,
+                NameGUID = nameGUID,
+                Name = name,
+                Language = language
+            };
+
+            // save to local db
+            fDatabase.UpdateRecord(new DBLocationNameTranslationRec(result));
+
+            // save to local transaction pool
+            AddPendingTransaction(TransactionType.LocationNameTranslation_Update, result);
+
+            return result;
+        }
+
+        public void DeleteLocationNameTranslation(string locationNameTranslationGUID)
+        {
+            var result = new Entity() {
+                GUID = locationNameTranslationGUID,
+            };
+
+            // save to local db
+            fDatabase.DeleteRecord<DBLocationNameTranslationRec>(locationNameTranslationGUID);
+
+            // save to local transaction pool
+            AddPendingTransaction(TransactionType.LocationNameTranslation_Delete, result);
+        }
+
+        #endregion
 
         public LocationRelation AddLocationRelation(string locationGUID, string ownerGUID, string relationType, string actualDates)
         {
@@ -256,5 +320,18 @@ namespace GKNetLocationsPlugin.Model
             // save to local transaction pool
             AddPendingTransaction(TransactionType.LocationRelation_Delete, result);
         }
+
+        private Dictionary<string, DBLocationRec> fCache = new Dictionary<string, DBLocationRec>();
+
+        public DBLocationRec GetLocation(string locGUID)
+        {
+            DBLocationRec result = null;
+            if (!fCache.TryGetValue(locGUID, out result)) {
+                result = fDatabase.LoadLocation(locGUID);
+                fCache.Add(locGUID, result);
+            }
+            return result;
+        }
+
     }
 }

@@ -57,6 +57,7 @@
     <Compile Include="BencodeNET\InvalidBencodeException.cs" />
     <Compile Include="BencodeNET\UnsupportedBencodeException.cs" />
     <Compile Include="Blockchain\Block.cs" />
+    <Compile Include="Blockchain\BlockchainNode.Consensus.cs" />
     <Compile Include="Blockchain\BlockchainNode.cs" />
     <Compile Include="Blockchain\Exceptions.cs" />
     <Compile Include="Blockchain\Hashable.cs" />
@@ -130,5 +131,6 @@
     <EmbeddedResource Include="Resources\Images\status_delivered.png" />
     <EmbeddedResource Include="Resources\Images\status_undelivered.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

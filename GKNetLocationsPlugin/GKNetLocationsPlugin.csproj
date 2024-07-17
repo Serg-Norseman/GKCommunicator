@@ -32,39 +32,38 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Database\DBLocationNameRec.cs" />
-    <Compile Include="Database\DBLocationRec.cs" />
-    <Compile Include="Database\DBLocationRelationRec.cs" />
-    <Compile Include="Database\GKLDatabase.cs" />
+    <Compile Include="Controls\BBTextChunk.cs" />
+    <Compile Include="Controls\BBTextParser.cs" />
+    <Compile Include="Controls\GKDateBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\GKDateControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\GKListView.cs" />
+    <Compile Include="Controls\HyperView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\ScrollablePanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Model\GKLRecords.cs" />
+    <Compile Include="Model\GKLDatabase.cs" />
+    <Compile Include="Dates\CalendarConverter.cs" />
     <Compile Include="Dates\GDMCustomDate.cs" />
     <Compile Include="Dates\GDMDate.cs" />
-    <Compile Include="Dates\GDMDateInterpreted.cs" />
     <Compile Include="Dates\GDMDatePeriod.cs" />
-    <Compile Include="Dates\GDMDateRange.cs" />
-    <Compile Include="Dates\GDMDateValue.cs" />
     <Compile Include="Dates\GEDCOMParser.cs" />
+    <Compile Include="Dates\UDN.cs" />
     <Compile Include="Editor\LocationsControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Editor\TreeControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Transactions\BaseTransactionSolver.cs" />
-    <Compile Include="Transactions\LocationNameTransactionSolver.cs" />
-    <Compile Include="Transactions\LocationRelationTransactionSolver.cs" />
+    <Compile Include="Model\GKLTransactions.cs" />
     <Compile Include="Model\GKLCore.cs" />
-    <Compile Include="Model\ILocation.cs" />
-    <Compile Include="Model\ILocationName.cs" />
-    <Compile Include="Model\ILocationRelation.cs" />
+    <Compile Include="Model\GKLInterfaces.cs" />
     <Compile Include="LocationsDataPlugin.cs" />
-    <Compile Include="Model\Entity.cs" />
-    <Compile Include="Model\Location.cs" />
-    <Compile Include="Model\LocationName.cs" />
-    <Compile Include="Model\LocationRelation.cs" />
-    <Compile Include="Database\QLocation.cs" />
-    <Compile Include="Transactions\LocationTransactionSolver.cs" />
+    <Compile Include="Model\GKLEntities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Transactions\TransactionType.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GKNetCore\GKNetCore.csproj">
