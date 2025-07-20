@@ -9,7 +9,8 @@
         <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
         <DefineConstants>ETO</DefineConstants>
 
-        <Configurations>MSWin_Debug;MSWin_Release;Linux_Debug;Linux_Release;MacOS_Debug;MacOS_Release;FreeBSD_Debug;FreeBSD_Release</Configurations>
+        <Configurations>Debug;Release</Configurations>
+        <Platforms>MSWin64;Linux;MacOS;FreeBSD</Platforms>
     </PropertyGroup>
 
     <Import Project="..\GKConfigurations3.targets" />
@@ -35,7 +36,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Eto.Serialization.Xaml" Version="2.7.5" />
+        <PackageReference Include="Eto.Serialization.Xaml" Version="2.8.3" />
     </ItemGroup>
 
 
@@ -47,11 +48,11 @@
         <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
         <StartupObject>GKCommunicatorApp.Program</StartupObject>
 
-        <RuntimeIdentifier>win-x86</RuntimeIdentifier>
+        <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     </PropertyGroup>
 
     <ItemGroup Condition=" $(DefineConstants.Contains('OS_MSWIN')) ">
-        <PackageReference Include="Eto.Platform.Wpf" Version="2.7.5" />
+        <PackageReference Include="Eto.Platform.Wpf" Version="2.8.3" />
     </ItemGroup>
 
 
@@ -68,7 +69,7 @@
     </PropertyGroup>
 
     <ItemGroup Condition=" $(DefineConstants.Contains('OS_LINUX')) or $(DefineConstants.Contains('OS_FREEBSD')) ">
-        <PackageReference Include="Eto.Platform.Gtk" Version="2.7.5" />
+        <PackageReference Include="Eto.Platform.Gtk" Version="2.8.3" />
     </ItemGroup>
 
 
@@ -80,7 +81,7 @@
     </PropertyGroup>
 
     <ItemGroup Condition=" $(DefineConstants.Contains('OS_MACOS')) ">
-        <PackageReference Include="Eto.Platform.Mac64" Version="2.7.5" />
+        <PackageReference Include="Eto.Platform.Mac64" Version="2.8.3" />
     </ItemGroup>
 
 </Project>

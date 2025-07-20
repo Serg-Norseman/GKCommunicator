@@ -20,7 +20,7 @@ namespace GKNet.DHT
             Assert.IsNotNull(node);
             Assert.AreEqual(randId.Data, node.Id.Data);
             Assert.AreEqual(endPoint, node.EndPoint);
-            Assert.IsNotNullOrEmpty(node.ToString());
+            Assert.IsFalse(string.IsNullOrEmpty(node.ToString()));
 
             Assert.AreEqual(0, node.LastAnnouncementTime);
             Assert.AreEqual(0, node.LastUpdateTime);

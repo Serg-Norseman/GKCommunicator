@@ -10,16 +10,10 @@ namespace GKNet
 
         private GKNetDatabase fDb;
 
-        [TestFixtureSetUp]
-        public void SetUp()
+        public DatabaseTests()
         {
             fDb = new GKNetDatabase();
             Assert.IsNotNull(fDb);
-        }
-
-        [TestFixtureTearDown]
-        public void TearDown()
-        {
         }
 
         [Test]
