@@ -16,8 +16,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GKNetUI.net", "GKNetUI.EtoForms\GKNetUI.net.csproj", "{1D2C209A-6E19-4FCF-BA08-11B8096FCA99}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GKNetLocationsPlugin", "GKNetLocationsPlugin\GKNetLocationsPlugin.csproj", "{2E9DC388-BF8C-4FCC-B76E-837E221953EF}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|FreeBSD = Debug|FreeBSD
@@ -94,22 +92,6 @@ Global
 		{1D2C209A-6E19-4FCF-BA08-11B8096FCA99}.Release|MacOS.Build.0 = Release|MacOS
 		{1D2C209A-6E19-4FCF-BA08-11B8096FCA99}.Release|MSWin64.ActiveCfg = Release|MSWin64
 		{1D2C209A-6E19-4FCF-BA08-11B8096FCA99}.Release|MSWin64.Build.0 = Release|MSWin64
-		{2E9DC388-BF8C-4FCC-B76E-837E221953EF}.Debug|FreeBSD.ActiveCfg = Debug|Any CPU
-		{2E9DC388-BF8C-4FCC-B76E-837E221953EF}.Debug|FreeBSD.Build.0 = Debug|Any CPU
-		{2E9DC388-BF8C-4FCC-B76E-837E221953EF}.Debug|Linux.ActiveCfg = Debug|Any CPU
-		{2E9DC388-BF8C-4FCC-B76E-837E221953EF}.Debug|Linux.Build.0 = Debug|Any CPU
-		{2E9DC388-BF8C-4FCC-B76E-837E221953EF}.Debug|MacOS.ActiveCfg = Debug|Any CPU
-		{2E9DC388-BF8C-4FCC-B76E-837E221953EF}.Debug|MacOS.Build.0 = Debug|Any CPU
-		{2E9DC388-BF8C-4FCC-B76E-837E221953EF}.Debug|MSWin64.ActiveCfg = Debug|Any CPU
-		{2E9DC388-BF8C-4FCC-B76E-837E221953EF}.Debug|MSWin64.Build.0 = Debug|Any CPU
-		{2E9DC388-BF8C-4FCC-B76E-837E221953EF}.Release|FreeBSD.ActiveCfg = Release|Any CPU
-		{2E9DC388-BF8C-4FCC-B76E-837E221953EF}.Release|FreeBSD.Build.0 = Release|Any CPU
-		{2E9DC388-BF8C-4FCC-B76E-837E221953EF}.Release|Linux.ActiveCfg = Release|Any CPU
-		{2E9DC388-BF8C-4FCC-B76E-837E221953EF}.Release|Linux.Build.0 = Release|Any CPU
-		{2E9DC388-BF8C-4FCC-B76E-837E221953EF}.Release|MacOS.ActiveCfg = Release|Any CPU
-		{2E9DC388-BF8C-4FCC-B76E-837E221953EF}.Release|MacOS.Build.0 = Release|Any CPU
-		{2E9DC388-BF8C-4FCC-B76E-837E221953EF}.Release|MSWin64.ActiveCfg = Release|Any CPU
-		{2E9DC388-BF8C-4FCC-B76E-837E221953EF}.Release|MSWin64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

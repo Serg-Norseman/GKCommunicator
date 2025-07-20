@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31729.503
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36301.6 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GKCommunicatorApp", "GKCommunicatorApp\GKCommunicatorApp.csproj", "{02B95D50-63D6-41F7-A46A-C169FB004304}"
 EndProject
@@ -15,8 +15,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GKNetUI", "GKNetUI\GKNetUI.csproj", "{1D2C209A-6E19-4FCF-BA08-11B8096FCA99}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GKNetLocationsPlugin", "GKNetLocationsPlugin\GKNetLocationsPlugin.csproj", "{2E9DC388-BF8C-4FCC-B76E-837E221953EF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -40,10 +38,6 @@ Global
 		{1D2C209A-6E19-4FCF-BA08-11B8096FCA99}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1D2C209A-6E19-4FCF-BA08-11B8096FCA99}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1D2C209A-6E19-4FCF-BA08-11B8096FCA99}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2E9DC388-BF8C-4FCC-B76E-837E221953EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2E9DC388-BF8C-4FCC-B76E-837E221953EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2E9DC388-BF8C-4FCC-B76E-837E221953EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2E9DC388-BF8C-4FCC-B76E-837E221953EF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
