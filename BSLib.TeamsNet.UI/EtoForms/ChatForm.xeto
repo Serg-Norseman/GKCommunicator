@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Form xmlns="http://schema.picoe.ca/eto.forms" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:netui="clr-namespace:BSLib.TeamsNet.UI"
+  x:Class="BSLib.TeamsNet.UI.ChatForm" Title="BSLib.TeamsNet" Load="ChatForm_Load">
+
+  <Form.ToolBar>
+    <ToolBar TextAlign="Right" Style="tbsi">
+      <ButtonToolItem x:Name="tbConnect" Click="miConnect_Click" Text="Connect" />
+      <ButtonToolItem x:Name="tbDisconnect" Click="miDisconnect_Click" Text="Disconnect" />
+      <SeparatorToolItem />
+      <ButtonToolItem x:Name="tbProfile" Click="miMyProfile_Click" Text="My Profile" />
+      <SeparatorToolItem />
+
+      <DropDownToolItem x:Name="tbPresenceStatus" Text="PresenceStatus">
+      </DropDownToolItem>
+    </ToolBar>
+  </Form.ToolBar>
+
+
+  <Form.Menu>
+    <MenuBar>
+
+      <ButtonMenuItem x:Name="miConnection" Text="Connection">
+        <ButtonMenuItem x:Name="miConnect" Text="Connect" Click="miConnect_Click" />
+        <ButtonMenuItem x:Name="miDisconnect" Text="Disconnect" Click="miDisconnect_Click" />
+        <SeparatorMenuItem />
+        <ButtonMenuItem x:Name="miProfile" Text="My Profile" Click="miMyProfile_Click" />
+        <SeparatorMenuItem />
+        <ButtonMenuItem x:Name="miExit" Text="Exit" Click="miExit_Click" />
+      </ButtonMenuItem>
+
+      <ButtonMenuItem x:Name="miView" Text="View">
+        <ButtonMenuItem x:Name="miPeersList" Text="Peers list">
+          <RadioMenuItem x:Name="miAllPeers" Text="All peers" Checked="true" />
+          <RadioMenuItem x:Name="miOnlyFriends" Text="Only friends" />
+          <SeparatorMenuItem />
+          <CheckMenuItem x:Name="miConnectionInfo" Text="Connection Info" Checked="true" CheckedChanged="miConnectionInfo_CheckedChanged" />
+        </ButtonMenuItem>
+      </ButtonMenuItem>
+
+      <ButtonMenuItem x:Name="miService" Text="Service">
+        <ButtonMenuItem x:Name="miDHTLog" Text="DHT Log" Click="miDHTLog_Click" />
+      </ButtonMenuItem>
+
+      <ButtonMenuItem x:Name="miHelp" Text="Help">
+        <ButtonMenuItem x:Name="miContents" Text="Contents" Enabled="false" />
+        <ButtonMenuItem x:Name="miAbout" Text="About" Enabled="false" />
+      </ButtonMenuItem>
+
+    </MenuBar>
+  </Form.Menu>
+
+
+  <TableLayout>
+    <TableRow ScaleHeight="True">
+      <Splitter Orientation="Horizontal" FixedPanel="Panel1" RelativePosition="230">
+        <Splitter.Panel1>
+          <netui:PeersList x:Name="lstMembers" Width="230" SelectionChanged="lstMembers_SelectedValueChanged">
+            <netui:PeersList.ContextMenu>
+              <ContextMenu x:Name="contextMenuStrip1">
+                <ButtonMenuItem x:Name="miPeerProfile" Text="Profile" Click="miPeerProfile_Click" />
+                <ButtonMenuItem x:Name="miAddPeer" Text="Add peer" Click="miAddPeer_Click" />
+              </ContextMenu>
+            </netui:PeersList.ContextMenu>
+          </netui:PeersList>
+        </Splitter.Panel1>
+
+        <Splitter.Panel2>
+          <TabControl x:Name="tabControl1" Size="800,700">
+            <TabPage x:Name="tabChat" Text="Chat">
+              <Splitter x:Name="splitContainer2" Orientation="Vertical" FixedPanel="Panel2" RelativePosition="200">
+                <Splitter.Panel1>
+                  <netui:MessagesList x:Name="lstChatMsgs" BackgroundColor="LightGrey" Width="230" />
+                </Splitter.Panel1>
+
+                <Splitter.Panel2>
+                  <TableLayout>
+                    <TableRow ScaleHeight="True">
+                      <TextArea x:Name="txtChatMsg" />
+                    </TableRow>
+
+                    <TableRow>
+                      <StackLayout Padding="8" Spacing="8" Orientation="Horizontal">
+                        <StackLayoutItem Expand="True" />
+                        <Button x:Name="btnSendToAll" Style="dlgBtn" Text="Send to All" Click="btnSendToAll_Click" />
+                        <Button x:Name="btnSend" Style="dlgBtn" Text="Send" Click="btnSend_Click" />
+                      </StackLayout>
+                    </TableRow>
+                  </TableLayout>
+                </Splitter.Panel2>
+              </Splitter>
+            </TabPage>
+          </TabControl>
+        </Splitter.Panel2>
+      </Splitter>
+    </TableRow>
+    <TableRow>
+      <TableLayout x:Name="statusStrip1">
+        <TableRow>
+
+          <Label x:Name="lblConnectionStatus" Width="600" Text="-" />
+          <Label x:Name="lblTicks" Width="200" Text="+" />
+          <TableCell ScaleWidth="True" />
+
+        </TableRow>
+      </TableLayout>
+    </TableRow>
+  </TableLayout>
+
+</Form>

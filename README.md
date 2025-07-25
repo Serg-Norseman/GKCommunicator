@@ -1,26 +1,6 @@
-# GKCommunicator
+#  BSLib.TeamsNet (BSLib Teams Network)
 
-This project is a distributed, decentralized, serverless, peer-to-peer chat client for GEDKeeper.
+This project is an experimental serverless peer-to-peer gaming network client.
+The project continues some of the ideas of the cancelled GEDKeeper communication plugin.
 
-## Roadmap
-
-### Implemented
-
-- [x] Kademlia (Mainline) DHT
-- [x] STUN detection of public endpoint
-- [x] UPnP port's mapping
-- [x] UDP hole-punching
-- [x] SQLite storage of DHT nodes, peer profiles and messages
-- [x] Keys generation, simple authentication and RSA traffic encryption
-- [x] Chat with presence statuses, message history and delivery statuses
-- [x] Invite peers to join via emails
-- [x] Simple blockchain
-
-### Planned
-
-- [ ] Local transactions pool (blockchain)
-- [ ] Distribution of user profiles (blockchain)
-- [ ] Distribution of data change transactions (blockchain)
-- [ ] Consensus strategy for combining transactions of different nodes (PoS or PoI or PoA)
-- [ ] A simple bulletin board of investigations and search of kins (only in the implementation of the plugin)
-- [ ] TCP
+Based on Mainline DHT, STUN detection of public endpoint, UPnP port's mapping and UDP hole-punching.

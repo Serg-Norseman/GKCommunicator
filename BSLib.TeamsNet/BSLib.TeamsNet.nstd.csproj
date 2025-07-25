@@ -1,0 +1,50 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>net6.0</TargetFrameworks>
+        <AssemblyName>BSLib.TeamsNet</AssemblyName>
+        <RootNamespace>BSLib.TeamsNet</RootNamespace>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+
+        <Configurations>Debug;Release</Configurations>
+        <Platforms>AnyCPU</Platforms>
+
+        <NoWarn>$(NoWarn);NU1902;NU1903;NU1904</NoWarn>
+    </PropertyGroup>
+
+    <Import Project="..\GKConfigurations3.targets" />
+
+
+    <PropertyGroup Condition="' $(Platform)' != 'Unknown' ">
+        <OutputPath>bin\</OutputPath>
+    </PropertyGroup>
+
+
+    <ItemGroup>
+        <Reference Include="BSLib">
+            <HintPath>..\libs\netstd\BSLib.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+
+
+    <ItemGroup>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+        <PackageReference Include="log4net" Version="3.0.3" />
+        <PackageReference Include="Mono.Nat" Version="3.0.4" />
+        <PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
+    </ItemGroup>
+
+
+    <ItemGroup>
+        <EmbeddedResource Include="Resources\Images\btn_accept.gif" />
+        <EmbeddedResource Include="Resources\Images\btn_cancel.gif" />
+        <EmbeddedResource Include="Resources\Images\btn_available.png" />
+        <EmbeddedResource Include="Resources\Images\btn_away.png" />
+        <EmbeddedResource Include="Resources\Images\btn_busy.png" />
+        <EmbeddedResource Include="Resources\Images\btn_offline.png" />
+        <EmbeddedResource Include="Resources\Images\btn_invisible.png" />
+        <EmbeddedResource Include="Resources\Images\status_delivered.png" />
+        <EmbeddedResource Include="Resources\Images\status_undelivered.png" />
+    </ItemGroup>
+</Project>

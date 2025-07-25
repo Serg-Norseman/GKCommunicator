@@ -6,7 +6,3 @@
 *.suo
 *.userprefs
 *.DotSettings.user
-
-/appdata/
-/packages/**/
-test_copy.*

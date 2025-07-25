@@ -1,0 +1,61 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>net6.0</TargetFrameworks>
+        <AssemblyName>BSLib.TeamsNet.UI</AssemblyName>
+        <RootNamespace>BSLib.TeamsNet.UI</RootNamespace>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+
+        <Configurations>Debug;Release</Configurations>
+        <Platforms>MSWin64;Linux;MacOS;FreeBSD</Platforms>
+
+        <NoWarn>$(NoWarn);NU1902;NU1903;NU1904</NoWarn>
+    </PropertyGroup>
+
+    <Import Project="..\GKConfigurations3.targets" />
+
+
+    <PropertyGroup Condition="' $(Platform)' != 'Unknown' ">
+        <OutputPath>bin\</OutputPath>
+    </PropertyGroup>
+
+
+    <ItemGroup>
+        <Compile Include="AssemblyInfo.cs" />
+        <Compile Include="EtoForms\ChatForm.cs" />
+        <Compile Include="EtoForms\InputDlg.cs" />
+        <Compile Include="EtoForms\MessagesList.cs" />
+        <Compile Include="EtoForms\PeersList.cs" />
+        <Compile Include="EtoForms\ProfileDlg.cs" />
+        <Compile Include="EtoForms\UIHelper.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="EtoForms\ChatForm.xeto">
+            <LogicalName>BSLib.TeamsNet.UI.ChatForm.xeto</LogicalName>
+        </EmbeddedResource>
+        <EmbeddedResource Include="EtoForms\ProfileDlg.xeto">
+            <LogicalName>BSLib.TeamsNet.UI.ProfileDlg.xeto</LogicalName>
+        </EmbeddedResource>
+    </ItemGroup>
+
+
+    <ItemGroup>
+        <ProjectReference Include="..\BSLib.TeamsNet\BSLib.TeamsNet.nstd.csproj" />
+    </ItemGroup>
+
+
+    <ItemGroup>
+        <Reference Include="BSLib">
+            <HintPath>..\libs\netstd\BSLib.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+
+
+    <ItemGroup>
+        <PackageReference Include="Eto.Forms" Version="2.8.3" />
+        <PackageReference Include="Eto.Serialization.Xaml" Version="2.8.3" />
+    </ItemGroup>
+</Project>

@@ -1,0 +1,51 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>net6.0</TargetFrameworks>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <RootNamespace>BSLib.TeamsNet.Tests</RootNamespace>
+        <AssemblyName>BSLib.TeamsNet.Tests</AssemblyName>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+        <Configurations>Debug;Release</Configurations>
+        <Platforms>AnyCPU</Platforms>
+        <OutputType>Library</OutputType>
+    </PropertyGroup>
+
+    <Import Project="..\GKConfigurations3.targets" />
+
+    <ItemGroup>
+        <Reference Include="BSLib">
+            <HintPath>..\libs\netstd\BSLib.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.2" />
+        <PackageReference Include="NSubstitute" Version="5.0.0" />
+        <PackageReference Include="NUnit" Version="3.13.3" />
+        <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\BSLib.TeamsNet\BSLib.TeamsNet.nstd.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Include="AssemblyInfo.cs" />
+        <Compile Include="BencodeTests.cs" />
+        <Compile Include="CommunicatorCoreTests.cs" />
+        <Compile Include="ConnectivitySettingsTests.cs" />
+        <Compile Include="DHT\DHTClientTests.cs" />
+        <Compile Include="DHT\DHTHelperTests.cs" />
+        <Compile Include="DHT\DHTMessageTests.cs" />
+        <Compile Include="DHT\DHTCommonTests.cs" />
+        <Compile Include="DHT\DHTRoutingTableTests.cs" />
+        <Compile Include="MessageTests.cs" />
+        <Compile Include="PeerTests.cs" />
+        <Compile Include="ProtocolHelperTests.cs" />
+        <Compile Include="STUNTests.cs" />
+        <Compile Include="UserProfileTests.cs" />
+    </ItemGroup>
+
+</Project>

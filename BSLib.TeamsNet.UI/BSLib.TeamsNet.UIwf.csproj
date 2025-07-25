@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <Import Project="..\GKConfigurations.targets" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{1D2C209A-6E19-4FCF-BA08-11B8096FCA99}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>GKNetUI</RootNamespace>
+    <AssemblyName>GKNetUI</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>bin\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>bin\Release\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="BSLib">
+      <HintPath>..\libs\BSLib.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="WinForms\ChatForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="WinForms\ChatForm.Designer.cs">
+      <DependentUpon>ChatForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WinForms\InputDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="WinForms\MessagesList.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="WinForms\PeersList.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="WinForms\ProfileDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="WinForms\ProfileDlg.Designer.cs">
+      <DependentUpon>ProfileDlg.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WinForms\UIHelper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BSLib.TeamsNet\BSLib.TeamsNet.csproj">
+      <Project>{fee68cf6-1d60-4e90-aef3-6afa4a8c977d}</Project>
+      <Name>BSLib.TeamsNet</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

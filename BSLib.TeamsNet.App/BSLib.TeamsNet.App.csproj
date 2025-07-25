@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="..\GKConfigurations.targets" />
+  <PropertyGroup>
+    <Configuration Condition="'$(Configuration)'==''">Debug</Configuration>
+    <AssemblyName>BSLib.TeamsNet.App</AssemblyName>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>BSLib.TeamsNet.App</RootNamespace>
+    <ProjectGuid>{02B95D50-63D6-41F7-A46A-C169FB004304}</ProjectGuid>
+    <MapFileExtensions>true</MapFileExtensions>
+    <NoWin32Manifest>False</NoWin32Manifest>
+    <NoStdLib>False</NoStdLib>
+    <StartupObject>BSLib.TeamsNet.App.Program</StartupObject>
+    <Prefer32Bit>True</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>..\bin\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>..\bin\</OutputPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Reference Include="System" />
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BSLib.TeamsNet.UI\BSLib.TeamsNet.UIwf.csproj">
+      <Project>{1d2c209a-6e19-4fcf-ba08-11b8096fca99}</Project>
+      <Name>BSLib.TeamsNet.UIwf</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BSLib.TeamsNet\BSLib.TeamsNet.csproj">
+      <Project>{fee68cf6-1d60-4e90-aef3-6afa4a8c977d}</Project>
+      <Name>BSLib.TeamsNet</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

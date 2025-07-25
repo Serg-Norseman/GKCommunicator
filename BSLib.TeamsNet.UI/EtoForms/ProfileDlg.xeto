@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Dialog xmlns="http://schema.picoe.ca/eto.forms" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  x:Class="BSLib.TeamsNet.UI.ProfileDlg" Title="Profile" Load="Form_Load">
+
+  <TableLayout Style="paddedTable8">
+
+    <TableRow ScaleHeight="True">
+      <TabControl>
+        <TabPage x:Name="tabProfile" Text="Profile">
+
+          <TableLayout Style="paddedTable">
+            <TableRow>
+              <StackLayout Style="labtexStack">
+                <Label x:Name="lblEndPoint" Text="EndPoint" />
+                <TextBox x:Name="txtEndPoint" Width="320" ReadOnly="true" />
+              </StackLayout>
+            </TableRow>
+
+            <TableRow>
+              <StackLayout Style="labtexStack">
+                <Label x:Name="lblUserName" Text="UserName" />
+                <TextBox x:Name="txtUserName" Width="320"  />
+              </StackLayout>
+            </TableRow>
+
+            <TableRow>
+              <StackLayout Style="labtexStack">
+                <StackLayout Spacing="8" Orientation="Horizontal" Width="320">
+                  <Label x:Name="lblCountry" Text="Country" />
+                  <StackLayoutItem Expand="True" />
+                  <CheckBox x:Name="chkCountryVisible" Text="Visible" />
+                </StackLayout>
+                <TextBox x:Name="txtCountry" Width="320" />
+              </StackLayout>
+            </TableRow>
+
+            <TableRow>
+              <StackLayout Style="labtexStack">
+                <StackLayout Spacing="8" Orientation="Horizontal" Width="320">
+                  <Label x:Name="lblTimeZone" Text="TimeZone" />
+                  <StackLayoutItem Expand="True" />
+                  <CheckBox x:Name="chkTimeZoneVisible" Text="Visible" />
+                </StackLayout>
+                <TextBox x:Name="txtTimeZone" Width="320" />
+              </StackLayout>
+            </TableRow>
+
+            <TableRow>
+              <StackLayout Style="labtexStack">
+                <StackLayout Spacing="8" Orientation="Horizontal" Width="320">
+                  <Label x:Name="lblLanguages" Text="Languages" />
+                  <StackLayoutItem Expand="True" />
+                  <CheckBox x:Name="chkLanguagesVisible" Text="Visible" />
+                </StackLayout>
+                <TextBox x:Name="txtLanguages" Width="320" />
+              </StackLayout>
+            </TableRow>
+
+            <TableRow>
+              <StackLayout Style="labtexStack">
+                <StackLayout Spacing="8" Orientation="Horizontal" Width="320">
+                  <Label x:Name="lblEmail" Text="Email" />
+                  <StackLayoutItem Expand="True" />
+                  <CheckBox x:Name="chkEmailVisible" Text="Visible" />
+                </StackLayout>
+                <TextBox x:Name="txtEmail" Width="320" />
+              </StackLayout>
+            </TableRow>
+          </TableLayout>
+
+        </TabPage>
+      </TabControl>
+    </TableRow>
+
+    <TableRow>
+      <StackLayout Spacing="8" Orientation="Horizontal">
+        <StackLayoutItem Expand="True" />
+        <StackLayoutItem HorizontalAlignment="Right">
+          <Button x:Name="btnSave" Style="dlgBtn" Text="Save" Click="btnSave_Click" />
+        </StackLayoutItem>
+      </StackLayout>
+    </TableRow>
+
+  </TableLayout>
+
+</Dialog>

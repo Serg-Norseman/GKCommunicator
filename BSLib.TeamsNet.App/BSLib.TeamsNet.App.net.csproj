@@ -1,0 +1,91 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <AssemblyName>BSLib.TeamsNet.App</AssemblyName>
+        <RootNamespace />
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <UseXeto>True</UseXeto>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+        <DefineConstants>ETO</DefineConstants>
+        <SelfContained>true</SelfContained>
+
+        <Configurations>Debug;Release</Configurations>
+        <Platforms>MSWin64;Linux;MacOS;FreeBSD</Platforms>
+    </PropertyGroup>
+
+    <Import Project="..\GKConfigurations3.targets" />
+
+    <ItemGroup>
+      <None Remove="app.config" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Include="Program.cs" />
+    </ItemGroup>
+
+
+    <ItemGroup>
+        <Reference Include="BSLib">
+            <HintPath>..\libs\netstd\BSLib.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\BSLib.TeamsNet\BSLib.TeamsNet.nstd.csproj" />
+        <ProjectReference Include="..\BSLib.TeamsNet.UI\BSLib.TeamsNet.UIef.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Eto.Serialization.Xaml" Version="2.8.3" />
+    </ItemGroup>
+
+
+    <PropertyGroup Condition=" $(DefineConstants.Contains('OS_MSWIN')) ">
+        <TargetFramework>net6.0-windows</TargetFramework>
+        <OutputType>WinExe</OutputType>
+        <OutputPath>..\bin\</OutputPath>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+        <StartupObject>BSLib.TeamsNet.App.Program</StartupObject>
+    </PropertyGroup>
+
+    <ItemGroup Condition=" $(DefineConstants.Contains('OS_MSWIN')) ">
+        <PackageReference Include="Eto.Platform.Wpf" Version="2.8.3" />
+    </ItemGroup>
+
+    <PropertyGroup Condition=" '$(Platform)' == 'MSWin64' ">
+        <PlatformTarget>x64</PlatformTarget>
+        <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    </PropertyGroup>
+
+
+    <PropertyGroup Condition=" $(DefineConstants.Contains('OS_LINUX')) ">
+        <TargetFramework>net6.0</TargetFramework>
+        <OutputType>exe</OutputType>
+        <OutputPath>..\bin\</OutputPath>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+        <StartupObject>GKCommunicatorApp.Program</StartupObject>
+        <PlatformTarget>x64</PlatformTarget>
+
+        <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
+    </PropertyGroup>
+
+    <ItemGroup Condition=" $(DefineConstants.Contains('OS_LINUX')) or $(DefineConstants.Contains('OS_FREEBSD')) ">
+        <PackageReference Include="Eto.Platform.Gtk" Version="2.8.3" />
+    </ItemGroup>
+
+
+    <PropertyGroup Condition=" $(DefineConstants.Contains('OS_MACOS')) ">
+        <TargetFramework>net6.0</TargetFramework>
+        <OutputType>exe</OutputType>
+
+        <RuntimeIdentifiers>osx-x64;osx-arm64</RuntimeIdentifiers>
+    </PropertyGroup>
+
+    <ItemGroup Condition=" $(DefineConstants.Contains('OS_MACOS')) ">
+        <PackageReference Include="Eto.Platform.Mac64" Version="2.8.3" />
+    </ItemGroup>
+
+</Project>
